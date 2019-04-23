@@ -30,8 +30,6 @@ displayName="Dimensional Dungeons" #mandatory
 # The description text for the mod (multi line!) (#mandatory)
 description='''
 This mod implements limitless proceedurally generated dungeons! These dungeons are placed in their own single dimension. Hence the name: Dimensional Dungeons.
-
-The player is responsible for building the dungeon portal and for acquiring some dungeon keys to use on the portal. These keys act as the 'seed' for the random dungeon. By finding and creating more keys the same portal can be used to explore any number of dungeons.
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.examplemod]] #optional
