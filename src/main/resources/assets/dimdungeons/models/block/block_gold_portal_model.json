@@ -1,0 +1,12 @@
+{
+    "parent": "block/cube",
+    "textures": {
+        "down": "dimdungeons:block/gold_portal",
+        "up": "dimdungeons:block/gold_portal",
+        "north": "dimdungeons:block/gold_portal",
+        "east": "dimdungeons:block/gold_portal",
+        "south": "dimdungeons:block/gold_portal",
+        "west": "dimdungeons:block/gold_portal",
+        "particle": "block/gold_block"
+    }
+}

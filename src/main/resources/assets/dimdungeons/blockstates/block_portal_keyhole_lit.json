@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "facing=north": { "model": "dimdungeons:block/block_portal_keyhole_lit" },
+        "facing=south": { "model": "dimdungeons:block/block_portal_keyhole_lit", "y": 180 },
+        "facing=west":  { "model": "dimdungeons:block/block_portal_keyhole_lit", "y": 270 },
+        "facing=east":  { "model": "dimdungeons:block/block_portal_keyhole_lit", "y": 90 }
+    }
+}

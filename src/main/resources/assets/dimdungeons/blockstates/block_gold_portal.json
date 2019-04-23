@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "": { "model": "dimdungeons:block/block_gold_portal_model" }
+    }
+}

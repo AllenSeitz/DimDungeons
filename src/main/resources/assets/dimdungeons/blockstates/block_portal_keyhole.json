@@ -1,0 +1,23 @@
+{
+    "variants": {
+        "facing=north,filled=false,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_model" },
+        "facing=south,filled=false,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_model", "y": 180 },
+        "facing=west,filled=false,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_model", "y": 270 },
+        "facing=east,filled=false,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_model", "y": 90 },
+
+        "facing=north,filled=true,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_full_model" },
+        "facing=south,filled=true,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_full_model", "y": 180 },
+        "facing=west,filled=true,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_full_model", "y": 270 },
+        "facing=east,filled=true,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_full_model", "y": 90 },
+		
+        "facing=north,filled=true,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit_model" },
+        "facing=south,filled=true,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit_model", "y": 180 },
+        "facing=west,filled=true,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit_model", "y": 270 },
+        "facing=east,filled=true,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit_model", "y": 90 },
+
+        "facing=north,filled=false,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit_model" },
+        "facing=south,filled=false,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit_model", "y": 180 },
+        "facing=west,filled=false,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit_model", "y": 270 },
+        "facing=east,filled=false,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit_model", "y": 90 }
+    }
+}
