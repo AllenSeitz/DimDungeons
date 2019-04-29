@@ -229,9 +229,9 @@ public class BlockGoldPortal extends BlockBreakable
 	for (int i = 0; i < 2; i++)
 	{
 	    IBlockState keyhole = worldIn.getBlockState(p);
-	    if (keyhole.getBlock() instanceof BlockPortalKeyhole)
+	    if (keyhole.getBlock() == Block.getBlockFromName(BlockPortalKeyhole.REG_NAME) )
 	    {
-		return (TileEntityPortalKeyhole) worldIn.getTileEntity(p);
+		return (TileEntityPortalKeyhole)worldIn.getTileEntity(p);
 	    }
 	    p = p.up();
 	}

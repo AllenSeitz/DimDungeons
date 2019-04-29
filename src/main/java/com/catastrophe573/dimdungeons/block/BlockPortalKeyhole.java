@@ -29,7 +29,6 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -43,7 +42,7 @@ public class BlockPortalKeyhole extends Block
     public static final BooleanProperty FILLED = BooleanProperty.create("filled");
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
 
-    public static String REG_NAME = "block_portal_keyhole";
+    public static final String REG_NAME = "block_portal_keyhole";
 
     public BlockPortalKeyhole()
     {
@@ -55,45 +54,6 @@ public class BlockPortalKeyhole extends Block
     public IBlockState getMyCustomDefaultState()
     {
 	return this.stateContainer.getBaseState().with(FACING, EnumFacing.NORTH).with(FILLED, false).with(LIT, false);
-    }
-
-    // Called after the block is set in the Chunk data, but before the Tile Entity is set
-    @Override
-    public void onBlockAdded(IBlockState state, World worldIn, BlockPos pos, IBlockState oldState)
-    {
-	this.setDefaultFacing(worldIn, pos, state);
-    }
-
-    // copied from vanilla furnaces in 1.12
-    private void setDefaultFacing(World worldIn, BlockPos pos, IBlockState state)
-    {
-	if (EffectiveSide.get() == LogicalSide.SERVER)
-	{
-	    IBlockState iblockstate = worldIn.getBlockState(pos.north());
-	    IBlockState iblockstate1 = worldIn.getBlockState(pos.south());
-	    IBlockState iblockstate2 = worldIn.getBlockState(pos.west());
-	    IBlockState iblockstate3 = worldIn.getBlockState(pos.east());
-	    EnumFacing enumfacing = (EnumFacing) state.get(FACING);
-
-	    if (enumfacing == EnumFacing.NORTH && iblockstate.isFullCube() && !iblockstate1.isFullCube())
-	    {
-		enumfacing = EnumFacing.SOUTH;
-	    }
-	    else if (enumfacing == EnumFacing.SOUTH && iblockstate1.isFullCube() && !iblockstate.isFullCube())
-	    {
-		enumfacing = EnumFacing.NORTH;
-	    }
-	    else if (enumfacing == EnumFacing.WEST && iblockstate2.isFullCube() && !iblockstate3.isFullCube())
-	    {
-		enumfacing = EnumFacing.EAST;
-	    }
-	    else if (enumfacing == EnumFacing.EAST && iblockstate3.isFullCube() && !iblockstate2.isFullCube())
-	    {
-		enumfacing = EnumFacing.WEST;
-	    }
-
-	    worldIn.setBlockState(pos, state.with(FACING, enumfacing), 2);
-	}
     }
 
     // based on code from vanilla furnaces, which also play a sound effect and make particles when their TileEntity is being productive
@@ -146,31 +106,18 @@ public class BlockPortalKeyhole extends Block
     @Override
     public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-	ItemStack playerItem = player.getHeldItem(hand);
-	TileEntity tileEntity = worldIn.getTileEntity(pos);
-	TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
-
 	// client side
 	if (EffectiveSide.get() == LogicalSide.CLIENT)
-	{
-	    // do nothing and print debug information
-	    if (playerItem.getItem() instanceof net.minecraft.item.ItemCompass)
-	    {
-		// speak to the player
-		String message = "Contents: " + myEntity.getObjectInserted().getDisplayName();
-		message += ", Filled = " + myEntity.isFilled() + ", Active = " + myEntity.isActivated();
-		player.sendMessage(new TextComponentString(message));
-	    }
-	}
-
-	// if the above debugging happened, then also do not insert the compass either
-	if (playerItem.getItem() instanceof net.minecraft.item.ItemCompass)
 	{
 	    return true;
 	}
 
+	ItemStack playerItem = player.getHeldItem(hand);
+	TileEntity tileEntity = worldIn.getTileEntity(pos);
+	TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
+
 	// insert or remove an item from this block
-	if (tileEntity instanceof TileEntityPortalKeyhole)
+	if (myEntity != null)
 	{
 	    ItemStack insideItem = myEntity.getObjectInserted();
 
@@ -179,18 +126,37 @@ public class BlockPortalKeyhole extends Block
 	    {
 		if (!playerItem.isEmpty())
 		{
-		    //System.out.println("Putting thing inside keyhole...");
+		    DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
 		    myEntity.setContents(playerItem.copy());
 		    //if (!playerIn.capabilities.isCreativeMode) // intentionally commented out
 		    //{
 		    playerItem.shrink(1);
 		    //}
+
+		    // recalculate the boolean block states	    
+		    IBlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
+		    worldIn.setBlockState(pos, newBlockState);
+
+		    // should portal blocks be spawned?
+		    if (isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
+		    {
+			DimDungeons.LOGGER.info("CREATING GOLD PORTAL BLOCKS. THIS NEVER CRASHED ON 1.12");
+			DimDungeons.LOGGER.info(Block.getBlockFromName(BlockGoldPortal.REG_NAME).toString());
+			worldIn.setBlockState(pos.down(), Block.getBlockFromName(BlockGoldPortal.REG_NAME).getDefaultState());
+			worldIn.setBlockState(pos.down(2), Block.getBlockFromName(BlockGoldPortal.REG_NAME).getDefaultState());
+
+			// TODO: is this needed?
+			// get a block on the destination side to pregen the chunk where this portal goes
+			//worldIn.getMinecraftServer().getWorld(573).getBlockState(pos.down());
+		    }
+
+		    return true;
 		}
 	    }
 	    // if the keyhole is currently full
 	    else
 	    {
-		//System.out.println("Taking thing out of keyhole...");
+		DimDungeons.LOGGER.info("Taking thing out of keyhole...");
 		if (playerItem.isEmpty())
 		{
 		    player.setHeldItem(hand, insideItem); // hand it to the player
@@ -201,31 +167,19 @@ public class BlockPortalKeyhole extends Block
 		}
 
 		myEntity.removeContents();
+
+		// recalculate the boolean block states	    
+		IBlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
+		worldIn.setBlockState(pos, newBlockState);
+
+		return true;
 	    }
-
-	    // recalculate the boolean block states
-	    IBlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
-	    worldIn.setBlockState(pos, newBlockState, 3);
-	    //worldIn.notifyBlockUpdate(pos, state, newBlockState, 3); // the above line of code causes a block update anyway, but otherwise this is needed
-	    myEntity.markDirty();
-
-	    // should portal blocks be spawned?
-	    if (isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
-	    {
-		worldIn.setBlockState(pos.down(), Block.getBlockFromName(BlockGoldPortal.REG_NAME).getDefaultState());
-		worldIn.setBlockState(pos.down(2), Block.getBlockFromName(BlockGoldPortal.REG_NAME).getDefaultState());
-
-		// TODO: is this needed?
-		// get a block on the destination side to pregen the chunk where this portal goes
-		//worldIn.getMinecraftServer().getWorld(573).getBlockState(pos.down());
-	    }
-
-	    return true;
 	}
 
 	return true;
     }
 
+    // helper function for checkForPortalCreation
     protected boolean isOkayToSpawnPortalBlocks(World worldIn, BlockPos pos, IBlockState state, TileEntityPortalKeyhole myEntity)
     {
 	// if the portal is not lit, then that is a fast "no"
@@ -283,7 +237,7 @@ public class BlockPortalKeyhole extends Block
     @Override
     public TileEntity createTileEntity(IBlockState state, IBlockReader world)
     {
-	return new TileEntityPortalKeyhole(null);
+	return new TileEntityPortalKeyhole();
     }
 
     // Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the IBlockstate
@@ -301,26 +255,32 @@ public class BlockPortalKeyhole extends Block
     {
 	worldIn.setBlockState(pos, state.with(FACING, placer.getHorizontalFacing().getOpposite()), 2);
     }
-    
-    // Called server side after this block is replaced with another in Chunk, but before the Tile Entity is updated
+
+    // Called server side after this block is replaced with another in Chunk, but before the TileEntity is updated
+    // this function is now in charge of preserving TileEntities across block updates, too, instead of the former TileEntity->shouldRefresh()
     @SuppressWarnings("deprecation")
     @Override
-    //public void replaceBlock(IBlockState oldState, IBlockState newState, IWorld worldIn, BlockPos pos, int flags)
     public void onReplaced(IBlockState state, World worldIn, BlockPos pos, IBlockState newState, boolean isMoving)
     {
 	TileEntity tileentity = worldIn.getTileEntity(pos);
 
-	if (tileentity instanceof TileEntityPortalKeyhole)
+	// DO NOT call super.onReplaced() unless this block has no TileEntity, or unless the block was deleted/changed to another block of course
+	if (state.getBlock() != newState.getBlock())
 	{
-	    ItemStack item = ((TileEntityPortalKeyhole) tileentity).getObjectInserted();
-	    if (!item.isEmpty())
+	    // if the block was destroyed and it held an item then spit the item out somewhere
+	    if (tileentity instanceof TileEntityPortalKeyhole)
 	    {
-		InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), item);
+		ItemStack item = ((TileEntityPortalKeyhole) tileentity).getObjectInserted();
+		if (!item.isEmpty())
+		{
+		    InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), item);
+		}
+		worldIn.updateComparatorOutputLevel(pos, this);
 	    }
-	    worldIn.updateComparatorOutputLevel(pos, this);
-	}
 
-	super.onReplaced(state, worldIn, pos, newState, isMoving);
+	    super.onReplaced(state, worldIn, pos, newState, isMoving);
+	    worldIn.removeTileEntity(pos);
+	}
     }
 
     @Override
@@ -329,11 +289,11 @@ public class BlockPortalKeyhole extends Block
 	return true;
     }
 
-    // returns 1 if the block is filled with an object that could open a portal given other conditions, and 0 otherwise
+    // returns 1 number if the block is filled with any item stack, and 0 otherwise
     @Override
     public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos)
     {
-	return blockState.get(LIT) ? 1 : 0;
+	return blockState.get(FILLED) ? 1 : 0;
     }
 
     // returns the ItemStack that represents this block - this has nothing to do with the item placed inside
@@ -353,6 +313,28 @@ public class BlockPortalKeyhole extends Block
 	return EnumBlockRenderType.MODEL;
     }
 
+    @Override
+    // this replaces all metadata in 1.13 forwards
+    //public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
+    public IBlockState getExtendedState(IBlockState state, IBlockReader world, BlockPos pos)
+    {
+	IBlockState retval = state;
+	TileEntity te = world.getTileEntity(pos);
+	if (te instanceof TileEntityPortalKeyhole)
+	{
+	    retval.with(FILLED, ((TileEntityPortalKeyhole) te).isFilled());
+	    retval.with(LIT, ((TileEntityPortalKeyhole) te).isActivated());
+	}
+
+	return retval;
+    }
+
+    @Override
+    protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder)
+    {
+	builder.add(FACING, FILLED, LIT);
+    }
+
     // Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed blockstate.
     @Override
     public IBlockState rotate(IBlockState state, Rotation rot)
@@ -365,11 +347,5 @@ public class BlockPortalKeyhole extends Block
     public IBlockState mirror(IBlockState state, Mirror mirrorIn)
     {
 	return state.with(FACING, mirrorIn.mirror(((EnumFacing) state.get(FACING))));
-    }
-
-    @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder)
-    {
-	builder.add(FACING, FILLED, LIT);
     }
 }

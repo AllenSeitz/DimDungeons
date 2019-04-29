@@ -19,12 +19,17 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ItemPortalKey extends Item
 {
+    public static final String REG_NAME = "item_portal_key";
+
     public static final String NBT_KEY_ACTIVATED = "key_activated";
     public static final String NBT_KEY_DESTINATION_X = "dest_x";
     public static final String NBT_KEY_DESTINATION_Z = "dest_z";
@@ -34,13 +39,13 @@ public class ItemPortalKey extends Item
 
     public static final int BLOCKS_APART_PER_DUNGEON = 128; // 16 chunks to try to keep "noise" or other interference from neighbors to a minimum (also makes maps work)
     public static final int RANDOM_COORDINATE_RANGE = 8192; // (0-8192 * 128) = 0 to 1,048,576
-    public static final float ENTRANCE_OFFSET_X = 8.0f + (8*16);    // applied when the player teleports in, centered on the two-block-wide return portal
-    public static final float ENTRANCE_OFFSET_Z = 12.5f + (11*16);  // applied when the player teleports in, centered on the two-block-wide return portal
-    
+    public static final float ENTRANCE_OFFSET_X = 8.0f + (8 * 16); // applied when the player teleports in, centered on the two-block-wide return portal
+    public static final float ENTRANCE_OFFSET_Z = 12.5f + (11 * 16); // applied when the player teleports in, centered on the two-block-wide return portal
+
     public ItemPortalKey()
     {
 	super(new Item.Builder().group(ItemGroup.MISC).maxStackSize(1));
-	this.setRegistryName(DimDungeons.MOD_ID, "item_portal_key");
+	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
     protected void activateKey(ItemStack stack)
@@ -53,18 +58,18 @@ public class ItemPortalKey extends Item
 	int destZ = random.nextInt(RANDOM_COORDINATE_RANGE);
 	data.setInt(NBT_KEY_DESTINATION_X, destX);
 	data.setInt(NBT_KEY_DESTINATION_Z, destZ);
-	
+
 	// give it a funny random name
 	int nameType = random.nextInt(3);
 	data.setInt(NBT_NAME_TYPE, nameType);
 	if (nameType == 0 || nameType == 1)
 	{
-	    data.setInt(NBT_NAME_PART_1, random.nextInt(32));
+	    data.setInt(NBT_NAME_PART_1, random.nextInt(32)); // key of noun & noun, key of finding noun in noun
 	    data.setInt(NBT_NAME_PART_2, random.nextInt(32));
 	}
 	else
 	{
-	    data.setInt(NBT_NAME_PART_1, random.nextInt(20)); // place
+	    data.setInt(NBT_NAME_PART_1, random.nextInt(20)); // key to the place of noun
 	    data.setInt(NBT_NAME_PART_2, random.nextInt(32));
 	}
 
@@ -84,7 +89,8 @@ public class ItemPortalKey extends Item
     }
 
     @OnlyIn(Dist.CLIENT)
-    public String getItemStackDisplayName(ItemStack stack)
+    @Override
+    public ITextComponent getDisplayName(ItemStack stack)
     {
 	// no NBT data on this item at all? well then return a blank key
 	if (stack.hasTag())
@@ -100,72 +106,72 @@ public class ItemPortalKey extends Item
 
 		if (nameType == 0)
 		{
-		    String start = I18n.format("npart.myfirstmod:struct_1");
-		    String preposition = I18n.format("npart.myfirstmod:struct_2");
-		    String noun1 = I18n.format("npart.myfirstmod:noun_" + word_index_1);
-		    String noun2 = I18n.format("npart.myfirstmod:noun_" + word_index_2);
-		    if ( word_index_1 == word_index_2 )
+		    String start = I18n.format("npart.dimdungeons.struct_1");
+		    String preposition = I18n.format("npart.dimdungeons.struct_2");
+		    String noun1 = I18n.format("npart.dimdungeons.noun_" + word_index_1);
+		    String noun2 = I18n.format("npart.dimdungeons.noun_" + word_index_2);
+		    if (word_index_1 == word_index_2)
 		    {
-			retval = start + noun1;			
+			retval = start + " " + noun1;
 		    }
 		    else
 		    {
-			retval = start + noun1 + preposition + noun2;			
+			retval = start + " " + noun1  + " " + preposition + " " + noun2;
 		    }
 		}
 		else if (nameType == 1)
 		{
-		    String start = I18n.format("npart.myfirstmod:struct_3");
-		    String preposition = I18n.format("npart.myfirstmod:struct_4");
-		    String noun1 = I18n.format("npart.myfirstmod:noun_" + word_index_1);
-		    String noun2 = I18n.format("npart.myfirstmod:noun_" + word_index_2);
-		    if ( word_index_1 == word_index_2 )
+		    String start = I18n.format("npart.dimdungeons.struct_3");
+		    String preposition = I18n.format("npart.dimdungeons.struct_4");
+		    String noun1 = I18n.format("npart.dimdungeons.noun_" + word_index_1);
+		    String noun2 = I18n.format("npart.dimdungeons.noun_" + word_index_2);
+		    if (word_index_1 == word_index_2)
 		    {
-			retval = start + noun1;			
+			retval = start + " " + noun1;
 		    }
 		    else
 		    {
-			retval = start + noun1 + preposition + noun2;			
+			retval = start + " " + noun1 + " " + preposition + " " + noun2;
 		    }
 		}
 		else
 		{
-		    String start = I18n.format("npart.myfirstmod:struct_5");
-		    String preposition = I18n.format("npart.myfirstmod:struct_6");
-		    String place = I18n.format("npart.myfirstmod:place_" + word_index_1);
-		    String noun = I18n.format("npart.myfirstmod:noun_" + word_index_2);
-		    retval = start + place + preposition + noun;			
+		    String start = I18n.format("npart.dimdungeons.struct_5");
+		    String preposition = I18n.format("npart.dimdungeons.struct_6");
+		    String place = I18n.format("npart.dimdungeons.place_" + word_index_1);
+		    String noun = I18n.format("npart.dimdungeons.noun_" + word_index_2);
+		    retval = start + " " + place + " " + preposition + " " + noun;
 		}
 
-		return retval;
+		return new TextComponentString(retval);
 	    }
 	}
 
 	// basically return "Blank Portal Key"
-	return I18n.format(stack.getTranslationKey());
+	//return I18n.format(stack.getTranslationKey());
+	return new TextComponentTranslation(this.getTranslationKey(stack), new Object[0]);
     }
 
     public float getWarpX(ItemStack stack)
     {
 	NBTTagCompound itemData = stack.getTag();
-	if ( itemData.hasKey(NBT_KEY_DESTINATION_X) )
+	if (itemData.hasKey(NBT_KEY_DESTINATION_X))
 	{
 	    return (itemData.getInt(NBT_KEY_DESTINATION_X) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_X;
 	}
 	return -1;
     }
-    
+
     public float getWarpZ(ItemStack stack)
     {
 	NBTTagCompound itemData = stack.getTag();
-	if ( itemData.hasKey(NBT_KEY_DESTINATION_Z) )
+	if (itemData.hasKey(NBT_KEY_DESTINATION_Z))
 	{
 	    return (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_Z;
 	}
 	return -1;
     }
-    
-    
+
     @Override
     //public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     public EnumActionResult onItemUse(ItemUseContext parameters)
@@ -178,7 +184,7 @@ public class ItemPortalKey extends Item
 	//float hitY = parameters.getHitY();
 	float hitZ = parameters.getHitZ();
 	//EntityPlayer player = parameters.getPlayer();	
-	
+
 	IBlockState iblockstate = worldIn.getBlockState(pos);
 	ItemStack itemstack = parameters.getItem();
 
@@ -261,14 +267,10 @@ public class ItemPortalKey extends Item
 		    worldIn.playSound((EntityPlayer) null, pos, SoundEvents.BLOCK_GLASS_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 	    }
-	    
+
 	    /*
-	    // did they use the key on a keyhole?
-	    if (worldIn.getBlockState(pos).getBlock() instanceof BlockPortalKeyhole)
-	    {
-		
-	    }
-	    */	    
+	     * // did they use the key on a keyhole? if (worldIn.getBlockState(pos).getBlock() instanceof BlockPortalKeyhole) { }
+	     */
 	}
 
 	return EnumActionResult.PASS;

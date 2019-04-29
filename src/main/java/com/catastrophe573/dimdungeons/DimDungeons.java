@@ -3,6 +3,7 @@ package com.catastrophe573.dimdungeons;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -14,10 +15,12 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
+import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 
 import java.util.stream.Collectors;
@@ -38,7 +41,7 @@ public class DimDungeons
     {
 	return 573;
     }
-    
+
     public DimDungeons()
     {
 	// Register the setup method for modloading
@@ -98,7 +101,6 @@ public class DimDungeons
 	@SubscribeEvent
 	public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent)
 	{
-	    // register a new block here
 	    LOGGER.info("HELLO from Register Block");
 	    BlockRegistrar.registerAllBlocks(blockRegistryEvent);
 	}
@@ -108,7 +110,16 @@ public class DimDungeons
 	{
 	    LOGGER.info("HELLO from Register Item");
 	    ItemRegistrar.registerAllItems(itemRegistryEvent);
-	    BlockRegistrar.registerAllItemBlocks(itemRegistryEvent);	    
+	    BlockRegistrar.registerAllItemBlocks(itemRegistryEvent);
+	}
+
+	@SubscribeEvent
+	public static void registerTE(RegistryEvent.Register<TileEntityType<?>> teRegistryEvent)
+	{
+	    LOGGER.info("HELLO from Register TileEntityType");
+	    TileEntityType<TileEntityPortalKeyhole> tetPortalKeyhole = TileEntityType.Builder.create(TileEntityPortalKeyhole::new).build(null);
+	    tetPortalKeyhole.setRegistryName(MOD_ID, TileEntityPortalKeyhole.REG_NAME);
+	    teRegistryEvent.getRegistry().register(tetPortalKeyhole);	    
 	}
     }
 }
