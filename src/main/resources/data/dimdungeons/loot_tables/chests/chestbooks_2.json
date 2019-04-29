@@ -1,0 +1,181 @@
+{
+  "pools": [
+    {
+      "rolls": {
+        "min": 1,
+        "max": 1
+      },
+  	  "name":"dimdungeons:books_1",	  
+      "entries": [
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_efficiency4",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:efficiency\",lvl:4}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_efficiency5",
+		  "weight": 1,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:efficiency\",lvl:5}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_mending",
+		  "weight": 3,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:mending\",lvl:1}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_unbreaking3",
+		  "weight": 3,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:unbreaking\",lvl:3}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_fortune3",
+		  "weight": 3,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:fortune\",lvl:3}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_looting3",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:looting\",lvl:3}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_feather_falling3",
+		  "weight": 1,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:feather_falling\",lvl:3}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_feather_falling4",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:feather_falling\",lvl:4}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_respiration2",
+		  "weight": 1,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:respiration\",lvl:2}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_respiration3",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:respiration\",lvl:3}]}"
+			}
+		  ]
+		},		
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_thorns2",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:thorns\",lvl:2}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_thorns3",
+		  "weight": 1,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:thorns\",lvl:3}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_frost_walker1",
+		  "weight": 1,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:frost_walker\",lvl:1}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_frost_walker2",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:frost_walker\",lvl:2}]}"
+			}
+		  ]
+		}
+      ]
+    }
+  ]
+}
