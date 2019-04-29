@@ -4,7 +4,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
-import com.catastrophe573.dimdungeons.block.BlockGildedPortal;
 import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 
@@ -229,7 +228,7 @@ public class BlockGoldPortal extends BlockBreakable
 	for (int i = 0; i < 2; i++)
 	{
 	    IBlockState keyhole = worldIn.getBlockState(p);
-	    if (keyhole.getBlock() == Block.getBlockFromName(BlockPortalKeyhole.REG_NAME) )
+	    if (keyhole.getBlock() == BlockRegistrar.block_portal_keyhole )
 	    {
 		return (TileEntityPortalKeyhole)worldIn.getTileEntity(p);
 	    }
@@ -249,21 +248,21 @@ public class BlockGoldPortal extends BlockBreakable
     {
 	// main portal body
 	if (!isValidPortalFrameBlock(worldIn.getBlockState(keyhole.west().down()).getBlock()) || !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.west().down(2)).getBlock())
-		|| !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.east().down()).getBlock()) || !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.east().down(2)).getBlock())
+		|| !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.east().down()).getBlock()) || !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.east().down(2)).getBlock()) 
 		|| !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.down(3)).getBlock()))
 	{
 	    return false;
 	}
 
 	// left spire
-	if (worldIn.getBlockState(keyhole.west(3).down(1)).getBlock() != Block.getBlockFromName(BlockGildedPortal.REG_NAME) || !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.west(3).down(2)).getBlock())
+	if (worldIn.getBlockState(keyhole.west(3).down(1)).getBlock() != BlockRegistrar.block_gilded_portal || !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.west(3).down(2)).getBlock())
 		|| !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.west(3).down(3)).getBlock()))
 	{
 	    return false;
 	}
 
 	// right spire
-	if (worldIn.getBlockState(keyhole.east(3).down(1)).getBlock() != Block.getBlockFromName(BlockGildedPortal.REG_NAME) || !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.east(3).down(2)).getBlock())
+	if (worldIn.getBlockState(keyhole.east(3).down(1)).getBlock() != BlockRegistrar.block_gilded_portal || !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.east(3).down(2)).getBlock())
 		|| !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.east(3).down(3)).getBlock()))
 	{
 	    return false;
@@ -284,14 +283,14 @@ public class BlockGoldPortal extends BlockBreakable
 	}
 
 	// left spire
-	if (worldIn.getBlockState(keyhole.north(3).down(1)).getBlock() != Block.getBlockFromName(BlockGildedPortal.REG_NAME) || !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.north(3).down(2)).getBlock())
+	if (worldIn.getBlockState(keyhole.north(3).down(1)).getBlock() != BlockRegistrar.block_gilded_portal || !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.north(3).down(2)).getBlock())
 		|| !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.north(3).down(3)).getBlock()))
 	{
 	    return false;
 	}
 
 	// right spire
-	if (worldIn.getBlockState(keyhole.south(3).down(1)).getBlock() != Block.getBlockFromName(BlockGildedPortal.REG_NAME) || !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.south(3).down(2)).getBlock())
+	if (worldIn.getBlockState(keyhole.south(3).down(1)).getBlock() != BlockRegistrar.block_gilded_portal || !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.south(3).down(2)).getBlock())
 		|| !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.south(3).down(3)).getBlock()))
 	{
 	    return false;

@@ -140,10 +140,9 @@ public class BlockPortalKeyhole extends Block
 		    // should portal blocks be spawned?
 		    if (isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
 		    {
-			DimDungeons.LOGGER.info("CREATING GOLD PORTAL BLOCKS. THIS NEVER CRASHED ON 1.12");
-			DimDungeons.LOGGER.info(Block.getBlockFromName(BlockGoldPortal.REG_NAME).toString());
-			worldIn.setBlockState(pos.down(), Block.getBlockFromName(BlockGoldPortal.REG_NAME).getDefaultState());
-			worldIn.setBlockState(pos.down(2), Block.getBlockFromName(BlockGoldPortal.REG_NAME).getDefaultState());
+			DimDungeons.LOGGER.info("DimDungeons: CREATING GOLD PORTAL BLOCKS!");
+			worldIn.setBlockState(pos.down(), BlockRegistrar.block_gold_portal.getDefaultState());
+			worldIn.setBlockState(pos.down(2), BlockRegistrar.block_gold_portal.getDefaultState());
 
 			// TODO: is this needed?
 			// get a block on the destination side to pregen the chunk where this portal goes
