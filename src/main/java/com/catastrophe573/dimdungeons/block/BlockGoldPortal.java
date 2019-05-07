@@ -5,6 +5,8 @@ import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
+import com.catastrophe573.dimdungeons.command.CustomTeleporter;
+import com.catastrophe573.dimdungeons.dimension.DimensionRegistrar;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 
 import net.minecraft.block.Block;
@@ -26,6 +28,8 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
 
 public class BlockGoldPortal extends BlockBreakable
 {
@@ -77,12 +81,17 @@ public class BlockGoldPortal extends BlockBreakable
     }
 
     // called When an entity collides with the Block
-    @SuppressWarnings("deprecation")
     @Override
     public void onEntityCollision(IBlockState state, World worldIn, BlockPos pos, Entity entityIn)
     {
-	super.onEntityCollision(state, worldIn, pos, entityIn);
-
+	//super.onEntityCollision(state, worldIn, pos, entityIn);
+	
+	// do not process this block on the client
+	if (EffectiveSide.get() == LogicalSide.CLIENT)
+	{
+	    return;
+	}
+	
 	// only teleport players! items and mobs and who knows what else must stay behind
 	if (!(entityIn instanceof EntityPlayerMP))
 	{
@@ -93,12 +102,11 @@ public class BlockGoldPortal extends BlockBreakable
 	{
 	    return; // not yet
 	}
-
+	
 	if (!entityIn.isPassenger() && !entityIn.isBeingRidden() && entityIn.isNonBoss())
 	{
-	    DimDungeons.LOGGER.info("Entity " + entityIn.getName() + " just entered a gold portal.");
+	    DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
 
-	    //*
 	    TileEntityPortalKeyhole te = findKeyholeForThisPortal(state, worldIn, pos);
 	    if (te != null)
 	    {
@@ -112,13 +120,13 @@ public class BlockGoldPortal extends BlockBreakable
 		    if (warpX == -1 || warpZ == -1)
 		    {
 			System.out.println("Player somehow used an unactivated key? Doing nothing.");
-			//actuallyPerformTeleport(pos, (EntityPlayerMP) entityIn, MyFirstMod.dungeonDimensionId, 7.5f, 52, 12.0f);
+			//actuallyPerformTeleport((EntityPlayerMP) entityIn, DimensionRegistrar.getDungeonDimensionID(), 7.5f, 52, 12.0f);
 		    }
 		    else
 		    {
 			// TODO: remove this print
 			System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");
-			actuallyPerformTeleport((EntityPlayerMP) entityIn, DimDungeons.getDungeonDimensionID(), warpX, 55.1D, warpZ);
+			actuallyPerformTeleport((EntityPlayerMP) entityIn, DimensionRegistrar.getDungeonDimensionID(), warpX, 55.1D, warpZ);
 		    }
 		}
 		// three vanilla blocks will also open portals to the 3 vanilla dimensions?
@@ -133,7 +141,7 @@ public class BlockGoldPortal extends BlockBreakable
 		    {
 			actuallyPerformTeleport((EntityPlayerMP) entityIn, 1, entityIn.posX, entityIn.posY, entityIn.posZ);
 		    }
-		    if (b == Blocks.GRASS && worldIn.getDimension().getId() != 0)
+		    if (b == Blocks.GRASS_BLOCK && worldIn.getDimension().getId() != 0)
 		    {
 			actuallyPerformTeleport((EntityPlayerMP) entityIn, 0, entityIn.posX, entityIn.posY, entityIn.posZ);
 		    }
@@ -142,21 +150,20 @@ public class BlockGoldPortal extends BlockBreakable
 	    else
 	    {
 		// no keyhole? this could be a return portal
-		if (worldIn.getDimension().getId() == DimDungeons.getDungeonDimensionID())
+		if (worldIn.getDimension().getId() == DimensionRegistrar.getDungeonDimensionID())
 		{
 		    sendPlayerBackHome((EntityPlayerMP) entityIn);
 		}
 	    }
-	    //*/
 	}
     }
 
     protected void actuallyPerformTeleport(EntityPlayerMP player, int dimid, double x, double y, double z)
     {
-	//TeleporterGoldPortal.teleportToDimension(player, dimid, x, y, z);
+	CustomTeleporter.teleportToDimension(player, dimid, x, y, z);
 	player.timeUntilPortal = 300; // 300 ticks, same as vanilla nether portal (hijacking this also affects nether portals, which is intentional) 
 
-	if (dimid == DimDungeons.getDungeonDimensionID())
+	if (dimid == DimensionRegistrar.getDungeonDimensionID())
 	{
 	    // if the player just entered a dungeon then force them to face north 
 	    player.setRotationYawHead(2);
@@ -185,7 +192,7 @@ public class BlockGoldPortal extends BlockBreakable
     public void checkPortalIntegrity(IBlockState state, World worldIn, BlockPos pos)
     {
 	// valid portal shapes are not needed for persistence in the dungeon dimension itself because of the return portal
-	if (!isPortalShapeIntact(state, worldIn, pos) && worldIn.dimension.getId() != DimDungeons.getDungeonDimensionID())
+	if (!isPortalShapeIntact(state, worldIn, pos) && worldIn.dimension.getId() != DimensionRegistrar.getDungeonDimensionID())
 	{
 	    worldIn.destroyBlock(pos, false);
 	}
