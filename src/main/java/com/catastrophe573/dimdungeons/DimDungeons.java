@@ -1,7 +1,6 @@
 package com.catastrophe573.dimdungeons;
 
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.MinecraftForge;
@@ -21,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
+import com.catastrophe573.dimdungeons.dimension.DimensionRegistrar;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 
 import java.util.stream.Collectors;
@@ -35,12 +35,6 @@ public class DimDungeons
     // constants used by other classes
     public static final String MOD_ID = "dimdungeons"; // this must match mods.toml
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
-
-    // TODO: move this to another class later, and make it use a config
-    public static int getDungeonDimensionID()
-    {
-	return 573;
-    }
 
     public DimDungeons()
     {
@@ -60,8 +54,6 @@ public class DimDungeons
     private void setup(final FMLCommonSetupEvent event)
     {
 	// some preinit code
-	LOGGER.info("HELLO FROM PREINIT");
-	LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
     }
 
     private void doClientStuff(final FMLClientSetupEvent event)
@@ -119,7 +111,10 @@ public class DimDungeons
 	    LOGGER.info("HELLO from Register TileEntityType");
 	    TileEntityType<TileEntityPortalKeyhole> tetPortalKeyhole = TileEntityType.Builder.create(TileEntityPortalKeyhole::new).build(null);
 	    tetPortalKeyhole.setRegistryName(MOD_ID, TileEntityPortalKeyhole.REG_NAME);
-	    teRegistryEvent.getRegistry().register(tetPortalKeyhole);	    
+	    teRegistryEvent.getRegistry().register(tetPortalKeyhole);
+	    
+	    // HACK: we're just going to register dungeons here because there's no better time to do it until 1.14
+	    DimensionRegistrar.registerDimensions();
 	}
     }
 }
