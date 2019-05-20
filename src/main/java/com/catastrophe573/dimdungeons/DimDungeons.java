@@ -35,7 +35,7 @@ public class DimDungeons
     // constants used by other classes
     public static final String MOD_ID = "dimdungeons"; // this must match mods.toml
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
-
+    
     public DimDungeons()
     {
 	// Register the setup method for modloading

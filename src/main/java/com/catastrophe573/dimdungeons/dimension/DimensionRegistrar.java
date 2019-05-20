@@ -6,7 +6,7 @@ import net.minecraftforge.common.DimensionManager;
 public class DimensionRegistrar
 {
     //ObjectHolder("dimdungeons:dimension_dungeons") public static DimensionType dungeon_dimension_type;   
-    public static DimensionType dungeon_dimension_type;
+    public static final DimensionType dungeon_dimension_type = DimensionType.create("dimension_dungeons", getDungeonDimensionID(), "Dungeon", "_DIM_DUNGEON", DungeonDimension::new, false);
     
     // TODO: make this use a config
     private static int dungeon_id = 573;
@@ -18,8 +18,6 @@ public class DimensionRegistrar
 
     public static void registerDimensions()
     {
-	dungeon_dimension_type = DimensionType.create("dimension_dungeons", getDungeonDimensionID(), "Dungeon", "_DIM_DUNGEON", DungeonDimension::new, false);
-
         DimensionManager.registerDimension(getDungeonDimensionID(), dungeon_dimension_type);
     }    
     

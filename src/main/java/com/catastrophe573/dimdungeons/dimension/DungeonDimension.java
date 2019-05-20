@@ -2,26 +2,26 @@ package com.catastrophe573.dimdungeons.dimension;
 
 import javax.annotation.Nullable;
 
-import com.mojang.datafixers.Dynamic;
+import com.catastrophe573.dimdungeons.biome.BiomeProviderDungeon;
+import com.catastrophe573.dimdungeons.command.CustomTeleporter;
 
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.MusicTicker.MusicType;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTDynamicOps;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Biomes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.GameType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.provider.BiomeProvider;
-import net.minecraft.world.biome.provider.BiomeProviderType;
-import net.minecraft.world.biome.provider.SingleBiomeProvider;
-import net.minecraft.world.biome.provider.SingleBiomeProviderSettings;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.ChunkGeneratorFlat;
-import net.minecraft.world.gen.ChunkGeneratorType;
-import net.minecraft.world.gen.FlatGenSettings;
 import net.minecraft.world.gen.IChunkGenSettings;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.api.distmarker.Dist;
@@ -34,6 +34,13 @@ public class DungeonDimension extends Dimension implements IForgeDimension
     public DimensionType getType()
     {
 	return DimensionRegistrar.dungeon_dimension_type;
+    }
+
+    @Override
+    // this is strictly required
+    public Biome getBiome(BlockPos pos)
+    {
+	return new BiomeProviderDungeon().getBiome(pos, Biomes.DESERT);
     }
 
     /**
@@ -54,18 +61,13 @@ public class DungeonDimension extends Dimension implements IForgeDimension
     protected void init()
     {
 	this.hasSkyLight = true;
+	this.doesWaterVaporize = false;
+	setAllowedSpawnTypes(false, false);
     }
 
-    // TODO: revisit this function, lines not relevant to flat worldgen deleted
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public IChunkGenerator<? extends IChunkGenSettings> createChunkGenerator()
     {
-	ChunkGeneratorType<FlatGenSettings, ChunkGeneratorFlat> chunkgeneratortype = ChunkGeneratorType.FLAT;
-	BiomeProviderType<SingleBiomeProviderSettings, SingleBiomeProvider> biomeprovidertype = BiomeProviderType.FIXED;
-
-	FlatGenSettings flatgensettings = FlatGenSettings.createFlatGenerator(new Dynamic(NBTDynamicOps.INSTANCE, this.world.getWorldInfo().getGeneratorOptions()));
-	SingleBiomeProviderSettings singlebiomeprovidersettings1 = ((SingleBiomeProviderSettings) biomeprovidertype.createSettings()).setBiome(flatgensettings.getBiome());
-	return chunkgeneratortype.create(this.world, biomeprovidertype.create(singlebiomeprovidersettings1), flatgensettings);
+	return new DungeonChunkGenerator(this.world, new BiomeProviderDungeon());
     }
 
     @Override
@@ -82,14 +84,14 @@ public class DungeonDimension extends Dimension implements IForgeDimension
 	return null;
     }
 
-    /**
-     * Calculates the angle of sun and moon in the sky relative to a specified time (usually worldTime)
-     */
     // basically copied from vanilla OverworldDimension but with the current time locked to keep the sun out, because why not
+    // also required by Forge for some reason
     public float calculateCelestialAngle(long worldTime, float partialTicks)
     {
+	// this is where I lock the angle of the sun
 	//int i = (int) (worldTime % 24000L);
 	int i = 10000;
+
 	float f = ((float) i + partialTicks) / 24000.0F - 0.25F;
 	if (f < 0.0F)
 	{
@@ -118,9 +120,10 @@ public class DungeonDimension extends Dimension implements IForgeDimension
     {
 	return new Vec3d(0.82d, 0.82d, 0.99d);
     }
-    
+
     @Override
     @OnlyIn(Dist.CLIENT)
+    // this is here for safety
     public Vec3d getFogColor(float p_76562_1_, float p_76562_2_)
     {
 	return new Vec3d(0.75d, 0.75d, 0.95d);
@@ -156,22 +159,78 @@ public class DungeonDimension extends Dimension implements IForgeDimension
     {
 	return MusicType.GAME;
     }
-    
+
     // from IForgeDimension
     public SleepResult canSleepAt(net.minecraft.entity.player.EntityPlayer player, BlockPos pos)
     {
-        return SleepResult.DENY;
+	return SleepResult.DENY;
     }
 
-    // from IForgeDimension
-    // TODO: revisit this later
-    public Biome getBiome(BlockPos pos)
-    {
-	return null;
-    }   
-    
     public boolean shouldMapSpin(String entity, double x, double z, double rotation)
     {
 	return false;
+    }
+
+    @Override
+    // no block breaking in this dimension!
+    public boolean canMineBlock(EntityPlayer player, BlockPos pos)
+    {
+	return false;
+    }
+
+    @Override
+    public float getCloudHeight()
+    {
+	return 199.0f;
+    }
+
+    @Override
+    public void onPlayerAdded(EntityPlayerMP player)
+    {
+	player.interactionManager.setGameType(GameType.SURVIVAL);
+
+	
+	
+	super.onPlayerAdded(player);
+
+	/*
+	 * // force them into adventure mode if (player.interactionManager.getGameType() == GameType.SURVIVAL) {
+	 * player.setGameType(GameType.ADVENTURE); }
+	 */
+	
+    }
+
+    @Override
+    public void onPlayerRemoved(EntityPlayerMP player)
+    {
+	super.onPlayerRemoved(player);
+
+	/*
+	 * // restore their previous game mode, assume it was survival if (player.interactionManager.getGameType() ==
+	 * GameType.ADVENTURE) { player.setGameType(GameType.SURVIVAL); }
+	 */	
+    }
+    
+    // sends a player back to their spawn point
+    // currently unused
+    public void evictPlayer(EntityPlayer player)
+    {
+	// does this player have a bed?
+	BlockPos cc = player.getBedLocation(player.getSpawnDimension());
+	if (cc != null)
+	{
+	    CustomTeleporter.teleportToDimension(player, player.getSpawnDimension(), cc.getX(), cc.getY(), cc.getZ());
+	}
+	else
+	{
+	    // otherwise just send them to overworld spawn
+	    cc = world.getServer().getWorld(0).getSpawnPoint();
+	    CustomTeleporter.teleportToDimension(player, 0, cc.getX(), cc.getY() + 1, cc.getZ());
+	}
+
+	// print cryptic message
+	TextComponentString message = new TextComponentString("It was all just a dream...");
+	message.getStyle().setColor(TextFormatting.DARK_PURPLE).setBold(true);
+	player.sendMessage(message);
     }
 }

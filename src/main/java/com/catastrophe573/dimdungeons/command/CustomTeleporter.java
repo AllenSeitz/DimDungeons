@@ -9,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Teleporter;
 import net.minecraft.world.WorldServer;
 
+// TODO: figure out if this is needed or if Entity.enterDimension or player.teleport is enough
 public class CustomTeleporter extends Teleporter 
 {
     public CustomTeleporter(WorldServer world, double x, double y, double z)
