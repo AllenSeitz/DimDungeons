@@ -1,29 +1,25 @@
 package com.catastrophe573.dimdungeons.dimension;
 
+import com.catastrophe573.dimdungeons.DimDungeons;
+
+import io.netty.buffer.Unpooled;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.ModDimension;
+import net.minecraftforge.event.RegistryEvent.Register;
 
 public class DimensionRegistrar
 {
-    //ObjectHolder("dimdungeons:dimension_dungeons") public static DimensionType dungeon_dimension_type;   
-    public static final DimensionType dungeon_dimension_type = DimensionType.create("dimension_dungeons", getDungeonDimensionID(), "Dungeon", "_DIM_DUNGEON", DungeonDimension::new, false);
+    // a reference to the dimension that this mod adds, similar to EntityType or any Block
+    public static DimensionType dungeon_dimension_type;
     
-    // TODO: make this use a config
-    private static int dungeon_id = 573;
-
-    public static int getDungeonDimensionID()
+    public static void registerAllDimensions(Register<ModDimension> dimRegistryEvent)
     {
-	return dungeon_id;
-    }
-
-    public static void registerDimensions()
-    {
-        DimensionManager.registerDimension(getDungeonDimensionID(), dungeon_dimension_type);
+	DimensionType dungeon_dimension_type = DimensionManager.registerDimension(DungeonDimension.dimension_id, DungeonDimension.newModDimension(), new PacketBuffer(Unpooled.wrappedBuffer(new byte[] {})));
+	
+	DimDungeons.LOGGER.info("TESTING TYPE: " + dungeon_dimension_type.toString());	
+	
+	dimRegistryEvent.getRegistry().register(DungeonDimension.newModDimension());
     }    
-    
-    // maybe someday in 1.14?
-    //public static void registerAllDimensions(RegistryEvent.Register<Dimension> event)
-    //{
-    //event.getRegistry().register( );
-    //}
 }

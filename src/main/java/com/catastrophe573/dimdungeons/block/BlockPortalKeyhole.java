@@ -31,6 +31,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
@@ -46,7 +47,7 @@ public class BlockPortalKeyhole extends Block
 
     public BlockPortalKeyhole()
     {
-	super(Block.Builder.create(Material.PORTAL).hardnessAndResistance(2).sound(SoundType.METAL));
+	super(Block.Properties.create(Material.PORTAL).hardnessAndResistance(2).sound(SoundType.METAL));
 	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
 	this.setDefaultState(getMyCustomDefaultState());
     }
@@ -190,11 +191,11 @@ public class BlockPortalKeyhole extends Block
 	// check for air or existing portal blocks below this keyhole
 	Block b1 = worldIn.getBlockState(pos.down()).getBlock();
 	Block b2 = worldIn.getBlockState(pos.down(2)).getBlock();
-	if (!(b1 == Blocks.AIR || b1 == Block.getBlockFromName(BlockGoldPortal.REG_NAME)))
+	if (!(b1 == Blocks.AIR || b1 == BlockRegistrar.block_gold_portal))
 	{
 	    return false;
 	}
-	if (!(b2 == Blocks.AIR || b2 == Block.getBlockFromName(BlockGoldPortal.REG_NAME)))
+	if (!(b2 == Blocks.AIR || b2 == BlockRegistrar.block_gold_portal))
 	{
 	    return false;
 	}
@@ -210,15 +211,15 @@ public class BlockPortalKeyhole extends Block
 	else if (getBlockFromItem(item.getItem()) != null)
 	{
 	    Block b = getBlockFromItem(item.getItem());
-	    if (b == Blocks.NETHERRACK && worldIn.getDimension().getId() != -1)
+	    if (b == Blocks.NETHERRACK && worldIn.getDimension().getType() != DimensionType.NETHER)
 	    {
 		return true;
 	    }
-	    if (b == Blocks.END_STONE && worldIn.getDimension().getId() != 1)
+	    if (b == Blocks.END_STONE && worldIn.getDimension().getType() != DimensionType.THE_END)
 	    {
 		return true;
 	    }
-	    if (b == Blocks.GRASS_BLOCK && worldIn.getDimension().getId() != 0)
+	    if (b == Blocks.GRASS_BLOCK && worldIn.getDimension().getType() != DimensionType.OVERWORLD)
 	    {
 		return true;
 	    }

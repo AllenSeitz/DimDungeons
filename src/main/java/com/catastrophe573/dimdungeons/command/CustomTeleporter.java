@@ -8,6 +8,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Teleporter;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.dimension.DimensionType;
 
 // TODO: figure out if this is needed or if Entity.enterDimension or player.teleport is enough
 public class CustomTeleporter extends Teleporter 
@@ -39,9 +40,9 @@ public class CustomTeleporter extends Teleporter
     }
 
     // a static helper function for GoldPortalBlock
-    public static void teleportToDimension(EntityPlayer player, int dimension, double x, double y, double z)
+    public static void teleportToDimension(EntityPlayer player, DimensionType dimension, double x, double y, double z)
     {
-        int oldDimension = player.getEntityWorld().getDimension().getId();
+        DimensionType oldDimension = player.getEntityWorld().getDimension().getType();
         MinecraftServer server = player.getEntityWorld().getServer();
         WorldServer worldServer = server.getWorld(dimension);
         player.addExperienceLevel(0); // I forget what this was for in 1.12.2 or if it is still needed?
@@ -55,7 +56,7 @@ public class CustomTeleporter extends Teleporter
         // actually perform the teleport now
         player.setPositionAndUpdate(x, y, z);
         player.changeDimension(dimension, new CustomTeleporter(worldServer, x, y, z));
-        if (oldDimension == 1)
+        if (oldDimension == DimensionType.THE_END)
         {
             // For some reason teleporting out of the end does weird things. Compensate for that
             player.setPositionAndUpdate(x, y, z);

@@ -1,7 +1,10 @@
 package com.catastrophe573.dimdungeons.dimension;
 
+import java.util.function.Function;
+
 import javax.annotation.Nullable;
 
+import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.biome.BiomeProviderDungeon;
 import com.catastrophe573.dimdungeons.command.CustomTeleporter;
 
@@ -9,14 +12,13 @@ import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.MusicTicker.MusicType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Biomes;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.GameType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.chunk.Chunk;
@@ -26,14 +28,36 @@ import net.minecraft.world.gen.IChunkGenSettings;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeDimension;
+import net.minecraftforge.common.ModDimension;
 
-public class DungeonDimension extends Dimension implements IForgeDimension
+public class DungeonDimension extends Dimension
 {
+    public static final ResourceLocation dimension_id = new ResourceLocation(DimDungeons.MOD_ID, "dimension_dungeon");
+    private final DimensionType type;
+    
+    // a bit of boiler plate code for Forge, don't worry about it or use it for anything
+    public static ModDimension newModDimension() {
+        return new ModDimension() {
+	    @Override
+	    public Function<DimensionType, ? extends Dimension> getFactory()
+	    {
+		return DungeonDimension::new;
+	    }
+        }.setRegistryName(dimension_id);
+    }    
+        
+    public DungeonDimension(DimensionType type)
+    {
+	DimDungeons.LOGGER.info("Someone constructed a dungeon instance with type: " + type.toString());
+	
+	this.type = type;
+    }
+    
     @Override
     public DimensionType getType()
     {
-	return DimensionRegistrar.dungeon_dimension_type;
+	DimDungeons.LOGGER.info("Someone asked for the DimDungeon type: " + type.toString());
+	return type;
     }
 
     @Override
@@ -183,33 +207,6 @@ public class DungeonDimension extends Dimension implements IForgeDimension
     {
 	return 199.0f;
     }
-
-    @Override
-    public void onPlayerAdded(EntityPlayerMP player)
-    {
-	player.interactionManager.setGameType(GameType.SURVIVAL);
-
-	
-	
-	super.onPlayerAdded(player);
-
-	/*
-	 * // force them into adventure mode if (player.interactionManager.getGameType() == GameType.SURVIVAL) {
-	 * player.setGameType(GameType.ADVENTURE); }
-	 */
-	
-    }
-
-    @Override
-    public void onPlayerRemoved(EntityPlayerMP player)
-    {
-	super.onPlayerRemoved(player);
-
-	/*
-	 * // restore their previous game mode, assume it was survival if (player.interactionManager.getGameType() ==
-	 * GameType.ADVENTURE) { player.setGameType(GameType.SURVIVAL); }
-	 */	
-    }
     
     // sends a player back to their spawn point
     // currently unused
@@ -224,8 +221,8 @@ public class DungeonDimension extends Dimension implements IForgeDimension
 	else
 	{
 	    // otherwise just send them to overworld spawn
-	    cc = world.getServer().getWorld(0).getSpawnPoint();
-	    CustomTeleporter.teleportToDimension(player, 0, cc.getX(), cc.getY() + 1, cc.getZ());
+	    cc = world.getServer().getWorld(DimensionType.OVERWORLD).getSpawnPoint();
+	    CustomTeleporter.teleportToDimension(player, DimensionType.OVERWORLD, cc.getX(), cc.getY() + 1, cc.getZ());
 	}
 
 	// print cryptic message

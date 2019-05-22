@@ -26,6 +26,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
@@ -37,7 +38,7 @@ public class BlockGoldPortal extends BlockBreakable
 
     public BlockGoldPortal()
     {
-	super(Block.Builder.create(Material.PORTAL).hardnessAndResistance(50).sound(SoundType.GLASS).doesNotBlockMovement().lightValue(15));
+	super(Block.Properties.create(Material.PORTAL).hardnessAndResistance(50).sound(SoundType.GLASS).doesNotBlockMovement().lightValue(15));
 	setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
@@ -111,7 +112,7 @@ public class BlockGoldPortal extends BlockBreakable
 	    if (te != null)
 	    {
 		ItemStack item = te.getObjectInserted();
-		if (item.getItem() instanceof ItemPortalKey && worldIn.getDimension().getId() == 0)
+		if (item.getItem() instanceof ItemPortalKey && worldIn.getDimension().getType() == DimensionType.OVERWORLD)
 		{
 		    ItemPortalKey key = (ItemPortalKey) item.getItem();
 		    float warpX = key.getWarpX(item);
@@ -126,31 +127,31 @@ public class BlockGoldPortal extends BlockBreakable
 		    {
 			// TODO: remove this print
 			System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");
-			actuallyPerformTeleport((EntityPlayerMP) entityIn, DimensionRegistrar.getDungeonDimensionID(), warpX, 55.1D, warpZ);
+			actuallyPerformTeleport((EntityPlayerMP) entityIn, DimensionRegistrar.dungeon_dimension_type, warpX, 55.1D, warpZ);
 		    }
 		}
 		// three vanilla blocks will also open portals to the 3 vanilla dimensions?
 		else if (getBlockFromItem(item.getItem()) != null)
 		{
 		    Block b = getBlockFromItem(item.getItem());
-		    if (b == Blocks.NETHERRACK && worldIn.getDimension().getId() != -1)
+		    if (b == Blocks.NETHERRACK && worldIn.getDimension().getType() != DimensionType.NETHER)
 		    {
-			actuallyPerformTeleport((EntityPlayerMP) entityIn, -1, entityIn.posX, entityIn.posY, entityIn.posZ);
+			actuallyPerformTeleport((EntityPlayerMP) entityIn, DimensionType.NETHER, entityIn.posX, entityIn.posY, entityIn.posZ);
 		    }
-		    if (b == Blocks.END_STONE && worldIn.getDimension().getId() != 1)
+		    if (b == Blocks.END_STONE && worldIn.getDimension().getType() != DimensionType.THE_END)
 		    {
-			actuallyPerformTeleport((EntityPlayerMP) entityIn, 1, entityIn.posX, entityIn.posY, entityIn.posZ);
+			actuallyPerformTeleport((EntityPlayerMP) entityIn, DimensionType.THE_END, entityIn.posX, entityIn.posY, entityIn.posZ);
 		    }
-		    if (b == Blocks.GRASS_BLOCK && worldIn.getDimension().getId() != 0)
+		    if (b == Blocks.GRASS_BLOCK && worldIn.getDimension().getType() != DimensionType.OVERWORLD)
 		    {
-			actuallyPerformTeleport((EntityPlayerMP) entityIn, 0, entityIn.posX, entityIn.posY, entityIn.posZ);
+			actuallyPerformTeleport((EntityPlayerMP) entityIn, DimensionType.OVERWORLD, entityIn.posX, entityIn.posY, entityIn.posZ);
 		    }
 		}
 	    }
 	    else
 	    {
 		// no keyhole? this could be a return portal
-		if (worldIn.getDimension().getId() == DimensionRegistrar.getDungeonDimensionID())
+		if (worldIn.getDimension().getType() == DimensionRegistrar.dungeon_dimension_type)
 		{
 		    sendPlayerBackHome((EntityPlayerMP) entityIn);
 		}
@@ -158,12 +159,12 @@ public class BlockGoldPortal extends BlockBreakable
 	}
     }
 
-    protected void actuallyPerformTeleport(EntityPlayerMP player, int dimid, double x, double y, double z)
+    protected void actuallyPerformTeleport(EntityPlayerMP player, DimensionType dim, double x, double y, double z)
     {
-	CustomTeleporter.teleportToDimension(player, dimid, x, y, z);
+	CustomTeleporter.teleportToDimension(player, dim, x, y, z);
 	player.timeUntilPortal = 300; // 300 ticks, same as vanilla nether portal (hijacking this also affects nether portals, which is intentional) 
 
-	if (dimid == DimensionRegistrar.getDungeonDimensionID())
+	if (dim == DimensionRegistrar.dungeon_dimension_type)
 	{
 	    // if the player just entered a dungeon then force them to face north 
 	    player.setRotationYawHead(2);
@@ -172,11 +173,11 @@ public class BlockGoldPortal extends BlockBreakable
 
     protected void sendPlayerBackHome(EntityPlayerMP player)
     {
-	BlockPos respawn = player.getBedLocation(0);
+	BlockPos respawn = player.getBedLocation(DimensionType.OVERWORLD);
 	if (respawn == null)
 	{
 	    // the fallback is to simply use the world spawn point
-	    respawn = player.getServer().getWorld(0).getSpawnPoint();
+	    respawn = player.getServer().getWorld(DimensionType.OVERWORLD).getSpawnPoint();
 	}
 	if (respawn == null)
 	{
@@ -185,14 +186,14 @@ public class BlockGoldPortal extends BlockBreakable
 	    DimDungeons.LOGGER.info("WARNING: Player " + player.getName() + " could not return to their spawn point after exiting their dungeon.");
 	}
 
-	actuallyPerformTeleport(player, 0, respawn.getX(), respawn.getY(), respawn.getZ());
+	actuallyPerformTeleport(player, DimensionType.OVERWORLD, respawn.getX(), respawn.getY(), respawn.getZ());
     }
 
     // this function returns void because the block deletes itself if the check fails
     public void checkPortalIntegrity(IBlockState state, World worldIn, BlockPos pos)
     {
 	// valid portal shapes are not needed for persistence in the dungeon dimension itself because of the return portal
-	if (!isPortalShapeIntact(state, worldIn, pos) && worldIn.dimension.getId() != DimensionRegistrar.getDungeonDimensionID())
+	if (!isPortalShapeIntact(state, worldIn, pos) && worldIn.dimension.getType() != DimensionRegistrar.dungeon_dimension_type)
 	{
 	    worldIn.destroyBlock(pos, false);
 	}
@@ -307,7 +308,7 @@ public class BlockGoldPortal extends BlockBreakable
     }
 
     /**
-     * Called periodically clientside on blocks near the player to show effects (like furnace fire particles). Note that
+     * Called periodically client side on blocks near the player to show effects (like furnace fire particles). Note that
      * this method is unrelated to {@link randomTick} and {@link #needsRandomTick}, and will always be called regardless of
      * whether the block can receive random update ticks
      */

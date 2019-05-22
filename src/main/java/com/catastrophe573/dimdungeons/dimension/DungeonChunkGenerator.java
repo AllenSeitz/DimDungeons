@@ -145,7 +145,7 @@ public class DungeonChunkGenerator extends AbstractChunkGenerator<IChunkGenSetti
     protected void generateDungeonAroundChunk(long x, long z)
     {
 	MinecraftServer minecraftserver = world.getWorld().getServer();
-	TemplateManager templatemanager = minecraftserver.getWorld(DimensionRegistrar.getDungeonDimensionID()).getStructureTemplateManager();
+	TemplateManager templatemanager = minecraftserver.getWorld(DimensionRegistrar.dungeon_dimension_type).getStructureTemplateManager();
 
 	// x,z is the position of the entrance room, which is located at (4,7) in this map
 	DungeonBuilderLogic dbl = new DungeonBuilderLogic(this.world.getSeed(), x, z);
@@ -597,7 +597,7 @@ public class DungeonChunkGenerator extends AbstractChunkGenerator<IChunkGenSetti
 	if (isEntranceChunk(x, z))
 	{
 	    DimDungeons.LOGGER.info("DIM DUNGEONS: Putting a dungeon at " + x + ", " + z);
-	    //generateDungeonAroundChunk(x - 4, z - 7); // the topleft corner of this 8x8 chunk area
+	    generateDungeonAroundChunk(x - 4, z - 7); // the topleft corner of this 8x8 chunk area
 	}
 
 	BlockFalling.fallInstantly = false;	
@@ -610,7 +610,7 @@ public class DungeonChunkGenerator extends AbstractChunkGenerator<IChunkGenSetti
     }
 
     @Override
-    public BlockPos findNearestStructure(World worldIn, String name, BlockPos pos, int radius)
+    public BlockPos findNearestStructure(World worldIn, String name, BlockPos pos, int radius, boolean p_211403_5_)
     {
 	// intentionally do nothing
 	return null;

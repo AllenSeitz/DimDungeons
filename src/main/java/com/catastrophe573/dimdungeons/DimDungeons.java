@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.ModDimension;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
@@ -112,9 +113,13 @@ public class DimDungeons
 	    TileEntityType<TileEntityPortalKeyhole> tetPortalKeyhole = TileEntityType.Builder.create(TileEntityPortalKeyhole::new).build(null);
 	    tetPortalKeyhole.setRegistryName(MOD_ID, TileEntityPortalKeyhole.REG_NAME);
 	    teRegistryEvent.getRegistry().register(tetPortalKeyhole);
-	    
-	    // HACK: we're just going to register dungeons here because there's no better time to do it until 1.14
-	    DimensionRegistrar.registerDimensions();
+	}
+	
+	@SubscribeEvent
+	public static void registerDims(RegistryEvent.Register<ModDimension> dimRegistryEvent)
+	{
+	    LOGGER.info("HELLO from Register DimensionType");
+	    DimensionRegistrar.registerAllDimensions(dimRegistryEvent);
 	}
     }
 }

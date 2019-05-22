@@ -44,7 +44,7 @@ public class ItemPortalKey extends Item
 
     public ItemPortalKey()
     {
-	super(new Item.Builder().group(ItemGroup.MISC).maxStackSize(1));
+	super(new Item.Properties().group(ItemGroup.MISC).maxStackSize(1));
 	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
