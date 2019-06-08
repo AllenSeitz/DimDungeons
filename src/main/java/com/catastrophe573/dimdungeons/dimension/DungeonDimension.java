@@ -33,7 +33,8 @@ import net.minecraftforge.common.ModDimension;
 public class DungeonDimension extends Dimension
 {
     public static final ResourceLocation dimension_id = new ResourceLocation(DimDungeons.MOD_ID, "dimension_dungeon");
-    private final DimensionType type;
+    
+    private DimensionType mySavedDimType; // remembered from the constructor and returned on demand
     
     // a bit of boiler plate code for Forge, don't worry about it or use it for anything
     public static ModDimension newModDimension() {
@@ -44,20 +45,23 @@ public class DungeonDimension extends Dimension
 		return DungeonDimension::new;
 	    }
         }.setRegistryName(dimension_id);
-    }    
-        
+    }
+    
     public DungeonDimension(DimensionType type)
     {
+	mySavedDimType = type;
 	DimDungeons.LOGGER.info("Someone constructed a dungeon instance with type: " + type.toString());
-	
-	this.type = type;
+	if ( type.toString().contains("null") )
+	{
+	    throw new IllegalArgumentException();
+	}
     }
     
     @Override
     public DimensionType getType()
     {
-	DimDungeons.LOGGER.info("Someone asked for the DimDungeon type: " + type.toString());
-	return type;
+	DimDungeons.LOGGER.info("Someone asked for the DimDungeon type: " + mySavedDimType.toString());
+	return mySavedDimType;
     }
 
     @Override

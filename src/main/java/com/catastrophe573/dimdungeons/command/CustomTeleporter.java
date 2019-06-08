@@ -42,7 +42,9 @@ public class CustomTeleporter extends Teleporter
     // a static helper function for GoldPortalBlock
     public static void teleportToDimension(EntityPlayer player, DimensionType dimension, double x, double y, double z)
     {
+	//DimDungeons.LOGGER.info("INSIDE teleportToDimension: newDim = " + dimension.toString());
         DimensionType oldDimension = player.getEntityWorld().getDimension().getType();
+	//DimDungeons.LOGGER.info("INSIDE teleportToDimension: oldDim = " + oldDimension.toString());
         MinecraftServer server = player.getEntityWorld().getServer();
         WorldServer worldServer = server.getWorld(dimension);
         player.addExperienceLevel(0); // I forget what this was for in 1.12.2 or if it is still needed?
@@ -50,6 +52,7 @@ public class CustomTeleporter extends Teleporter
         if (worldServer == null || worldServer.getServer() == null)
         {
             // Dimension doesn't exist
+            System.out.println("BIG ERROR: DIMENSION DOES NOT EXIST!");
             throw new IllegalArgumentException("Dimension: "+dimension+" doesn't exist!");
         }
 

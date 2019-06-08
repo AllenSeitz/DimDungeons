@@ -145,7 +145,7 @@ public class DungeonChunkGenerator extends AbstractChunkGenerator<IChunkGenSetti
     protected void generateDungeonAroundChunk(long x, long z)
     {
 	MinecraftServer minecraftserver = world.getWorld().getServer();
-	TemplateManager templatemanager = minecraftserver.getWorld(DimensionRegistrar.dungeon_dimension_type).getStructureTemplateManager();
+	TemplateManager templatemanager = minecraftserver.getWorld(world.getDimension().getType()).getStructureTemplateManager();
 
 	// x,z is the position of the entrance room, which is located at (4,7) in this map
 	DungeonBuilderLogic dbl = new DungeonBuilderLogic(this.world.getSeed(), x, z);

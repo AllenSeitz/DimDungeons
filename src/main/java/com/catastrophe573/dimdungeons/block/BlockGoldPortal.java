@@ -126,7 +126,8 @@ public class BlockGoldPortal extends BlockBreakable
 		    else
 		    {
 			// TODO: remove this print
-			System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");
+			System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + "). in dim...");
+			
 			actuallyPerformTeleport((EntityPlayerMP) entityIn, DimensionRegistrar.dungeon_dimension_type, warpX, 55.1D, warpZ);
 		    }
 		}
@@ -161,9 +162,10 @@ public class BlockGoldPortal extends BlockBreakable
 
     protected void actuallyPerformTeleport(EntityPlayerMP player, DimensionType dim, double x, double y, double z)
     {
+	//DimDungeons.LOGGER.info("INSIDE actuallyPerformTeleport: newDim = " + dim.toString());
 	CustomTeleporter.teleportToDimension(player, dim, x, y, z);
 	player.timeUntilPortal = 300; // 300 ticks, same as vanilla nether portal (hijacking this also affects nether portals, which is intentional) 
-
+	
 	if (dim == DimensionRegistrar.dungeon_dimension_type)
 	{
 	    // if the player just entered a dungeon then force them to face north 
