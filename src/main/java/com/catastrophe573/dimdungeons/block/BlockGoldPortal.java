@@ -5,26 +5,25 @@ import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
-import com.catastrophe573.dimdungeons.command.CustomTeleporter;
 import com.catastrophe573.dimdungeons.dimension.DimensionRegistrar;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockBreakable;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.BreakableBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Particles;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -32,7 +31,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 
-public class BlockGoldPortal extends BlockBreakable
+public class BlockGoldPortal extends BreakableBlock
 {
     public static String REG_NAME = "block_gold_portal";
 
@@ -43,35 +42,23 @@ public class BlockGoldPortal extends BlockBreakable
     }
 
     // Called by ItemBlocks after a block is set in the world, to allow post-place logic
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, @Nullable EntityLivingBase placer, ItemStack stack)
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
     {
 	checkPortalIntegrity(state, worldIn, pos);
     }
 
     // this function is used to recalculate if the portal shape is still valid
     @Override
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
+    public void updateNeighbors(BlockState stateIn, IWorld worldIn, BlockPos pos, int flags)
     {
-	checkPortalIntegrity(state, worldIn, pos);
+	checkPortalIntegrity(stateIn, worldIn, pos);
     }
 
     // called by getItemsToDropCount() to determine what BlockItem or Item to drop
     // in this case, do not allow the player to obtain this block as an item
-    public int quantityDropped(Random random)
-    {
-	return 0;
-    }
-
-    // called by getItemsToDropCount() to determine what BlockItem or Item to drop
-    // in this case, do not allow the player to obtain this block as an item
-    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
+    public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state)
     {
 	return ItemStack.EMPTY;
-    }
-
-    public boolean isFullCube(IBlockState state)
-    {
-	return false;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -83,18 +70,18 @@ public class BlockGoldPortal extends BlockBreakable
 
     // called When an entity collides with the Block
     @Override
-    public void onEntityCollision(IBlockState state, World worldIn, BlockPos pos, Entity entityIn)
+    public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn)
     {
 	//super.onEntityCollision(state, worldIn, pos, entityIn);
-	
+
 	// do not process this block on the client
 	if (EffectiveSide.get() == LogicalSide.CLIENT)
 	{
 	    return;
 	}
-	
+
 	// only teleport players! items and mobs and who knows what else must stay behind
-	if (!(entityIn instanceof EntityPlayerMP))
+	if (!(entityIn instanceof ServerPlayerEntity))
 	{
 	    return;
 	}
@@ -103,7 +90,7 @@ public class BlockGoldPortal extends BlockBreakable
 	{
 	    return; // not yet
 	}
-	
+
 	if (!entityIn.isPassenger() && !entityIn.isBeingRidden() && entityIn.isNonBoss())
 	{
 	    DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
@@ -127,25 +114,25 @@ public class BlockGoldPortal extends BlockBreakable
 		    {
 			// TODO: remove this print
 			System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + "). in dim...");
-			
-			actuallyPerformTeleport((EntityPlayerMP) entityIn, DimensionRegistrar.dungeon_dimension_type, warpX, 55.1D, warpZ);
+
+			actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionRegistrar.dungeon_dimension_type, warpX, 55.1D, warpZ);
 		    }
 		}
 		// three vanilla blocks will also open portals to the 3 vanilla dimensions?
 		else if (getBlockFromItem(item.getItem()) != null)
 		{
 		    Block b = getBlockFromItem(item.getItem());
-		    if (b == Blocks.NETHERRACK && worldIn.getDimension().getType() != DimensionType.NETHER)
+		    if (b == Blocks.NETHERRACK && worldIn.getDimension().getType() != DimensionType.THE_NETHER)
 		    {
-			actuallyPerformTeleport((EntityPlayerMP) entityIn, DimensionType.NETHER, entityIn.posX, entityIn.posY, entityIn.posZ);
+			actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionType.THE_NETHER, entityIn.posX, entityIn.posY, entityIn.posZ);
 		    }
 		    if (b == Blocks.END_STONE && worldIn.getDimension().getType() != DimensionType.THE_END)
 		    {
-			actuallyPerformTeleport((EntityPlayerMP) entityIn, DimensionType.THE_END, entityIn.posX, entityIn.posY, entityIn.posZ);
+			actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionType.THE_END, entityIn.posX, entityIn.posY, entityIn.posZ);
 		    }
 		    if (b == Blocks.GRASS_BLOCK && worldIn.getDimension().getType() != DimensionType.OVERWORLD)
 		    {
-			actuallyPerformTeleport((EntityPlayerMP) entityIn, DimensionType.OVERWORLD, entityIn.posX, entityIn.posY, entityIn.posZ);
+			actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionType.OVERWORLD, entityIn.posX, entityIn.posY, entityIn.posZ);
 		    }
 		}
 	    }
@@ -154,18 +141,18 @@ public class BlockGoldPortal extends BlockBreakable
 		// no keyhole? this could be a return portal
 		if (worldIn.getDimension().getType() == DimensionRegistrar.dungeon_dimension_type)
 		{
-		    sendPlayerBackHome((EntityPlayerMP) entityIn);
+		    sendPlayerBackHome((ServerPlayerEntity) entityIn);
 		}
 	    }
 	}
     }
 
-    protected void actuallyPerformTeleport(EntityPlayerMP player, DimensionType dim, double x, double y, double z)
+    protected void actuallyPerformTeleport(ServerPlayerEntity player, DimensionType dim, double x, double y, double z)
     {
-	//DimDungeons.LOGGER.info("INSIDE actuallyPerformTeleport: newDim = " + dim.toString());
-	CustomTeleporter.teleportToDimension(player, dim, x, y, z);
+	DimDungeons.LOGGER.info("INSIDE actuallyPerformTeleport: newDim = " + dim.toString());
 	player.timeUntilPortal = 300; // 300 ticks, same as vanilla nether portal (hijacking this also affects nether portals, which is intentional) 
-	
+	player.changeDimension(dim);
+
 	if (dim == DimensionRegistrar.dungeon_dimension_type)
 	{
 	    // if the player just entered a dungeon then force them to face north 
@@ -173,7 +160,7 @@ public class BlockGoldPortal extends BlockBreakable
 	}
     }
 
-    protected void sendPlayerBackHome(EntityPlayerMP player)
+    protected void sendPlayerBackHome(ServerPlayerEntity player)
     {
 	BlockPos respawn = player.getBedLocation(DimensionType.OVERWORLD);
 	if (respawn == null)
@@ -192,16 +179,16 @@ public class BlockGoldPortal extends BlockBreakable
     }
 
     // this function returns void because the block deletes itself if the check fails
-    public void checkPortalIntegrity(IBlockState state, World worldIn, BlockPos pos)
+    public void checkPortalIntegrity(BlockState state, IWorld worldIn, BlockPos pos)
     {
 	// valid portal shapes are not needed for persistence in the dungeon dimension itself because of the return portal
-	if (!isPortalShapeIntact(state, worldIn, pos) && worldIn.dimension.getType() != DimensionRegistrar.dungeon_dimension_type)
+	if (!isPortalShapeIntact(state, worldIn, pos) && worldIn.getDimension().getType() != DimensionRegistrar.dungeon_dimension_type)
 	{
 	    worldIn.destroyBlock(pos, false);
 	}
     }
 
-    private boolean isPortalShapeIntact(IBlockState state, World worldIn, BlockPos pos)
+    private boolean isPortalShapeIntact(BlockState state, IWorld worldIn, BlockPos pos)
     {
 	// step 1: look for the keyhole block 1 or 2 tiles up
 	TileEntityPortalKeyhole te = findKeyholeForThisPortal(state, worldIn, pos);
@@ -217,9 +204,9 @@ public class BlockGoldPortal extends BlockBreakable
 	}
 
 	// step 3: look for the other structure blocks on either the X or Z axis, depending on how the keyhole is facing
-	IBlockState keyholeBlock = worldIn.getBlockState(te.getPos());
-	
-	if (keyholeBlock.get(BlockPortalKeyhole.FACING) == EnumFacing.WEST || keyholeBlock.get(BlockPortalKeyhole.FACING) == EnumFacing.EAST)
+	BlockState keyholeBlock = worldIn.getBlockState(te.getPos());
+
+	if (keyholeBlock.get(BlockPortalKeyhole.FACING) == Direction.WEST || keyholeBlock.get(BlockPortalKeyhole.FACING) == Direction.EAST)
 	{
 	    return checkPortalFrameNorthSouth(worldIn, te.getPos());
 	}
@@ -230,17 +217,17 @@ public class BlockGoldPortal extends BlockBreakable
     }
 
     // return the tile entity if it can be found, or NULL otherwise (in which case this portal block will soon vanish)
-    private TileEntityPortalKeyhole findKeyholeForThisPortal(IBlockState state, World worldIn, BlockPos pos)
+    private TileEntityPortalKeyhole findKeyholeForThisPortal(BlockState state, IWorld worldIn, BlockPos pos)
     {
 	BlockPos p = pos.up();
 
 	// look 1-2 blocks up for a BlockPortalKeyhole
 	for (int i = 0; i < 2; i++)
 	{
-	    IBlockState keyhole = worldIn.getBlockState(p);
-	    if (keyhole.getBlock() == BlockRegistrar.block_portal_keyhole )
+	    BlockState keyhole = worldIn.getBlockState(p);
+	    if (keyhole.getBlock() == BlockRegistrar.block_portal_keyhole)
 	    {
-		return (TileEntityPortalKeyhole)worldIn.getTileEntity(p);
+		return (TileEntityPortalKeyhole) worldIn.getTileEntity(p);
 	    }
 	    p = p.up();
 	}
@@ -254,11 +241,11 @@ public class BlockGoldPortal extends BlockBreakable
     }
 
     // just get the block states and keep it simple
-    private boolean checkPortalFrameWestEast(World worldIn, BlockPos keyhole)
+    private boolean checkPortalFrameWestEast(IWorld worldIn, BlockPos keyhole)
     {
 	// main portal body
 	if (!isValidPortalFrameBlock(worldIn.getBlockState(keyhole.west().down()).getBlock()) || !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.west().down(2)).getBlock())
-		|| !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.east().down()).getBlock()) || !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.east().down(2)).getBlock()) 
+		|| !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.east().down()).getBlock()) || !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.east().down(2)).getBlock())
 		|| !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.down(3)).getBlock()))
 	{
 	    return false;
@@ -282,7 +269,7 @@ public class BlockGoldPortal extends BlockBreakable
     }
 
     // just get the block states and keep it simple
-    private boolean checkPortalFrameNorthSouth(World worldIn, BlockPos keyhole)
+    private boolean checkPortalFrameNorthSouth(IWorld worldIn, BlockPos keyhole)
     {
 	// main portal body
 	if (!isValidPortalFrameBlock(worldIn.getBlockState(keyhole.north().down()).getBlock()) || !isValidPortalFrameBlock(worldIn.getBlockState(keyhole.north().down(2)).getBlock())
@@ -315,26 +302,13 @@ public class BlockGoldPortal extends BlockBreakable
      * whether the block can receive random update ticks
      */
     @OnlyIn(Dist.CLIENT)
-    public void animateTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
+    public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
 	double d0 = (double) ((float) pos.getX() + rand.nextFloat());
 	double d1 = (double) ((float) pos.getY() + 0.8F);
 	double d2 = (double) ((float) pos.getZ() + rand.nextFloat());
 	double xspeed = rand.nextFloat() * (rand.nextInt(3) - 1) / 9;
 	double zspeed = rand.nextFloat() * (rand.nextInt(3) - 1) / 9;
-	worldIn.spawnParticle(Particles.END_ROD, d0, d1, d2, xspeed, 0.0D, zspeed);
-    }
-
-    /**
-     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
-     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things. Common
-     * values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that does not fit
-     * the other descriptions and will generally cause other things not to connect to the face.
-     * 
-     * @return an approximation of the form of the given face
-     */
-    public BlockFaceShape getBlockFaceShape(IBlockReader worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-    {
-	return BlockFaceShape.UNDEFINED;
+	worldIn.addParticle(ParticleTypes.END_ROD, d0, d1, d2, xspeed, 0.0D, zspeed);
     }
 }

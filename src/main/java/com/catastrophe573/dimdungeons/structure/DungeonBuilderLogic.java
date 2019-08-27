@@ -6,7 +6,7 @@ import java.util.Random;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Rotation;
 
 // this class is used by the DungeonChunkGenerator to design dungeons
@@ -157,16 +157,16 @@ public class DungeonBuilderLogic
 	    }
 
 	    // if this room has neighbors already then it must connect to them
-	    boolean mustConnectNorth = hasOpenDoor(roomPos.left, roomPos.right, EnumFacing.NORTH);
-	    boolean mustConnectSouth = hasOpenDoor(roomPos.left, roomPos.right, EnumFacing.SOUTH);
-	    boolean mustConnectWest = hasOpenDoor(roomPos.left, roomPos.right, EnumFacing.WEST);
-	    boolean mustConnectEast = hasOpenDoor(roomPos.left, roomPos.right, EnumFacing.EAST);
+	    boolean mustConnectNorth = hasOpenDoor(roomPos.left, roomPos.right, Direction.NORTH);
+	    boolean mustConnectSouth = hasOpenDoor(roomPos.left, roomPos.right, Direction.SOUTH);
+	    boolean mustConnectWest = hasOpenDoor(roomPos.left, roomPos.right, Direction.WEST);
+	    boolean mustConnectEast = hasOpenDoor(roomPos.left, roomPos.right, Direction.EAST);
 
 	    // likewise some walls must be acknowledged as mutual too
-	    boolean cantConnectNorth = hasSolidWall(roomPos.left, roomPos.right, EnumFacing.NORTH);
-	    boolean cantConnectSouth = hasSolidWall(roomPos.left, roomPos.right, EnumFacing.SOUTH);
-	    boolean cantConnectWest = hasSolidWall(roomPos.left, roomPos.right, EnumFacing.WEST);
-	    boolean cantConnectEast = hasSolidWall(roomPos.left, roomPos.right, EnumFacing.EAST);
+	    boolean cantConnectNorth = hasSolidWall(roomPos.left, roomPos.right, Direction.NORTH);
+	    boolean cantConnectSouth = hasSolidWall(roomPos.left, roomPos.right, Direction.SOUTH);
+	    boolean cantConnectWest = hasSolidWall(roomPos.left, roomPos.right, Direction.WEST);
+	    boolean cantConnectEast = hasSolidWall(roomPos.left, roomPos.right, Direction.EAST);
 
 	    // this puts the dungeon generation into "end it now" mode, where doors will no longer create more doors
 	    if (numRoomsPlaced + openings.size() >= maxNumRooms)
@@ -652,19 +652,19 @@ public class DungeonBuilderLogic
 	    int roomX = roomPos.left;
 	    int roomZ = roomPos.right;
 	    placeRoomShape(roomX, roomZ, nextRoom, nextType, nextRot);
-	    if ( hasOpenDoor(roomX-1, roomZ, EnumFacing.EAST) )
+	    if ( hasOpenDoor(roomX-1, roomZ, Direction.EAST) )
 	    {
 		openings.add(new ImmutablePair<Integer, Integer>(roomX-1, roomZ));
 	    }
-	    if ( hasOpenDoor(roomX+1, roomZ, EnumFacing.WEST) )
+	    if ( hasOpenDoor(roomX+1, roomZ, Direction.WEST) )
 	    {
 		openings.add(new ImmutablePair<Integer, Integer>(roomX+1, roomZ));
 	    }
-	    if ( hasOpenDoor(roomX, roomZ-1, EnumFacing.SOUTH) )
+	    if ( hasOpenDoor(roomX, roomZ-1, Direction.SOUTH) )
 	    {
 		openings.add(new ImmutablePair<Integer, Integer>(roomX, roomZ-1));
 	    }
-	    if ( hasOpenDoor(roomX, roomZ+1, EnumFacing.NORTH) )
+	    if ( hasOpenDoor(roomX, roomZ+1, Direction.NORTH) )
 	    {
 		openings.add(new ImmutablePair<Integer, Integer>(roomX, roomZ+1));
 	    }
@@ -676,25 +676,25 @@ public class DungeonBuilderLogic
 
     // returns true if another chunk has a door leading into this chunk from the specified direction
     // safe to call with x or y that are out of bounds
-    private boolean hasOpenDoor(int x, int z, EnumFacing direction)
+    private boolean hasOpenDoor(int x, int z, Direction direction)
     {
 	if (x < 0 || z < 0 || x > 7 || z > 7)
 	{
 	    return false;
 	}
-	if (direction == EnumFacing.NORTH && z > 0)
+	if (direction == Direction.NORTH && z > 0)
 	{
 	    return finalLayout[x][z - 1].hasDoorSouth();
 	}
-	if (direction == EnumFacing.SOUTH && z < 7)
+	if (direction == Direction.SOUTH && z < 7)
 	{
 	    return finalLayout[x][z + 1].hasDoorNorth();
 	}
-	if (direction == EnumFacing.WEST && x > 0)
+	if (direction == Direction.WEST && x > 0)
 	{
 	    return finalLayout[x - 1][z].hasDoorEast();
 	}
-	if (direction == EnumFacing.EAST && x < 7)
+	if (direction == Direction.EAST && x < 7)
 	{
 	    return finalLayout[x + 1][z].hasDoorWest();
 	}
@@ -703,25 +703,25 @@ public class DungeonBuilderLogic
 
     // returns true if the neighbor in this direction has placed a solid wall, and false if there is a door or no neighbor yet at all
     // safe to call with x or y that are out of bounds
-    private boolean hasSolidWall(int x, int z, EnumFacing direction)
+    private boolean hasSolidWall(int x, int z, Direction direction)
     {
 	if (x < 0 || z < 0 || x > 7 || z > 7)
 	{
 	    return true;
 	}
-	if (direction == EnumFacing.NORTH && z > 0)
+	if (direction == Direction.NORTH && z > 0)
 	{
 	    return !finalLayout[x][z - 1].hasDoorSouth() && finalLayout[x][z - 1].hasRoom();
 	}
-	if (direction == EnumFacing.SOUTH && z < 7)
+	if (direction == Direction.SOUTH && z < 7)
 	{
 	    return !finalLayout[x][z + 1].hasDoorNorth() && finalLayout[x][z + 1].hasRoom();
 	}
-	if (direction == EnumFacing.WEST && x > 0)
+	if (direction == Direction.WEST && x > 0)
 	{
 	    return !finalLayout[x - 1][z].hasDoorEast() && finalLayout[x - 1][z].hasRoom();
 	}
-	if (direction == EnumFacing.EAST && x < 7)
+	if (direction == Direction.EAST && x < 7)
 	{
 	    return !finalLayout[x + 1][z].hasDoorWest() && finalLayout[x + 1][z].hasRoom();
 	}

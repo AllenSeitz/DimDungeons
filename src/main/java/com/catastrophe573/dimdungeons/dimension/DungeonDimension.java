@@ -1,31 +1,35 @@
 package com.catastrophe573.dimdungeons.dimension;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.biome.BiomeProviderDungeon;
-import com.catastrophe573.dimdungeons.command.CustomTeleporter;
 
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.MusicTicker.MusicType;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Biomes;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biomes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.provider.BiomeProvider;
+import net.minecraft.world.biome.provider.BiomeProviderType;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.IChunkGenSettings;
-import net.minecraft.world.gen.IChunkGenerator;
+import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.ChunkGeneratorType;
+import net.minecraft.world.gen.GenerationSettings;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ModDimension;
@@ -33,30 +37,14 @@ import net.minecraftforge.common.ModDimension;
 public class DungeonDimension extends Dimension
 {
     public static final ResourceLocation dimension_id = new ResourceLocation(DimDungeons.MOD_ID, "dimension_dungeon");
-    
+
     private DimensionType mySavedDimType; // remembered from the constructor and returned on demand
-    
-    // a bit of boiler plate code for Forge, don't worry about it or use it for anything
-    public static ModDimension newModDimension() {
-        return new ModDimension() {
-	    @Override
-	    public Function<DimensionType, ? extends Dimension> getFactory()
-	    {
-		return DungeonDimension::new;
-	    }
-        }.setRegistryName(dimension_id);
-    }
-    
-    public DungeonDimension(DimensionType type)
+
+    public DungeonDimension(World worldIn, DimensionType typeIn)
     {
-	mySavedDimType = type;
-	DimDungeons.LOGGER.info("Someone constructed a dungeon instance with type: " + type.toString());
-	if ( type.toString().contains("null") )
-	{
-	    throw new IllegalArgumentException();
-	}
+	super(worldIn, typeIn);
     }
-    
+
     @Override
     public DimensionType getType()
     {
@@ -68,46 +56,31 @@ public class DungeonDimension extends Dimension
     // this is strictly required
     public Biome getBiome(BlockPos pos)
     {
-	return new BiomeProviderDungeon().getBiome(pos, Biomes.DESERT);
+	return new BiomeProviderDungeon().getBiome(pos);
     }
 
-    /**
-     * Called to determine if the chunk at the given chunk coordinates within the provider's world can be dropped. Used in
-     * WorldProviderSurface to prevent spawn chunks from being unloaded.
-     */
-    @Override
-    public boolean canDropChunk(int x, int z)
+    public ChunkGenerator<? extends GenerationSettings> createChunkGenerator()
     {
-	return true;
+	//return new DungeonChunkGenerator(this.world, new BiomeProviderDungeon());
+	BiomeProviderType<AMBiomeProviderSettings, BiomeProviderDungeon> biomeprovidertype1 = new BiomeProviderType<>(BiomeProviderDungeon::new, AMBiomeProviderSettings::new);
+	AMBiomeProviderSettings biomeprovidersettings1 = biomeprovidertype1.createSettings().setGeneratorSettings(new AMGenSettings()).setWorldInfo(this.world.getWorldInfo());
+	BiomeProviderDungeon biomeprovider = biomeprovidertype1.create(biomeprovidersettings1);
+
+	ChunkGeneratorType<AMGenSettings, DungeonChunkGenerator> chunkgeneratortype4 = new ChunkGeneratorType<>(DungeonChunkGenerator::new, true, AMGenSettings::new);
+	AMGenSettings gensettings1 = chunkgeneratortype4.createSettings();
+	gensettings1.setDefaultFluid(Blocks.LAVA.getDefaultState());
+	return chunkgeneratortype4.create(this.world, biomeprovider, gensettings1);
     }
 
-    /**
-     * Creates a new {@link BiomeProvider} for the WorldProvider, and also sets the values of {@link #hasSkylight} and
-     * {@link #hasNoSky} appropriately. Note that subclasses generally override this method without calling the parent
-     * version.
-     */
-    protected void init()
-    {
-	this.hasSkyLight = true;
-	this.doesWaterVaporize = false;
-	setAllowedSpawnTypes(false, false);
-    }
-
-    public IChunkGenerator<? extends IChunkGenSettings> createChunkGenerator()
-    {
-	return new DungeonChunkGenerator(this.world, new BiomeProviderDungeon());
-    }
-
-    @Override
+    @Nullable
     // no respawning in this dimension
-    public BlockPos findSpawn(ChunkPos p_206920_1_, boolean checkValid)
+    public BlockPos findSpawn(ChunkPos chunkPosIn, boolean checkValid)
     {
 	return null;
     }
 
-    @Override
-    // no respawning in this dimension
-    public BlockPos findSpawn(int p_206921_1_, int p_206921_2_, boolean checkValid)
+    @Nullable
+    public BlockPos findSpawn(int posX, int posZ, boolean checkValid)
     {
 	return null;
     }
@@ -139,14 +112,6 @@ public class DungeonDimension extends Dimension
     public boolean isSurfaceWorld()
     {
 	return false;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    // hard crash without this function
-    public Vec3d getSkyColor(Entity cameraEntity, float partialTicks)
-    {
-	return new Vec3d(0.82d, 0.82d, 0.99d);
     }
 
     @Override
@@ -189,7 +154,7 @@ public class DungeonDimension extends Dimension
     }
 
     // from IForgeDimension
-    public SleepResult canSleepAt(net.minecraft.entity.player.EntityPlayer player, BlockPos pos)
+    public SleepResult canSleepAt(PlayerEntity player, BlockPos pos)
     {
 	return SleepResult.DENY;
     }
@@ -201,7 +166,7 @@ public class DungeonDimension extends Dimension
 
     @Override
     // no block breaking in this dimension!
-    public boolean canMineBlock(EntityPlayer player, BlockPos pos)
+    public boolean canMineBlock(PlayerEntity player, BlockPos pos)
     {
 	return false;
     }
@@ -211,26 +176,30 @@ public class DungeonDimension extends Dimension
     {
 	return 199.0f;
     }
-    
+
     // sends a player back to their spawn point
     // currently unused
-    public void evictPlayer(EntityPlayer player)
+    public void evictPlayer(PlayerEntity player)
     {
 	// does this player have a bed?
 	BlockPos cc = player.getBedLocation(player.getSpawnDimension());
 	if (cc != null)
 	{
-	    CustomTeleporter.teleportToDimension(player, player.getSpawnDimension(), cc.getX(), cc.getY(), cc.getZ());
+	    //CustomTeleporter.teleportToDimension(player, player.getSpawnDimension(), cc.getX(), cc.getY(), cc.getZ());
+	    player.changeDimension(player.getSpawnDimension());
+	    player.setPosition(cc.getX(), cc.getY(), cc.getZ());
 	}
 	else
 	{
 	    // otherwise just send them to overworld spawn
 	    cc = world.getServer().getWorld(DimensionType.OVERWORLD).getSpawnPoint();
-	    CustomTeleporter.teleportToDimension(player, DimensionType.OVERWORLD, cc.getX(), cc.getY() + 1, cc.getZ());
+	    //CustomTeleporter.teleportToDimension(player, DimensionType.OVERWORLD, cc.getX(), cc.getY() + 1, cc.getZ());
+	    player.changeDimension(player.getSpawnDimension());
+	    player.setPosition(cc.getX(), cc.getY() + 1, cc.getZ());
 	}
 
 	// print cryptic message
-	TextComponentString message = new TextComponentString("It was all just a dream...");
+	StringTextComponent message = new StringTextComponent("It was all just a dream...");
 	message.getStyle().setColor(TextFormatting.DARK_PURPLE).setBold(true);
 	player.sendMessage(message);
     }

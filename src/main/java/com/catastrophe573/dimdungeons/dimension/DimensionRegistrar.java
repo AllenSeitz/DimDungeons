@@ -13,6 +13,6 @@ public class DimensionRegistrar
     {
 	dimRegistryEvent.getRegistry().register(DungeonDimension.newModDimension());
 
-	dungeon_dimension_type = DimensionManager.registerDimension(DungeonDimension.dimension_id, DungeonDimension.newModDimension(), null);
+	dungeon_dimension_type = DimensionManager.registerDimension(DungeonDimension.dimension_id, DungeonDimension.newModDimension(), null, false);
     }
 }

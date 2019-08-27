@@ -2,33 +2,36 @@ package com.catastrophe573.dimdungeons.block;
 
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.HorizontalBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Particles;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -39,7 +42,7 @@ import net.minecraftforge.fml.common.thread.EffectiveSide;
 
 public class BlockPortalKeyhole extends Block
 {
-    public static final DirectionProperty FACING = BlockHorizontal.HORIZONTAL_FACING;
+    public static final DirectionProperty FACING = HorizontalBlock.HORIZONTAL_FACING;
     public static final BooleanProperty FILLED = BooleanProperty.create("filled");
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
 
@@ -52,20 +55,21 @@ public class BlockPortalKeyhole extends Block
 	this.setDefaultState(getMyCustomDefaultState());
     }
 
-    public IBlockState getMyCustomDefaultState()
+    // used by the constructor and I'm not sure where else anymore?
+    public BlockState getMyCustomDefaultState()
     {
-	return this.stateContainer.getBaseState().with(FACING, EnumFacing.NORTH).with(FILLED, false).with(LIT, false);
+	return this.stateContainer.getBaseState().with(FACING, Direction.NORTH).with(FILLED, false).with(LIT, false);
     }
 
     // based on code from vanilla furnaces, which also play a sound effect and make particles when their TileEntity is being productive
     @OnlyIn(Dist.CLIENT)
     @Override
     //public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
-    public void animateTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
+    public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
 	if (stateIn.get(LIT))
 	{
-	    EnumFacing enumfacing = (EnumFacing) stateIn.get(FACING);
+	    Direction enumfacing = (Direction) stateIn.get(FACING);
 	    double d0 = (double) pos.getX() + 0.5D;
 	    double d1 = (double) pos.getY() + rand.nextDouble() * 6.0D / 16.0D;
 	    double d2 = (double) pos.getZ() + 0.5D;
@@ -80,32 +84,32 @@ public class BlockPortalKeyhole extends Block
 	    switch (enumfacing)
 	    {
 	    case EAST:
-		worldIn.spawnParticle(Particles.PORTAL, d0 - 0.52D, d1 - 1, d2 + d4, 1.0D, 1.0D, 0.0D);
-		worldIn.spawnParticle(Particles.FIREWORK, d0 + 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
-		worldIn.spawnParticle(Particles.FIREWORK, d0 + 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, -0.23D);
+		worldIn.addParticle(ParticleTypes.PORTAL, d0 - 0.52D, d1 - 1, d2 + d4, 1.0D, 1.0D, 0.0D);
+		worldIn.addParticle(ParticleTypes.FIREWORK, d0 + 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
+		worldIn.addParticle(ParticleTypes.FIREWORK, d0 + 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, -0.23D);
 		break;
 	    case WEST:
-		worldIn.spawnParticle(Particles.PORTAL, d0 + 0.52D, d1 - 1, d2 + d4, -1.0D, 1.0D, 0.0D);
-		worldIn.spawnParticle(Particles.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
-		worldIn.spawnParticle(Particles.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, -0.23D);
+		worldIn.addParticle(ParticleTypes.PORTAL, d0 + 0.52D, d1 - 1, d2 + d4, -1.0D, 1.0D, 0.0D);
+		worldIn.addParticle(ParticleTypes.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
+		worldIn.addParticle(ParticleTypes.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, -0.23D);
 		break;
 	    case NORTH:
-		worldIn.spawnParticle(Particles.PORTAL, d0 + d4, d1, d2 - 0.52D, 0.0D, 1.0D, -1.0D);
-		worldIn.spawnParticle(Particles.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, 0.23D, 0.0D, 0.0D);
-		worldIn.spawnParticle(Particles.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, -0.23D, 0.0D, 0.0D);
+		worldIn.addParticle(ParticleTypes.PORTAL, d0 + d4, d1, d2 - 0.52D, 0.0D, 1.0D, -1.0D);
+		worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, 0.23D, 0.0D, 0.0D);
+		worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, -0.23D, 0.0D, 0.0D);
 		break;
 	    default:
 	    case SOUTH:
-		worldIn.spawnParticle(Particles.PORTAL, d0 + d4, d1, d2 + 0.52D, 0.0D, 1.0D, 1.0D);
-		worldIn.spawnParticle(Particles.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, 0.23D, 0.0D, 0.0D);
-		worldIn.spawnParticle(Particles.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, -0.23D, 0.0D, 0.0D);
+		worldIn.addParticle(ParticleTypes.PORTAL, d0 + d4, d1, d2 + 0.52D, 0.0D, 1.0D, 1.0D);
+		worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, 0.23D, 0.0D, 0.0D);
+		worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, -0.23D, 0.0D, 0.0D);
 	    }
 	}
     }
 
     // called when the player right clicks this block
     @Override
-    public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
 	// client side
 	if (EffectiveSide.get() == LogicalSide.CLIENT)
@@ -113,7 +117,7 @@ public class BlockPortalKeyhole extends Block
 	    return true;
 	}
 
-	ItemStack playerItem = player.getHeldItem(hand);
+	ItemStack playerItem = player.getHeldItem(handIn);
 	TileEntity tileEntity = worldIn.getTileEntity(pos);
 	TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
 
@@ -135,7 +139,7 @@ public class BlockPortalKeyhole extends Block
 		    //}
 
 		    // recalculate the boolean block states	    
-		    IBlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
+		    BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
 		    worldIn.setBlockState(pos, newBlockState);
 
 		    // should portal blocks be spawned?
@@ -159,7 +163,7 @@ public class BlockPortalKeyhole extends Block
 		DimDungeons.LOGGER.info("Taking thing out of keyhole...");
 		if (playerItem.isEmpty())
 		{
-		    player.setHeldItem(hand, insideItem); // hand it to the player
+		    player.setHeldItem(handIn, insideItem); // hand it to the player
 		}
 		else if (!player.addItemStackToInventory(insideItem)) // okay put it in their inventory
 		{
@@ -169,7 +173,7 @@ public class BlockPortalKeyhole extends Block
 		myEntity.removeContents();
 
 		// recalculate the boolean block states	    
-		IBlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
+		BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
 		worldIn.setBlockState(pos, newBlockState);
 
 		return true;
@@ -180,7 +184,7 @@ public class BlockPortalKeyhole extends Block
     }
 
     // helper function for checkForPortalCreation
-    protected boolean isOkayToSpawnPortalBlocks(World worldIn, BlockPos pos, IBlockState state, TileEntityPortalKeyhole myEntity)
+    protected boolean isOkayToSpawnPortalBlocks(World worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole myEntity)
     {
 	// if the portal is not lit, then that is a fast "no"
 	if (!myEntity.isActivated())
@@ -211,7 +215,7 @@ public class BlockPortalKeyhole extends Block
 	else if (getBlockFromItem(item.getItem()) != null)
 	{
 	    Block b = getBlockFromItem(item.getItem());
-	    if (b == Blocks.NETHERRACK && worldIn.getDimension().getType() != DimensionType.NETHER)
+	    if (b == Blocks.NETHERRACK && worldIn.getDimension().getType() != DimensionType.THE_NETHER)
 	    {
 		return true;
 	    }
@@ -229,13 +233,13 @@ public class BlockPortalKeyhole extends Block
     }
 
     @Override
-    public boolean hasTileEntity(IBlockState state)
+    public boolean hasTileEntity(BlockState state)
     {
 	return true;
     }
 
     @Override
-    public TileEntity createTileEntity(IBlockState state, IBlockReader world)
+    public TileEntity createTileEntity(BlockState state, IBlockReader world)
     {
 	return new TileEntityPortalKeyhole();
     }
@@ -243,15 +247,15 @@ public class BlockPortalKeyhole extends Block
     // Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the IBlockstate
     //public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     @Override
-    public IBlockState getStateForPlacement(BlockItemUseContext context)
+    public BlockState getStateForPlacement(BlockItemUseContext context)
     {
-	IBlockState retval = getMyCustomDefaultState();
+	BlockState retval = getMyCustomDefaultState();
 	return retval.with(FACING, context.getPlacementHorizontalFacing().getOpposite());
     }
 
     // Called by ItemBlocks after a block is set in the world, to allow post-place logic
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
     {
 	worldIn.setBlockState(pos, state.with(FACING, placer.getHorizontalFacing().getOpposite()), 2);
     }
@@ -260,7 +264,7 @@ public class BlockPortalKeyhole extends Block
     // this function is now in charge of preserving TileEntities across block updates, too, instead of the former TileEntity->shouldRefresh()
     @SuppressWarnings("deprecation")
     @Override
-    public void onReplaced(IBlockState state, World worldIn, BlockPos pos, IBlockState newState, boolean isMoving)
+    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving)
     {
 	TileEntity tileentity = worldIn.getTileEntity(pos);
 
@@ -284,21 +288,21 @@ public class BlockPortalKeyhole extends Block
     }
 
     @Override
-    public boolean hasComparatorInputOverride(IBlockState state)
+    public boolean hasComparatorInputOverride(BlockState state)
     {
 	return true;
     }
 
     // returns 1 number if the block is filled with any item stack, and 0 otherwise
     @Override
-    public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos)
+    public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos)
     {
 	return blockState.get(FILLED) ? 1 : 0;
     }
 
     // returns the ItemStack that represents this block - this has nothing to do with the item placed inside
     @Override
-    public ItemStack getItem(IBlockReader worldIn, BlockPos pos, IBlockState state)
+    public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state)
     {
 	return new ItemStack(this);
     }
@@ -308,17 +312,17 @@ public class BlockPortalKeyhole extends Block
      * for vanilla liquids, INVISIBLE to skip all rendering
      */
     @Override
-    public EnumBlockRenderType getRenderType(IBlockState state)
+    public BlockRenderType getRenderType(BlockState state)
     {
-	return EnumBlockRenderType.MODEL;
+	return BlockRenderType.MODEL;
     }
 
     @Override
     // this replaces all metadata in 1.13 forwards
     //public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-    public IBlockState getExtendedState(IBlockState state, IBlockReader world, BlockPos pos)
+    public BlockState getExtendedState(BlockState state, IBlockReader world, BlockPos pos)
     {
-	IBlockState retval = state;
+	BlockState retval = state;
 	TileEntity te = world.getTileEntity(pos);
 	if (te instanceof TileEntityPortalKeyhole)
 	{
@@ -330,22 +334,22 @@ public class BlockPortalKeyhole extends Block
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder)
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
     {
 	builder.add(FACING, FILLED, LIT);
     }
 
     // Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed blockstate.
     @Override
-    public IBlockState rotate(IBlockState state, Rotation rot)
+    public BlockState rotate(BlockState state, Rotation rot)
     {
-	return state.with(FACING, rot.rotate((EnumFacing) state.get(FACING)));
+	return state.with(FACING, rot.rotate((Direction) state.get(FACING)));
     }
 
     // Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed blockstate.
     @Override
-    public IBlockState mirror(IBlockState state, Mirror mirrorIn)
+    public BlockState mirror(BlockState state, Mirror mirrorIn)
     {
-	return state.with(FACING, mirrorIn.mirror(((EnumFacing) state.get(FACING))));
+	return state.with(FACING, mirrorIn.mirror(((Direction) state.get(FACING))));
     }
 }

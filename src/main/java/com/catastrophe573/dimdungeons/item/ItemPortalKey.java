@@ -2,26 +2,26 @@ package com.catastrophe573.dimdungeons.item;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 
-import net.minecraft.block.BlockEndPortalFrame;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.EndPortalFrameBlock;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Particles;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -50,27 +50,27 @@ public class ItemPortalKey extends Item
 
     protected void activateKey(ItemStack stack)
     {
-	NBTTagCompound data = new NBTTagCompound();
-	data.setBoolean(NBT_KEY_ACTIVATED, true);
+	CompoundNBT data = new CompoundNBT();
+	data.putBoolean(NBT_KEY_ACTIVATED, true);
 
 	// where is this key going?
 	int destX = random.nextInt(RANDOM_COORDINATE_RANGE);
 	int destZ = random.nextInt(RANDOM_COORDINATE_RANGE);
-	data.setInt(NBT_KEY_DESTINATION_X, destX);
-	data.setInt(NBT_KEY_DESTINATION_Z, destZ);
+	data.putInt(NBT_KEY_DESTINATION_X, destX);
+	data.putInt(NBT_KEY_DESTINATION_Z, destZ);
 
 	// give it a funny random name
 	int nameType = random.nextInt(3);
-	data.setInt(NBT_NAME_TYPE, nameType);
+	data.putInt(NBT_NAME_TYPE, nameType);
 	if (nameType == 0 || nameType == 1)
 	{
-	    data.setInt(NBT_NAME_PART_1, random.nextInt(32)); // key of noun & noun, key of finding noun in noun
-	    data.setInt(NBT_NAME_PART_2, random.nextInt(32));
+	    data.putInt(NBT_NAME_PART_1, random.nextInt(32)); // key of noun & noun, key of finding noun in noun
+	    data.putInt(NBT_NAME_PART_2, random.nextInt(32));
 	}
 	else
 	{
-	    data.setInt(NBT_NAME_PART_1, random.nextInt(20)); // key to the place of noun
-	    data.setInt(NBT_NAME_PART_2, random.nextInt(32));
+	    data.putInt(NBT_NAME_PART_1, random.nextInt(20)); // key to the place of noun
+	    data.putInt(NBT_NAME_PART_2, random.nextInt(32));
 	}
 
 	stack.setTag(data);
@@ -80,7 +80,7 @@ public class ItemPortalKey extends Item
     {
 	if (stack.hasTag())
 	{
-	    if (stack.getTag().hasKey(NBT_KEY_ACTIVATED))
+	    if (stack.getTag().contains(NBT_KEY_ACTIVATED))
 	    {
 		return true;
 	    }
@@ -95,13 +95,13 @@ public class ItemPortalKey extends Item
 	// no NBT data on this item at all? well then return a blank key
 	if (stack.hasTag())
 	{
-	    NBTTagCompound itemData = stack.getTag();
+	    CompoundNBT itemData = stack.getTag();
 
-	    if (itemData.hasKey(NBT_KEY_ACTIVATED))
+	    if (itemData.contains(NBT_KEY_ACTIVATED))
 	    {
-		int nameType = itemData.hasKey(NBT_NAME_TYPE) ? itemData.getInt(NBT_NAME_TYPE) : 0;
-		int word_index_1 = itemData.hasKey(NBT_NAME_PART_1) ? itemData.getInt(NBT_NAME_PART_1) : 2;
-		int word_index_2 = itemData.hasKey(NBT_NAME_PART_2) ? itemData.getInt(NBT_NAME_PART_2) : 1;
+		int nameType = itemData.contains(NBT_NAME_TYPE) ? itemData.getInt(NBT_NAME_TYPE) : 0;
+		int word_index_1 = itemData.contains(NBT_NAME_PART_1) ? itemData.getInt(NBT_NAME_PART_1) : 2;
+		int word_index_2 = itemData.contains(NBT_NAME_PART_2) ? itemData.getInt(NBT_NAME_PART_2) : 1;
 		String retval = "";
 
 		if (nameType == 0)
@@ -143,19 +143,19 @@ public class ItemPortalKey extends Item
 		    retval = start + " " + place + " " + preposition + " " + noun;
 		}
 
-		return new TextComponentString(retval);
+		return new StringTextComponent(retval);
 	    }
 	}
 
 	// basically return "Blank Portal Key"
 	//return I18n.format(stack.getTranslationKey());
-	return new TextComponentTranslation(this.getTranslationKey(stack), new Object[0]);
+	return new TranslationTextComponent(this.getTranslationKey(stack), new Object[0]);
     }
 
     public float getWarpX(ItemStack stack)
     {
-	NBTTagCompound itemData = stack.getTag();
-	if (itemData.hasKey(NBT_KEY_DESTINATION_X))
+	CompoundNBT itemData = stack.getTag();
+	if (itemData.contains(NBT_KEY_DESTINATION_X))
 	{
 	    return (itemData.getInt(NBT_KEY_DESTINATION_X) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_X;
 	}
@@ -164,8 +164,8 @@ public class ItemPortalKey extends Item
 
     public float getWarpZ(ItemStack stack)
     {
-	NBTTagCompound itemData = stack.getTag();
-	if (itemData.hasKey(NBT_KEY_DESTINATION_Z))
+	CompoundNBT itemData = stack.getTag();
+	if (itemData.contains(NBT_KEY_DESTINATION_Z))
 	{
 	    return (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_Z;
 	}
@@ -174,18 +174,18 @@ public class ItemPortalKey extends Item
 
     @Override
     //public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    public EnumActionResult onItemUse(ItemUseContext parameters)
+    public ActionResultType onItemUse(ItemUseContext parameters)
     {
 	// break down the one 1.13 parameter to get the half dozen 1.12 parameters because I need most of them
 	World worldIn = parameters.getWorld();
 	BlockPos pos = parameters.getPos();
-	EnumFacing facing = parameters.getFace();
-	float hitX = parameters.getHitX();
+	Direction facing = parameters.getFace();
+	double hitX = parameters.getHitVec().getX();
 	//float hitY = parameters.getHitY();
-	float hitZ = parameters.getHitZ();
+	double hitZ = parameters.getHitVec().getZ();
 	//EntityPlayer player = parameters.getPlayer();	
 
-	IBlockState iblockstate = worldIn.getBlockState(pos);
+	BlockState iblockstate = worldIn.getBlockState(pos);
 	ItemStack itemstack = parameters.getItem();
 
 	if (worldIn.getBlockState(pos) != null)
@@ -197,9 +197,9 @@ public class ItemPortalKey extends Item
 	    if (worldIn.getBlockState(pos).getBlock() == Blocks.END_PORTAL_FRAME)
 	    {
 		// did they use it on the top?
-		if (facing == EnumFacing.UP)
+		if (facing == Direction.UP)
 		{
-		    boolean isFilled = ((Boolean) worldIn.getBlockState(pos).get(BlockEndPortalFrame.EYE)).booleanValue();
+		    boolean isFilled = ((Boolean) worldIn.getBlockState(pos).get(EndPortalFrameBlock.EYE)).booleanValue();
 
 		    // did they hit precisely the black area in the middle?
 		    if (hitX > 0.3f && hitX < 0.7f && hitZ > 0.3f && hitZ < 0.8f)
@@ -209,12 +209,12 @@ public class ItemPortalKey extends Item
 			    if (isActivated(itemstack))
 			    {
 				System.out.println("Key already activated!");
-				worldIn.playSound((EntityPlayer) null, pos, SoundEvents.BLOCK_METAL_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_METAL_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			    }
 			    else
 			    {
 				System.out.println("Triggered special event to initialize key!");
-				worldIn.playSound((EntityPlayer) null, pos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				activateKey(itemstack);
 
 				// more particle effects for this special event!
@@ -226,21 +226,21 @@ public class ItemPortalKey extends Item
 				    double xspeed = (random.nextFloat() * 0.04) * (random.nextBoolean() ? 1 : -1);
 				    double yspeed = random.nextFloat() * 0.125;
 				    double zspeed = (random.nextFloat() * 0.04) * (random.nextBoolean() ? 1 : -1);
-				    worldIn.spawnParticle(Particles.FIREWORK, d0, d1, d2, xspeed, yspeed, zspeed);
+				    worldIn.addParticle(ParticleTypes.FIREWORK, d0, d1, d2, xspeed, yspeed, zspeed);
 				}
 			    }
 			}
 			else
 			{
-			    worldIn.setBlockState(pos, iblockstate.with(BlockEndPortalFrame.EYE, Boolean.valueOf(false)), 2);
+			    worldIn.setBlockState(pos, iblockstate.with(EndPortalFrameBlock.EYE, Boolean.valueOf(false)), 2);
 			    worldIn.updateComparatorOutputLevel(pos, Blocks.END_PORTAL_FRAME);
 
 			    // do this if you want the key to break, too
 			    //itemstack.shrink(1);
 
 			    // dramatic effect for what you just did!
-			    worldIn.playSound((EntityPlayer) null, pos, SoundEvents.ENTITY_ENDER_EYE_DEATH, SoundCategory.BLOCKS, 1.5F, 1.0F);
-			    worldIn.playSound((EntityPlayer) null, pos, SoundEvents.ENTITY_ITEM_BREAK, SoundCategory.BLOCKS, 0.4F, 1.5F);
+			    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.ENTITY_ENDER_EYE_DEATH, SoundCategory.BLOCKS, 1.5F, 1.0F);
+			    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.ENTITY_ITEM_BREAK, SoundCategory.BLOCKS, 0.4F, 1.5F);
 
 			    // launch a ring of particles up and outwards from the center
 			    for (int i = 0; i < 32; i++)
@@ -251,20 +251,20 @@ public class ItemPortalKey extends Item
 				double xspeed = (random.nextFloat() * 0.08) * (random.nextBoolean() ? 1 : -1);
 				double yspeed = random.nextFloat() * 0.4;
 				double zspeed = (random.nextFloat() * 0.08) * (random.nextBoolean() ? 1 : -1);
-				worldIn.spawnParticle(Particles.END_ROD, d0, d1, d2, xspeed, yspeed, zspeed);
+				worldIn.addParticle(ParticleTypes.END_ROD, d0, d1, d2, xspeed, yspeed, zspeed);
 			    }
 			}
 		    }
 		    else
 		    {
 			//System.out.println("Just missed the center area...");
-			worldIn.playSound((EntityPlayer) null, pos, SoundEvents.BLOCK_GLASS_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_GLASS_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		    }
 		}
 		else
 		{
 		    // hit the side of the block
-		    worldIn.playSound((EntityPlayer) null, pos, SoundEvents.BLOCK_GLASS_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+		    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_GLASS_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 	    }
 
@@ -273,7 +273,7 @@ public class ItemPortalKey extends Item
 	     */
 	}
 
-	return EnumActionResult.PASS;
+	return ActionResultType.PASS;
     }
 
     /**
@@ -286,7 +286,7 @@ public class ItemPortalKey extends Item
      * @return True to cancel the rest of the interaction.
      */
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
+    public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity)
     {
 	return false;
     }

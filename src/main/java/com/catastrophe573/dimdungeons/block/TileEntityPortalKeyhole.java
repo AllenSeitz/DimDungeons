@@ -4,11 +4,11 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
@@ -19,7 +19,7 @@ public class TileEntityPortalKeyhole extends TileEntity
 
     @ObjectHolder(DimDungeons.RESOURCE_PREFIX + REG_NAME)
     public static TileEntityType<TileEntityPortalKeyhole> TYPE;
-    
+
     public TileEntityPortalKeyhole()
     {
 	super(TYPE);
@@ -34,14 +34,14 @@ public class TileEntityPortalKeyhole extends TileEntity
     private static final String ITEM_PROPERTY_KEY = "objectInserted";
 
     @Override
-    public void read(NBTTagCompound compound)
+    public void read(CompoundNBT compound)
     {
 	super.read(compound);
-	readMyNBTData(compound);	
+	readMyNBTData(compound);
     }
-    
+
     @Override
-    public NBTTagCompound write(NBTTagCompound compound)
+    public CompoundNBT write(CompoundNBT compound)
     {
 	writeMyNBTData(compound);
 	return super.write(compound);
@@ -49,48 +49,48 @@ public class TileEntityPortalKeyhole extends TileEntity
 
     // synchronize on chunk loading
     @Override
-    public void handleUpdateTag(NBTTagCompound nbt)
+    public void handleUpdateTag(CompoundNBT nbt)
     {
 	read(nbt);
-    }   
-    
+    }
+
     // synchronize on chunk loading
     @Override
-    public NBTTagCompound getUpdateTag()
+    public CompoundNBT getUpdateTag()
     {
-	return write(new NBTTagCompound());
+	return write(new CompoundNBT());
     }
 
     // synchronize on block updates
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet)
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet)
     {
 	read(packet.getNbtCompound());
-    }    
-    
+    }
+
     // synchronize on block updates
     @Override
-    public SPacketUpdateTileEntity getUpdatePacket()
+    public SUpdateTileEntityPacket getUpdatePacket()
     {
-	NBTTagCompound tag = write(new NBTTagCompound());
-	return new SPacketUpdateTileEntity(pos, 1, tag); // Forge recommends putting -1 as the second parameter
-    }    
-
-    // business logic for this object
-    public void writeMyNBTData(NBTTagCompound compound)
-    {
-	// always send this, even if it is empty or air
-	NBTTagCompound itemNBT = new NBTTagCompound();
-	compound.setTag(ITEM_PROPERTY_KEY, objectInserted.write(itemNBT));
+	CompoundNBT tag = write(new CompoundNBT());
+	return new SUpdateTileEntityPacket(pos, 1, tag); // Forge recommends putting -1 as the second parameter
     }
 
     // business logic for this object
-    public void readMyNBTData(NBTTagCompound compound)
+    public void writeMyNBTData(CompoundNBT compound)
     {
-	if (compound.hasKey(ITEM_PROPERTY_KEY))
+	// always send this, even if it is empty or air
+	CompoundNBT itemNBT = new CompoundNBT();
+	compound.put(ITEM_PROPERTY_KEY, objectInserted.write(itemNBT));
+    }
+
+    // business logic for this object
+    public void readMyNBTData(CompoundNBT compound)
+    {
+	if (compound.contains(ITEM_PROPERTY_KEY))
 	{
 	    this.objectInserted = (ItemStack.read(compound.getCompound(ITEM_PROPERTY_KEY)));
-	}	
+	}
     }
 
     public boolean isFilled()
@@ -123,10 +123,10 @@ public class TileEntityPortalKeyhole extends TileEntity
     }
 
     public ItemStack getObjectInserted()
-    {	
+    {
 	return this.objectInserted;
     }
-    
+
     //  be sure to notify the world of a block update after calling this
     public void setContents(ItemStack item)
     {
@@ -139,6 +139,6 @@ public class TileEntityPortalKeyhole extends TileEntity
     public void removeContents()
     {
 	this.objectInserted = ItemStack.EMPTY;
-	this.markDirty();		
+	this.markDirty();
     }
 }

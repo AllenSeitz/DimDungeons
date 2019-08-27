@@ -3,8 +3,8 @@ package com.catastrophe573.dimdungeons.block;
 import com.catastrophe573.dimdungeons.DimDungeons;
 
 import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemGroup;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.registries.ObjectHolder;
@@ -28,8 +28,8 @@ public class BlockRegistrar
     {
 	DimDungeons.LOGGER.info("HELLO from Register ItemBlock");
 
-	event.getRegistry().register(new ItemBlock(block_gilded_portal, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_gilded_portal.getRegistryName()));
-	event.getRegistry().register(new ItemBlock(block_gold_portal, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_gold_portal.getRegistryName()));
-	event.getRegistry().register(new ItemBlock(block_portal_keyhole, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_portal_keyhole.getRegistryName()));
+	event.getRegistry().register(new BlockItem(block_gilded_portal, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_gilded_portal.getRegistryName()));
+	event.getRegistry().register(new BlockItem(block_gold_portal, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_gold_portal.getRegistryName()));
+	event.getRegistry().register(new BlockItem(block_portal_keyhole, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_portal_keyhole.getRegistryName()));
     }
 }
