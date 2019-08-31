@@ -21,7 +21,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
-import com.catastrophe573.dimdungeons.dimension.DimensionRegistrar;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 
 import java.util.stream.Collectors;
@@ -119,7 +118,8 @@ public class DimDungeons
 	public static void registerDims(RegistryEvent.Register<ModDimension> dimRegistryEvent)
 	{
 	    LOGGER.info("HELLO from Register DimensionType");
-	    DimensionRegistrar.registerAllDimensions(dimRegistryEvent);
+	    // DimensionRegistrar is also listening for this event, and does not appreciate being told twice
+	    // TODO: hey wait why don't I make the other registrars work this way too?
 	}
     }
 }

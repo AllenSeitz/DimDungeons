@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
-import com.catastrophe573.dimdungeons.dimension.DimensionRegistrar;
+import com.catastrophe573.dimdungeons.dimension.DungeonDimensionType;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 
 import net.minecraft.block.Block;
@@ -115,7 +115,7 @@ public class BlockGoldPortal extends BreakableBlock
 			// TODO: remove this print
 			System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + "). in dim...");
 
-			actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionRegistrar.dungeon_dimension_type, warpX, 55.1D, warpZ);
+			actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonDimensionType.getDimensionType(), warpX, 55.1D, warpZ);
 		    }
 		}
 		// three vanilla blocks will also open portals to the 3 vanilla dimensions?
@@ -139,7 +139,7 @@ public class BlockGoldPortal extends BreakableBlock
 	    else
 	    {
 		// no keyhole? this could be a return portal
-		if (worldIn.getDimension().getType() == DimensionRegistrar.dungeon_dimension_type)
+		if (worldIn.getDimension().getType() == DungeonDimensionType.getDimensionType())
 		{
 		    sendPlayerBackHome((ServerPlayerEntity) entityIn);
 		}
@@ -153,7 +153,7 @@ public class BlockGoldPortal extends BreakableBlock
 	player.timeUntilPortal = 300; // 300 ticks, same as vanilla nether portal (hijacking this also affects nether portals, which is intentional) 
 	player.changeDimension(dim);
 
-	if (dim == DimensionRegistrar.dungeon_dimension_type)
+	if (dim == DungeonDimensionType.getDimensionType())
 	{
 	    // if the player just entered a dungeon then force them to face north 
 	    player.setRotationYawHead(2);
@@ -182,7 +182,7 @@ public class BlockGoldPortal extends BreakableBlock
     public void checkPortalIntegrity(BlockState state, IWorld worldIn, BlockPos pos)
     {
 	// valid portal shapes are not needed for persistence in the dungeon dimension itself because of the return portal
-	if (!isPortalShapeIntact(state, worldIn, pos) && worldIn.getDimension().getType() != DimensionRegistrar.dungeon_dimension_type)
+	if (!isPortalShapeIntact(state, worldIn, pos) && worldIn.getDimension().getType() != DungeonDimensionType.getDimensionType())
 	{
 	    worldIn.destroyBlock(pos, false);
 	}
