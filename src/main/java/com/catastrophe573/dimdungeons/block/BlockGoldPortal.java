@@ -99,40 +99,43 @@ public class BlockGoldPortal extends BreakableBlock
 	    if (te != null)
 	    {
 		ItemStack item = te.getObjectInserted();
-		if (item.getItem() instanceof ItemPortalKey && worldIn.getDimension().getType() == DimensionType.OVERWORLD)
+		if ( !item.isEmpty() )
 		{
-		    ItemPortalKey key = (ItemPortalKey) item.getItem();
-		    float warpX = key.getWarpX(item);
-		    float warpZ = key.getWarpZ(item);
+		    if (item.getItem() instanceof ItemPortalKey && worldIn.getDimension().getType() == DimensionType.OVERWORLD)
+		    {
+			ItemPortalKey key = (ItemPortalKey) item.getItem();
+			float warpX = key.getWarpX(item);
+			float warpZ = key.getWarpZ(item);
 
-		    if (warpX == -1 || warpZ == -1)
-		    {
-			System.out.println("Player somehow used an unactivated key? Doing nothing.");
-			//actuallyPerformTeleport((EntityPlayerMP) entityIn, DimensionRegistrar.getDungeonDimensionID(), 7.5f, 52, 12.0f);
-		    }
-		    else
-		    {
-			// TODO: remove this print
-			System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + "). in dim...");
+			if (warpX == -1 || warpZ == -1)
+			{
+			    System.out.println("Player somehow used an unactivated key? Doing nothing.");
+			    //actuallyPerformTeleport((EntityPlayerMP) entityIn, DimensionRegistrar.getDungeonDimensionID(), 7.5f, 52, 12.0f);
+			}
+			else
+			{
+			    // TODO: remove this print
+			    System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + "). in dim...");
 
-			actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonDimensionType.getDimensionType(), warpX, 55.1D, warpZ);
+			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonDimensionType.getDimensionType(), warpX, 55.1D, warpZ);
+			}
 		    }
-		}
-		// three vanilla blocks will also open portals to the 3 vanilla dimensions?
-		else if (getBlockFromItem(item.getItem()) != null)
-		{
-		    Block b = getBlockFromItem(item.getItem());
-		    if (b == Blocks.NETHERRACK && worldIn.getDimension().getType() != DimensionType.THE_NETHER)
+		    // three vanilla blocks will also open portals to the 3 vanilla dimensions?
+		    else if (getBlockFromItem(item.getItem()) != null)
 		    {
-			actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionType.THE_NETHER, entityIn.posX, entityIn.posY, entityIn.posZ);
-		    }
-		    if (b == Blocks.END_STONE && worldIn.getDimension().getType() != DimensionType.THE_END)
-		    {
-			actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionType.THE_END, entityIn.posX, entityIn.posY, entityIn.posZ);
-		    }
-		    if (b == Blocks.GRASS_BLOCK && worldIn.getDimension().getType() != DimensionType.OVERWORLD)
-		    {
-			actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionType.OVERWORLD, entityIn.posX, entityIn.posY, entityIn.posZ);
+			Block b = getBlockFromItem(item.getItem());
+			if (b == Blocks.NETHERRACK && worldIn.getDimension().getType() != DimensionType.THE_NETHER)
+			{
+			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionType.THE_NETHER, entityIn.posX, entityIn.posY, entityIn.posZ);
+			}
+			if (b == Blocks.END_STONE && worldIn.getDimension().getType() != DimensionType.THE_END)
+			{
+			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionType.THE_END, entityIn.posX, entityIn.posY, entityIn.posZ);
+			}
+			if (b == Blocks.GRASS_BLOCK && worldIn.getDimension().getType() != DimensionType.OVERWORLD)
+			{
+			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionType.OVERWORLD, entityIn.posX, entityIn.posY, entityIn.posZ);
+			}
 		    }
 		}
 	    }

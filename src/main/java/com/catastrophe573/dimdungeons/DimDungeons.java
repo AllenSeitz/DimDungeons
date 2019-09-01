@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
+import com.catastrophe573.dimdungeons.dimension.DimensionRegistrar;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 
 import java.util.stream.Collectors;
@@ -38,15 +39,14 @@ public class DimDungeons
     
     public DimDungeons()
     {
-	// Register the setup method for modloading
+	// register event listeners that don't use the event bus
+	// TODO: why do doCommonStuff and doClientStuff not use the bus like onServerStarting()?
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-	// Register the enqueueIMC method for modloading
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
-	// Register the processIMC method for modloading
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
-	// Register the doClientStuff method for modloading
+	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-
+	
 	// Register ourselves for server, registry and other game events we are interested in
 	MinecraftForge.EVENT_BUS.register(this);
     }
@@ -56,6 +56,11 @@ public class DimDungeons
 	// some preinit code
     }
 
+    private void doCommonStuff(final FMLCommonSetupEvent event)
+    {
+	DimensionRegistrar.registerDimensions();
+    }
+    
     private void doClientStuff(final FMLClientSetupEvent event)
     {
 	// do something that can only be done on the client

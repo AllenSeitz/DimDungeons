@@ -116,7 +116,7 @@ public class ItemPortalKey extends Item
 		    }
 		    else
 		    {
-			retval = start + " " + noun1  + " " + preposition + " " + noun2;
+			retval = start + " " + noun1 + " " + preposition + " " + noun2;
 		    }
 		}
 		else if (nameType == 1)
@@ -154,20 +154,26 @@ public class ItemPortalKey extends Item
 
     public float getWarpX(ItemStack stack)
     {
-	CompoundNBT itemData = stack.getTag();
-	if (itemData.contains(NBT_KEY_DESTINATION_X))
+	if (stack != null && !stack.isEmpty())
 	{
-	    return (itemData.getInt(NBT_KEY_DESTINATION_X) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_X;
+	    CompoundNBT itemData = stack.getTag();
+	    if (itemData != null && itemData.contains(NBT_KEY_DESTINATION_X))
+	    {
+		return (itemData.getInt(NBT_KEY_DESTINATION_X) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_X;
+	    }
 	}
 	return -1;
     }
 
     public float getWarpZ(ItemStack stack)
     {
-	CompoundNBT itemData = stack.getTag();
-	if (itemData.contains(NBT_KEY_DESTINATION_Z))
+	if (stack != null && !stack.isEmpty())
 	{
-	    return (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_Z;
+	    CompoundNBT itemData = stack.getTag();
+	    if (itemData != null && itemData.contains(NBT_KEY_DESTINATION_Z))
+	    {
+		return (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_Z;
+	    }
 	}
 	return -1;
     }
@@ -188,23 +194,27 @@ public class ItemPortalKey extends Item
 	BlockState iblockstate = worldIn.getBlockState(pos);
 	ItemStack itemstack = parameters.getItem();
 
+	// new in 1.13 the hit vector contains world coordinates in the integer part, instead of returning 0.5 for hitting the middle of a block
+	hitX = hitX - (int) hitX;
+	hitZ = hitZ - (int) hitZ;
+
 	if (worldIn.getBlockState(pos) != null)
 	{
-	    //System.out.println("Used a key on some block: " + worldIn.getBlockState(pos).getBlock().getRegistryName());
-	    //System.out.println("Hit it here: " + hitX + ", " + hitY + ", " + hitZ + ", facing=" + facing.getName());
+	    System.out.println("Used a key on some block: " + worldIn.getBlockState(pos).getBlock().getRegistryName());
+	    System.out.println("Hit it here: " + hitX + ", " + hitZ + ", facing=" + facing.getName());
 
 	    // did they use the key on an end portal frame?
 	    if (worldIn.getBlockState(pos).getBlock() == Blocks.END_PORTAL_FRAME)
 	    {
-		// did they use it on the top?
-		if (facing == Direction.UP)
-		{
-		    boolean isFilled = ((Boolean) worldIn.getBlockState(pos).get(EndPortalFrameBlock.EYE)).booleanValue();
+		boolean isFilled = ((Boolean) worldIn.getBlockState(pos).get(EndPortalFrameBlock.EYE)).booleanValue();
 
-		    // did they hit precisely the black area in the middle?
-		    if (hitX > 0.3f && hitX < 0.7f && hitZ > 0.3f && hitZ < 0.8f)
+		// did they hit precisely the black area in the middle?
+		if (hitX > 0.3f && hitX < 0.7f && hitZ > 0.3f && hitZ < 0.8f)
+		{
+		    if (!isFilled)
 		    {
-			if (!isFilled)
+			// did they use it on the top?
+			if (facing == Direction.UP)
 			{
 			    if (isActivated(itemstack))
 			    {
@@ -230,44 +240,43 @@ public class ItemPortalKey extends Item
 				}
 			    }
 			}
-			else
-			{
-			    worldIn.setBlockState(pos, iblockstate.with(EndPortalFrameBlock.EYE, Boolean.valueOf(false)), 2);
-			    worldIn.updateComparatorOutputLevel(pos, Blocks.END_PORTAL_FRAME);
-
-			    // do this if you want the key to break, too
-			    //itemstack.shrink(1);
-
-			    // dramatic effect for what you just did!
-			    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.ENTITY_ENDER_EYE_DEATH, SoundCategory.BLOCKS, 1.5F, 1.0F);
-			    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.ENTITY_ITEM_BREAK, SoundCategory.BLOCKS, 0.4F, 1.5F);
-
-			    // launch a ring of particles up and outwards from the center
-			    for (int i = 0; i < 32; i++)
-			    {
-				double d0 = (double) ((float) pos.getX() + 0.5F);
-				double d1 = (double) ((float) pos.getY() + 0.8F);
-				double d2 = (double) ((float) pos.getZ() + 0.5F);
-				double xspeed = (random.nextFloat() * 0.08) * (random.nextBoolean() ? 1 : -1);
-				double yspeed = random.nextFloat() * 0.4;
-				double zspeed = (random.nextFloat() * 0.08) * (random.nextBoolean() ? 1 : -1);
-				worldIn.addParticle(ParticleTypes.END_ROD, d0, d1, d2, xspeed, yspeed, zspeed);
-			    }
-			}
 		    }
 		    else
 		    {
-			//System.out.println("Just missed the center area...");
-			worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_GLASS_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			worldIn.setBlockState(pos, iblockstate.with(EndPortalFrameBlock.EYE, Boolean.valueOf(false)), 2);
+			worldIn.updateComparatorOutputLevel(pos, Blocks.END_PORTAL_FRAME);
+
+			// do this if you want the key to break, too
+			//itemstack.shrink(1);
+
+			// dramatic effect for what you just did!
+			worldIn.playSound((PlayerEntity) null, pos, SoundEvents.ENTITY_ENDER_EYE_DEATH, SoundCategory.BLOCKS, 1.5F, 1.0F);
+			worldIn.playSound((PlayerEntity) null, pos, SoundEvents.ENTITY_ITEM_BREAK, SoundCategory.BLOCKS, 0.4F, 1.5F);
+
+			// launch a ring of particles up and outwards from the center
+			for (int i = 0; i < 32; i++)
+			{
+			    double d0 = (double) ((float) pos.getX() + 0.5F);
+			    double d1 = (double) ((float) pos.getY() + 0.8F);
+			    double d2 = (double) ((float) pos.getZ() + 0.5F);
+			    double xspeed = (random.nextFloat() * 0.08) * (random.nextBoolean() ? 1 : -1);
+			    double yspeed = random.nextFloat() * 0.4;
+			    double zspeed = (random.nextFloat() * 0.08) * (random.nextBoolean() ? 1 : -1);
+			    worldIn.addParticle(ParticleTypes.END_ROD, d0, d1, d2, xspeed, yspeed, zspeed);
+			}
 		    }
 		}
 		else
 		{
-		    // hit the side of the block
+		    //System.out.println("Just missed the center area...");
 		    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_GLASS_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 	    }
-
+	    else
+	    {
+		// hit the side of the block
+		worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_GLASS_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+	    }
 	    /*
 	     * // did they use the key on a keyhole? if (worldIn.getBlockState(pos).getBlock() instanceof BlockPortalKeyhole) { }
 	     */

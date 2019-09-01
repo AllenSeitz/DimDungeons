@@ -27,12 +27,13 @@ public class DimensionRegistrar
 	{
 	    event.getRegistry().registerAll(DUNGEON_BASIC);
 
-	    DimDungeons.LOGGER.info("Registered Dimensions");
+	    DimDungeons.LOGGER.info("Registered Dimension Types.");
 	}
     }
 
     public static void registerDimensions()
     {
+	DimDungeons.LOGGER.info("Registered Dimension Instances.");
 	DimensionManager.registerDimension(new ResourceLocation(DimDungeons.MOD_ID, dungeon_basic_regname), DUNGEON_BASIC, new PacketBuffer(Unpooled.buffer(16)), true);
     }
 }
