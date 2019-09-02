@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
+import com.catastrophe573.dimdungeons.command.CustomTeleporter;
 import com.catastrophe573.dimdungeons.dimension.DungeonDimensionType;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 
@@ -151,14 +152,11 @@ public class BlockGoldPortal extends BreakableBlock
 
     protected void actuallyPerformTeleport(ServerPlayerEntity player, DimensionType dim, double x, double y, double z)
     {
-	if (dim == null)
-	{
-	    DimDungeons.LOGGER.info("***DIM DUNGEONS MAJOR ERROR - passed null dimension into actuallyPerformTeleport");
-	}
 	DimDungeons.LOGGER.info("INSIDE actuallyPerformTeleport: newDim = " + dim.toString());
 	player.timeUntilPortal = 300; // 300 ticks, same as vanilla nether portal (hijacking this also affects nether portals, which is intentional) 
-	player.changeDimension(dim);
-
+	//player.changeDimension(dim);
+	CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z);
+	
 	if (dim == DungeonDimensionType.getDimensionType())
 	{
 	    // if the player just entered a dungeon then force them to face north 

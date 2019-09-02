@@ -33,7 +33,7 @@ public class DungeonDimension extends Dimension
     }
 
     public ChunkGenerator<? extends GenerationSettings> createChunkGenerator()
-    {
+    {	
 	BiomeProviderDungeon biomeProvider = new BiomeProviderDungeon();
 	ChunkGeneratorType<FlatGenerationSettings, DungeonChunkGenerator> gen = new ChunkGeneratorType<>(DungeonChunkGenerator::new, true, FlatGenerationSettings::new);
 	FlatGenerationSettings gensettings = gen.createSettings();
@@ -119,7 +119,7 @@ public class DungeonDimension extends Dimension
     {
 	return false;
     }
-
+    
     @Override
     // oh the possibilities
     public boolean doesWaterVaporize()
