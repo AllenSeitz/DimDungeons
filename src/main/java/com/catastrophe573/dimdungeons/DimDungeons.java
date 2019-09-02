@@ -3,6 +3,7 @@ package com.catastrophe573.dimdungeons;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.ModDimension;
 import net.minecraftforge.event.RegistryEvent;
@@ -19,6 +20,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.catastrophe573.dimdungeons.biome.BiomeRegistrar;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.dimension.DimensionRegistrar;
@@ -118,6 +120,13 @@ public class DimDungeons
 	    tetPortalKeyhole.setRegistryName(MOD_ID, TileEntityPortalKeyhole.REG_NAME);
 	    teRegistryEvent.getRegistry().register(tetPortalKeyhole);
 	}
+	
+	@SubscribeEvent
+	public static void registerBiomes(RegistryEvent.Register<Biome> biomeRegistryEvent)
+	{
+	    LOGGER.info("HELLO from Register Biome");
+	    BiomeRegistrar.registerAllBiomes(biomeRegistryEvent);
+	}	
 	
 	@SubscribeEvent
 	public static void registerDims(RegistryEvent.Register<ModDimension> dimRegistryEvent)

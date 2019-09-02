@@ -25,6 +25,6 @@ public class DungeonDimensionType extends ModDimension
     @Override
     public BiFunction<World, DimensionType, ? extends Dimension> getFactory()
     {
-	return null;//return AMDimension::new;
+	return DungeonDimension::new;
     }
 }

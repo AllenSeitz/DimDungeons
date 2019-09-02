@@ -18,7 +18,7 @@ public class DimensionRegistrar
 
     @ObjectHolder(DimDungeons.MOD_ID + ":" + dungeon_basic_regname)
     public static final DungeonDimensionType DUNGEON_BASIC = new DungeonDimensionType(new ResourceLocation(DimDungeons.MOD_ID, dungeon_basic_regname));
-
+    
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents
     {

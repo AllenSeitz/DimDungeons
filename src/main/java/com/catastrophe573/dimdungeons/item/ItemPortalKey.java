@@ -194,9 +194,9 @@ public class ItemPortalKey extends Item
 	BlockState iblockstate = worldIn.getBlockState(pos);
 	ItemStack itemstack = parameters.getItem();
 
-	// new in 1.13 the hit vector contains world coordinates in the integer part, instead of returning 0.5 for hitting the middle of a block
-	hitX = hitX - (int) hitX;
-	hitZ = hitZ - (int) hitZ;
+	// new in 1.13 the hit vector contains world coordinates in the integer part, and I would like just the decimal part
+	hitX = Math.abs((int) hitX - hitX);
+	hitZ = Math.abs((int) hitZ - hitZ);
 
 	if (worldIn.getBlockState(pos) != null)
 	{

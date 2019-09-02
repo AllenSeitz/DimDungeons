@@ -99,7 +99,7 @@ public class BlockGoldPortal extends BreakableBlock
 	    if (te != null)
 	    {
 		ItemStack item = te.getObjectInserted();
-		if ( !item.isEmpty() )
+		if (!item.isEmpty())
 		{
 		    if (item.getItem() instanceof ItemPortalKey && worldIn.getDimension().getType() == DimensionType.OVERWORLD)
 		    {
@@ -116,7 +116,6 @@ public class BlockGoldPortal extends BreakableBlock
 			{
 			    // TODO: remove this print
 			    System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + "). in dim...");
-
 			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonDimensionType.getDimensionType(), warpX, 55.1D, warpZ);
 			}
 		    }
@@ -152,6 +151,10 @@ public class BlockGoldPortal extends BreakableBlock
 
     protected void actuallyPerformTeleport(ServerPlayerEntity player, DimensionType dim, double x, double y, double z)
     {
+	if (dim == null)
+	{
+	    DimDungeons.LOGGER.info("***DIM DUNGEONS MAJOR ERROR - passed null dimension into actuallyPerformTeleport");
+	}
 	DimDungeons.LOGGER.info("INSIDE actuallyPerformTeleport: newDim = " + dim.toString());
 	player.timeUntilPortal = 300; // 300 ticks, same as vanilla nether portal (hijacking this also affects nether portals, which is intentional) 
 	player.changeDimension(dim);
