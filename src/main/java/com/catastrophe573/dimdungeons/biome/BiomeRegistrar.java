@@ -13,7 +13,7 @@ public class BiomeRegistrar
     
     public static void registerAllBiomes(RegistryEvent.Register<Biome> event)
     {
-	DimDungeons.LOGGER.info("HELLO from Register ItemBlock");
+	DimDungeons.LOGGER.info("HELLO from Register Biome");
 
 	event.getRegistry().register(new BiomeDungeon(new Builder()).setRegistryName("biome_dungeon"));
     }

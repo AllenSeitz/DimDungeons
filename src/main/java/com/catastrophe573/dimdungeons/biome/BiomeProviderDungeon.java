@@ -14,6 +14,7 @@ public class BiomeProviderDungeon extends SingleBiomeProvider
     }
 
     @Override
+    // if the structure is one of mine then the answer is yes, otherwise no
     public boolean hasStructure(Structure<?> structure)
     {
 	return structure instanceof BasicDungeonFeature;
