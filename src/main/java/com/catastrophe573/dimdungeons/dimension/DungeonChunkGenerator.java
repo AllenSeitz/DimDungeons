@@ -85,7 +85,7 @@ public class DungeonChunkGenerator extends FlatChunkGenerator
 	// otherwise, implement exceptions and structure-specific logic here (witch huts, ocean monuments, etc)
 	return super.getPossibleCreatures(creatureType, pos);
     }
-
+    
     @Override
     public int getGroundHeight()
     {
