@@ -3,7 +3,6 @@ package com.catastrophe573.dimdungeons.feature;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.biome.BiomeRegistrar;
 
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.Feature;
@@ -20,16 +19,23 @@ import net.minecraftforge.registries.ObjectHolder;
 
 @Mod.EventBusSubscriber(modid = DimDungeons.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class FeatureRegistrar
-{
-    @ObjectHolder("dimdungeons:basic_dungeon")
-    public static Structure<NoFeatureConfig> basic_dungeon_feature = null;
+{    
+    @ObjectHolder("dimdungeons:feature_basic_dungeon")
+    public static Structure<NoFeatureConfig> feature_basic_dungeon = null;
 
     @SubscribeEvent
     public static void onFeaturesRegistry(RegistryEvent.Register<Feature<?>> event)
     {
 	DimDungeons.LOGGER.info("Registering features.");
 
-	basic_dungeon_feature = Registry.register(Registry.STRUCTURE_FEATURE, "dimdungeons:basic_dungeon", new BasicDungeonFeature(NoFeatureConfig::deserialize));
+	registerFeature(event, new BasicDungeonFeature(NoFeatureConfig::deserialize), BasicDungeonFeature.STRUCT_ID);
+    }
+
+    // a helper function for onFeaturesRegistry(), copied from Laton95's mod Rune-Mysteries
+    private static void registerFeature(RegistryEvent.Register<Feature<?>> event, Feature<?> feature, String name)
+    {
+	feature.setRegistryName(DimDungeons.MOD_ID, name);
+	event.getRegistry().register(feature);
     }
 
     @SubscribeEvent
@@ -37,14 +43,15 @@ public class FeatureRegistrar
     {
 	DimDungeons.LOGGER.info("Applying features to biomes.");
 
-	addStructure(BiomeRegistrar.biome_dungeon, GenerationStage.Decoration.SURFACE_STRUCTURES, basic_dungeon_feature);
+	DimDungeons.LOGGER.info("TESTING: " + feature_basic_dungeon.toString());
+	addStructure(BiomeRegistrar.biome_dungeon, GenerationStage.Decoration.SURFACE_STRUCTURES, feature_basic_dungeon);
     }
 
     // a helper function for applyFeatures(), copied from Laton95's mod Rune-Mysteries
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static void addStructure(Biome biome, GenerationStage.Decoration stage, Structure structure)
     {
-	biome.addFeature(stage, Biome.createDecoratedFeature(structure, IFeatureConfig.NO_FEATURE_CONFIG, Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));	
+	biome.addFeature(stage, Biome.createDecoratedFeature(structure, IFeatureConfig.NO_FEATURE_CONFIG, Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
 	biome.addStructure(structure, IFeatureConfig.NO_FEATURE_CONFIG);
     }
 }
