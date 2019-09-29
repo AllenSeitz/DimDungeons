@@ -2,10 +2,8 @@ package com.catastrophe573.dimdungeons.dimension;
 
 import javax.annotation.Nullable;
 
-import com.catastrophe573.dimdungeons.biome.BiomeDungeon;
 import com.catastrophe573.dimdungeons.biome.BiomeProviderDungeon;
 
-import net.minecraft.block.Blocks;
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -15,13 +13,12 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biome.Builder;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.ChunkGeneratorType;
-import net.minecraft.world.gen.FlatGenerationSettings;
 import net.minecraft.world.gen.GenerationSettings;
+import net.minecraft.world.gen.OverworldGenSettings;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -33,12 +30,10 @@ public class DungeonDimension extends Dimension
     }
 
     public ChunkGenerator<? extends GenerationSettings> createChunkGenerator()
-    {	
+    {
 	BiomeProviderDungeon biomeProvider = new BiomeProviderDungeon();
-	ChunkGeneratorType<FlatGenerationSettings, DungeonChunkGenerator> gen = new ChunkGeneratorType<>(DungeonChunkGenerator::new, true, FlatGenerationSettings::new);
-	FlatGenerationSettings gensettings = gen.createSettings();
-	gensettings.setBiome(new BiomeDungeon(new Builder()));
-	gensettings.setDefaultBlock(Blocks.STONE.getDefaultState());
+	ChunkGeneratorType<OverworldGenSettings, DungeonChunkGenerator> gen = new ChunkGeneratorType<>(DungeonChunkGenerator::new, true, OverworldGenSettings::new);
+	OverworldGenSettings gensettings = new OverworldGenSettings();
 	return gen.create(this.world, biomeProvider, gensettings);
     }
 
@@ -119,7 +114,7 @@ public class DungeonDimension extends Dimension
     {
 	return false;
     }
-    
+
     @Override
     // oh the possibilities
     public boolean doesWaterVaporize()

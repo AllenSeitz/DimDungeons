@@ -8,7 +8,6 @@ import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.IFeatureConfig;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
-import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.placement.IPlacementConfig;
 import net.minecraft.world.gen.placement.Placement;
 import net.minecraftforge.event.RegistryEvent;
@@ -21,14 +20,14 @@ import net.minecraftforge.registries.ObjectHolder;
 public class FeatureRegistrar
 {    
     @ObjectHolder("dimdungeons:feature_basic_dungeon")
-    public static Structure<NoFeatureConfig> feature_basic_dungeon = null;
+    public static Feature<NoFeatureConfig> feature_basic_dungeon = null;
 
     @SubscribeEvent
     public static void onFeaturesRegistry(RegistryEvent.Register<Feature<?>> event)
     {
 	DimDungeons.LOGGER.info("Registering features.");
 
-	registerFeature(event, new BasicDungeonFeature(NoFeatureConfig::deserialize), BasicDungeonFeature.STRUCT_ID);
+	registerFeature(event, new BasicDungeonFeature(NoFeatureConfig::deserialize), BasicDungeonFeature.FEATURE_ID);
     }
 
     // a helper function for onFeaturesRegistry(), copied from Laton95's mod Rune-Mysteries
@@ -43,15 +42,12 @@ public class FeatureRegistrar
     {
 	DimDungeons.LOGGER.info("Applying features to biomes.");
 
-	DimDungeons.LOGGER.info("TESTING: " + feature_basic_dungeon.toString());
-	addStructure(BiomeRegistrar.biome_dungeon, GenerationStage.Decoration.SURFACE_STRUCTURES, feature_basic_dungeon);
+	addFeatureToBiome(BiomeRegistrar.biome_dungeon, GenerationStage.Decoration.SURFACE_STRUCTURES, feature_basic_dungeon);
     }
 
-    // a helper function for applyFeatures(), copied from Laton95's mod Rune-Mysteries
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static void addStructure(Biome biome, GenerationStage.Decoration stage, Structure structure)
+    private static void addFeatureToBiome(Biome biome, GenerationStage.Decoration stage, Feature feature)
     {
-	biome.addFeature(stage, Biome.createDecoratedFeature(structure, IFeatureConfig.NO_FEATURE_CONFIG, Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
-	biome.addStructure(structure, IFeatureConfig.NO_FEATURE_CONFIG);
+	biome.addFeature(stage, Biome.createDecoratedFeature(feature, IFeatureConfig.NO_FEATURE_CONFIG, Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
     }
 }
