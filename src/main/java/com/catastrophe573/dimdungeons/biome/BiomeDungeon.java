@@ -15,7 +15,7 @@ public class BiomeDungeon extends Biome
     public BiomeDungeon(Builder biomeBuilder)
     {
 	super(biomeBuilder.surfaceBuilder(new ConfiguredSurfaceBuilder<SurfaceBuilderConfig>(SurfaceBuilder.DEFAULT, SurfaceBuilder.AIR_CONFIG)).precipitation(Biome.RainType.RAIN).category(Biome.Category.NONE).depth(0.0F).scale(0.025F).temperature(0.8F)
-		.downfall(0.4F).waterColor(0xFFFF66).waterFogColor(329011).parent((String) null));
+		.downfall(0.4F).waterColor(0x676767).waterFogColor(329011).parent((String) null));
 
 	// this dimension spawns no monsters or entities
 	this.getSpawns(EntityClassification.AMBIENT).clear();
