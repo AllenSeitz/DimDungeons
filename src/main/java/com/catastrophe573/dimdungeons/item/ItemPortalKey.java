@@ -37,8 +37,8 @@ public class ItemPortalKey extends Item
     public static final String NBT_NAME_PART_1 = "name_part_1";
     public static final String NBT_NAME_PART_2 = "name_part_2";
 
-    public static final int BLOCKS_APART_PER_DUNGEON = 128; // 16 chunks to try to keep "noise" or other interference from neighbors to a minimum (also makes maps work)
-    public static final int RANDOM_COORDINATE_RANGE = 8192; // (0-8192 * 128) = 0 to 1,048,576
+    public static final int BLOCKS_APART_PER_DUNGEON = 256; // 16 chunks to try to keep "noise" or other interference from neighbors to a minimum (also makes maps work)
+    public static final int RANDOM_COORDINATE_RANGE = 8192; // (0-8192 * 256) = 0 to 2,097,152
     public static final float ENTRANCE_OFFSET_X = 8.0f + (8 * 16); // applied when the player teleports in, centered on the two-block-wide return portal
     public static final float ENTRANCE_OFFSET_Z = 12.5f + (11 * 16); // applied when the player teleports in, centered on the two-block-wide return portal
 
