@@ -1,10 +1,11 @@
 package com.catastrophe573.dimdungeons.structure;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
+
+import com.catastrophe573.dimdungeons.DimDungeons;
 
 import net.minecraft.util.Direction;
 import net.minecraft.util.Rotation;
@@ -59,14 +60,14 @@ public class DungeonBuilderLogic
 	{
 	    return type == RoomType.FOURWAY || (type == RoomType.ENTRANCE && rotation != Rotation.CLOCKWISE_180) || (type == RoomType.THREEWAY && rotation != Rotation.NONE) || (type == RoomType.CORNER && rotation == Rotation.NONE)
 		    || (type == RoomType.CORNER && rotation == Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.HALLWAY && rotation == Rotation.NONE) || (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_180)
-		    || (type == RoomType.END && rotation == Rotation.NONE);
+		    || (type == RoomType.END && rotation == Rotation.CLOCKWISE_180);
 	}
 
 	public boolean hasDoorSouth()
 	{
 	    return type == RoomType.FOURWAY || (type == RoomType.ENTRANCE && rotation != Rotation.NONE) || (type == RoomType.THREEWAY && rotation != Rotation.CLOCKWISE_180) || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_90)
 		    || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_180) || (type == RoomType.HALLWAY && rotation == Rotation.NONE) || (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_180)
-		    || (type == RoomType.END && rotation == Rotation.CLOCKWISE_180);
+		    || (type == RoomType.END && rotation == Rotation.NONE);
 	}
 
 	public boolean hasDoorWest()
@@ -102,9 +103,11 @@ public class DungeonBuilderLogic
 
     public DungeonBuilderLogic(long worldSeed, long chunkX, long chunkZ)
     {
-	// copied the seed logic from the vanilla decorate function
-	rand = new Random((worldSeed + (long) (chunkX * chunkX * 4987142) + (long) (chunkX * 5947611) + (long) (chunkZ * chunkZ) * 4392871L + (long) (chunkZ * 389711) ^ worldSeed));
-
+	// copied the seed logic from the vanilla decorate function (which may be flawed, but since I only use the +X/+Z quadrant it won't matter)
+	long newSeed = (worldSeed + (long) (chunkX * chunkX * 4987142) + (long) (chunkX * 5947611) + (long) (chunkZ * chunkZ) * 4392871L + (long) (chunkZ * 389711) ^ worldSeed);
+	rand = new Random(newSeed);
+	//DimDungeons.LOGGER.info("DUNGEON SEED: " + newSeed);
+	
 	shuffleArray(entrance);
 	shuffleArray(end);
 	shuffleArray(corner);
@@ -137,7 +140,7 @@ public class DungeonBuilderLogic
 	openings.add(new ImmutablePair<Integer, Integer>(3, 7));
 	openings.add(new ImmutablePair<Integer, Integer>(5, 7));
 	openings.add(new ImmutablePair<Integer, Integer>(4, 6));
-	Collections.shuffle(openings);
+	shuffleArray(openings);
 
 	// remaining rooms: for each opening, place a room that fits, and update openings, until no openings are left
 	while (openings.size() > 0)
@@ -149,9 +152,12 @@ public class DungeonBuilderLogic
 	    boolean mustPickEndings = false;
 	    boolean noEndingsYet = false;
 
+	    DimDungeons.LOGGER.info("Processing opening " + roomPos.left + ", " + roomPos.right);
+	    
 	    // it can happen that an "opening" is in the list twice due to loops, in which case skip this loop
 	    if (finalLayout[roomPos.left][roomPos.right].hasRoom())
 	    {
+		DimDungeons.LOGGER.info("IT HAPPENED: Trying to place a room where a room already exists! Not necessarily a bug.");
 		continue;
 	    }
 
@@ -185,6 +191,7 @@ public class DungeonBuilderLogic
 	    // TODO: eliminate the redundant half of this IF statement by using mustPickEndings to abort the roomPossibilities[] check at the end
 	    if (mustPickEndings)
 	    {
+		DimDungeons.LOGGER.info("Trying to end dungeon...");
 		// this case should be impossible
 		if (mustConnectNorth && mustConnectSouth && mustConnectWest && mustConnectEast)
 		{
@@ -267,6 +274,8 @@ public class DungeonBuilderLogic
 	    }
 	    else
 	    {
+		DimDungeons.LOGGER.info("Still growing dungeon...");
+		
 		if (mustConnectNorth && mustConnectSouth && mustConnectWest && mustConnectEast)
 		{
 		    nextType = RoomType.FOURWAY;
@@ -577,7 +586,8 @@ public class DungeonBuilderLogic
 	    // this code path represents more doorways being added and branching paths
 	    if ( roomPossibilities.size() > 0 && !mustPickEndings )
 	    {
-		Collections.shuffle(roomPossibilities);
+		DimDungeons.LOGGER.info("Using roomPossibilities to pick room type.");		
+		shuffleRoomPossibilities(roomPossibilities);
 		nextType = roomPossibilities.get(0).left;
 		nextRot = roomPossibilities.get(0).right;
 	    }
@@ -623,12 +633,14 @@ public class DungeonBuilderLogic
 		{
 		    // the coffin room appears at most once per dungeon, and there are 5 variations of it
 		    int variation = rand.nextInt(5) + 1;
+		    variation = 2; // TODO: q
 		    nextRoom = nextRoom.replace("1", "" + variation);
 		}
 		if (nextRoom == "restroom_1")
 		{
 		    // the break room appears at most once per dungeon, and there are 5 variations of it
 		    int variation = rand.nextInt(5) + 1;
+		    variation = 1; // TODO: q
 		    nextRoom = nextRoom.replace("1", "" + variation);
 		}
 		if (nextRoom == "shoutout_1")
@@ -666,22 +678,27 @@ public class DungeonBuilderLogic
 	    if ( hasOpenDoor(roomX-1, roomZ, Direction.EAST) )
 	    {
 		openings.add(new ImmutablePair<Integer, Integer>(roomX-1, roomZ));
+		DimDungeons.LOGGER.info("Adding opening " + (roomX-1) + ", " + roomZ);
 	    }
 	    if ( hasOpenDoor(roomX+1, roomZ, Direction.WEST) )
 	    {
 		openings.add(new ImmutablePair<Integer, Integer>(roomX+1, roomZ));
+		DimDungeons.LOGGER.info("Adding opening " + (roomX+1) + ", " + roomZ);
 	    }
 	    if ( hasOpenDoor(roomX, roomZ-1, Direction.SOUTH) )
 	    {
 		openings.add(new ImmutablePair<Integer, Integer>(roomX, roomZ-1));
+		DimDungeons.LOGGER.info("Adding opening " + roomX + ", " + (roomZ-1));
 	    }
 	    if ( hasOpenDoor(roomX, roomZ+1, Direction.NORTH) )
 	    {
 		openings.add(new ImmutablePair<Integer, Integer>(roomX, roomZ+1));
+		DimDungeons.LOGGER.info("Adding opening " + roomX + ", " + (roomZ+1));
 	    }
 
 	    // next loop - reshuffle the openings because we may have added some
-	    Collections.shuffle(openings);
+	    shuffleArray(openings);
+	    DimDungeons.LOGGER.info("Num openings: " + openings.size());
 	}
     }
 
@@ -745,6 +762,7 @@ public class DungeonBuilderLogic
 	finalLayout[x][z].type = type;
 	finalLayout[x][z].rotation = rot;
 	//System.out.println("Put a " + type.toString() + " at (" + x + ", " + z + ") with rotation " + rot.toString() + ".");
+	DimDungeons.LOGGER.info("Put a " + room + " at (" + x + ", " + z + ") with rotation " + rot.toString() + ".");
     }
 
     // Implementing Fisher–Yates shuffle
@@ -760,4 +778,34 @@ public class DungeonBuilderLogic
 	    array[i] = temp;
 	}
     }
+    
+    // TODO: MAJOR TODO MAKE SURE THIS WORKS AS INTENDED
+    private void shuffleArray(ArrayList<ImmutablePair<Integer, Integer>> array)
+    {
+	/*
+	for (int i = array.size() - 1; i > 0; i--)
+	{
+	    int index = rand.nextInt(i + 1);
+
+	    ImmutablePair<Integer, Integer> temp = array.get(index);
+	    array.set(index, array.get(i));
+	    array.set(i, temp);
+	}
+	*/
+    }       
+    
+    private void shuffleRoomPossibilities(ArrayList<ImmutablePair<RoomType, Rotation>> array)
+    {
+	/*
+	for (int i = array.size() - 1; i > 0; i--)
+	{
+	    int index = rand.nextInt(i + 1);
+
+	    // Simple swap
+	    ImmutablePair<RoomType, Rotation> temp = array.get(index);
+	    array.set(index, array.get(i));
+	    array.set(i, temp);
+	}
+	*/
+    }           
 }

@@ -1,6 +1,5 @@
 package com.catastrophe573.dimdungeons.feature;
 
-import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -13,37 +12,31 @@ import com.mojang.datafixers.Dynamic;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.DispenserBlock;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.monster.DrownedEntity;
-import net.minecraft.entity.monster.EndermanEntity;
-import net.minecraft.entity.monster.GuardianEntity;
-import net.minecraft.entity.monster.HuskEntity;
-import net.minecraft.entity.monster.SkeletonEntity;
-import net.minecraft.entity.monster.StrayEntity;
-import net.minecraft.entity.monster.WitchEntity;
-import net.minecraft.entity.monster.WitherSkeletonEntity;
-import net.minecraft.entity.monster.ZombieEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.state.properties.StructureMode;
 import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.DispenserTileEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MutableBoundingBox;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LockCode;
-import net.minecraft.world.World;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.feature.Feature;
@@ -51,7 +44,6 @@ import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.template.PlacementSettings;
 import net.minecraft.world.gen.feature.template.Template;
 import net.minecraft.world.gen.feature.template.TemplateManager;
-import net.minecraft.world.gen.feature.template.Template.BlockInfo;
 
 public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 {
@@ -63,23 +55,47 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
     }
 
     @Override
+    // vanilla worldgen calls this function at some point in the complicated decoration process
     public boolean place(IWorld world, ChunkGenerator<? extends GenerationSettings> chunkGenerator, Random rand, BlockPos pos, NoFeatureConfig config)
     {
 	// only put dungeons on the right chunks, and only in the dungeon dimension
-	if ( world.getDimension().getType() != DungeonDimensionType.getDimensionType() )
+	if (world.getDimension().getType() != DungeonDimensionType.getDimensionType())
 	{
 	    DimDungeons.LOGGER.info("DIMDUNGEONS WEIRD ERROR: why is there a dungeon biome outside of the dungeon dimension?");
 	    return false;
-	}	
-	ChunkPos cpos = new ChunkPos(pos);
-	if ( isEntranceChunk(cpos.x, cpos.z) )
-	{
-	    DimDungeons.LOGGER.info("MyFeature: PLACING DUNGEON FEATURE " + pos.getX() + ", " + pos.getY() + ", " + pos.getZ());
-	    //world.setBlockState(pos.add(0, 150, 0), Blocks.MAGENTA_GLAZED_TERRACOTTA.getDefaultState(), 2);
-	    generateDungeonAroundChunk(cpos.x - 4, cpos.z - 7, world, rand);
-	    
-	    return true;
 	}
+
+	ChunkPos cpos = new ChunkPos(pos);
+	if (isEntranceChunk(cpos.x, cpos.z))
+	{
+	    //DimDungeons.LOGGER.info("MyFeature: PLACING DUNGEON FEATURE " + pos.getX() + ", " + pos.getY() + ", " + pos.getZ());
+	    //world.setBlockState(pos.add(0, 150, 0), Blocks.MAGENTA_GLAZED_TERRACOTTA.getDefaultState(), 2);
+	    //generateDungeonAroundChunk(cpos.x - 4, cpos.z - 7, world, rand);
+	    //return true;
+	}
+
+	if (isDungeonChunk(cpos.x, cpos.z))
+	{
+	    /*
+	    if (cpos.x > 16 || cpos.z > 16)
+	    {
+		DimDungeons.LOGGER.info("NOM NOM NOM"); //TODO: debug
+		return false;
+	    }
+	    */
+
+	    DungeonRoom room = getRoomForChunk(cpos, world);
+	    if (room != null)
+	    {
+		boolean success = putRoomHere(cpos, world, room);
+		if ( !success)
+		{
+		    DimDungeons.LOGGER.info("DIMDUNGEONS STRUCTURE ERROR: failed to place structure " + room.structure + " at " + cpos.x + ", " + cpos.z);
+		}
+		return true;
+	    }
+	}
+
 	return false;
     }
 
@@ -108,7 +124,106 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	long plotZ = z % 16;
 	return plotX == 8 && plotZ == 11;
     }
-    
+
+    // a test/debugging function that shouldn't be used in the final version
+    public static void putTestStructureHere(long x, long z, IWorld world)
+    {
+	ChunkPos cpos = new ChunkPos((int) x, (int) z);
+	MinecraftServer minecraftserver = world.getWorld().getServer();
+	TemplateManager templatemanager = minecraftserver.getWorld(world.getDimension().getType()).getStructureTemplateManager();
+
+	Template template = templatemanager.getTemplate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "basic_template"));
+	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunk(cpos);
+	placementsettings.setBoundingBox(placementsettings.getBoundingBox());
+	placementsettings.setRotation(Rotation.NONE);
+	BlockPos position = new BlockPos(cpos.getXStart(), 50, cpos.getZStart());
+	template.addBlocksToWorld(world, position, placementsettings, 2);
+    }
+
+    // used by the place() function to actually place rooms
+    public static boolean putRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room)
+    {
+	MinecraftServer minecraftserver = world.getWorld().getServer();
+	TemplateManager templatemanager = minecraftserver.getWorld(world.getDimension().getType()).getStructureTemplateManager();
+
+	Template template = templatemanager.getTemplate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + room.structure));
+	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunk(cpos);
+	placementsettings.setBoundingBox(placementsettings.getBoundingBox());
+
+	placementsettings.setRotation(room.rotation);
+	BlockPos position = new BlockPos(cpos.getXStart(), 50, cpos.getZStart());
+
+	// next if the structure is to be rotated then it must also be offset, because rotating a structure also moves it
+	if (room.rotation == Rotation.COUNTERCLOCKWISE_90)
+	{
+	    // west: rotate CCW and push +Z
+	    placementsettings.setRotation(Rotation.COUNTERCLOCKWISE_90);
+	    position = position.add(0, 0, template.getSize().getZ() - 1);
+	}
+	else if (room.rotation == Rotation.CLOCKWISE_90)
+	{
+	    // east rotate CW and push +X
+	    placementsettings.setRotation(Rotation.CLOCKWISE_90);
+	    position = position.add(template.getSize().getX() - 1, 0, 0);
+	}
+	else if (room.rotation == Rotation.CLOCKWISE_180)
+	{
+	    // south: rotate 180 and push both +X and +Z
+	    placementsettings.setRotation(Rotation.CLOCKWISE_180);
+	    position = position.add(template.getSize().getX() - 1, 0, template.getSize().getZ() - 1);
+	}
+	else //if (nextRoom.rotation == Rotation.NONE)
+	{
+	    // north: no rotation
+	    placementsettings.setRotation(Rotation.NONE);
+	}
+	boolean success = template.addBlocksToWorld(world, position, placementsettings, 2);
+
+	// TODO: handle data blocks
+
+	return success;
+    }
+
+    // this function assumes the chunk isDungeonChunk() and may return null if the dungeon doesn't have a room at that position
+    public static DungeonRoom getRoomForChunk(ChunkPos cpos, IWorld world)
+    {
+	// start by calculating the position of the entrance chunk for this dungeon
+	int entranceX = cpos.x;
+	int entranceZ = cpos.z;
+	int distToEntranceX = 8 - (entranceX % 16);
+	int distToEntranceZ = 11 - (entranceZ % 16);
+	entranceX += distToEntranceX;
+	entranceZ += distToEntranceZ;
+
+	// assert that my math is not bad
+	if (!isEntranceChunk(entranceX, entranceZ))
+	{
+	    DimDungeons.LOGGER.info("DIMDUNGEONS MAJOR ERROR: attempting to generate a dungeon at a chunk which isn't an entrance chunk! (" + entranceX + ", " + entranceZ + ")");
+	    return null;
+	}
+
+	// generate the entire dungeon
+	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getSeed(), entranceX, entranceZ);
+	dbl.calculateDungeonShape(5);
+
+	// debug - print map
+	/*
+	 * System.out.println("Making a dungeon at " + cpos.x + ", " + cpos.z + "!"); for (int j = 0; j < 8; j++) { String
+	 * dungeonRowShape = ""; for (int i = 0; i < 8; i++) { dungeonRowShape += dbl.finalLayout[i][j].hasRoom() ? "*" : "."; }
+	 * System.out.println(dungeonRowShape); } //
+	 */
+
+	// pick the room we want, for example the entrance room is at [4][7] in this array
+	int i = (cpos.x % 16) - 4;
+	int j = (cpos.z % 16) - 4;
+	DungeonRoom nextRoom = dbl.finalLayout[i][j];
+	if (!nextRoom.hasRoom())
+	{
+	    return null; // no room here after all
+	}
+	return nextRoom;
+    }
+
     public void generateDungeonAroundChunk(long x, long z, IWorld world, Random rand)
     {
 	MinecraftServer minecraftserver = world.getWorld().getServer();
@@ -116,7 +231,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 
 	// x,z is the position of the entrance room, which is located at (4,7) in this map
 	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getSeed(), x, z);
-	dbl.calculateDungeonShape(5);
+	dbl.calculateDungeonShape(10);
 
 	// debug - print map
 	//*
@@ -143,15 +258,21 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 		    System.out.println("NO ROOM AT " + i + ", " + j + "!");
 		    continue; // do nothing for blank chunks. Not every cell in the 7x7 will be filled
 		}
-
 		// get the position of the top left corner of the corner in block coordinates
 		ChunkPos chunkpos = new ChunkPos((int) x + i, (int) z + j);
 		BlockPos position = new BlockPos(chunkpos.getXStart(), 50, chunkpos.getZStart());
+
+		if (!world.chunkExists(chunkpos.x, chunkpos.z))
+		{
+		    DimDungeons.LOGGER.info("CHUNK DOES NOT EXIST! DO NOT BUILD HERE! " + chunkpos.x + ", " + chunkpos.z);
+		    continue;
+		}
 
 		// default placement settings
 		Template template = templatemanager.getTemplate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + nextRoom.structure));
 		PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunk(chunkpos);
 		placementsettings.setBoundingBox(placementsettings.getBoundingBox());
+		boolean success = false;
 
 		// next if the structure is to be rotated then it must also be offset, because rotating a structure also moves it
 		if (nextRoom.rotation == Rotation.COUNTERCLOCKWISE_90)
@@ -160,7 +281,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 		    placementsettings.setRotation(Rotation.COUNTERCLOCKWISE_90);
 		    position = position.add(0, 0, template.getSize().getZ() - 1);
 		    System.out.println("template placement CCW: " + position.toString() + " " + nextRoom.structure);
-		    template.addBlocksToWorld(world, position, placementsettings);
+		    success = template.addBlocksToWorld(world, position, placementsettings, 2);
 		}
 		else if (nextRoom.rotation == Rotation.CLOCKWISE_90)
 		{
@@ -168,7 +289,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 		    placementsettings.setRotation(Rotation.CLOCKWISE_90);
 		    position = position.add(template.getSize().getX() - 1, 0, 0);
 		    System.out.println("template placement CW: " + position.toString() + " " + nextRoom.structure);
-		    template.addBlocksToWorld(world, position, placementsettings);
+		    success = template.addBlocksToWorld(world, position, placementsettings, 2);
 		}
 		else if (nextRoom.rotation == Rotation.CLOCKWISE_180)
 		{
@@ -176,175 +297,34 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 		    placementsettings.setRotation(Rotation.CLOCKWISE_180);
 		    position = position.add(template.getSize().getX() - 1, 0, template.getSize().getZ() - 1);
 		    System.out.println("template placement 180: " + position.toString() + " " + nextRoom.structure);
-		    template.addBlocksToWorld(world, position, placementsettings);
+		    success = template.addBlocksToWorld(world, position, placementsettings, 2);
 		}
 		else //if (nextRoom.rotation == Rotation.NONE)
 		{
 		    // north: no rotation
 		    placementsettings.setRotation(Rotation.NONE);
 		    System.out.println("template placement NONE: " + position.toString() + " " + nextRoom.structure);
-		    template.addBlocksToWorld(world, position, placementsettings);
+		    success = template.addBlocksToWorld(world, position, placementsettings, 2);
+		}
+
+		if (!success)
+		{
+		    DimDungeons.LOGGER.info("FAILED TO PLACE THAT LAST STRUCTURE? Moving on. ");
+		    continue;
 		}
 
 		// handle data blocks
-		DimDungeons.LOGGER.info("DIMDUNGEONS ABOUT TO START DATA BLOCKS");
 		//Map<BlockPos, String> map = template.getDataBlocks(position, placementsettings); // 1.12 / 1.13 version
-		List<Template.BlockInfo> dblocks = template.func_215386_a(position, placementsettings, Blocks.STRUCTURE_BLOCK, true);
-
-		//for (Entry<BlockPos, String> entry : map.entrySet())
-		for (int blockIndex = 0; blockIndex < dblocks.size(); blockIndex++)
+		//List<Template.BlockInfo> dblocks = template.func_215386_a(position, placementsettings, Blocks.STRUCTURE_BLOCK, true); // my old 1.14.2 method
+		// this code block is copied from TemplateStructurePiece
+		for (Template.BlockInfo template$blockinfo : template.func_215381_a(position, placementsettings, Blocks.STRUCTURE_BLOCK))
 		{
-		    BlockPos blockpos2 = dblocks.get(blockIndex).pos;
-		    String name = dblocks.get(blockIndex).nbt.getString("name");
-
-		    if (name == null)
+		    if (template$blockinfo.nbt != null)
 		    {
-			DimDungeons.LOGGER.info("DUNGEON CHUNK GENERATOR - NOT A DATA BLOCK? " + dblocks.get(blockIndex).nbt.toString());
-			continue;
-		    }
-
-		    if ("LockIt".equals(name))
-		    {
-			LockDispensersAround(world, blockpos2);
-			world.setBlockState(blockpos2, Blocks.AIR.getDefaultState(), 3); // erase this data block 
-		    }
-		    else if ("LockItStoneBrick".equals(name))
-		    {
-			LockDispensersAround(world, blockpos2);
-			world.setBlockState(blockpos2, Blocks.STONE_BRICKS.getDefaultState(), 3); // erase this data block 
-		    }
-		    else if ("ReturnPortal".equals(name))
-		    {
-			LockDispensersAround(world, blockpos2);
-			world.setBlockState(blockpos2, BlockRegistrar.block_gold_portal.getDefaultState(), 3); // erase this data block 
-		    }
-		    else if ("FortuneTeller".equals(name))
-		    {
-			world.setBlockState(blockpos2, Blocks.DISPENSER.getDefaultState(), 3); // erase this data block 
-			faceContainerTowardsAir(world, blockpos2);
-			LockDispensersAround(world, blockpos2.up());
-
-			// put a message inside the dispenser
-			DispenserTileEntity te = (DispenserTileEntity) world.getTileEntity(blockpos2);
-			if (te != null)
+			StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt.getString("mode"));
+			if (structuremode == StructureMode.DATA)
 			{
-			    te.clear();
-			    ItemStack message = generateLuckyMessage(rand);
-			    te.addItemStack(message);
-			}
-		    }
-		    else if ("ChestLoot1".equals(name))
-		    {
-			// 80% loot_1, 20% loot_2
-			int lucky = rand.nextInt(100);
-			if (lucky < 80)
-			{
-			    putChestHere(blockpos2, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), world, rand);
-			}
-			else
-			{
-			    putChestHere(blockpos2, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
-			}
-		    }
-		    else if ("ChestLoot2".equals(name))
-		    {
-			// 50% loot_2, 50% loot_1
-			int lucky = rand.nextInt(100);
-			if (lucky < 50)
-			{
-			    putChestHere(blockpos2, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), world, rand);
-			}
-			else
-			{
-			    putChestHere(blockpos2, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
-			}
-		    }
-		    else if ("ChestLootLucky".equals(name))
-		    {
-			// 70% nothing, 30% random minecraft loot table that isn't an end city
-			int lucky = rand.nextInt(100);
-			if (lucky < 30)
-			{
-			    putChestHere(blockpos2, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_lucky"), world, rand);
-			}
-			else
-			{
-			    world.setBlockState(blockpos2, Blocks.AIR.getDefaultState(), 3); // erase this data block 
-			}
-		    }
-		    else if ("SetTrappedLoot".equals(name))
-		    {
-			world.setBlockState(blockpos2, Blocks.AIR.getDefaultState(), 3); // erase this data block
-			ChestTileEntity te = (ChestTileEntity) world.getTileEntity(blockpos2.down());
-			if (te != null)
-			{
-			    te.clear();
-			    te.setLootTable(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), rand.nextLong());
-			}
-		    }
-		    else if ("SummonWitch".equals(name))
-		    {
-			world.setBlockState(blockpos2, Blocks.AIR.getDefaultState(), 3); // erase this data block
-			spawnEnemyHere(blockpos2, "witch", world);
-		    }
-		    else if ("SummonWaterEnemy".equals(name))
-		    {
-			world.setBlockState(blockpos2, Blocks.AIR.getDefaultState(), 3); // erase this data block
-			int chance = rand.nextInt(100);
-			if (chance < 80)
-			{
-			    spawnEnemyHere(blockpos2, "guardian", world);
-			}
-			else
-			{
-			    spawnEnemyHere(blockpos2, "drowned", world);
-			}
-		    }
-		    else if ("SummonEnderman".equals(name))
-		    {
-			world.setBlockState(blockpos2, Blocks.AIR.getDefaultState(), 3); // erase this data block
-			spawnEnemyHere(blockpos2, "enderman", world);
-		    }
-		    else if ("SummonEnemy1".equals(name))
-		    {
-			// 50% chance of a weak enemy
-			world.setBlockState(blockpos2, Blocks.AIR.getDefaultState(), 3); // erase this data block
-			int chance = rand.nextInt(100);
-			if (chance < 50)
-			{
-			    switch (dbl.enemyVariation1)
-			    {
-			    case 0:
-				spawnEnemyHere(blockpos2, "zombie", world);
-				break;
-			    case 1:
-				spawnEnemyHere(blockpos2, "husk", world);
-				break;
-			    default:
-				spawnEnemyHere(blockpos2, "drowned", world);
-				break;
-			    }
-			}
-		    }
-		    else if ("SummonEnemy2".equals(name))
-		    {
-			// 80% chance of a strong enemy
-			world.setBlockState(blockpos2, Blocks.AIR.getDefaultState(), 3); // erase this data block
-			int chance = rand.nextInt(100);
-			if (chance < 80)
-			{
-			    switch (dbl.enemyVariation1)
-			    {
-			    case 0:
-				spawnEnemyHere(blockpos2, "skeleton", world);
-				break;
-			    case 1:
-				spawnEnemyHere(blockpos2, "wither_skeleton", world);
-				break;
-			    default:
-				spawnEnemyHere(blockpos2, "stray", world);
-				break;
-			    }
+			    //handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, rand, placementsettings.getBoundingBox(), dbl);
 			}
 		    }
 		}
@@ -353,53 +333,210 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	DimDungeons.LOGGER.info("DIMDUNGEONS FINISHED BUILDING DUNGEON");
     }
 
+    // a helper function for generateDungeonAroundChunk()
+    // resembles TemplateStructurePiece.handleDataMarker() except that the entire dungeon blueprint is passed in too
+    protected void handleDataBlock(String name, BlockPos pos, IWorld world, Random rand, MutableBoundingBox bb, DungeonBuilderLogic dbl)
+    {
+	DimDungeons.LOGGER.info("DATA BLOCK NAME: " + name);
+
+	if ("LockIt".equals(name))
+	{
+	    LockDispensersAround(world, pos);
+	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block 
+	}
+	else if ("LockItStoneBrick".equals(name))
+	{
+	    LockDispensersAround(world, pos);
+	    world.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), 2); // erase this data block 
+	}
+	else if ("ReturnPortal".equals(name))
+	{
+	    LockDispensersAround(world, pos);
+	    world.setBlockState(pos, BlockRegistrar.block_gold_portal.getDefaultState(), 2); // erase this data block 
+	}
+	else if ("FortuneTeller".equals(name))
+	{
+	    world.setBlockState(pos, Blocks.DISPENSER.getDefaultState(), 2); // erase this data block 
+	    faceContainerTowardsAir(world, pos);
+	    LockDispensersAround(world, pos.up());
+
+	    // put a message inside the dispenser
+	    DispenserTileEntity te = (DispenserTileEntity) world.getTileEntity(pos);
+	    if (te != null)
+	    {
+		te.clear();
+		ItemStack message = generateLuckyMessage(rand);
+		te.addItemStack(message);
+	    }
+	}
+	else if ("ChestLoot1".equals(name))
+	{
+	    // 80% loot_1, 20% loot_2
+	    int lucky = rand.nextInt(100);
+	    if (lucky < 80)
+	    {
+		putChestHere(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), world, rand);
+	    }
+	    else
+	    {
+		putChestHere(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
+	    }
+	}
+	else if ("ChestLoot2".equals(name))
+	{
+	    // 50% loot_2, 50% loot_1
+	    int lucky = rand.nextInt(100);
+	    if (lucky < 50)
+	    {
+		putChestHere(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), world, rand);
+	    }
+	    else
+	    {
+		putChestHere(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
+	    }
+	}
+	else if ("ChestLootLucky".equals(name))
+	{
+	    // 70% nothing, 30% random minecraft loot table that isn't an end city
+	    int lucky = rand.nextInt(100);
+	    if (lucky < 30)
+	    {
+		putChestHere(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_lucky"), world, rand);
+	    }
+	    else
+	    {
+		world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block 
+	    }
+	}
+	else if ("SetTrappedLoot".equals(name))
+	{
+	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    ChestTileEntity te = (ChestTileEntity) world.getTileEntity(pos.down());
+	    if (te != null)
+	    {
+		te.clear();
+		te.setLootTable(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), rand.nextLong());
+	    }
+	}
+	else if ("SummonWitch".equals(name))
+	{
+	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    spawnEnemyHere(pos, "witch", world);
+	}
+	else if ("SummonWaterEnemy".equals(name))
+	{
+	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    int chance = rand.nextInt(100);
+	    if (chance < 80)
+	    {
+		spawnEnemyHere(pos, "guardian", world);
+	    }
+	    else
+	    {
+		spawnEnemyHere(pos, "drowned", world);
+	    }
+	}
+	else if ("SummonEnderman".equals(name))
+	{
+	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    spawnEnemyHere(pos, "enderman", world);
+	}
+	else if ("SummonEnemy1".equals(name))
+	{
+	    // 50% chance of a weak enemy
+	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    int chance = rand.nextInt(100);
+	    if (chance < 50)
+	    {
+		switch (dbl.enemyVariation1)
+		{
+		case 0:
+		    spawnEnemyHere(pos, "zombie", world);
+		    break;
+		case 1:
+		    spawnEnemyHere(pos, "husk", world);
+		    break;
+		default:
+		    spawnEnemyHere(pos, "drowned", world);
+		    break;
+		}
+	    }
+	}
+	else if ("SummonEnemy2".equals(name))
+	{
+	    // 80% chance of a strong enemy
+	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    int chance = rand.nextInt(100);
+	    if (chance < 80)
+	    {
+		switch (dbl.enemyVariation1)
+		{
+		case 0:
+		    spawnEnemyHere(pos, "skeleton", world);
+		    break;
+		case 1:
+		    spawnEnemyHere(pos, "wither_skeleton", world);
+		    break;
+		default:
+		    spawnEnemyHere(pos, "stray", world);
+		    break;
+		}
+	    }
+	}
+	else
+	{
+	    DimDungeons.LOGGER.info("UNHANDLED DATA BLOCK WITH name = " + name);
+	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	}
+    }
+
     private void spawnEnemyHere(BlockPos pos, String casualName, IWorld world)
     {
 	MobEntity mob = null;
 
 	if ("witch".contentEquals(casualName))
 	{
-	    mob = new WitchEntity(null, (World) world);
+	    mob = EntityType.WITCH.create(world.getWorld());
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("enderman".contentEquals(casualName))
 	{
-	    mob = new EndermanEntity(null, (World) world);
+	    mob = EntityType.ENDERMAN.create(world.getWorld());
 	    mob.setPosition(pos.getX(), pos.getY() + 2, pos.getZ());
 	}
 	else if ("guardian".contentEquals(casualName))
 	{
-	    mob = new GuardianEntity(null, (World) world);
+	    mob = EntityType.GUARDIAN.create(world.getWorld());
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("zombie".contentEquals(casualName))
 	{
-	    mob = new ZombieEntity((World) world);
+	    mob = EntityType.ZOMBIE.create(world.getWorld());
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("husk".contentEquals(casualName))
 	{
-	    mob = new HuskEntity(null, (World) world);
+	    mob = EntityType.HUSK.create(world.getWorld());
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("drowned".contentEquals(casualName))
 	{
-	    mob = new DrownedEntity(null, (World) world);
+	    mob = EntityType.DROWNED.create(world.getWorld());
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("skeleton".contentEquals(casualName))
 	{
-	    mob = new SkeletonEntity(null, (World) world);
+	    mob = EntityType.SKELETON.create(world.getWorld());
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("wither_skeleton".contentEquals(casualName))
 	{
-	    mob = new WitherSkeletonEntity(null, (World) world);
+	    mob = EntityType.WITHER_SKELETON.create(world.getWorld());
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("stray".contentEquals(casualName))
 	{
-	    mob = new StrayEntity(null, (World) world);
+	    mob = EntityType.STRAY.create(world.getWorld());
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else
@@ -411,21 +548,28 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	mob.setCanPickUpLoot(false);
 	mob.setCustomName(new StringTextComponent(I18n.format("enemy.dimdungeons:" + casualName)));
 	mob.setHomePosAndDistance(pos, 16);
+	mob.moveToBlockPosAndAngles(pos, 0.0F, 0.0F);
 	mob.enablePersistence();
+
+	mob.onInitialSpawn(world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
 	world.addEntity(mob);
     }
 
     private void putChestHere(BlockPos pos, ResourceLocation lootTable, IWorld world, Random rand)
     {
-	world.setBlockState(pos, Blocks.CHEST.getDefaultState(), 3);
-	//faceContainerTowardsAir(world, pos);
+	world.setBlockState(pos, Blocks.CHEST.getDefaultState(), 2);
+	faceContainerTowardsAir(world, pos);
 
 	// set the loot table
-	ChestTileEntity te = (ChestTileEntity) world.getTileEntity(pos);
-	if (te != null)
+	TileEntity te = world.getTileEntity(pos);
+	if (te instanceof ChestTileEntity)
 	{
-	    te.clear();
-	    te.setLootTable(lootTable, rand.nextLong());
+	    ((ChestTileEntity) te).clear();
+	    ((ChestTileEntity) te).setLootTable(lootTable, rand.nextLong());
+	}
+	else
+	{
+	    DimDungeons.LOGGER.info("DIMDUNGEONS: FAILED TO PLACE CHEST IN DUNGEON. pos = " + pos.getX() + ", " + pos.getZ());
 	}
     }
 
@@ -509,6 +653,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
     }
 
     // used on dispensers and chests, particularly ones created by data blocks
+    // TODO: this whole function
     private void faceContainerTowardsAir(IWorld world, BlockPos pos)
     {
 	BlockState bs = world.getBlockState(pos);
@@ -517,21 +662,21 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	{
 	    if (world.getBlockState(pos.north()).getBlock() == Blocks.AIR)
 	    {
-		bs.with(DispenserBlock.FACING, Direction.NORTH);
+		//bs.with(DispenserBlock.FACING, Direction.NORTH);
 	    }
 	    if (world.getBlockState(pos.south()).getBlock() == Blocks.AIR)
 	    {
-		bs.with(DispenserBlock.FACING, Direction.SOUTH);
+		//bs.with(DispenserBlock.FACING, Direction.SOUTH);
 	    }
 	    if (world.getBlockState(pos.west()).getBlock() == Blocks.AIR)
 	    {
-		bs.with(DispenserBlock.FACING, Direction.WEST);
+		//bs.with(DispenserBlock.FACING, Direction.WEST);
 	    }
 	    if (world.getBlockState(pos.east()).getBlock() == Blocks.AIR)
 	    {
-		bs.with(DispenserBlock.FACING, Direction.EAST);
+		//bs.with(DispenserBlock.FACING, Direction.EAST);
 	    }
-	    world.setBlockState(pos, bs, 3);
+	    world.setBlockState(pos, bs, 2);
 	}
-    }    
+    }
 }
