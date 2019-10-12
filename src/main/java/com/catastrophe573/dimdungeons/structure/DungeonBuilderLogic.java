@@ -5,8 +5,6 @@ import java.util.Random;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
-import com.catastrophe573.dimdungeons.DimDungeons;
-
 import net.minecraft.util.Direction;
 import net.minecraft.util.Rotation;
 
@@ -627,14 +625,12 @@ public class DungeonBuilderLogic
 		{
 		    // the coffin room appears at most once per dungeon, and there are 5 variations of it
 		    int variation = rand.nextInt(5) + 1;
-		    variation = 2; // TODO: q
 		    nextRoom = nextRoom.replace("1", "" + variation);
 		}
 		if (nextRoom == "restroom_1")
 		{
 		    // the break room appears at most once per dungeon, and there are 5 variations of it
 		    int variation = rand.nextInt(5) + 1;
-		    variation = 1; // TODO: q
 		    nextRoom = nextRoom.replace("1", "" + variation);
 		}
 		if (nextRoom == "shoutout_1")
@@ -774,10 +770,8 @@ public class DungeonBuilderLogic
 	}
     }
     
-    // TODO: MAJOR TODO MAKE SURE THIS WORKS AS INTENDED
     private void shuffleArray(ArrayList<ImmutablePair<Integer, Integer>> array)
     {
-	/*
 	for (int i = array.size() - 1; i > 0; i--)
 	{
 	    int index = rand.nextInt(i + 1);
@@ -786,12 +780,10 @@ public class DungeonBuilderLogic
 	    array.set(index, array.get(i));
 	    array.set(i, temp);
 	}
-	*/
     }       
     
     private void shuffleRoomPossibilities(ArrayList<ImmutablePair<RoomType, Rotation>> array)
     {
-	/*
 	for (int i = array.size() - 1; i > 0; i--)
 	{
 	    int index = rand.nextInt(i + 1);
@@ -801,6 +793,5 @@ public class DungeonBuilderLogic
 	    array.set(index, array.get(i));
 	    array.set(i, temp);
 	}
-	*/
     }           
 }
