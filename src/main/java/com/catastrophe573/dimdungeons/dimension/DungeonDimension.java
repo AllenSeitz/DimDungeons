@@ -87,10 +87,12 @@ public class DungeonDimension extends Dimension
 	return false;
     }
 
-    // basically copied from vanilla OverworldDimension but with the current time locked to keep the sun at midday, because why not
+    // copied from vanilla OverworldDimension because it is required
     public float calculateCelestialAngle(long worldTime, float partialTicks)
     {
-	double d0 = MathHelper.frac((double) worldTime / 24000.0D - 0.25D);
+	// intentionally lock the time at midday
+	//double d0 = MathHelper.frac((double) worldTime / 24000.0D - 0.25D);
+	double d0 = MathHelper.frac(1000.0D / 24000.0D - 0.25D);
 	double d1 = 0.5D - Math.cos(d0 * Math.PI) / 2.0D;
 	return (float) (d0 * 2.0D + d1) / 3.0F;
     }
