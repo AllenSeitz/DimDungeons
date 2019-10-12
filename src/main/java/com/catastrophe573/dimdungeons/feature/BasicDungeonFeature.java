@@ -204,14 +204,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 
 	// generate the entire dungeon
 	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getSeed(), entranceX, entranceZ);
-	dbl.calculateDungeonShape(5);
-
-	// debug - print map
-	/*
-	 * System.out.println("Making a dungeon at " + cpos.x + ", " + cpos.z + "!"); for (int j = 0; j < 8; j++) { String
-	 * dungeonRowShape = ""; for (int i = 0; i < 8; i++) { dungeonRowShape += dbl.finalLayout[i][j].hasRoom() ? "*" : "."; }
-	 * System.out.println(dungeonRowShape); } //
-	 */
+	dbl.calculateDungeonShape(10);
 
 	// pick the room we want, for example the entrance room is at [4][7] in this array
 	int i = (cpos.x % 16) - 4;

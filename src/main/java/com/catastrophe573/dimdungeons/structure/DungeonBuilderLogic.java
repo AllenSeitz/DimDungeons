@@ -151,13 +151,11 @@ public class DungeonBuilderLogic
 
 	    boolean mustPickEndings = false;
 	    boolean noEndingsYet = false;
-
-	    DimDungeons.LOGGER.info("Processing opening " + roomPos.left + ", " + roomPos.right);
+	    //DimDungeons.LOGGER.info("Processing opening " + roomPos.left + ", " + roomPos.right);
 	    
 	    // it can happen that an "opening" is in the list twice due to loops, in which case skip this loop
 	    if (finalLayout[roomPos.left][roomPos.right].hasRoom())
 	    {
-		DimDungeons.LOGGER.info("IT HAPPENED: Trying to place a room where a room already exists! Not necessarily a bug.");
 		continue;
 	    }
 
@@ -191,7 +189,6 @@ public class DungeonBuilderLogic
 	    // TODO: eliminate the redundant half of this IF statement by using mustPickEndings to abort the roomPossibilities[] check at the end
 	    if (mustPickEndings)
 	    {
-		DimDungeons.LOGGER.info("Trying to end dungeon...");
 		// this case should be impossible
 		if (mustConnectNorth && mustConnectSouth && mustConnectWest && mustConnectEast)
 		{
@@ -274,8 +271,6 @@ public class DungeonBuilderLogic
 	    }
 	    else
 	    {
-		DimDungeons.LOGGER.info("Still growing dungeon...");
-		
 		if (mustConnectNorth && mustConnectSouth && mustConnectWest && mustConnectEast)
 		{
 		    nextType = RoomType.FOURWAY;
@@ -586,7 +581,6 @@ public class DungeonBuilderLogic
 	    // this code path represents more doorways being added and branching paths
 	    if ( roomPossibilities.size() > 0 && !mustPickEndings )
 	    {
-		DimDungeons.LOGGER.info("Using roomPossibilities to pick room type.");		
 		shuffleRoomPossibilities(roomPossibilities);
 		nextType = roomPossibilities.get(0).left;
 		nextRot = roomPossibilities.get(0).right;
@@ -675,30 +669,31 @@ public class DungeonBuilderLogic
 	    int roomX = roomPos.left;
 	    int roomZ = roomPos.right;
 	    placeRoomShape(roomX, roomZ, nextRoom, nextType, nextRot);
-	    if ( hasOpenDoor(roomX-1, roomZ, Direction.EAST) )
+	    numRoomsPlaced++;
+	    if ( hasOpenDoor(roomX-1, roomZ, Direction.EAST) && !finalLayout[roomX-1][roomZ].hasRoom() )
 	    {
 		openings.add(new ImmutablePair<Integer, Integer>(roomX-1, roomZ));
-		DimDungeons.LOGGER.info("Adding opening " + (roomX-1) + ", " + roomZ);
+		//DimDungeons.LOGGER.info("Adding opening " + (roomX-1) + ", " + roomZ);
 	    }
-	    if ( hasOpenDoor(roomX+1, roomZ, Direction.WEST) )
+	    if ( hasOpenDoor(roomX+1, roomZ, Direction.WEST) && !finalLayout[roomX+1][roomZ].hasRoom() )
 	    {
 		openings.add(new ImmutablePair<Integer, Integer>(roomX+1, roomZ));
-		DimDungeons.LOGGER.info("Adding opening " + (roomX+1) + ", " + roomZ);
+		//DimDungeons.LOGGER.info("Adding opening " + (roomX+1) + ", " + roomZ);
 	    }
-	    if ( hasOpenDoor(roomX, roomZ-1, Direction.SOUTH) )
+	    if ( hasOpenDoor(roomX, roomZ-1, Direction.SOUTH) && !finalLayout[roomX][roomZ-1].hasRoom())
 	    {
 		openings.add(new ImmutablePair<Integer, Integer>(roomX, roomZ-1));
-		DimDungeons.LOGGER.info("Adding opening " + roomX + ", " + (roomZ-1));
+		//DimDungeons.LOGGER.info("Adding opening " + roomX + ", " + (roomZ-1));
 	    }
-	    if ( hasOpenDoor(roomX, roomZ+1, Direction.NORTH) )
+	    if ( hasOpenDoor(roomX, roomZ+1, Direction.NORTH) && !finalLayout[roomX][roomZ+1].hasRoom() )
 	    {
 		openings.add(new ImmutablePair<Integer, Integer>(roomX, roomZ+1));
-		DimDungeons.LOGGER.info("Adding opening " + roomX + ", " + (roomZ+1));
+		//DimDungeons.LOGGER.info("Adding opening " + roomX + ", " + (roomZ+1));
 	    }
 
 	    // next loop - reshuffle the openings because we may have added some
 	    shuffleArray(openings);
-	    DimDungeons.LOGGER.info("Num openings: " + openings.size());
+	    //DimDungeons.LOGGER.info("Num openings: " + openings.size());
 	}
     }
 
@@ -762,7 +757,7 @@ public class DungeonBuilderLogic
 	finalLayout[x][z].type = type;
 	finalLayout[x][z].rotation = rot;
 	//System.out.println("Put a " + type.toString() + " at (" + x + ", " + z + ") with rotation " + rot.toString() + ".");
-	DimDungeons.LOGGER.info("Put a " + room + " at (" + x + ", " + z + ") with rotation " + rot.toString() + ".");
+	//DimDungeons.LOGGER.info("Put a " + room + " at (" + x + ", " + z + ") with rotation " + rot.toString() + ".");
     }
 
     // Implementing Fisher–Yates shuffle
