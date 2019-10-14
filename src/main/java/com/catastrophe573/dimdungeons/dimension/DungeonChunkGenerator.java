@@ -29,7 +29,7 @@ public class DungeonChunkGenerator extends OverworldChunkGenerator
     public DungeonChunkGenerator(IWorld world, BiomeProvider provider, OverworldGenSettings settingsIn)
     {
 	super(world, provider, settingsIn);
-	
+
 	randomSeed = world.getRandom();
     }
 
@@ -101,14 +101,31 @@ public class DungeonChunkGenerator extends OverworldChunkGenerator
 		}
 	    }
 	}
+	else
+	{
+	    // add barrier blocks to the void, just to be sure (players could escape with ender pearls, use elytra with fireworks, etc)
+	    if (x % 16 == 0 || z % 16 == 0)
+	    {
+		for (int px = 0; px < 16; px++)
+		{
+		    for (int py = 1; py < 255; py++)
+		    {
+			for (int pz = 0; pz < 16; pz++)
+			{
+			    chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BARRIER.getDefaultState(), false);
+			}
+		    }
+		}
+	    }
+	}
     }
 
     @Override
-    protected void makeBedrock(IChunk chunkIn, Random rand) 
+    protected void makeBedrock(IChunk chunkIn, Random rand)
     {
 	// actually nah I'm good, lets keep the void world please because it looks better on a map
     }
-    
+
     // TODO: delete this old 1.12 function
     public void unusedGenerateSurface(IChunk chunkIn)
     {
