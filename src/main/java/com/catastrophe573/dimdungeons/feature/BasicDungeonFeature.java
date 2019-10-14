@@ -66,29 +66,13 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	}
 
 	ChunkPos cpos = new ChunkPos(pos);
-	if (isEntranceChunk(cpos.x, cpos.z))
-	{
-	    //DimDungeons.LOGGER.info("MyFeature: PLACING DUNGEON FEATURE " + pos.getX() + ", " + pos.getY() + ", " + pos.getZ());
-	    //world.setBlockState(pos.add(0, 150, 0), Blocks.MAGENTA_GLAZED_TERRACOTTA.getDefaultState(), 2);
-	    //generateDungeonAroundChunk(cpos.x - 4, cpos.z - 7, world, rand);
-	    //return true;
-	}
-
 	if (isDungeonChunk(cpos.x, cpos.z))
 	{
-	    /*
-	    if (cpos.x > 16 || cpos.z > 16)
-	    {
-		DimDungeons.LOGGER.info("NOM NOM NOM"); //TODO: debug
-		return false;
-	    }
-	    */
-
 	    DungeonRoom room = getRoomForChunk(cpos, world);
 	    if (room != null)
 	    {
 		boolean success = putRoomHere(cpos, world, room);
-		if ( !success)
+		if (!success)
 		{
 		    DimDungeons.LOGGER.info("DIMDUNGEONS STRUCTURE ERROR: failed to place structure " + room.structure + " at " + cpos.x + ", " + cpos.z);
 		}
@@ -179,8 +163,20 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	}
 	boolean success = template.addBlocksToWorld(world, position, placementsettings, 2);
 
-	// TODO: handle data blocks
-
+	// handle data blocks - this code block is copied from TemplateStructurePiece
+	//Map<BlockPos, String> map = template.getDataBlocks(position, placementsettings); // 1.12 / 1.13 version
+	//List<Template.BlockInfo> dblocks = template.func_215386_a(position, placementsettings, Blocks.STRUCTURE_BLOCK, true); // my old 1.14.2 method
+	for (Template.BlockInfo template$blockinfo : template.func_215381_a(position, placementsettings, Blocks.STRUCTURE_BLOCK))
+	{
+	    if (template$blockinfo.nbt != null)
+	    {
+		StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt.getString("mode"));
+		if (structuremode == StructureMode.DATA)
+		{
+		    handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox());
+		}
+	    }
+	}
 	return success;
     }
 
@@ -217,7 +213,22 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	return nextRoom;
     }
 
-    public void generateDungeonAroundChunk(long x, long z, IWorld world, Random rand)
+    // another debugging function
+    public void printMap(DungeonBuilderLogic dbl)
+    {
+	for (int j = 0; j < 8; j++)
+	{
+	    String dungeonRowShape = "";
+	    for (int i = 0; i < 8; i++)
+	    {
+		dungeonRowShape += dbl.finalLayout[i][j].hasRoom() ? "*" : ".";
+	    }
+	    System.out.println(dungeonRowShape);
+	}
+    }
+
+    // TODO: delete this function
+    public void UNUSEDgenerateDungeonAroundChunk(long x, long z, IWorld world, Random rand)
     {
 	MinecraftServer minecraftserver = world.getWorld().getServer();
 	TemplateManager templatemanager = minecraftserver.getWorld(world.getDimension().getType()).getStructureTemplateManager();
@@ -326,9 +337,8 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	DimDungeons.LOGGER.info("DIMDUNGEONS FINISHED BUILDING DUNGEON");
     }
 
-    // a helper function for generateDungeonAroundChunk()
-    // resembles TemplateStructurePiece.handleDataMarker() except that the entire dungeon blueprint is passed in too
-    protected void handleDataBlock(String name, BlockPos pos, IWorld world, Random rand, MutableBoundingBox bb, DungeonBuilderLogic dbl)
+    // resembles TemplateStructurePiece.handleDataMarker()
+    protected static void handleDataBlock(String name, BlockPos pos, IWorld world, Random rand, MutableBoundingBox bb)
     {
 	DimDungeons.LOGGER.info("DATA BLOCK NAME: " + name);
 
@@ -349,17 +359,21 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	}
 	else if ("FortuneTeller".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.DISPENSER.getDefaultState(), 2); // erase this data block 
-	    faceContainerTowardsAir(world, pos);
-	    LockDispensersAround(world, pos.up());
+	    world.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), 2); // erase this data block 
+	    faceContainerTowardsAir(world, pos.down());
+	    LockDispensersAround(world, pos.down());
 
 	    // put a message inside the dispenser
-	    DispenserTileEntity te = (DispenserTileEntity) world.getTileEntity(pos);
-	    if (te != null)
+	    TileEntity te = world.getTileEntity(pos.down());
+	    if (te instanceof DispenserTileEntity)
 	    {
-		te.clear();
+		((DispenserTileEntity)te).clear();
 		ItemStack message = generateLuckyMessage(rand);
-		te.addItemStack(message);
+		((DispenserTileEntity)te).addItemStack(message);
+	    }
+	    else
+	    {
+		DimDungeons.LOGGER.info("DIMDUNGEONS TILE ENTITY ERROR: unable to place a fortune teller block.");
 	    }
 	}
 	else if ("ChestLoot1".equals(name))
@@ -368,11 +382,11 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	    int lucky = rand.nextInt(100);
 	    if (lucky < 80)
 	    {
-		putChestHere(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), world, rand);
+		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), world, rand);
 	    }
 	    else
 	    {
-		putChestHere(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
+		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
 	    }
 	}
 	else if ("ChestLoot2".equals(name))
@@ -381,11 +395,11 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	    int lucky = rand.nextInt(100);
 	    if (lucky < 50)
 	    {
-		putChestHere(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), world, rand);
+		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), world, rand);
 	    }
 	    else
 	    {
-		putChestHere(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
+		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
 	    }
 	}
 	else if ("ChestLootLucky".equals(name))
@@ -394,11 +408,12 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	    int lucky = rand.nextInt(100);
 	    if (lucky < 30)
 	    {
-		putChestHere(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_lucky"), world, rand);
+		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_lucky"), world, rand);
 	    }
 	    else
 	    {
 		world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block 
+		world.setBlockState(pos.down(), Blocks.AIR.getDefaultState(), 2); // and erase the chest below it
 	    }
 	}
 	else if ("SetTrappedLoot".equals(name))
@@ -439,20 +454,21 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	    // 50% chance of a weak enemy
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
 	    int chance = rand.nextInt(100);
-	    if (chance < 50)
+	    if (chance < 16)
 	    {
-		switch (dbl.enemyVariation1)
-		{
-		case 0:
-		    spawnEnemyHere(pos, "zombie", world);
-		    break;
-		case 1:
-		    spawnEnemyHere(pos, "husk", world);
-		    break;
-		default:
-		    spawnEnemyHere(pos, "drowned", world);
-		    break;
-		}
+		spawnEnemyHere(pos, "zombie", world);
+	    }
+	    else if (chance < 32)
+	    {
+		spawnEnemyHere(pos, "husk", world);
+	    }
+	    else if (chance < 48)
+	    {
+		spawnEnemyHere(pos, "drowned", world);
+	    }
+	    else if (chance < 64)
+	    {
+		spawnEnemyHere(pos, "spider", world);
 	    }
 	}
 	else if ("SummonEnemy2".equals(name))
@@ -460,20 +476,21 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	    // 80% chance of a strong enemy
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
 	    int chance = rand.nextInt(100);
-	    if (chance < 80)
+	    if (chance < 20)
 	    {
-		switch (dbl.enemyVariation1)
-		{
-		case 0:
-		    spawnEnemyHere(pos, "skeleton", world);
-		    break;
-		case 1:
-		    spawnEnemyHere(pos, "wither_skeleton", world);
-		    break;
-		default:
-		    spawnEnemyHere(pos, "stray", world);
-		    break;
-		}
+		spawnEnemyHere(pos, "wither_skeleton", world);
+	    }
+	    else if (chance < 40)
+	    {
+		spawnEnemyHere(pos, "stray", world);
+	    }
+	    else if (chance < 60)
+	    {
+		spawnEnemyHere(pos, "skeleton", world);
+	    }
+	    else if (chance < 80)
+	    {
+		spawnEnemyHere(pos, "pillager", world);
 	    }
 	}
 	else
@@ -483,7 +500,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	}
     }
 
-    private void spawnEnemyHere(BlockPos pos, String casualName, IWorld world)
+    private static void spawnEnemyHere(BlockPos pos, String casualName, IWorld world)
     {
 	MobEntity mob = null;
 
@@ -532,6 +549,16 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	    mob = EntityType.STRAY.create(world.getWorld());
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
+	else if ("spider".contentEquals(casualName))
+	{
+	    mob = EntityType.SPIDER.create(world.getWorld());
+	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	}
+	else if ("pillager".contentEquals(casualName))
+	{
+	    mob = EntityType.PILLAGER.create(world.getWorld());
+	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	}
 	else
 	{
 	    System.out.println("DungeonChunkGenerator: Attempting to spawn unrecognized enemy: " + casualName);
@@ -548,13 +575,13 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	world.addEntity(mob);
     }
 
-    private void putChestHere(BlockPos pos, ResourceLocation lootTable, IWorld world, Random rand)
+    private static void fillChestBelow(BlockPos pos, ResourceLocation lootTable, IWorld world, Random rand)
     {
-	world.setBlockState(pos, Blocks.CHEST.getDefaultState(), 2);
-	faceContainerTowardsAir(world, pos);
+	world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	faceContainerTowardsAir(world, pos.down());
 
 	// set the loot table
-	TileEntity te = world.getTileEntity(pos);
+	TileEntity te = world.getTileEntity(pos.down());
 	if (te instanceof ChestTileEntity)
 	{
 	    ((ChestTileEntity) te).clear();
@@ -567,7 +594,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
     }
 
     // I was originally thinking that this would contain direct hints about the dungeon, but that would involve a post generation step
-    private ItemStack generateLuckyMessage(Random rand)
+    private static ItemStack generateLuckyMessage(Random rand)
     {
 	ItemStack stack = new ItemStack(Items.WRITTEN_BOOK);
 	stack.setTag(new CompoundNBT());
@@ -612,7 +639,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	return stack;
     }
 
-    private void LockDispensersAround(IWorld world, BlockPos pos)
+    private static void LockDispensersAround(IWorld world, BlockPos pos)
     {
 	Random r = new Random((world.getSeed() + (long) (pos.getX() * pos.getX() * 4987142) + (long) (pos.getX() * 5947611) + (long) (pos.getZ() * pos.getZ()) * 4392871L + (long) (pos.getZ() * 389711) ^ world.getSeed()));
 
@@ -647,7 +674,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 
     // used on dispensers and chests, particularly ones created by data blocks
     // TODO: this whole function
-    private void faceContainerTowardsAir(IWorld world, BlockPos pos)
+    private static void faceContainerTowardsAir(IWorld world, BlockPos pos)
     {
 	BlockState bs = world.getBlockState(pos);
 

@@ -1,7 +1,7 @@
 {
     "itemGroup.dimdungeons_creative_tab": "Dimensional Dungeons",
 
-	"biome.dimdungeons.biome_dungeon": "Dungeon Biome",
+	"biome.dimdungeons.biome_dungeon": "Dungeon",
 
     "block.dimdungeons.block_gilded_portal": "Gilded Portal Block",
     "block.dimdungeons.block_gold_portal": "Gold Dungeon Portal",
@@ -135,5 +135,7 @@
     "enemy.dimdungeons.drowned": "Drowned",
     "enemy.dimdungeons.skeleton": "Skeleton",
     "enemy.dimdungeons.wither_skeleton": "W. Skeleton",
-    "enemy.dimdungeons.stray": "Stray"
+    "enemy.dimdungeons.stray": "Stray",
+    "enemy.dimdungeons.spider": "Spider",
+    "enemy.dimdungeons.pillager": "Pillager"
 }
