@@ -340,7 +340,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
     // resembles TemplateStructurePiece.handleDataMarker()
     protected static void handleDataBlock(String name, BlockPos pos, IWorld world, Random rand, MutableBoundingBox bb)
     {
-	DimDungeons.LOGGER.info("DATA BLOCK NAME: " + name);
+	//DimDungeons.LOGGER.info("DATA BLOCK NAME: " + name);
 
 	if ("LockIt".equals(name))
 	{
@@ -566,8 +566,8 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	}
 
 	mob.setCanPickUpLoot(false);
-	mob.setCustomName(new StringTextComponent(I18n.format("enemy.dimdungeons:" + casualName)));
-	mob.setHomePosAndDistance(pos, 16);
+	mob.setCustomName(new StringTextComponent(I18n.format("enemy.dimdungeons." + casualName)));
+	mob.setHomePosAndDistance(pos, 8);
 	mob.moveToBlockPosAndAngles(pos, 0.0F, 0.0F);
 	mob.enablePersistence();
 
@@ -607,18 +607,18 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 
 	if (bookType == 0)
 	{
-	    title = I18n.format("book.myfirstmod:title_1");
-	    body = I18n.format("book.myfirstmod:fun_message_" + messageVariation);
+	    title = I18n.format("book.dimdungeons.title_1");
+	    body = I18n.format("book.dimdungeons.fun_message_" + messageVariation);
 	}
 	else if (bookType == 1)
 	{
-	    title = I18n.format("book.myfirstmod:title_2");
-	    body = I18n.format("book.myfirstmod:helpful_message_" + messageVariation);
+	    title = I18n.format("book.dimdungeons.title_2");
+	    body = I18n.format("book.dimdungeons.helpful_message_" + messageVariation);
 	}
 	else
 	{
-	    title = I18n.format("book.myfirstmod:title_3");
-	    body = I18n.format("book.myfirstmod:dangerous_message_" + messageVariation);
+	    title = I18n.format("book.dimdungeons.title_3");
+	    body = I18n.format("book.dimdungeons.dangerous_message_" + messageVariation);
 	}
 
 	// create the complicated NBT tag list for the list of pages in the book
@@ -634,46 +634,47 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	stack.getTag().putInt("generation", 0);
 	stack.getTag().put("pages", pages);
 	stack.getTag().putString("title", title);
-	stack.getTag().putString("author", I18n.format("book.myfirstmod:author"));
+	stack.getTag().putString("author", I18n.format("book.dimdungeons.author"));
 
 	return stack;
     }
 
+    // this function might not be needed unless the DungeonDimension::canMineBlock() returns true for Dispensers
     private static void LockDispensersAround(IWorld world, BlockPos pos)
     {
-	Random r = new Random((world.getSeed() + (long) (pos.getX() * pos.getX() * 4987142) + (long) (pos.getX() * 5947611) + (long) (pos.getZ() * pos.getZ()) * 4392871L + (long) (pos.getZ() * 389711) ^ world.getSeed()));
-
-	// make sure the player cannot be holding an item with this name
-	LockCode code = new LockCode("ThisIsIntentionallyLongerThanCanNormallyBePossiblePlus" + r.nextLong());
-
-	if (world.getBlockState(pos.up()).getBlock() == Blocks.DISPENSER)
-	{
-	    //((DispenserTileEntity) world.getTileEntity(pos.up())).setLockCode(code);
-	}
-	if (world.getBlockState(pos.down()).getBlock() == Blocks.DISPENSER)
-	{
-	    //((DispenserTileEntity) world.getTileEntity(pos.down())).setLockCode(code);
-	}
-	if (world.getBlockState(pos.north()).getBlock() == Blocks.DISPENSER)
-	{
-	    //((DispenserTileEntity) world.getTileEntity(pos.north())).setLockCode(code);
-	}
-	if (world.getBlockState(pos.south()).getBlock() == Blocks.DISPENSER)
-	{
-	    //((DispenserTileEntity) world.getTileEntity(pos.south())).setLockCode(code);
-	}
-	if (world.getBlockState(pos.west()).getBlock() == Blocks.DISPENSER)
-	{
-	    //((DispenserTileEntity) world.getTileEntity(pos.west())).setLockCode(code);
-	}
-	if (world.getBlockState(pos.east()).getBlock() == Blocks.DISPENSER)
-	{
-	    //((DispenserTileEntity) world.getTileEntity(pos.east())).setLockCode(code);
-	}
+	//	Random r = new Random((world.getSeed() + (long) (pos.getX() * pos.getX() * 4987142) + (long) (pos.getX() * 5947611) + (long) (pos.getZ() * pos.getZ()) * 4392871L + (long) (pos.getZ() * 389711) ^ world.getSeed()));
+	//
+	//	// make sure the player cannot be holding an item with this name
+	//	LockCode code = new LockCode("ThisIsIntentionallyLongerThanCanNormallyBePossiblePlus" + r.nextLong());
+	//
+	//	if (world.getBlockState(pos.up()).getBlock() == Blocks.DISPENSER)
+	//	{
+	//	    //((DispenserTileEntity) world.getTileEntity(pos.up())).setLockCode(code);
+	//	}
+	//	if (world.getBlockState(pos.down()).getBlock() == Blocks.DISPENSER)
+	//	{
+	//	    //((DispenserTileEntity) world.getTileEntity(pos.down())).setLockCode(code);
+	//	}
+	//	if (world.getBlockState(pos.north()).getBlock() == Blocks.DISPENSER)
+	//	{
+	//	    //((DispenserTileEntity) world.getTileEntity(pos.north())).setLockCode(code);
+	//	}
+	//	if (world.getBlockState(pos.south()).getBlock() == Blocks.DISPENSER)
+	//	{
+	//	    //((DispenserTileEntity) world.getTileEntity(pos.south())).setLockCode(code);
+	//	}
+	//	if (world.getBlockState(pos.west()).getBlock() == Blocks.DISPENSER)
+	//	{
+	//	    //((DispenserTileEntity) world.getTileEntity(pos.west())).setLockCode(code);
+	//	}
+	//	if (world.getBlockState(pos.east()).getBlock() == Blocks.DISPENSER)
+	//	{
+	//	    //((DispenserTileEntity) world.getTileEntity(pos.east())).setLockCode(code);
+	//	}
     }
 
     // used on dispensers and chests, particularly ones created by data blocks
-    // TODO: this whole function
+    // this function might not be needed in versions later thaN 1.13
     private static void faceContainerTowardsAir(IWorld world, BlockPos pos)
     {
 	BlockState bs = world.getBlockState(pos);
