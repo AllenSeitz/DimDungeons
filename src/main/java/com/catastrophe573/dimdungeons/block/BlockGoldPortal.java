@@ -52,6 +52,7 @@ public class BlockGoldPortal extends BreakableBlock
     @Override
     public void updateNeighbors(BlockState stateIn, IWorld worldIn, BlockPos pos, int flags)
     {
+	DimDungeons.LOGGER.info("updateNeightbors() test");
 	checkPortalIntegrity(stateIn, worldIn, pos);
     }
 
@@ -115,27 +116,26 @@ public class BlockGoldPortal extends BreakableBlock
 			}
 			else
 			{
-			    // TODO: remove this print
-			    System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + "). in dim...");
+			    //System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + "). in dim...");
 			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonDimensionType.getDimensionType(), warpX, 55.1D, warpZ);
 			}
 		    }
 		    // three vanilla blocks will also open portals to the 3 vanilla dimensions?
 		    else if (getBlockFromItem(item.getItem()) != null)
 		    {
-			Block b = getBlockFromItem(item.getItem());
-			if (b == Blocks.NETHERRACK && worldIn.getDimension().getType() != DimensionType.THE_NETHER)
-			{
-			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionType.THE_NETHER, entityIn.posX, entityIn.posY, entityIn.posZ);
-			}
-			if (b == Blocks.END_STONE && worldIn.getDimension().getType() != DimensionType.THE_END)
-			{
-			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionType.THE_END, entityIn.posX, entityIn.posY, entityIn.posZ);
-			}
-			if (b == Blocks.GRASS_BLOCK && worldIn.getDimension().getType() != DimensionType.OVERWORLD)
-			{
-			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionType.OVERWORLD, entityIn.posX, entityIn.posY, entityIn.posZ);
-			}
+			//			Block b = getBlockFromItem(item.getItem());
+			//			if (b == Blocks.NETHERRACK && worldIn.getDimension().getType() != DimensionType.THE_NETHER)
+			//			{
+			//			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionType.THE_NETHER, entityIn.posX, entityIn.posY, entityIn.posZ);
+			//			}
+			//			if (b == Blocks.END_STONE && worldIn.getDimension().getType() != DimensionType.THE_END)
+			//			{
+			//			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionType.THE_END, entityIn.posX, entityIn.posY, entityIn.posZ);
+			//			}
+			//			if (b == Blocks.GRASS_BLOCK && worldIn.getDimension().getType() != DimensionType.OVERWORLD)
+			//			{
+			//			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DimensionType.OVERWORLD, entityIn.posX, entityIn.posY, entityIn.posZ);
+			//			}
 		    }
 		}
 	    }
@@ -155,12 +155,15 @@ public class BlockGoldPortal extends BreakableBlock
 	DimDungeons.LOGGER.info("INSIDE actuallyPerformTeleport: newDim = " + dim.toString());
 	player.timeUntilPortal = 300; // 300 ticks, same as vanilla nether portal (hijacking this also affects nether portals, which is intentional) 
 	//player.changeDimension(dim);
-	CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z);
-	
+
+	// if the player just entered a dungeon then force them to face north 
 	if (dim == DungeonDimensionType.getDimensionType())
 	{
-	    // if the player just entered a dungeon then force them to face north 
-	    player.setRotationYawHead(2);
+	    CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, 0.0f, 180.0f);
+	}
+	else
+	{
+	    CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, player.getPitchYaw().x, player.getPitchYaw().y);
 	}
     }
 

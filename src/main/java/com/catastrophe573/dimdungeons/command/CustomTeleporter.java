@@ -24,7 +24,7 @@ public class CustomTeleporter
     // 2. advancements and triggers will not happen
     // 3. lastFoodLevel is not updated (but any potential desync on the player's food bar will be minor, and will fix itself soon anyway)
     //
-    public static Entity teleportEntityToDimension(ServerPlayerEntity entity, DimensionType destination, boolean respectMovementFactor, double x, double y, double z)
+    public static Entity teleportEntityToDimension(ServerPlayerEntity entity, DimensionType destination, boolean respectMovementFactor, double x, double y, double z, float pitch, float yaw)
     {
 	if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(entity, destination))
 	{
@@ -46,8 +46,8 @@ public class CustomTeleporter
 	double d0 = x; //entity.posX;
 	double d1 = y; //entity.posY;
 	double d2 = z; //entity.posZ;
-	float f = entity.rotationPitch;
-	float f1 = entity.rotationYaw;
+	float f = pitch;
+	float f1 = yaw;
 	if (respectMovementFactor)
 	{
 	    double moveFactor = originWorld.getDimension().getMovementFactor() / destinationWorld.getDimension().getMovementFactor();
