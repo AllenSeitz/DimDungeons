@@ -4,9 +4,12 @@ import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.biome.BiomeProviderDungeon;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -63,6 +66,22 @@ public class DungeonDimension extends Dimension
     // no block breaking in this dimension!
     public boolean canMineBlock(PlayerEntity player, BlockPos pos)
     {
+	Block block = getWorld().getBlockState(pos).getBlock();
+
+	if (block.isIn(BlockTags.WOODEN_DOORS) || block.isIn(BlockTags.WOODEN_TRAPDOORS))
+	{
+	    return true;
+	}
+	if (block == Blocks.LEVER || block.isIn(BlockTags.BUTTONS) || block == Blocks.CAULDRON)
+	{
+	    return true;
+	}
+	if (block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST)
+	{
+	    return true;
+	}
+
+	//return getWorld().canMineBlockBody(player, pos);
 	return false;
     }
 
