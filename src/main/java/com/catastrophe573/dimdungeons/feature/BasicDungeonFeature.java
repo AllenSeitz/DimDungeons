@@ -36,7 +36,6 @@ import net.minecraft.util.math.MutableBoundingBox;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.LockCode;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.feature.Feature;
@@ -391,16 +390,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	}
 	else if ("ChestLoot2".equals(name))
 	{
-	    // 50% loot_2, 50% loot_1
-	    int lucky = rand.nextInt(100);
-	    if (lucky < 50)
-	    {
-		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), world, rand);
-	    }
-	    else
-	    {
-		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
-	    }
+	    fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
 	}
 	else if ("ChestLootLucky".equals(name))
 	{
