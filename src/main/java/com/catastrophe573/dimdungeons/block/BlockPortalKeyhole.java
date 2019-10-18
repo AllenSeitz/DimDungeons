@@ -174,7 +174,7 @@ public class BlockPortalKeyhole extends Block
 
 		// recalculate the boolean block states	    
 		BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
-		worldIn.setBlockState(pos, newBlockState);
+		worldIn.setBlockState(pos, newBlockState, 3);
 
 		return true;
 	    }

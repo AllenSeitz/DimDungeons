@@ -25,6 +25,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -45,17 +46,33 @@ public class BlockGoldPortal extends BreakableBlock
     // Called by ItemBlocks after a block is set in the world, to allow post-place logic
     public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
     {
-	checkPortalIntegrity(state, worldIn, pos);
+	if ( !checkPortalIntegrity(state, worldIn, pos) )
+	{
+	    worldIn.destroyBlock(pos, false);	    
+	}
     }
 
-    // this function is used to recalculate if the portal shape is still valid
+    // this function was used in 1.12 to recalculate if the portal shape is still valid, and it is still called in a few places
     @Override
     public void updateNeighbors(BlockState stateIn, IWorld worldIn, BlockPos pos, int flags)
     {
-	DimDungeons.LOGGER.info("updateNeightbors() test");
-	checkPortalIntegrity(stateIn, worldIn, pos);
+	if ( !checkPortalIntegrity(stateIn, worldIn, pos) )
+	{
+	    worldIn.destroyBlock(pos, false);	    
+	}
     }
 
+    // this function seems to be the true 1.14 replacement for updateNeighbors(), and it cares about block sides now
+    @Override
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos)
+    {
+	if ( checkPortalIntegrity(stateIn, worldIn, currentPos) )
+	{
+	    return stateIn;
+	}
+	return Blocks.AIR.getDefaultState(); // destroy this block
+    }
+    
     // called by getItemsToDropCount() to determine what BlockItem or Item to drop
     // in this case, do not allow the player to obtain this block as an item
     public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state)
@@ -185,14 +202,11 @@ public class BlockGoldPortal extends BreakableBlock
 	actuallyPerformTeleport(player, DimensionType.OVERWORLD, respawn.getX(), respawn.getY(), respawn.getZ());
     }
 
-    // this function returns void because the block deletes itself if the check fails
-    public void checkPortalIntegrity(BlockState state, IWorld worldIn, BlockPos pos)
+    // this function returns boolean and relies on another function to actually destroy the block
+    public boolean checkPortalIntegrity(BlockState state, IWorld worldIn, BlockPos pos)
     {
 	// valid portal shapes are not needed for persistence in the dungeon dimension itself because of the return portal
-	if (!isPortalShapeIntact(state, worldIn, pos) && worldIn.getDimension().getType() != DungeonDimensionType.getDimensionType())
-	{
-	    worldIn.destroyBlock(pos, false);
-	}
+	return worldIn.getDimension().getType() == DungeonDimensionType.getDimensionType() || isPortalShapeIntact(state, worldIn, pos);
     }
 
     private boolean isPortalShapeIntact(BlockState state, IWorld worldIn, BlockPos pos)
