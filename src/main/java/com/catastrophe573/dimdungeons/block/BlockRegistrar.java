@@ -29,7 +29,7 @@ public class BlockRegistrar
 	DimDungeons.LOGGER.info("HELLO from Register ItemBlock");
 
 	event.getRegistry().register(new BlockItem(block_gilded_portal, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_gilded_portal.getRegistryName()));
-	event.getRegistry().register(new BlockItem(block_gold_portal, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_gold_portal.getRegistryName()));
+	event.getRegistry().register(new BlockItem(block_gold_portal, new Item.Properties()).setRegistryName(block_gold_portal.getRegistryName()));
 	event.getRegistry().register(new BlockItem(block_portal_keyhole, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_portal_keyhole.getRegistryName()));
     }
 }

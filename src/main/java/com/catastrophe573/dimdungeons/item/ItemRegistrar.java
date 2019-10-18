@@ -15,7 +15,7 @@ public class ItemRegistrar
 	// register trophy items
 	for (int i = 1; i <= NUM_TROPHIES; i++)
 	{
-	    Item trophy = new Item(new Item.Properties().group(ItemGroup.MISC).maxStackSize(1));
+	    Item trophy = new Item(new Item.Properties().maxStackSize(1));
 	    trophy.setRegistryName(DimDungeons.MOD_ID, "item_trophy_" + i);
 	    event.getRegistry().register(trophy);
 	}
