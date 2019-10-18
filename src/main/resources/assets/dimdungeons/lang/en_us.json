@@ -112,10 +112,10 @@
     "book.dimdungeons.helpful_message_1": "Some rooms have carefully hidden treasure chests. Be sure to closely inspect anything suspicious!",
     "book.dimdungeons.helpful_message_2": "If you've think you've seen a room before, think again. Many subtle variations exist!",
     "book.dimdungeons.helpful_message_3": "Using a blank map inside a dungeon might prove surprisingly useful!",
-    "book.dimdungeons.helpful_message_4": "Did you know that cauldrons interact with redstone comparitors through walls?",
+    "book.dimdungeons.helpful_message_4": "Did you know that cauldrons interact with redstone comparators through walls?",
     "book.dimdungeons.helpful_message_5": "A cubic zirconia is as good as a real diamond. But it is a fake prize.",
     "book.dimdungeons.helpful_message_6": "Some puzzles may require a potion of swiftness or two players to solve.",
-    "book.dimdungeons.helpful_message_7": "One of my friends wagered that I couldn't hide treasure under tall grass while still being indoors.",
+    "book.dimdungeons.helpful_message_7": "Breaking a lever or button is never the answer to a puzzle, and doing so may trap you.",
     "book.dimdungeons.helpful_message_8": "Sometimes, explosions are a favor, not a trap. But stay out of the way in either case.",
 
     "book.dimdungeons.dangerous_message_1": "I have tried very hard not to ever trap you inside a room. But if it does happen don't forget the /kill command.",
