@@ -3,7 +3,6 @@ package com.catastrophe573.dimdungeons.item;
 import com.catastrophe573.dimdungeons.DimDungeons;
 
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraftforge.event.RegistryEvent;
 
 public class ItemRegistrar
