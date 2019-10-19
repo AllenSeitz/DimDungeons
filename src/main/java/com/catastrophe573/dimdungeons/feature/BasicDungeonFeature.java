@@ -333,7 +333,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 		}
 	    }
 	}
-	DimDungeons.LOGGER.info("DIMDUNGEONS FINISHED BUILDING DUNGEON");
+	//DimDungeons.LOGGER.info("DIMDUNGEONS FINISHED BUILDING DUNGEON");
     }
 
     // resembles TemplateStructurePiece.handleDataMarker()

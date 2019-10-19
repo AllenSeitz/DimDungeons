@@ -45,9 +45,9 @@ public class BlockGoldPortal extends BreakableBlock
     // Called by ItemBlocks after a block is set in the world, to allow post-place logic
     public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
     {
-	if ( !checkPortalIntegrity(state, worldIn, pos) )
+	if (!checkPortalIntegrity(state, worldIn, pos))
 	{
-	    worldIn.destroyBlock(pos, false);	    
+	    worldIn.destroyBlock(pos, false);
 	}
     }
 
@@ -55,9 +55,9 @@ public class BlockGoldPortal extends BreakableBlock
     @Override
     public void updateNeighbors(BlockState stateIn, IWorld worldIn, BlockPos pos, int flags)
     {
-	if ( !checkPortalIntegrity(stateIn, worldIn, pos) )
+	if (!checkPortalIntegrity(stateIn, worldIn, pos))
 	{
-	    worldIn.destroyBlock(pos, false);	    
+	    worldIn.destroyBlock(pos, false);
 	}
     }
 
@@ -65,13 +65,13 @@ public class BlockGoldPortal extends BreakableBlock
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos)
     {
-	if ( checkPortalIntegrity(stateIn, worldIn, currentPos) )
+	if (checkPortalIntegrity(stateIn, worldIn, currentPos))
 	{
 	    return stateIn;
 	}
 	return Blocks.AIR.getDefaultState(); // destroy this block
     }
-    
+
     // called by getItemsToDropCount() to determine what BlockItem or Item to drop
     // in this case, do not allow the player to obtain this block as an item
     public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state)
@@ -111,7 +111,7 @@ public class BlockGoldPortal extends BreakableBlock
 
 	if (!entityIn.isPassenger() && !entityIn.isBeingRidden() && entityIn.isNonBoss())
 	{
-	    DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
+	    //DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
 
 	    TileEntityPortalKeyhole te = findKeyholeForThisPortal(state, worldIn, pos);
 	    if (te != null)
@@ -168,9 +168,7 @@ public class BlockGoldPortal extends BreakableBlock
 
     protected void actuallyPerformTeleport(ServerPlayerEntity player, DimensionType dim, double x, double y, double z)
     {
-	DimDungeons.LOGGER.info("INSIDE actuallyPerformTeleport: newDim = " + dim.toString());
 	player.timeUntilPortal = 300; // 300 ticks, same as vanilla nether portal (hijacking this also affects nether portals, which is intentional) 
-	//player.changeDimension(dim);
 
 	// if the player just entered a dungeon then force them to face north 
 	if (dim == DungeonDimensionType.getDimensionType())

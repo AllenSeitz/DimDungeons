@@ -1,7 +1,5 @@
 package com.catastrophe573.dimdungeons.block;
 
-import com.catastrophe573.dimdungeons.DimDungeons;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -26,8 +24,6 @@ public class BlockRegistrar
     // this is called by the ItemRegistrar
     public static void registerAllItemBlocks(RegistryEvent.Register<Item> event)
     {
-	DimDungeons.LOGGER.info("HELLO from Register ItemBlock");
-
 	event.getRegistry().register(new BlockItem(block_gilded_portal, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_gilded_portal.getRegistryName()));
 	event.getRegistry().register(new BlockItem(block_gold_portal, new Item.Properties()).setRegistryName(block_gold_portal.getRegistryName()));
 	event.getRegistry().register(new BlockItem(block_portal_keyhole, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_portal_keyhole.getRegistryName()));

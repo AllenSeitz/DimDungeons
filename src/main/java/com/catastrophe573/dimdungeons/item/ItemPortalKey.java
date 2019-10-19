@@ -200,8 +200,8 @@ public class ItemPortalKey extends Item
 
 	if (worldIn.getBlockState(pos) != null)
 	{
-	    System.out.println("Used a key on some block: " + worldIn.getBlockState(pos).getBlock().getRegistryName());
-	    System.out.println("Hit it here: " + hitX + ", " + hitZ + ", facing=" + facing.getName());
+	    //System.out.println("Used a key on some block: " + worldIn.getBlockState(pos).getBlock().getRegistryName());
+	    //System.out.println("Hit it here: " + hitX + ", " + hitZ + ", facing=" + facing.getName());
 
 	    // did they use the key on an end portal frame?
 	    if (worldIn.getBlockState(pos).getBlock() == Blocks.END_PORTAL_FRAME)
@@ -218,12 +218,12 @@ public class ItemPortalKey extends Item
 			{
 			    if (isActivated(itemstack))
 			    {
-				System.out.println("Key already activated!");
+				//System.out.println("Key already activated!");
 				worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_METAL_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			    }
 			    else
 			    {
-				System.out.println("Triggered special event to initialize key!");
+				//System.out.println("Triggered special event to initialize key!");
 				worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				activateKey(itemstack);
 
@@ -277,9 +277,6 @@ public class ItemPortalKey extends Item
 		// hit the side of the block
 		worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_GLASS_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 	    }
-	    /*
-	     * // did they use the key on a keyhole? if (worldIn.getBlockState(pos).getBlock() instanceof BlockPortalKeyhole) { }
-	     */
 	}
 
 	return ActionResultType.PASS;

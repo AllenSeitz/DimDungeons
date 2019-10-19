@@ -131,12 +131,9 @@ public class BlockPortalKeyhole extends Block
 	    {
 		if (!playerItem.isEmpty())
 		{
-		    DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
+		    //DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
 		    myEntity.setContents(playerItem.copy());
-		    //if (!playerIn.capabilities.isCreativeMode) // intentionally commented out
-		    //{
 		    playerItem.shrink(1);
-		    //}
 
 		    // recalculate the boolean block states	    
 		    BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
@@ -145,7 +142,6 @@ public class BlockPortalKeyhole extends Block
 		    // should portal blocks be spawned?
 		    if (isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
 		    {
-			DimDungeons.LOGGER.info("DimDungeons: CREATING GOLD PORTAL BLOCKS!");
 			worldIn.setBlockState(pos.down(), BlockRegistrar.block_gold_portal.getDefaultState());
 			worldIn.setBlockState(pos.down(2), BlockRegistrar.block_gold_portal.getDefaultState());
 
@@ -160,7 +156,7 @@ public class BlockPortalKeyhole extends Block
 	    // if the keyhole is currently full
 	    else
 	    {
-		DimDungeons.LOGGER.info("Taking thing out of keyhole...");
+		//DimDungeons.LOGGER.info("Taking thing out of keyhole...");
 		if (playerItem.isEmpty())
 		{
 		    player.setHeldItem(handIn, insideItem); // hand it to the player
@@ -307,10 +303,7 @@ public class BlockPortalKeyhole extends Block
 	return new ItemStack(this);
     }
 
-    /**
-     * The type of render function called. MODEL for mixed tesr and static model, MODELBLOCK_ANIMATED for TESR-only, LIQUID
-     * for vanilla liquids, INVISIBLE to skip all rendering
-     */
+    // The type of render function called. MODEL for mixed tesr and static model, MODELBLOCK_ANIMATED for TESR-only, LIQUID for vanilla liquids, INVISIBLE to skip all rendering
     @Override
     public BlockRenderType getRenderType(BlockState state)
     {

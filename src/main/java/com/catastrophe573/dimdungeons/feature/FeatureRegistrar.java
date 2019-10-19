@@ -25,8 +25,6 @@ public class FeatureRegistrar
     @SubscribeEvent
     public static void onFeaturesRegistry(RegistryEvent.Register<Feature<?>> event)
     {
-	DimDungeons.LOGGER.info("Registering features.");
-
 	registerFeature(event, new BasicDungeonFeature(NoFeatureConfig::deserialize), BasicDungeonFeature.FEATURE_ID);
     }
 
@@ -40,8 +38,6 @@ public class FeatureRegistrar
     @SubscribeEvent
     public static void applyFeatures(FMLCommonSetupEvent event)
     {
-	DimDungeons.LOGGER.info("Applying features to biomes.");
-
 	addFeatureToBiome(BiomeRegistrar.biome_dungeon, GenerationStage.Decoration.SURFACE_STRUCTURES, feature_basic_dungeon);
     }
 

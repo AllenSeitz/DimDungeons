@@ -3,20 +3,16 @@ package com.catastrophe573.dimdungeons.dimension;
 import java.util.List;
 import java.util.Random;
 
-import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.feature.BasicDungeonFeature;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityClassification;
-import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.OverworldChunkGenerator;
 import net.minecraft.world.gen.OverworldGenSettings;
 import net.minecraft.world.gen.WorldGenRegion;
@@ -124,51 +120,5 @@ public class DungeonChunkGenerator extends OverworldChunkGenerator
     protected void makeBedrock(IChunk chunkIn, Random rand)
     {
 	// actually nah I'm good, lets keep the void world please because it looks better on a map
-    }
-
-    // TODO: delete this old 1.12 function
-    public void unusedGenerateSurface(IChunk chunkIn)
-    {
-	int x = chunkIn.getPos().x;
-	int z = chunkIn.getPos().z;
-	this.randomSeed.setSeed(this.world.getSeed());
-	long k = this.randomSeed.nextLong() / 2L * 2L + 1L;
-	long l = this.randomSeed.nextLong() / 2L * 2L + 1L;
-	this.randomSeed.setSeed((long) x * k + (long) z * l ^ this.world.getSeed());
-	// if this is an entrance chunk then generate a dungeon here
-	if (BasicDungeonFeature.isEntranceChunk(x, z))
-	{
-	    DimDungeons.LOGGER.info("DIM DUNGEONS: Putting a new dungeon at " + x + ", " + z);
-	    //generateDungeonAroundChunk(x - 4, z - 7); // the topleft corner of this 8x8 chunk area 
-	}
-    }
-
-    // copied from NoiseChunkGenerator because that chunk generator is the only one that tells the biomes to buildSurface() 
-    //TODO: remove this too
-    public void alsoUnusedGenerateSurface(IChunk chunkIn)
-    {
-	ChunkPos chunkpos = chunkIn.getPos();
-	int chunkX = chunkpos.x;
-	int chunkZ = chunkpos.z;
-	SharedSeedRandom sharedseedrandom = new SharedSeedRandom();
-	sharedseedrandom.setBaseChunkSeed(chunkX, chunkZ);
-	ChunkPos chunkpos1 = chunkIn.getPos();
-	int globalX = chunkpos1.getXStart();
-	int globalZ = chunkpos1.getZStart();
-	Biome[] abiome = chunkIn.getBiomes();
-	DimDungeons.LOGGER.info("DIM DUNGEONS: generatingSurface at " + chunkX + ", " + chunkZ);
-
-	for (int sx = 0; sx < 16; sx++)
-	{
-	    for (int sz = 0; sz < 16; sz++)
-	    {
-		int offsetX = globalX + sx;
-		int offsetZ = globalZ + sz;
-		int height = chunkIn.getTopBlockY(Heightmap.Type.WORLD_SURFACE_WG, sx, sz) + 1;
-		double noise = 0L;
-		abiome[sz * 16 + sx].buildSurface(sharedseedrandom, chunkIn, offsetX, offsetZ, height, noise, this.getSettings().getDefaultBlock(), this.getSettings().getDefaultFluid(), this.getSeaLevel(), this.world.getSeed());
-		//DimDungeons.LOGGER.info("BUILD SURFACE BIOME " + abiome[sz * 16 + sx].getDisplayName().getString());
-	    }
-	}
     }
 }
