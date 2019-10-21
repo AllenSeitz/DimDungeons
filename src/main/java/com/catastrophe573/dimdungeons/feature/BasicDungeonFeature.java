@@ -24,6 +24,7 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.state.properties.StructureMode;
+import net.minecraft.tileentity.BarrelTileEntity;
 import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.DispenserTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -160,6 +161,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	    // north: no rotation
 	    placementsettings.setRotation(Rotation.NONE);
 	}
+	DimDungeons.LOGGER.info("Placing a room: " + room.structure);
 	boolean success = template.addBlocksToWorld(world, position, placementsettings, 2);
 
 	// handle data blocks - this code block is copied from TemplateStructurePiece
@@ -416,6 +418,19 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 		te.setLootTable(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), rand.nextLong());
 	    }
 	}
+	else if ("BarrelLoot1".equals(name))
+	{
+	    // 80% loot_1, 20% loot_2
+	    int lucky = rand.nextInt(100);
+	    if (lucky < 80)
+	    {
+		fillBarrelBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), world, rand);
+	    }
+	    else
+	    {
+		fillBarrelBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
+	    }
+	}
 	else if ("SummonWitch".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
@@ -582,6 +597,23 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	    DimDungeons.LOGGER.info("DIMDUNGEONS: FAILED TO PLACE CHEST IN DUNGEON. pos = " + pos.getX() + ", " + pos.getZ());
 	}
     }
+    
+    private static void fillBarrelBelow(BlockPos pos, ResourceLocation lootTable, IWorld world, Random rand)
+    {
+	world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+
+	// set the loot table
+	TileEntity te = world.getTileEntity(pos.down());
+	if (te instanceof BarrelTileEntity)
+	{
+	    ((BarrelTileEntity) te).clear();
+	    ((BarrelTileEntity) te).setLootTable(lootTable, rand.nextLong());
+	}
+	else
+	{
+	    DimDungeons.LOGGER.info("DIMDUNGEONS: FAILED TO PLACE BARREL IN DUNGEON. pos = " + pos.getX() + ", " + pos.getZ());
+	}
+    }    
 
     // I was originally thinking that this would contain direct hints about the dungeon, but that would involve a post generation step
     private static ItemStack generateLuckyMessage(Random rand)

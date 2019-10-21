@@ -15,19 +15,19 @@ public class DungeonBuilderLogic
     protected String[] entrance = { "entrance_1", "entrance_2", "entrance_3", "entrance_4", "entrance_5", "entrance_6" };
 
     // dead ends contain one door
-    protected String end[] = { "deadend_1", "deadend_2", "deadend_3", "deadend_4", "deadend_5", "deadend_6", "deadend_7", "deadend_8", "coffin_1", "advice_room_1", "restroom_1", "shoutout_1", "spawner_1", "redspuzzle_1" };
+    protected String end[] = { "deadend_1", "deadend_2", "deadend_3", "deadend_4", "deadend_5", "deadend_6", "deadend_7", "deadend_8", "coffin_1", "advice_room_1", "restroom_1", "shoutout_1", "spawner_1", "redspuzzle_1", "deathtrap_1" };
 
     // corners contain two doors on adjacent sides
-    protected String corner[] = { "corner_1", "corner_2", "corner_3", "corner_4", "corner_5", "corner_6", "corner_7", "corner_8", "redstrap_3" };
+    protected String corner[] = { "corner_1", "corner_2", "corner_3", "corner_4", "corner_5", "corner_6", "corner_7", "corner_8", "redstrap_3", "longcorner_1", "longcorner_2", "longcorner_3", "longcorner_4", "longcorner_5" };
 
     // hallways contain two doors on opposite sides
-    protected String hallway[] = { "hallway_1", "hallway_2", "hallway_3", "hallway_4", "hallway_5", "hallway_6", "advice_room_3", "tempt_1", "redstrap_2" };
+    protected String hallway[] = { "hallway_1", "hallway_2", "hallway_3", "hallway_4", "hallway_5", "hallway_6", "advice_room_3", "tempt_1", "redstrap_2", "extrahall_1", "extrahall_2", "extrahall_3" };
 
     // threeways contain three doors and one wall
-    protected String threeway[] = { "threeway_1", "threeway_2", "threeway_3", "threeway_4", "threeway_5", "advice_room_2", "redstrap_4" };
+    protected String threeway[] = { "threeway_1", "threeway_2", "threeway_3", "threeway_4", "threeway_5", "advice_room_2", "redstrap_4", "morethree_1", "morethree_2", "morethree_3" };
 
     // fourways simply have all four possible doors open
-    protected String fourway[] = { "fourway_1", "fourway_2", "fourway_3", "fourway_4", "fourway_5", "fourway_6", "fourway_7", "fourway_8", "fourway_9", "combat_1", "combat_1", "redstrap_1" };
+    protected String fourway[] = { "fourway_1", "fourway_2", "fourway_3", "fourway_4", "fourway_5", "fourway_6", "fourway_7", "fourway_8", "fourway_9", "combat_1", "combat_1", "redstrap_1", "disco_1" };
 
     // an enumeration of the six room types, used internally for randomization and classification
     enum RoomType
@@ -595,6 +595,12 @@ public class DungeonBuilderLogic
 		    int variation = rand.nextInt(5) + 1;
 		    nextRoom = nextRoom.replace("1", "" + variation);
 		}
+		if (nextRoom == "disco_1")
+		{
+		    // the disco room appears at most once per dungeon, and there are 4 variations of it
+		    int variation = rand.nextInt(4) + 1;
+		    nextRoom = nextRoom.replace("1", "" + variation);
+		}
 		fourwayIndex = fourwayIndex == fourway.length - 1 ? 0 : fourwayIndex + 1;
 	    }
 	    if (nextType == RoomType.THREEWAY)
@@ -610,6 +616,12 @@ public class DungeonBuilderLogic
 		    // the chest chance room appears at most once per dungeon, and there are 4 variations of it
 		    int variation = rand.nextInt(4) + 1;
 		    nextRoom = nextRoom.replace("1", "" + variation);
+		}		
+		if (nextRoom == "extrahall_3")
+		{
+		    // the ender hallway room appears at most once per dungeon, and there are 3 variations of it
+		    int variation = rand.nextInt(3) + 3;
+		    nextRoom = nextRoom.replace("3", "" + variation);
 		}		
 		hallwayIndex = hallwayIndex == hallway.length - 1 ? 0 : hallwayIndex + 1;
 	    }
@@ -641,7 +653,13 @@ public class DungeonBuilderLogic
 		}
 		if (nextRoom == "redspuzzle_1")
 		{
-		    // the puzzle/reward room appears at most once per dungeon, and there are 5 variations of it (4 and 5 are intentional duplicates)
+		    // the puzzle/reward room appears at most once per dungeon, and there are 4 variations of it
+		    int variation = rand.nextInt(4) + 1;
+		    nextRoom = nextRoom.replace("1", "" + variation);
+		}
+		if (nextRoom == "deathtrap_1")
+		{
+		    // yet another puzzle/reward room appears at most once per dungeon, and there are 4 unrelated variations of this room as well
 		    int variation = rand.nextInt(5) + 1;
 		    nextRoom = nextRoom.replace("1", "" + variation);
 		}		
