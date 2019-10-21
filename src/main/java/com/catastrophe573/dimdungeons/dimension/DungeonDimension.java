@@ -76,7 +76,7 @@ public class DungeonDimension extends Dimension
 	{
 	    return true;
 	}
-	if (block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST)
+	if (block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST || block == Blocks.BARREL)
 	{
 	    return true;
 	}
