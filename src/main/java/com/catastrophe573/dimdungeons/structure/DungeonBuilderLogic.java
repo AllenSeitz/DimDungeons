@@ -765,7 +765,7 @@ public class DungeonBuilderLogic
 	return true;
     }
 
-    private void placeRoomShape(int x, int z, String room, RoomType type, Rotation rot)
+    public void placeRoomShape(int x, int z, String room, RoomType type, Rotation rot)
     {
 	finalLayout[x][z].structure = room;
 	finalLayout[x][z].type = type;
@@ -774,7 +774,6 @@ public class DungeonBuilderLogic
 	//DimDungeons.LOGGER.info("Put a " + room + " at (" + x + ", " + z + ") with rotation " + rot.toString() + ".");
     }
 
-    // Implementing Fisher–Yates shuffle
     private void shuffleArray(String[] array)
     {
 	for (int i = array.length - 1; i > 0; i--)

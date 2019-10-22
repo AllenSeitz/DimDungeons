@@ -8,6 +8,7 @@ import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.dimension.DungeonDimensionType;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonRoom;
+import com.catastrophe573.dimdungeons.structure.DungeonBuilderTestShapes;
 import com.mojang.datafixers.Dynamic;
 
 import net.minecraft.block.BlockState;
@@ -199,9 +200,27 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	    return null;
 	}
 
-	// generate the entire dungeon
+	// this is the date structure for an entire dungeon
 	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getSeed(), entranceX, entranceZ);
-	dbl.calculateDungeonShape(25);
+
+	// trigger some debug code for test layouts
+	if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugOne"))
+	{
+	    DungeonBuilderTestShapes.MakeTestDungeonEnds(dbl);
+	}
+	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugTwo"))
+	{
+	    DungeonBuilderTestShapes.MakeTestDungeonTwos(dbl);
+	}
+	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugThree"))
+	{
+	    DungeonBuilderTestShapes.MakeTestDungeonThreesAndFours(dbl);
+	}
+	else
+	{
+	    // generate the entire dungeon, a normal dungeon
+	    dbl.calculateDungeonShape(25);
+	}
 
 	// pick the room we want, for example the entrance room is at [4][7] in this array
 	int i = (cpos.x % 16) - 4;
@@ -368,9 +387,9 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	    TileEntity te = world.getTileEntity(pos.down());
 	    if (te instanceof DispenserTileEntity)
 	    {
-		((DispenserTileEntity)te).clear();
+		((DispenserTileEntity) te).clear();
 		ItemStack message = generateLuckyMessage(rand);
-		((DispenserTileEntity)te).addItemStack(message);
+		((DispenserTileEntity) te).addItemStack(message);
 	    }
 	    else
 	    {
@@ -597,7 +616,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	    DimDungeons.LOGGER.info("DIMDUNGEONS: FAILED TO PLACE CHEST IN DUNGEON. pos = " + pos.getX() + ", " + pos.getZ());
 	}
     }
-    
+
     private static void fillBarrelBelow(BlockPos pos, ResourceLocation lootTable, IWorld world, Random rand)
     {
 	world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
@@ -613,7 +632,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	{
 	    DimDungeons.LOGGER.info("DIMDUNGEONS: FAILED TO PLACE BARREL IN DUNGEON. pos = " + pos.getX() + ", " + pos.getZ());
 	}
-    }    
+    }
 
     // I was originally thinking that this would contain direct hints about the dungeon, but that would involve a post generation step
     private static ItemStack generateLuckyMessage(Random rand)
