@@ -65,7 +65,7 @@ public class DungeonBuilderTestShapes
 	{
 	    dbl.placeRoomShape(i - 1, 5, "corner_" + i, RoomType.CORNER, Rotation.NONE);
 	}
-	for (int i = 1; i <= 6; i++)
+	for (int i = 1; i <= 5; i++)
 	{
 	    dbl.placeRoomShape(i - 1, 6, "longcorner_" + i, RoomType.CORNER, Rotation.NONE);
 	}
