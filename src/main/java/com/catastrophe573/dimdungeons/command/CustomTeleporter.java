@@ -8,6 +8,7 @@ import net.minecraft.network.play.server.SPlayerAbilitiesPacket;
 import net.minecraft.network.play.server.SRespawnPacket;
 import net.minecraft.network.play.server.SServerDifficultyPacket;
 import net.minecraft.potion.EffectInstance;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -33,9 +34,11 @@ public class CustomTeleporter
 	//entity.invulnerableDimensionChange = true; // private case #1: not having access to this member variable
 	DimensionType dimensiontype = entity.dimension;
 
-	ServerWorld originWorld = entity.server.getWorld(dimensiontype);
+	MinecraftServer minecraftserver = entity.getServer();	
+	
+	ServerWorld originWorld = minecraftserver.getWorld(dimensiontype);
+	ServerWorld destinationWorld = minecraftserver.getWorld(destination);
 	entity.dimension = destination;
-	ServerWorld destinationWorld = entity.server.getWorld(destination);
 	WorldInfo worldinfo = entity.world.getWorldInfo();
 	entity.connection.sendPacket(new SRespawnPacket(destination, worldinfo.getGenerator(), entity.interactionManager.getGameType()));
 	entity.connection.sendPacket(new SServerDifficultyPacket(worldinfo.getDifficulty(), worldinfo.isDifficultyLocked()));

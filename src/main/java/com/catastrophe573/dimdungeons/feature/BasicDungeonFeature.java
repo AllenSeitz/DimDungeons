@@ -138,6 +138,12 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	placementsettings.setRotation(room.rotation);
 	BlockPos position = new BlockPos(cpos.getXStart(), 50, cpos.getZStart());
 
+	if (template == null)
+	{
+	    DimDungeons.LOGGER.info("DIMDUNGEONS FATAL ERROR: Structure does not exist (" + room.structure + ")");
+	    return false;
+	}
+
 	// next if the structure is to be rotated then it must also be offset, because rotating a structure also moves it
 	if (room.rotation == Rotation.COUNTERCLOCKWISE_90)
 	{
