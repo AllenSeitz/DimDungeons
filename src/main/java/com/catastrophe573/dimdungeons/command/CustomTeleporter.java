@@ -1,6 +1,9 @@
 package com.catastrophe573.dimdungeons.command;
 
-import net.minecraft.entity.Entity;
+import java.lang.reflect.Field;
+
+import com.catastrophe573.dimdungeons.DimDungeons;
+
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.play.server.SPlayEntityEffectPacket;
 import net.minecraft.network.play.server.SPlaySoundEventPacket;
@@ -15,6 +18,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper.UnableToAccessFieldException;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper.UnableToFindFieldException;
 
 public class CustomTeleporter
 {
@@ -25,17 +31,32 @@ public class CustomTeleporter
     // 2. advancements and triggers will not happen
     // 3. lastFoodLevel is not updated (but any potential desync on the player's food bar will be minor, and will fix itself soon anyway)
     //
-    public static Entity teleportEntityToDimension(ServerPlayerEntity entity, DimensionType destination, boolean respectMovementFactor, double x, double y, double z, float pitch, float yaw)
+    public static void teleportEntityToDimension(ServerPlayerEntity entity, DimensionType destination, boolean respectMovementFactor, double x, double y, double z, float pitch, float yaw)
     {
 	if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(entity, destination))
 	{
-	    return null;
+	    return;
 	}
+
+	// gross hack to compensate for this variable being private
 	//entity.invulnerableDimensionChange = true; // private case #1: not having access to this member variable
+	try
+	{
+	    //ObfuscationReflectionHelper.setPrivateValue(ServerPlayerEntity.class, entity, true, "invulnerableDimensionChange");
+	    ObfuscationReflectionHelper.setPrivateValue(ServerPlayerEntity.class, entity, true, "field_184851_cj");
+	    //Field hack = ServerPlayerEntity.class.getDeclaredField("invulnerableDimensionChange");
+	    //hack.setAccessible(true);
+	    //hack.set(entity, true);
+	}
+	catch (SecurityException | UnableToFindFieldException | UnableToAccessFieldException e)
+	{
+	    DimDungeons.LOGGER.info("DIMDUNGEONS ERROR: UNABLE TO SET field invulnerableDimensionChange on Player. Teleporting is about to go wrong!");
+	}
+
 	DimensionType dimensiontype = entity.dimension;
 
-	MinecraftServer minecraftserver = entity.getServer();	
-	
+	MinecraftServer minecraftserver = entity.getServer();
+
 	ServerWorld originWorld = minecraftserver.getWorld(dimensiontype);
 	ServerWorld destinationWorld = minecraftserver.getWorld(destination);
 	entity.dimension = destination;
@@ -58,7 +79,9 @@ public class CustomTeleporter
 	    d2 *= moveFactor;
 	}
 
+	// clamp to world border
 	entity.setLocationAndAngles(d0, d1, d2, f1, f);
+	entity.connection.setPlayerLocation(x, y, z, f1, f);
 	double d7 = Math.min(-2.9999872E7D, destinationWorld.getWorldBorder().minX() + 16.0D);
 	double d4 = Math.min(-2.9999872E7D, destinationWorld.getWorldBorder().minZ() + 16.0D);
 	double d5 = Math.min(2.9999872E7D, destinationWorld.getWorldBorder().maxX() - 16.0D);
@@ -66,11 +89,12 @@ public class CustomTeleporter
 	d0 = MathHelper.clamp(d0, d7, d5);
 	d2 = MathHelper.clamp(d2, d4, d6);
 	entity.setLocationAndAngles(d0, d1, d2, f1, f);
+	entity.connection.setPlayerLocation(d0, d1, d2, f1, f);
 
 	entity.setWorld(destinationWorld);
 	destinationWorld.func_217447_b(entity);
 	//entity.func_213846_b(serverworld); // private case #2: seems to be an advancement trigger thing
-	entity.connection.setPlayerLocation(entity.posX, entity.posY, entity.posZ, f1, f);
+	entity.connection.setPlayerLocation(d0, d1, d2, f1, f);
 	entity.interactionManager.setWorld(destinationWorld);
 	entity.connection.sendPacket(new SPlayerAbilitiesPacket(entity.abilities));
 	playerlist.sendWorldInfo(entity, destinationWorld);
@@ -86,6 +110,5 @@ public class CustomTeleporter
 	entity.setPlayerHealthUpdated();
 	//entity.lastFoodLevel = -1; // private case #3: oh well it'll update soon anyway
 	net.minecraftforge.fml.hooks.BasicEventHooks.firePlayerChangedDimensionEvent(entity, dimensiontype, destination);
-	return entity;
     }
 }
