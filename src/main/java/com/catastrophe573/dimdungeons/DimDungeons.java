@@ -6,6 +6,7 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.ModDimension;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -22,6 +23,10 @@ import org.apache.logging.log4j.Logger;
 import com.catastrophe573.dimdungeons.biome.BiomeRegistrar;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
+import com.catastrophe573.dimdungeons.capability.DefaultPlayerDungeonData;
+import com.catastrophe573.dimdungeons.capability.IPlayerDungeonData;
+import com.catastrophe573.dimdungeons.capability.PlayerDungeonDataEvents;
+import com.catastrophe573.dimdungeons.capability.PlayerDungeonDataStorage;
 import com.catastrophe573.dimdungeons.dimension.DimensionRegistrar;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 
@@ -35,7 +40,7 @@ public class DimDungeons
     // constants used by other classes
     public static final String MOD_ID = "dimdungeons"; // this must match mods.toml
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
-    
+
     public DimDungeons()
     {
 	// register event listeners that don't use the event bus
@@ -44,21 +49,25 @@ public class DimDungeons
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-	
+
 	// Register ourselves for server, registry and other game events we are interested in
 	MinecraftForge.EVENT_BUS.register(this);
+	//MinecraftForge.EVENT_BUS.register(new PlayerDungeonDataEvents());
     }
 
+    // some preinit code	
     private void setup(final FMLCommonSetupEvent event)
     {
-	// some preinit code
+	MinecraftForge.EVENT_BUS.register(new PlayerDungeonDataEvents());
+
+	CapabilityManager.INSTANCE.register(IPlayerDungeonData.class, new PlayerDungeonDataStorage(), DefaultPlayerDungeonData::new);
     }
 
     private void doCommonStuff(final FMLCommonSetupEvent event)
     {
 	DimensionRegistrar.registerDimensions();
     }
-    
+
     private void doClientStuff(final FMLClientSetupEvent event)
     {
 	// do something that can only be done on the client
@@ -105,13 +114,13 @@ public class DimDungeons
 	    tetPortalKeyhole.setRegistryName(MOD_ID, TileEntityPortalKeyhole.REG_NAME);
 	    teRegistryEvent.getRegistry().register(tetPortalKeyhole);
 	}
-	
+
 	@SubscribeEvent
 	public static void registerBiomes(RegistryEvent.Register<Biome> biomeRegistryEvent)
 	{
 	    BiomeRegistrar.registerAllBiomes(biomeRegistryEvent);
-	}	
-	
+	}
+
 	@SubscribeEvent
 	public static void registerDims(RegistryEvent.Register<ModDimension> dimRegistryEvent)
 	{

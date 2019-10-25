@@ -5,6 +5,9 @@ import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
+import com.catastrophe573.dimdungeons.capability.DefaultPlayerDungeonData;
+import com.catastrophe573.dimdungeons.capability.IPlayerDungeonData;
+import com.catastrophe573.dimdungeons.capability.PlayerDungeonDataProvider;
 import com.catastrophe573.dimdungeons.command.CustomTeleporter;
 import com.catastrophe573.dimdungeons.dimension.DungeonDimensionType;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
@@ -128,12 +131,25 @@ public class BlockGoldPortal extends BreakableBlock
 			if (warpX == -1 || warpZ == -1)
 			{
 			    System.out.println("Player somehow used an unactivated key? Doing nothing.");
-			    //actuallyPerformTeleport((EntityPlayerMP) entityIn, DimensionRegistrar.getDungeonDimensionID(), 7.5f, 52, 12.0f);
 			}
 			else
 			{
 			    //System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + "). in dim...");
-			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonDimensionType.getDimensionType(), warpX, 55.1D, warpZ);
+			    //IPlayerDungeonData data = (IPlayerDungeonData) entityIn.getCapability(PlayerDungeonDataProvider.DUNGEONDATA_CAPABILITY);
+			    if (entityIn.getCapability(PlayerDungeonDataProvider.DUNGEONDATA_CAPABILITY).isPresent())
+			    {
+				IPlayerDungeonData data = entityIn.getCapability(PlayerDungeonDataProvider.DUNGEONDATA_CAPABILITY).orElse(new DefaultPlayerDungeonData());
+				data.setLastOverworldPortalX((float) entityIn.prevPosX);
+				data.setLastOverworldPortalY((float) entityIn.prevPosY);
+				data.setLastOverworldPortalZ((float) entityIn.prevPosZ);
+				data.setLastOverworldPortalYaw(entityIn.getPitchYaw().y);
+				DimDungeons.LOGGER.info("DIMDUNGEONS: SAVED PLAYER CAPABILITY " + data.getLastOverworldPortalY());
+			    }
+			    else
+			    {
+				DimDungeons.LOGGER.info("DIMDUNGEONS: UNABLE TO SAVE PLAYER CAPABILITY");
+			    }
+			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonDimensionType.getDimensionType(), warpX, 55.1D, warpZ, 0);
 			}
 		    }
 		    // three vanilla blocks will also open portals to the 3 vanilla dimensions?
@@ -166,9 +182,9 @@ public class BlockGoldPortal extends BreakableBlock
 	}
     }
 
-    protected void actuallyPerformTeleport(ServerPlayerEntity player, DimensionType dim, double x, double y, double z)
+    protected void actuallyPerformTeleport(ServerPlayerEntity player, DimensionType dim, double x, double y, double z, double yaw)
     {
-	player.timeUntilPortal = 300; // 300 ticks, same as vanilla nether portal (hijacking this also affects nether portals, which is intentional) 
+	player.timeUntilPortal = 200; // 300 ticks, same as vanilla nether portal (hijacking this also affects nether portals, which is intentional) 
 
 	// if the player just entered a dungeon then force them to face north 
 	if (dim == DungeonDimensionType.getDimensionType())
@@ -177,26 +193,51 @@ public class BlockGoldPortal extends BreakableBlock
 	}
 	else
 	{
-	    CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, player.getPitchYaw().x, player.getPitchYaw().y);
+	    CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, player.getPitchYaw().x, (float) yaw);
 	}
     }
 
     protected void sendPlayerBackHome(ServerPlayerEntity player)
     {
-	BlockPos respawn = player.getBedLocation(DimensionType.OVERWORLD);
-	if (respawn == null)
+	float lastX = 0;
+	float lastY = 0;
+	float lastZ = 0;
+	float lastYaw = player.getPitchYaw().y;
+	if (player.getCapability(PlayerDungeonDataProvider.DUNGEONDATA_CAPABILITY).isPresent())
 	{
-	    // the fallback is to simply use the world spawn point
-	    respawn = player.getServer().getWorld(DimensionType.OVERWORLD).getSpawnPoint();
+	    IPlayerDungeonData data = player.getCapability(PlayerDungeonDataProvider.DUNGEONDATA_CAPABILITY).orElse(new DefaultPlayerDungeonData());
+	    lastX = data.getLastOverworldPortalX();
+	    lastY = data.getLastOverworldPortalY();
+	    lastZ = data.getLastOverworldPortalZ();
+	    lastYaw = data.getLastOverworldPortalYaw();
+	    DimDungeons.LOGGER.info("DIMDUNGEONS: LOADED PLAYER CAPABILITY " + data.getLastOverworldPortalY());
 	}
-	if (respawn == null)
+	else
 	{
-	    // okay so we're using mods to not have respawns on the overworld or something?
-	    respawn = new BlockPos(0f, 100f, 0f);
-	    DimDungeons.LOGGER.info("WARNING: Player " + player.getName() + " could not return to their spawn point after exiting their dungeon.");
+	    DimDungeons.LOGGER.info("DIMDUNGEONS: PLAYER WENT HOME WITH NO CAPABILITY");
 	}
 
-	actuallyPerformTeleport(player, DimensionType.OVERWORLD, respawn.getX(), respawn.getY(), respawn.getZ());
+	if (lastY < 2)
+	{
+	    // second fallback: use the bed position
+	    BlockPos respawn = player.getBedLocation(DimensionType.OVERWORLD);
+	    if (respawn != null)
+	    {
+		respawn.add(0, 3, 0); // stand on the bed
+	    }
+	    else
+	    {
+		// third fallback: use the world spawn point
+		respawn = player.getServer().getWorld(DimensionType.OVERWORLD).getSpawnPoint();
+		respawn.add(0, 2, 0);
+	    }
+	    lastX = respawn.getX();
+	    lastY = respawn.getY();
+	    lastZ = respawn.getZ();
+	    lastYaw = player.getPitchYaw().y;
+	}
+
+	actuallyPerformTeleport(player, DimensionType.OVERWORLD, lastX, lastY, lastZ, lastYaw);
     }
 
     // this function returns boolean and relies on another function to actually destroy the block
