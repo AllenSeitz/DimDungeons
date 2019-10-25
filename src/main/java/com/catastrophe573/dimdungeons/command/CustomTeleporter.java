@@ -1,7 +1,5 @@
 package com.catastrophe573.dimdungeons.command;
 
-import java.lang.reflect.Field;
-
 import com.catastrophe573.dimdungeons.DimDungeons;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
