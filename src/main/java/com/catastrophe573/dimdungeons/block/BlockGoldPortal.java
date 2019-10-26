@@ -112,7 +112,7 @@ public class BlockGoldPortal extends BreakableBlock
 	    return; // not yet
 	}
 
-	if (!entityIn.isPassenger() && !entityIn.isBeingRidden() && entityIn.isNonBoss())
+	if (!entityIn.isPassenger() && !entityIn.isBeingRidden() && entityIn.isNonBoss() && entityIn.onGround)
 	{
 	    //DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
 
