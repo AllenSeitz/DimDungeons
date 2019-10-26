@@ -52,15 +52,14 @@ public class DimDungeons
 
 	// Register ourselves for server, registry and other game events we are interested in
 	MinecraftForge.EVENT_BUS.register(this);
-	//MinecraftForge.EVENT_BUS.register(new PlayerDungeonDataEvents());
     }
 
     // some preinit code	
     private void setup(final FMLCommonSetupEvent event)
     {
-	MinecraftForge.EVENT_BUS.register(new PlayerDungeonDataEvents());
+	//MinecraftForge.EVENT_BUS.register(new PlayerDungeonDataEvents());
 
-	CapabilityManager.INSTANCE.register(IPlayerDungeonData.class, new PlayerDungeonDataStorage(), DefaultPlayerDungeonData::new);
+	//CapabilityManager.INSTANCE.register(IPlayerDungeonData.class, new PlayerDungeonDataStorage(), DefaultPlayerDungeonData::new);
     }
 
     private void doCommonStuff(final FMLCommonSetupEvent event)
