@@ -37,6 +37,9 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableBoundingBox;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.TextComponentUtils;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.GenerationSettings;
@@ -45,6 +48,7 @@ import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.template.PlacementSettings;
 import net.minecraft.world.gen.feature.template.Template;
 import net.minecraft.world.gen.feature.template.TemplateManager;
+import net.minecraftforge.server.command.TextComponentHelper;
 
 public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 {
@@ -596,7 +600,8 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	}
 
 	mob.setCanPickUpLoot(false);
-	mob.setCustomName(new StringTextComponent(I18n.format("enemy.dimdungeons." + casualName)));
+	//mob.setCustomName(new StringTextComponent(I18n.format("enemy.dimdungeons." + casualName)));
+	mob.setCustomName(new TranslationTextComponent("enemy.dimdungeons." + casualName));
 	mob.setHomePosAndDistance(pos, 8);
 	mob.moveToBlockPosAndAngles(pos, 0.0F, 0.0F);
 	mob.enablePersistence();
@@ -654,23 +659,30 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 
 	if (bookType == 0)
 	{
-	    title = I18n.format("book.dimdungeons.title_1");
-	    body = I18n.format("book.dimdungeons.fun_message_" + messageVariation);
+	    //title = I18n.format("book.dimdungeons.title_1");
+	    //body = I18n.format("book.dimdungeons.fun_message_" + messageVariation);
+	    title = new TranslationTextComponent("book.dimdungeons.title_1").getString();
+	    body = new TranslationTextComponent("book.dimdungeons.fun_message_" + messageVariation).getString();
+	    
 	}
 	else if (bookType == 1)
 	{
-	    title = I18n.format("book.dimdungeons.title_2");
-	    body = I18n.format("book.dimdungeons.helpful_message_" + messageVariation);
+	    //title = I18n.format("book.dimdungeons.title_2");
+	    //body = I18n.format("book.dimdungeons.helpful_message_" + messageVariation);
+	    title = new TranslationTextComponent("book.dimdungeons.title_2").getString();
+	    body = new TranslationTextComponent("book.dimdungeons.helpful_message_" + messageVariation).getString();
 	}
 	else
 	{
-	    title = I18n.format("book.dimdungeons.title_3");
-	    body = I18n.format("book.dimdungeons.dangerous_message_" + messageVariation);
+	    //title = I18n.format("book.dimdungeons.title_3");
+	    //body = I18n.format("book.dimdungeons.dangerous_message_" + messageVariation);
+	    title = new TranslationTextComponent("book.dimdungeons.title_3").getString();
+	    body = new TranslationTextComponent("book.dimdungeons.dangerous_message_" + messageVariation).getString();
 	}
 
 	// create the complicated NBT tag list for the list of pages in the book
 	ListNBT pages = new ListNBT();
-	ITextComponent text = new StringTextComponent(body);
+	ITextComponent text = new TranslationTextComponent(body);
 	String json = ITextComponent.Serializer.toJson(text);
 	//pages.appendTag(new NBTTagString(json)); // 1.12
 	//pages.add(0, new NBTTagString(json)); // 1.13
@@ -681,8 +693,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	stack.getTag().putInt("generation", 0);
 	stack.getTag().put("pages", pages);
 	stack.getTag().putString("title", title);
-	stack.getTag().putString("author", I18n.format("book.dimdungeons.author"));
-
+	stack.getTag().putString("author", new TranslationTextComponent("book.dimdungeons.author").getString());
 	return stack;
     }
 
