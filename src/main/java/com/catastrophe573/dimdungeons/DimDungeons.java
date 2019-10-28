@@ -6,7 +6,6 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.ModDimension;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -23,10 +22,6 @@ import org.apache.logging.log4j.Logger;
 import com.catastrophe573.dimdungeons.biome.BiomeRegistrar;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
-import com.catastrophe573.dimdungeons.capability.DefaultPlayerDungeonData;
-import com.catastrophe573.dimdungeons.capability.IPlayerDungeonData;
-import com.catastrophe573.dimdungeons.capability.PlayerDungeonDataEvents;
-import com.catastrophe573.dimdungeons.capability.PlayerDungeonDataStorage;
 import com.catastrophe573.dimdungeons.dimension.DimensionRegistrar;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 
