@@ -167,7 +167,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	    // north: no rotation
 	    placementsettings.setRotation(Rotation.NONE);
 	}
-	DimDungeons.LOGGER.info("Placing a room: " + room.structure);
+	//DimDungeons.LOGGER.info("Placing a room: " + room.structure);
 	boolean success = template.addBlocksToWorld(world, position, placementsettings, 2);
 
 	// handle data blocks - this code block is copied from TemplateStructurePiece
