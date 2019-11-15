@@ -660,7 +660,7 @@ public class DungeonBuilderLogic
 		if (nextRoom == "deathtrap_1")
 		{
 		    // yet another puzzle/reward room appears at most once per dungeon, and there are 4 unrelated variations of this room as well
-		    int variation = rand.nextInt(5) + 1;
+		    int variation = rand.nextInt(4) + 1;
 		    nextRoom = nextRoom.replace("1", "" + variation);
 		}		
 		if (nextRoom == "spawner_1")
