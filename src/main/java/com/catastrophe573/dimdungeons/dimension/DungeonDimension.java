@@ -80,6 +80,10 @@ public class DungeonDimension extends Dimension
 	{
 	    return true;
 	}
+	if (block.getRegistryName().getNamespace() == "gravestones")
+	{
+	    return true;
+	}
 
 	//return getWorld().canMineBlockBody(player, pos);
 	return false;
