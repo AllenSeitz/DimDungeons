@@ -5,9 +5,6 @@ import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
-import com.catastrophe573.dimdungeons.capability.DefaultPlayerDungeonData;
-import com.catastrophe573.dimdungeons.capability.IPlayerDungeonData;
-import com.catastrophe573.dimdungeons.capability.PlayerDungeonDataProvider;
 import com.catastrophe573.dimdungeons.command.CustomTeleporter;
 import com.catastrophe573.dimdungeons.dimension.DungeonDimensionType;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
@@ -136,6 +133,8 @@ public class BlockGoldPortal extends BreakableBlock
 			{
 			    //System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + "). in dim...");
 			    //IPlayerDungeonData data = (IPlayerDungeonData) entityIn.getCapability(PlayerDungeonDataProvider.DUNGEONDATA_CAPABILITY);
+			    
+			    /*
 			    if (entityIn.getCapability(PlayerDungeonDataProvider.DUNGEONDATA_CAPABILITY).isPresent())
 			    {
 				IPlayerDungeonData data = entityIn.getCapability(PlayerDungeonDataProvider.DUNGEONDATA_CAPABILITY).orElse(new DefaultPlayerDungeonData());
@@ -149,6 +148,8 @@ public class BlockGoldPortal extends BreakableBlock
 			    {
 				DimDungeons.LOGGER.info("DIMDUNGEONS: UNABLE TO SAVE PLAYER CAPABILITY");
 			    }
+			    */
+			    
 			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonDimensionType.getDimensionType(), warpX, 55.1D, warpZ, 0);
 			}
 		    }
@@ -203,6 +204,7 @@ public class BlockGoldPortal extends BreakableBlock
 	float lastY = 0;
 	float lastZ = 0;
 	float lastYaw = player.getPitchYaw().y;
+	/*
 	if (player.getCapability(PlayerDungeonDataProvider.DUNGEONDATA_CAPABILITY).isPresent())
 	{
 	    IPlayerDungeonData data = player.getCapability(PlayerDungeonDataProvider.DUNGEONDATA_CAPABILITY).orElse(new DefaultPlayerDungeonData());
@@ -216,6 +218,7 @@ public class BlockGoldPortal extends BreakableBlock
 	{
 	    DimDungeons.LOGGER.info("DIMDUNGEONS: PLAYER WENT HOME WITH NO CAPABILITY");
 	}
+	*/
 
 	if (lastY < 2)
 	{

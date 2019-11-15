@@ -10,9 +10,9 @@ import net.minecraftforge.common.util.LazyOptional;
 public class PlayerDungeonDataProvider implements ICapabilitySerializable<CompoundNBT>
 {
     @CapabilityInject(IPlayerDungeonData.class)
-    public static final Capability<IPlayerDungeonData> DUNGEONDATA_CAPABILITY = null;
+    //public static final Capability<IPlayerDungeonData> DUNGEONDATA_CAPABILITY = null;
 
-    private IPlayerDungeonData instance = DUNGEONDATA_CAPABILITY.getDefaultInstance();
+    //private IPlayerDungeonData instance = DUNGEONDATA_CAPABILITY.getDefaultInstance();
 
     @SuppressWarnings("unchecked")
     @Override
@@ -27,12 +27,13 @@ public class PlayerDungeonDataProvider implements ICapabilitySerializable<Compou
     @Override
     public CompoundNBT serializeNBT()
     {
-	return (CompoundNBT) DUNGEONDATA_CAPABILITY.getStorage().writeNBT(DUNGEONDATA_CAPABILITY, instance, null);
+	return null;
+	//return (CompoundNBT) DUNGEONDATA_CAPABILITY.getStorage().writeNBT(DUNGEONDATA_CAPABILITY, instance, null);
     }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt)
     {
-	DUNGEONDATA_CAPABILITY.getStorage().readNBT(DUNGEONDATA_CAPABILITY, instance, null, nbt);
+	//DUNGEONDATA_CAPABILITY.getStorage().readNBT(DUNGEONDATA_CAPABILITY, instance, null, nbt);
     }
 }
