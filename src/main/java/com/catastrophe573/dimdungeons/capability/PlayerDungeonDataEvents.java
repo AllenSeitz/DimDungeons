@@ -12,28 +12,28 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 //@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class PlayerDungeonDataEvents
 {
-    public static final ResourceLocation DUNGEONDATA_CAPABILITY = new ResourceLocation(DimDungeons.MOD_ID, "dungeondata_capability");
+    //public static final ResourceLocation DUNGEONDATA_CAPABILITY = new ResourceLocation(DimDungeons.MOD_ID, "dungeondata_capability");
 
+    /*
     @SubscribeEvent
     public void onAttachCaps(AttachCapabilitiesEvent<Entity> event)
     {
 	if (event.getObject() instanceof PlayerEntity)
 	{
-	    /*
 	    if (!event.getObject().getCapability(PlayerDungeonDataProvider.DUNGEONDATA_CAPABILITY).isPresent())
 	    {
 		event.addCapability(DUNGEONDATA_CAPABILITY, new PlayerDungeonDataProvider());
 	    }
-	    */
 	}
     }
+    */
 
+    /*
     @SubscribeEvent
     public void onTravelAcrossDimensions(PlayerEvent.PlayerChangedDimensionEvent event)
     {
 	if (event.getPlayer() != null)
 	{
-	    /*
 	    if (event.getPlayer().getCapability(PlayerDungeonDataProvider.DUNGEONDATA_CAPABILITY).isPresent())
 	    {
 		IPlayerDungeonData data = event.getPlayer().getCapability(PlayerDungeonDataProvider.DUNGEONDATA_CAPABILITY).orElse(null);
@@ -46,10 +46,11 @@ public class PlayerDungeonDataEvents
 		    data.setLastOverworldPortalYaw((float)event.getPlayer().getPitchYaw().y);		    
 		}
 	    }
-	    */
 	}
     }
+    */
 
+    /*
     @SubscribeEvent
     // this event is fired for two unrelated reasons: onPlayerDeath (and respawn). And when returning from the end to the overworld.
     public void onPlayerClone(PlayerEvent.Clone event)
@@ -60,7 +61,6 @@ public class PlayerDungeonDataEvents
 	    return;
 	}
 
-	/*
 	if (event.getOriginal().getCapability(PlayerDungeonDataProvider.DUNGEONDATA_CAPABILITY).isPresent())
 	{
 	    IPlayerDungeonData data = event.getPlayer().getCapability(PlayerDungeonDataProvider.DUNGEONDATA_CAPABILITY).orElse(new DefaultPlayerDungeonData());
@@ -72,6 +72,6 @@ public class PlayerDungeonDataEvents
 	    data.setLastOverworldPortalZ(oldData.getLastOverworldPortalZ());
 	    data.setLastOverworldPortalYaw(oldData.getLastOverworldPortalYaw());
 	}
-	*/
     }
+    */
 }
