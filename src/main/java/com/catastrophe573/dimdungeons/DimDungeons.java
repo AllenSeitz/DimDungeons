@@ -5,7 +5,6 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.ModDimension;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -44,7 +43,8 @@ public class DimDungeons
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-
+	DimensionRegistrar.DIMENSIONS.register(FMLJavaModLoadingContext.get().getModEventBus());
+	
 	// Register ourselves for server, registry and other game events we are interested in
 	MinecraftForge.EVENT_BUS.register(this);
     }
@@ -59,7 +59,6 @@ public class DimDungeons
 
     private void doCommonStuff(final FMLCommonSetupEvent event)
     {
-	DimensionRegistrar.registerDimensions();
     }
 
     private void doClientStuff(final FMLClientSetupEvent event)
@@ -113,13 +112,6 @@ public class DimDungeons
 	public static void registerBiomes(RegistryEvent.Register<Biome> biomeRegistryEvent)
 	{
 	    BiomeRegistrar.registerAllBiomes(biomeRegistryEvent);
-	}
-
-	@SubscribeEvent
-	public static void registerDims(RegistryEvent.Register<ModDimension> dimRegistryEvent)
-	{
-	    // DimensionRegistrar is also listening for this event, and does not appreciate being told twice
-	    // TODO: hey wait why don't I make the other registrars work this way too?
 	}
     }
 }

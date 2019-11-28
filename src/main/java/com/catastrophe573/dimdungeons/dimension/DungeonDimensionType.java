@@ -21,7 +21,7 @@ public class DungeonDimensionType extends ModDimension
     {
 	return DimensionType.byName(new ResourceLocation(DimDungeons.MOD_ID, DimensionRegistrar.dungeon_basic_regname));
     }
-
+    
     @Override
     public BiFunction<World, DimensionType, ? extends Dimension> getFactory()
     {
