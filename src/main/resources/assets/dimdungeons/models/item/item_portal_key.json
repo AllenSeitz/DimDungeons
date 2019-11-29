@@ -4,6 +4,21 @@
         "layer0": "dimdungeons:item/item_portal_key"
     },
 	
+  "overrides": [
+    {
+      "predicate": {
+        "dimdungeons:keytype": 0.1
+      },
+      "model": "dimdungeons:item/item_key_level1"
+    },
+    {
+      "predicate": {
+        "dimdungeons:keytype": 0.2
+      },
+      "model": "dimdungeons:item/item_key_level2"
+    }	
+  ],	
+	
   "display": {
     "thirdperson_righthand": {
       "rotation": [ 32, 90, 0 ],

@@ -8,8 +8,10 @@
     "block.dimdungeons.block_gold_portal": "Gold Dungeon Portal",
     "block.dimdungeons.block_portal_keyhole": "Portal Keystone",
 
-// these trophy strings are not used, 1.14 forced them to move into the loot tables
+// this will be overridden when the key is activated
     "item.dimdungeons.item_portal_key": "Blank Portal Key",
+
+// these trophy strings are not used, 1.14 forced them to move into the loot tables
     "item.dimdungeons.item_trophy_1": "1UP Mushroom",
     "item.dimdungeons.item_trophy_2": "Master Sword",
     "item.dimdungeons.item_trophy_3": "Ist Rune",
