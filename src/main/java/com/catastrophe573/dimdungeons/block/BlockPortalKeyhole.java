@@ -34,7 +34,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
@@ -67,7 +66,9 @@ public class BlockPortalKeyhole extends Block
     //public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
     public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
-	if (stateIn.get(LIT))
+	boolean hasPortalBlockBelow = worldIn.getBlockState(pos.down()).getBlock() == BlockRegistrar.block_gold_portal;
+	
+	if (stateIn.get(LIT) && hasPortalBlockBelow)
 	{
 	    Direction enumfacing = (Direction) stateIn.get(FACING);
 	    double d0 = (double) pos.getX() + 0.5D;
@@ -206,23 +207,6 @@ public class BlockPortalKeyhole extends Block
 	{
 	    ItemPortalKey key = (ItemPortalKey) item.getItem();
 	    return key.isActivated(item);
-	}
-	// three vanilla blocks will also open portals to the 3 vanilla dimensions?
-	else if (getBlockFromItem(item.getItem()) != null)
-	{
-	    Block b = getBlockFromItem(item.getItem());
-	    if (b == Blocks.NETHERRACK && worldIn.getDimension().getType() != DimensionType.THE_NETHER)
-	    {
-		return true;
-	    }
-	    if (b == Blocks.END_STONE && worldIn.getDimension().getType() != DimensionType.THE_END)
-	    {
-		return true;
-	    }
-	    if (b == Blocks.GRASS_BLOCK && worldIn.getDimension().getType() != DimensionType.OVERWORLD)
-	    {
-		return true;
-	    }
 	}
 
 	return false;
