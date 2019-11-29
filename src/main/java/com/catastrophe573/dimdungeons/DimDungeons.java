@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -44,7 +45,7 @@ public class DimDungeons
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 	DimensionRegistrar.DIMENSIONS.register(FMLJavaModLoadingContext.get().getModEventBus());
-	
+
 	// Register ourselves for server, registry and other game events we are interested in
 	MinecraftForge.EVENT_BUS.register(this);
     }
@@ -59,6 +60,7 @@ public class DimDungeons
 
     private void doCommonStuff(final FMLCommonSetupEvent event)
     {
+	BiomeDictionary.addTypes(BiomeRegistrar.biome_dungeon, BiomeDictionary.Type.VOID);
     }
 
     private void doClientStuff(final FMLClientSetupEvent event)
