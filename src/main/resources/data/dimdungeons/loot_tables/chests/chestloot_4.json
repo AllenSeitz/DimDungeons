@@ -1,0 +1,23 @@
+{
+  "pools": [
+    {
+      "rolls": {
+        "min": 2,
+        "max": 2
+      },
+  	  "name":"dimdungeons:pool_4",
+      "entries": [
+        {
+          "type": "loot_table",
+          "name": "dimdungeons:chests/chestloot_2",
+          "weight": 1
+        },
+        {
+          "type": "loot_table",
+          "name": "dimdungeons:chests/chestloot_2",
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}

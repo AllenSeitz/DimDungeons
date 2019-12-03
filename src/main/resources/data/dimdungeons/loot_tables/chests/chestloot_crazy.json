@@ -1,0 +1,48 @@
+{
+  "pools": [
+    {
+      "rolls": {
+        "min": 2,
+        "max": 2
+      },
+  	  "name":"dimdungeons:pool_super",
+      "entries": [
+        {
+          "type": "loot_table",
+          "name": "minecraft:chests/pillager_outpost",
+          "weight": 1
+        },
+        {
+          "type": "loot_table",
+          "name": "minecraft:chests/shipwreck_treasure",
+          "weight": 1
+        },
+        {
+          "type": "loot_table",
+          "name": "minecraft:chests/village_weaponsmith",
+          "weight": 1
+        },
+        {
+          "type": "loot_table",
+          "name": "minecraft:chests/woodland_mansion",
+          "weight": 1
+        },
+        {
+          "type": "loot_table",
+          "name": "minecraft:chests/end_city_treasure",
+          "weight": 1
+        },
+        {
+          "type": "loot_table",
+          "name": "minecraft:chests/stronghold_corridor",
+          "weight": 1
+        },
+        {
+          "type": "loot_table",
+          "name": "minecraft:chests/stronghold_library",
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}
