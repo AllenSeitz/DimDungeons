@@ -60,15 +60,15 @@ public class ItemPortalKey extends Item
 	    @OnlyIn(Dist.CLIENT)
 	    public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity)
 	    {
-		if ( isActivated(stack))
+		if (isActivated(stack))
 		{
-		    if ( getWarpZ(stack) < 0 )
+		    if (getWarpZ(stack) < 0)
 		    {
 			return 0.2f; // level 2 key
 		    }
 		    return 0.1f; // level 1 key
 		}
-		
+
 		return 0.0f; // unactivated key
 	    }
 	});
@@ -81,7 +81,7 @@ public class ItemPortalKey extends Item
 
 	// where is this key going?
 	int destX = random.nextInt(RANDOM_COORDINATE_RANGE);
-	int destZ = random.nextInt(RANDOM_COORDINATE_RANGE);
+	int destZ = random.nextInt(RANDOM_COORDINATE_RANGE) * -1;
 	data.putInt(NBT_KEY_DESTINATION_X, destX);
 	data.putInt(NBT_KEY_DESTINATION_Z, destZ);
 
@@ -98,6 +98,26 @@ public class ItemPortalKey extends Item
 	    data.putInt(NBT_NAME_PART_1, random.nextInt(20)); // key to the place of noun
 	    data.putInt(NBT_NAME_PART_2, random.nextInt(32));
 	}
+
+	stack.setTag(data);
+    }
+
+    // the only way to obtain level 2 keys is to find them already activated
+    protected void activateKeyLevel2(ItemStack stack)
+    {
+	CompoundNBT data = new CompoundNBT();
+	data.putBoolean(NBT_KEY_ACTIVATED, true);
+
+	// where is this key going?
+	int destX = random.nextInt(RANDOM_COORDINATE_RANGE);
+	int destZ = random.nextInt(RANDOM_COORDINATE_RANGE);
+	data.putInt(NBT_KEY_DESTINATION_X, destX);
+	data.putInt(NBT_KEY_DESTINATION_Z, destZ);
+
+	// give it a funny random name like "Key to the [LARGE] [PLACE]"
+	data.putInt(NBT_NAME_TYPE, 3);
+	data.putInt(NBT_NAME_PART_1, random.nextInt(20)); // place
+	data.putInt(NBT_NAME_PART_2, random.nextInt(12)); // largeness
 
 	stack.setTag(data);
     }
@@ -160,13 +180,20 @@ public class ItemPortalKey extends Item
 			retval = start + " " + noun1 + " " + preposition + " " + noun2;
 		    }
 		}
-		else
+		else if (nameType == 2)
 		{
 		    String start = I18n.format("npart.dimdungeons.struct_5");
 		    String preposition = I18n.format("npart.dimdungeons.struct_6");
 		    String place = I18n.format("npart.dimdungeons.place_" + word_index_1);
 		    String noun = I18n.format("npart.dimdungeons.noun_" + word_index_2);
 		    retval = start + " " + place + " " + preposition + " " + noun;
+		}
+		else if (nameType == 3)
+		{
+		    String start = I18n.format("npart.dimdungeons.struct_7");
+		    String place = I18n.format("npart.dimdungeons.place_" + word_index_1);
+		    String largeness = I18n.format("npart.dimdungeons.large_" + word_index_2);
+		    retval = start + " " + largeness + " " + place;
 		}
 
 		return new StringTextComponent(retval);
@@ -250,8 +277,15 @@ public class ItemPortalKey extends Item
 			    else
 			    {
 				//System.out.println("Triggered special event to initialize key!");
-				worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-				activateKey(itemstack);
+				worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				if (pos.getX() == 0 && pos.getZ() == 0)
+				{
+				    activateKeyLevel2(itemstack); // for debugging only, End Portal Frames should never appear at (0,0) in the Overworld and this is not intended
+				}
+				else
+				{
+				    activateKey(itemstack);
+				}
 
 				// more particle effects for this special event!
 				for (int i = 0; i < 32; i++)
