@@ -22,10 +22,14 @@ public class FeatureRegistrar
     @ObjectHolder("dimdungeons:feature_basic_dungeon")
     public static Feature<NoFeatureConfig> feature_basic_dungeon = null;
 
+    @ObjectHolder("dimdungeons:feature_advanced_dungeon")
+    public static Feature<NoFeatureConfig> feature_advanced_dungeon = null;
+    
     @SubscribeEvent
     public static void onFeaturesRegistry(RegistryEvent.Register<Feature<?>> event)
     {
 	registerFeature(event, new BasicDungeonFeature(NoFeatureConfig::deserialize), BasicDungeonFeature.FEATURE_ID);
+	registerFeature(event, new AdvancedDungeonFeature(NoFeatureConfig::deserialize), AdvancedDungeonFeature.FEATURE_ID);
     }
 
     // a helper function for onFeaturesRegistry(), copied from Laton95's mod Rune-Mysteries
@@ -39,6 +43,7 @@ public class FeatureRegistrar
     public static void applyFeatures(FMLCommonSetupEvent event)
     {
 	addFeatureToBiome(BiomeRegistrar.biome_dungeon, GenerationStage.Decoration.SURFACE_STRUCTURES, feature_basic_dungeon);
+	addFeatureToBiome(BiomeRegistrar.biome_dungeon, GenerationStage.Decoration.SURFACE_STRUCTURES, feature_advanced_dungeon);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

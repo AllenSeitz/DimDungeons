@@ -3,6 +3,7 @@ package com.catastrophe573.dimdungeons.dimension;
 import java.util.List;
 import java.util.Random;
 
+import com.catastrophe573.dimdungeons.feature.AdvancedDungeonFeature;
 import com.catastrophe573.dimdungeons.feature.BasicDungeonFeature;
 
 import net.minecraft.block.Blocks;
@@ -69,7 +70,7 @@ public class DungeonChunkGenerator extends OverworldChunkGenerator
 	randomSeed.setSeed((worldSeed + (long) (x * x * 4987142) + (long) (x * 5947611) + (long) (z * z) * 4392871L + (long) (z * 389711) ^ worldSeed));
 
 	// first generate a superflat world - sandstone where dungeons can appear, and void otherwise
-	if (BasicDungeonFeature.isDungeonChunk(x, z))
+	if (BasicDungeonFeature.isDungeonChunk(x, z) || AdvancedDungeonFeature.isDungeonChunk(x, z))
 	{
 	    for (int px = 0; px < 16; px++)
 	    {
@@ -84,9 +85,9 @@ public class DungeonChunkGenerator extends OverworldChunkGenerator
 			else if (py < 50)
 			{
 			    // for debugging mostly but it also kind of looks good when you're in creative mode
-			    if (BasicDungeonFeature.isEntranceChunk(x, z))
+			    if (BasicDungeonFeature.isEntranceChunk(x, z) || AdvancedDungeonFeature.isEntranceChunk(x, z))
 			    {
-				chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.COBBLESTONE.getDefaultState(), false);
+				chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.ANDESITE.getDefaultState(), false);
 			    }
 			    else
 			    {
