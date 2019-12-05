@@ -46,6 +46,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.template.PlacementSettings;
 import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.world.gen.feature.template.Template.BlockInfo;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 
 public class AdvancedDungeonFeature extends Feature<NoFeatureConfig>
@@ -172,6 +173,13 @@ public class AdvancedDungeonFeature extends Feature<NoFeatureConfig>
 		}
 	    }
 	}
+	
+	// replace all red carpet in entrance rooms with green carpet
+	for (BlockInfo info : template.func_215381_a(position, placementsettings, Blocks.RED_CARPET))
+	{
+	    world.setBlockState(info.pos, Blocks.GREEN_CARPET.getDefaultState(), 3);
+	}
+	
 	return success;
     }
 
