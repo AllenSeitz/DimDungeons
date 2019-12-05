@@ -13,12 +13,14 @@ public class BlockRegistrar
     @ObjectHolder("dimdungeons:block_gilded_portal") public static Block block_gilded_portal;    
     @ObjectHolder("dimdungeons:block_gold_portal") public static Block block_gold_portal;    
     @ObjectHolder("dimdungeons:block_portal_keyhole") public static Block block_portal_keyhole;    
+    @ObjectHolder("dimdungeons:block_portal_crown") public static Block block_portal_crown;    
     
     public static void registerAllBlocks(RegistryEvent.Register<Block> event)
     {
 	event.getRegistry().register(new BlockGildedPortal());
 	event.getRegistry().register(new BlockGoldPortal());
 	event.getRegistry().register(new BlockPortalKeyhole());
+	event.getRegistry().register(new BlockPortalCrown());
     }
 
     // this is called by the ItemRegistrar
@@ -27,5 +29,6 @@ public class BlockRegistrar
 	event.getRegistry().register(new BlockItem(block_gilded_portal, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_gilded_portal.getRegistryName()));
 	event.getRegistry().register(new BlockItem(block_gold_portal, new Item.Properties()).setRegistryName(block_gold_portal.getRegistryName()));
 	event.getRegistry().register(new BlockItem(block_portal_keyhole, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_portal_keyhole.getRegistryName()));
+	event.getRegistry().register(new BlockItem(block_portal_crown, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_portal_crown.getRegistryName()));
     }
 }
