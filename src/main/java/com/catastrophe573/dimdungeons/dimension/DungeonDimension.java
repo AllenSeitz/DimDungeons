@@ -84,6 +84,13 @@ public class DungeonDimension extends Dimension
 	{
 	    return true;
 	}
+	
+	/* TODO: someday make this a config option
+	if (player.hasPermissionLevel(2))
+	{
+	    return true;
+	}
+	//*/
 
 	//return getWorld().canMineBlockBody(player, pos);
 	return false;
