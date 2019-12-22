@@ -18,8 +18,11 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.tileentity.BannerPattern;
+import net.minecraft.tileentity.BannerTileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -267,15 +270,44 @@ public class BlockGoldPortal extends BreakableBlock
 
 	// step 3: look for the other structure blocks on either the X or Z axis, depending on how the keyhole is facing
 	BlockState keyholeBlock = worldIn.getBlockState(te.getPos());
-
+	boolean frameLevel1 = false;
 	if (keyholeBlock.get(BlockPortalKeyhole.FACING) == Direction.WEST || keyholeBlock.get(BlockPortalKeyhole.FACING) == Direction.EAST)
 	{
-	    return checkPortalFrameNorthSouth(worldIn, te.getPos());
+	    frameLevel1 = checkPortalFrameNorthSouth(worldIn, te.getPos());
 	}
 	else
 	{
-	    return checkPortalFrameWestEast(worldIn, te.getPos());
+	    frameLevel1 = checkPortalFrameWestEast(worldIn, te.getPos());
 	}
+	if ( !frameLevel1 )
+	{
+	    return false;
+	}
+	
+	// step 4: if this is a level 2 key then check additional portal frame requirements
+	ItemStack key = te.getObjectInserted();
+	int keyLevel = ((ItemPortalKey)key.getItem()).getKeyLevel(key);
+	if ( key.getItem() instanceof ItemPortalKey )
+	{
+	    if ( keyLevel >= 2 )
+	    {
+		boolean frameLevel2 = false;
+		if (keyholeBlock.get(BlockPortalKeyhole.FACING) == Direction.WEST || keyholeBlock.get(BlockPortalKeyhole.FACING) == Direction.EAST)
+		{
+		    frameLevel2 = checkPortalFrameLevel2NorthSouth(worldIn, te.getPos());
+		}
+		else
+		{
+		    frameLevel2 = checkPortalFrameLevel2WestEast(worldIn, te.getPos());
+		}
+		if ( !frameLevel2 )
+		{
+		    return false;
+		}
+	    }
+	}
+	
+	return true;
     }
 
     // return the tile entity if it can be found, or NULL otherwise (in which case this portal block will soon vanish)
@@ -357,7 +389,109 @@ public class BlockGoldPortal extends BreakableBlock
 
 	return true;
     }
+    
+    private boolean checkPortalFrameLevel2WestEast(IWorld worldIn, BlockPos keyhole)
+    {
+	// main portal body - check for added crowns
+	if (worldIn.getBlockState(keyhole.west(1)).getBlock() != BlockRegistrar.block_portal_crown || worldIn.getBlockState(keyhole.east(1)).getBlock() != BlockRegistrar.block_portal_crown)
+	{
+	    return false;
+	}
 
+	// left spire - check for banner
+	int front = getBannerLevel(worldIn, keyhole.west(3).down(1).north(1));
+	int back = getBannerLevel(worldIn, keyhole.west(3).down(1).south(1));
+	if ( front < 2 && back < 2 )
+	{
+	    return false;
+	}
+	
+	// right spire - check for banner
+	front = getBannerLevel(worldIn, keyhole.east(3).down(1).north(1));
+	back = getBannerLevel(worldIn, keyhole.east(3).down(1).south(1));
+	if ( front < 2 && back < 2 )
+	{
+	    return false;
+	}	
+	
+	return true;
+    }
+
+    // just get the block states and keep it simple
+    private boolean checkPortalFrameLevel2NorthSouth(IWorld worldIn, BlockPos keyhole)
+    {
+	// main portal body - check for added crowns
+	if (worldIn.getBlockState(keyhole.north(1)).getBlock() != BlockRegistrar.block_portal_crown || worldIn.getBlockState(keyhole.south(1)).getBlock() != BlockRegistrar.block_portal_crown)
+	{
+	    return false;
+	}
+
+	// left spire - check for banner
+	int front = getBannerLevel(worldIn, keyhole.north(3).down(1).west(1));
+	int back = getBannerLevel(worldIn, keyhole.north(3).down(1).east(1));
+	if ( front < 2 && back < 2 )
+	{
+	    return false;
+	}
+	
+	// right spire - check for banner
+	front = getBannerLevel(worldIn, keyhole.south(3).down(1).west(1));
+	back = getBannerLevel(worldIn, keyhole.south(3).down(1).east(1));
+	if ( front < 2 && back < 2 )
+	{
+	    return false;
+	}
+	
+	return true;
+    }    
+
+    // it's okay if the block here isn't a banner, I check for that too
+    public int getBannerLevel(IWorld worldIn, BlockPos pos )
+    {
+	boolean level2 = false;
+	boolean level3 = false;
+	Block banner = worldIn.getBlockState(pos).getBlock();
+
+	// first ensure that the tile entity is going to exist
+	if ( !(banner == Blocks.WHITE_WALL_BANNER || banner == Blocks.PURPLE_WALL_BANNER) )
+	{
+	    return 0;
+	}
+	BannerTileEntity te = (BannerTileEntity)worldIn.getTileEntity(pos);
+	if ( te == null )
+	{
+	    return 0;
+	}
+	
+	// check the banner patterns, any matches are fine, any extras are ignored
+	for ( int i = 0; i < te.getPatternList().size(); i++ )
+	{
+	    BannerPattern p = te.getPatternList().get(i);
+	    DyeColor c = te.getColorList().get(i);
+	    //DimDungeons.LOGGER.info("DIMDUNGEONS: pattern is " + p + ", " + c);
+	    
+	    if ( banner == Blocks.WHITE_WALL_BANNER && p == BannerPattern.DIAGONAL_RIGHT && c == DyeColor.PURPLE )
+	    {
+		level2 = true;
+	    }
+	    if ( banner == Blocks.PURPLE_WALL_BANNER && p == BannerPattern.DIAGONAL_LEFT && c == DyeColor.WHITE )
+	    {
+		level2 = true;
+	    }
+	    // TODO: check for my custom banner pattern for level 3
+	}
+	
+	if ( level2 && level3 )
+	{
+	    return 3;
+	}
+	else if ( level2 )
+	{
+	    return 2;
+	}
+	return 0;
+    }
+    
     /**
      * Called periodically client side on blocks near the player to show effects (like furnace fire particles). Note that
      * this method is unrelated to {@link randomTick} and {@link #needsRandomTick}, and will always be called regardless of
