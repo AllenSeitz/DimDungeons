@@ -74,14 +74,27 @@ public class ItemPortalKey extends Item
 	});
     }
 
-    protected void activateKey(ItemStack stack)
+    public int getKeyLevel(ItemStack stack)
+    {
+	if ( !isActivated(stack) )
+	{
+	    return 0;
+	}
+	if ( getWarpZ(stack) < 0 )
+	{
+	    return 2;
+	}
+	return 1;
+    }
+    
+    public void activateKey(ItemStack stack)
     {
 	CompoundNBT data = new CompoundNBT();
 	data.putBoolean(NBT_KEY_ACTIVATED, true);
 
 	// where is this key going?
 	int destX = random.nextInt(RANDOM_COORDINATE_RANGE);
-	int destZ = random.nextInt(RANDOM_COORDINATE_RANGE) * -1;
+	int destZ = random.nextInt(RANDOM_COORDINATE_RANGE);
 	data.putInt(NBT_KEY_DESTINATION_X, destX);
 	data.putInt(NBT_KEY_DESTINATION_Z, destZ);
 
@@ -103,7 +116,7 @@ public class ItemPortalKey extends Item
     }
 
     // the only way to obtain level 2 keys is to find them already activated
-    protected void activateKeyLevel2(ItemStack stack)
+    public void activateKeyLevel2(ItemStack stack)
     {
 	CompoundNBT data = new CompoundNBT();
 	data.putBoolean(NBT_KEY_ACTIVATED, true);
@@ -112,7 +125,7 @@ public class ItemPortalKey extends Item
 	int destX = random.nextInt(RANDOM_COORDINATE_RANGE);
 	int destZ = random.nextInt(RANDOM_COORDINATE_RANGE);
 	data.putInt(NBT_KEY_DESTINATION_X, destX);
-	data.putInt(NBT_KEY_DESTINATION_Z, destZ);
+	data.putInt(NBT_KEY_DESTINATION_Z, destZ * -1);
 
 	// give it a funny random name like "Key to the [LARGE] [PLACE]"
 	data.putInt(NBT_NAME_TYPE, 3);
@@ -225,7 +238,8 @@ public class ItemPortalKey extends Item
 	    CompoundNBT itemData = stack.getTag();
 	    if (itemData != null && itemData.contains(NBT_KEY_DESTINATION_Z))
 	    {
-		return (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_Z;
+		float z = (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_Z;
+		return z;
 	    }
 	}
 	return -1;
