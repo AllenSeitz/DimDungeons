@@ -5,7 +5,9 @@ import java.util.function.Function;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
+import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.dimension.DungeonDimensionType;
+import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonRoom;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderTestShapes;
@@ -455,6 +457,20 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 		fillBarrelBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
 	    }
 	}
+	else if ("PlaceL2Key".equals(name))
+	{
+	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    TileEntityPortalKeyhole te = (TileEntityPortalKeyhole)world.getTileEntity(pos.down());
+	    if (te != null)
+	    {
+		ItemStack key = te.getObjectInserted();
+		if ( key.getItem() instanceof ItemPortalKey )
+		{
+		    ((ItemPortalKey)key.getItem()).activateKeyLevel2(key);
+		    te.setContents(key);
+		}
+	    }
+	}	
 	else if ("SummonWitch".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
