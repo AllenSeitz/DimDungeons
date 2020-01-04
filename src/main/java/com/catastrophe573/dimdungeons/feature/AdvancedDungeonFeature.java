@@ -354,6 +354,7 @@ public class AdvancedDungeonFeature extends Feature<NoFeatureConfig>
 		{
 		    ((ItemPortalKey)key.getItem()).activateKeyLevel2(key);
 		    te.setContents(key);
+		    //te.updateContainingBlockInfo();
 		}
 	    }
 	}
