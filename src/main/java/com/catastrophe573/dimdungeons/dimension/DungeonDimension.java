@@ -3,6 +3,7 @@ package com.catastrophe573.dimdungeons.dimension;
 import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.biome.BiomeProviderDungeon;
+import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -68,6 +69,7 @@ public class DungeonDimension extends Dimension
     {
 	Block block = getWorld().getBlockState(pos).getBlock();
 
+	// okay, except some interactable blocks need to return true so that they can be interacted with
 	if (block.isIn(BlockTags.WOODEN_DOORS) || block.isIn(BlockTags.WOODEN_TRAPDOORS))
 	{
 	    return true;
@@ -77,6 +79,10 @@ public class DungeonDimension extends Dimension
 	    return true;
 	}
 	if (block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST || block == Blocks.BARREL)
+	{
+	    return true;
+	}
+	if (block == BlockRegistrar.block_portal_keyhole)
 	{
 	    return true;
 	}
