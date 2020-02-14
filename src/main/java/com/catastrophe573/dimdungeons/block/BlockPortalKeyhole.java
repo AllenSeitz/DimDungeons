@@ -24,6 +24,7 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Mirror;
@@ -36,8 +37,6 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
 
 public class BlockPortalKeyhole extends Block
 {
@@ -109,76 +108,79 @@ public class BlockPortalKeyhole extends Block
     }
 
     // called when the player right clicks this block
-    @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
-    {
-	// client side
-	if (EffectiveSide.get() == LogicalSide.CLIENT)
+	@Override
+	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) 
 	{
-	    return true;
+		/* removed in 1.15?
+		// client side
+		if (EffectiveSide.get() == LogicalSide.CLIENT)
+		{
+			return ActionResultType.PASS;
+		}
+		*/
+
+		ItemStack playerItem = player.getHeldItem(handIn);
+		TileEntity tileEntity = worldIn.getTileEntity(pos);
+		TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
+
+		// insert or remove an item from this block
+		if (myEntity != null)
+		{
+			ItemStack insideItem = myEntity.getObjectInserted();
+
+			// if the keyhole is currently empty
+			if (insideItem.isEmpty())
+			{
+				if (!playerItem.isEmpty())
+				{
+					// DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString()
+					// + " inside keyhole...");
+					myEntity.setContents(playerItem.copy());
+					playerItem.shrink(1);
+
+					// recalculate the boolean block states
+					BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled())
+							.with(LIT, myEntity.isActivated());
+					worldIn.setBlockState(pos, newBlockState);
+
+					// should portal blocks be spawned?
+					if (isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
+					{
+						worldIn.setBlockState(pos.down(), BlockRegistrar.block_gold_portal.getDefaultState());
+						worldIn.setBlockState(pos.down(2), BlockRegistrar.block_gold_portal.getDefaultState());
+
+						// TODO: is this needed?
+						// get a block on the destination side to pregen the chunk where this portal
+						// goes
+						// worldIn.getMinecraftServer().getWorld(573).getBlockState(pos.down());
+					}
+					return ActionResultType.SUCCESS;
+				}
+			}
+			// if the keyhole is currently full
+			else 
+			{
+				// DimDungeons.LOGGER.info("Taking thing out of keyhole...");
+				if (playerItem.isEmpty())
+				{
+					player.setHeldItem(handIn, insideItem); // hand it to the player
+				}
+				else if (!player.addItemStackToInventory(insideItem)) // okay put it in their inventory
+				{
+					player.dropItem(insideItem, false); // whatever drop it on the ground
+				}
+
+				myEntity.removeContents();
+
+				// recalculate the boolean block states
+				BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
+				worldIn.setBlockState(pos, newBlockState, 3);
+
+				return ActionResultType.SUCCESS;
+			}
+		}
+		return ActionResultType.PASS;
 	}
-
-	ItemStack playerItem = player.getHeldItem(handIn);
-	TileEntity tileEntity = worldIn.getTileEntity(pos);
-	TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
-
-	// insert or remove an item from this block
-	if (myEntity != null)
-	{
-	    ItemStack insideItem = myEntity.getObjectInserted();
-
-	    // if the keyhole is currently empty
-	    if (insideItem.isEmpty())
-	    {
-		if (!playerItem.isEmpty())
-		{
-		    //DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
-		    myEntity.setContents(playerItem.copy());
-		    playerItem.shrink(1);
-
-		    // recalculate the boolean block states	    
-		    BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
-		    worldIn.setBlockState(pos, newBlockState);
-
-		    // should portal blocks be spawned?
-		    if (isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
-		    {
-			worldIn.setBlockState(pos.down(), BlockRegistrar.block_gold_portal.getDefaultState());
-			worldIn.setBlockState(pos.down(2), BlockRegistrar.block_gold_portal.getDefaultState());
-
-			// TODO: is this needed?
-			// get a block on the destination side to pregen the chunk where this portal goes
-			//worldIn.getMinecraftServer().getWorld(573).getBlockState(pos.down());
-		    }
-
-		    return true;
-		}
-	    }
-	    // if the keyhole is currently full
-	    else
-	    {
-		//DimDungeons.LOGGER.info("Taking thing out of keyhole...");
-		if (playerItem.isEmpty())
-		{
-		    player.setHeldItem(handIn, insideItem); // hand it to the player
-		}
-		else if (!player.addItemStackToInventory(insideItem)) // okay put it in their inventory
-		{
-		    player.dropItem(insideItem, false); // whatever drop it on the ground
-		}
-
-		myEntity.removeContents();
-
-		// recalculate the boolean block states	    
-		BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
-		worldIn.setBlockState(pos, newBlockState, 3);
-
-		return true;
-	    }
-	}
-
-	return true;
-    }
 
     // helper function for checkForPortalCreation
     protected boolean isOkayToSpawnPortalBlocks(World worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole myEntity)

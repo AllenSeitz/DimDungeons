@@ -49,6 +49,7 @@ public class FeatureRegistrar
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static void addFeatureToBiome(Biome biome, GenerationStage.Decoration stage, Feature feature)
     {
-	biome.addFeature(stage, Biome.createDecoratedFeature(feature, IFeatureConfig.NO_FEATURE_CONFIG, Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
+    	//biome.addFeature(stage, Biome.createDecoratedFeature(feature, IFeatureConfig.NO_FEATURE_CONFIG, Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
+        biome.addFeature(stage, feature.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG).withPlacement(Placement.NOPE.configure(IPlacementConfig.NO_PLACEMENT_CONFIG)));    	
     }
 }

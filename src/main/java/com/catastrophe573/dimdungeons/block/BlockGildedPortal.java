@@ -7,9 +7,6 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class BlockGildedPortal extends Block
 {
@@ -26,12 +23,5 @@ public class BlockGildedPortal extends Block
     public BlockRenderType getRenderType(BlockState iBlockState)
     {
 	return BlockRenderType.MODEL;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public BlockRenderLayer getRenderLayer()
-    {
-	return BlockRenderLayer.SOLID;
     }
 }

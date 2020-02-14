@@ -1,5 +1,6 @@
 package com.catastrophe573.dimdungeons.block;
 
+import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
 
@@ -8,6 +9,8 @@ import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.command.CustomTeleporter;
 import com.catastrophe573.dimdungeons.dimension.DungeonDimensionType;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
+import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -20,10 +23,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.BannerPattern;
 import net.minecraft.tileentity.BannerTileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
@@ -33,6 +37,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 
 public class BlockGoldPortal extends BreakableBlock
@@ -82,13 +87,12 @@ public class BlockGoldPortal extends BreakableBlock
 	return ItemStack.EMPTY;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public BlockRenderLayer getRenderLayer()
+    @Deprecated
+    public boolean isTransparent(BlockState state)
     {
-	return BlockRenderLayer.TRANSLUCENT;
+       return true;
     }
-
+    
     // called When an entity collides with the Block
     @Override
     public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn)
@@ -446,7 +450,7 @@ public class BlockGoldPortal extends BreakableBlock
     }    
 
     // it's okay if the block here isn't a banner, I check for that too
-    public int getBannerLevel(IWorld worldIn, BlockPos pos )
+	public int getBannerLevel(IWorld worldIn, BlockPos pos )
     {
 	boolean level2 = false;
 	boolean level3 = false;
@@ -462,19 +466,49 @@ public class BlockGoldPortal extends BreakableBlock
 	{
 	    return 0;
 	}
+	List<Pair<BannerPattern, DyeColor>> patterns = null;
+	
+	// starting in 1.15 the getPatternList() function was removed from the dedicated server environment
+	if (EffectiveSide.get() == LogicalSide.CLIENT)
+	{
+		patterns = te.getPatternList(); // the correct way
+	}
+	else
+	{
+		// the gross hack to access private data that Mojang doesn't need for the vanilla game, but I do
+		Object tempList = ObfuscationReflectionHelper.getPrivateValue(BannerTileEntity.class, te, "field_175118_f");
+		ListNBT nbt = (ListNBT)tempList;
+		if ( nbt == null )
+		{
+			return 0; // legit possible
+		}
+
+		// rewrite and steal func_230138_a_() and getPatternList(). Thanks Mojang!
+		patterns = Lists.newArrayList();
+		//patterns.add(Pair.of(BannerPattern.BASE, baseColor)); // we already know the banner is white or purple at this point
+	    for(int i = 0; i < nbt.size(); ++i)
+	    {
+	    	CompoundNBT compoundnbt = nbt.getCompound(i);
+	       	BannerPattern bannerpattern = getBannerForHash(compoundnbt.getString("Pattern"));
+	       	if (bannerpattern != null)
+	       	{
+	       		int j = compoundnbt.getInt("Color");
+	       		patterns.add(Pair.of(bannerpattern, DyeColor.byId(j)));
+	        }
+         }
+	}
 	
 	// check the banner patterns, any matches are fine, any extras are ignored
-	for ( int i = 0; i < te.getPatternList().size(); i++ )
+	for ( int i = 0; i < patterns.size(); i++ )
 	{
-	    BannerPattern p = te.getPatternList().get(i);
-	    DyeColor c = te.getColorList().get(i);
+	    Pair<BannerPattern, DyeColor> p = patterns.get(i);
 	    //DimDungeons.LOGGER.info("DIMDUNGEONS: pattern is " + p + ", " + c);
 	    
-	    if ( banner == Blocks.WHITE_WALL_BANNER && p == BannerPattern.DIAGONAL_RIGHT && c == DyeColor.PURPLE )
+	    if ( banner == Blocks.WHITE_WALL_BANNER && p.getFirst() == BannerPattern.DIAGONAL_RIGHT && p.getSecond() == DyeColor.PURPLE )
 	    {
 		level2 = true;
 	    }
-	    if ( banner == Blocks.PURPLE_WALL_BANNER && p == BannerPattern.DIAGONAL_LEFT && c == DyeColor.WHITE )
+	    if ( banner == Blocks.PURPLE_WALL_BANNER && p.getFirst() == BannerPattern.DIAGONAL_LEFT && p.getSecond() == DyeColor.WHITE )
 	    {
 		level2 = true;
 	    }
@@ -507,4 +541,18 @@ public class BlockGoldPortal extends BreakableBlock
 	double zspeed = rand.nextFloat() * (rand.nextInt(3) - 1) / 9;
 	worldIn.addParticle(ParticleTypes.END_ROD, d0, d1, d2, xspeed, 0.0D, zspeed);
     }
+    
+    // copy/pasted from BannerPattern.byHash() because it was needed for a 1.15 workaround
+    public static BannerPattern getBannerForHash(String hash)
+    {
+        for(BannerPattern bannerpattern : BannerPattern.values())
+        {
+           if (bannerpattern.getHashname().equals(hash))
+           {
+              return bannerpattern;
+           }
+        }
+
+        return null;
+     }    
 }

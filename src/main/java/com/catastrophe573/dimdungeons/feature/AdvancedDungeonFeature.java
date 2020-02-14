@@ -600,7 +600,8 @@ public class AdvancedDungeonFeature extends Feature<NoFeatureConfig>
 	String json = ITextComponent.Serializer.toJson(text);
 	//pages.appendTag(new NBTTagString(json)); // 1.12
 	//pages.add(0, new NBTTagString(json)); // 1.13
-	pages.add(0, new StringNBT(json)); // 1.14
+	//pages.add(0, new StringNBT(json)); // 1.14
+	pages.add(0, StringNBT.valueOf(json)); // 1.15
 
 	// actually set all the bookish NBT on the item
 	stack.getTag().putBoolean("resolved", false);

@@ -59,7 +59,7 @@ public class CustomTeleporter
 	ServerWorld destinationWorld = minecraftserver.getWorld(destination);
 	entity.dimension = destination;
 	WorldInfo worldinfo = entity.world.getWorldInfo();
-	entity.connection.sendPacket(new SRespawnPacket(destination, worldinfo.getGenerator(), entity.interactionManager.getGameType()));
+	entity.connection.sendPacket(new SRespawnPacket(destination, worldinfo.getSeed(), worldinfo.getGenerator(), entity.interactionManager.getGameType())); // 1.14 -> 1.15 change, this function now requires the seed? okay sure?
 	entity.connection.sendPacket(new SServerDifficultyPacket(worldinfo.getDifficulty(), worldinfo.isDifficultyLocked()));
 	PlayerList playerlist = entity.server.getPlayerList();
 	playerlist.updatePermissionLevel(entity);

@@ -16,7 +16,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkGenerator;
@@ -30,7 +29,7 @@ public class DungeonDimension extends Dimension
 {
     public DungeonDimension(World worldIn, DimensionType typeIn)
     {
-	super(worldIn, typeIn);
+    	super(worldIn, typeIn, 0); // the third parameter is new in 1.15? It is unnamed but seems to have something to do with time/celestial angle
     }
 
     public ChunkGenerator<? extends GenerationSettings> createChunkGenerator()
@@ -160,34 +159,12 @@ public class DungeonDimension extends Dimension
 	return false;
     }
 
-    public Biome getBiome(BlockPos pos)
-    {
-	return getWorld().getBiomeBody(pos);
-    }
-
     @OnlyIn(Dist.CLIENT)
     @Override
     // the sky is further customizable with other functions not implemented in this class
     public boolean isSkyColored()
     {
 	return true;
-    }
-
-    public float getSunBrightness(float partialTicks)
-    {
-	return getWorld().getSunBrightnessBody(partialTicks);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public Vec3d getSkyColor(BlockPos cameraPos, float partialTicks)
-    {
-	return getWorld().getSkyColorBody(cameraPos, partialTicks);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public Vec3d getCloudColor(float partialTicks)
-    {
-	return getWorld().getCloudColorBody(partialTicks);
     }
 
     @OnlyIn(Dist.CLIENT)

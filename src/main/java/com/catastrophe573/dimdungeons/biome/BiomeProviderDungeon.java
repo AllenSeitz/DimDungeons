@@ -5,8 +5,9 @@ import net.minecraft.world.biome.provider.SingleBiomeProviderSettings;
 
 public class BiomeProviderDungeon extends SingleBiomeProvider
 {
-    public BiomeProviderDungeon()
-    {
-	super(new SingleBiomeProviderSettings().setBiome(BiomeRegistrar.biome_dungeon));
-    }   
+	public BiomeProviderDungeon()
+	{
+		// new in 1.15 - passing null here seems okay here because the constructor for this class is just { }
+		super(new SingleBiomeProviderSettings(null).setBiome(BiomeRegistrar.biome_dungeon));
+	}
 }

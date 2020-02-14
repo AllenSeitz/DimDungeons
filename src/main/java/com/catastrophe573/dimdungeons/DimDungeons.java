@@ -1,6 +1,8 @@
 package com.catastrophe573.dimdungeons;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.world.biome.Biome;
@@ -65,7 +67,9 @@ public class DimDungeons
 
     private void doClientStuff(final FMLClientSetupEvent event)
     {
-	// do something that can only be done on the client
+		RenderType translucent = RenderType.getTranslucent();
+		
+		RenderTypeLookup.setRenderLayer(BlockRegistrar.block_gold_portal, translucent);
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)
