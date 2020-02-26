@@ -89,6 +89,10 @@ public class DungeonDimension extends Dimension
 	{
 	    return true;
 	}
+	if (block.getRegistryName().getNamespace() == "tombstone") // Corail Tombstone, allow players to interact with and break it
+	{
+	    return true;
+	}
 	
 	/* TODO: someday make this a config option
 	if (player.hasPermissionLevel(2))
