@@ -2,7 +2,6 @@ package com.catastrophe573.dimdungeons.item;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 
-import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -16,6 +15,9 @@ public class ItemRegistrar
     @ObjectHolder("dimdungeons:" + ItemPortalKey.REG_NAME)
     public static Item item_portal_key;
 
+    @ObjectHolder("dimdungeons:" + ItemGuidebook.REG_NAME)
+    public static Item item_guidebook;
+        
     public static final ItemGroup CREATIVE_TAB = new ItemGroup(DimDungeons.MOD_ID)
     {
 	@Override
@@ -37,5 +39,6 @@ public class ItemRegistrar
 
 	// register basic items
 	event.getRegistry().register(new ItemPortalKey());
+	event.getRegistry().register(new ItemGuidebook());
     }
 }

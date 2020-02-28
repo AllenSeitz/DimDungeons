@@ -9,8 +9,9 @@
     "block.dimdungeons.block_portal_keyhole": "Portal Keystone",
     "block.dimdungeons.block_portal_crown": "Portal Crown Block",
 
-// this will be overridden when the key is activated
+// neither of these names will appear in the game since they both get replaced in different ways
     "item.dimdungeons.item_portal_key": "Blank Portal Key",
+    "item.dimdungeons.item_guidebook": "Dimensional Dungeons Guidebook",
 
 // these trophy strings are not used, 1.14 forced them to move into the loot tables
     "item.dimdungeons.item_trophy_1": "1UP Mushroom",
@@ -122,7 +123,7 @@
 
     "book.dimdungeons.fun_message_1": "There are no creepers in this dungeon, nor in any other dungeon, because they tend to ruin puzzles.",
     "book.dimdungeons.fun_message_2": "Many chests contain more dungeon keys in their loot table. So you can keep dungeoneering!",
-    "book.dimdungeons.fun_message_3": "Silverfish are banned in this dimension because they destroy stone brick walls.",
+    "book.dimdungeons.fun_message_3": "If you find another portal then you are very lucky! Be sure to take the rare key that is inside the keyhole.",
     "book.dimdungeons.fun_message_4": "These dungeons are an excellent source of enchanted books.",
     "book.dimdungeons.fun_message_5": "Rare enemy spawner rooms are known to exist. These rooms are as valuable as any treasure!",
     "book.dimdungeons.fun_message_6": "Some rooms have treasure chests that only appear if you are lucky. These chests can draw from any loot table!",
@@ -135,14 +136,14 @@
     "book.dimdungeons.helpful_message_4": "Did you know that cauldrons interact with redstone comparators through walls?",
     "book.dimdungeons.helpful_message_5": "A cubic zirconia is as good as a real diamond. But it is a fake prize.",
     "book.dimdungeons.helpful_message_6": "Some puzzles may require a potion of swiftness or two players to solve.",
-    "book.dimdungeons.helpful_message_7": "Breaking a lever or button is never the answer to a puzzle, and doing so may trap you.",
+    "book.dimdungeons.helpful_message_7": "Advanced portal frames require two special banners and two crown pieces. The crown pieces can be found as loot.",
     "book.dimdungeons.helpful_message_8": "Consider bringing a few ender pearls with you. They can save you in trap rooms.",
 
     "book.dimdungeons.dangerous_message_1": "I have tried very hard not to ever trap you inside a room. But if it does happen don't forget the /kill command.",
     "book.dimdungeons.dangerous_message_2": "The room with 4 trapped chests is unfair. Be careful not to lose all of your items!",
     "book.dimdungeons.dangerous_message_3": "In the room with the piston bridge over lava, it may be required to jump over the sides!",
     "book.dimdungeons.dangerous_message_4": "In this dimension fire cannot be extinguished by punching it. Fire pits are very dangerous!",
-    "book.dimdungeons.dangerous_message_5": "If you find a bug then please report it on github. Just in case.",
+    "book.dimdungeons.dangerous_message_5": "Breaking a lever or button is never the answer to a puzzle, and doing so may trap you.",
     "book.dimdungeons.dangerous_message_6": "The falling anvil trap never gets old.",
     "book.dimdungeons.dangerous_message_7": "Minecraft has dozens of inspirational death messages.",
     "book.dimdungeons.dangerous_message_8": "I've designed many rooms to feature handy lava traps for you to push the enemies into.",
@@ -155,6 +156,20 @@
     "book.dimdungeons.advanced_message_6": "Have you been ambushed by a Blaze yet?",
     "book.dimdungeons.advanced_message_7": "You can safely rename dungeon keys and they will still teleport you to the same place.",
     "book.dimdungeons.advanced_message_8": "There is more to come! This isn't the final dungeon.",
+
+    "book.dimdungeons.guidebook_1": "This short guide will spell out everything you need to know about building a portal, crafting keys, and raiding dungeons!",
+    "book.dimdungeons.guidebook_2": "First, your portal will require 3 Gilded Portal Blocks. To craft a Gilded Portal Block surround a Chiseled Stone Brick with 8 Gold Ingots.",
+    "book.dimdungeons.guidebook_3": "Second, your portal requires a Keyhole Block. To craft this item take one of your 3 Gilded Portal Blocks and combine it with a Trapped Chest and an Eye of Ender.",
+    "book.dimdungeons.guidebook_4": "Your portal build starts with a frame built out of Stone Bricks, 4 blocks tall and 3 wide. (With two air blocks in the middle.) Replace the top center block with your Portal Keystone.",
+    "book.dimdungeons.guidebook_5": "Finish your portal by placing spires 1 block away on both sides of the frame. Spires are three blocks tall and have a Gilded Portal Block on top.",
+    "book.dimdungeons.guidebook_6": "Portal Keys can be crafted from a Name Tag and a Blaze Rod. But Portal Keys need to be activated before they can be used.",
+    "book.dimdungeons.guidebook_7": "To activate a Portal Key, find a stronghold, and use the key on the top side of an End Portal Frame block. The key should now have a unique name!",
+    "book.dimdungeons.guidebook_8": "Once a key is activated it will always take you to the same dungeon. You will need to craft and activate more keys to visit new dungeons. Keys may be inserted and removed from keyholes any number of times.",
+    "book.dimdungeons.guidebook_9": "More advice will be dispensed inside the dungeons themselves.                                     (The author's penmanship looks very rushed...)",
+
+    "book.dimdungeons.title_guidebook": "Dimensional Dungeons Guidebook",
+    "book.dimdungeons.open_guide_message": "Catastrophe573 suddenly appears for just a moment, hastily writes into the book, and hands it back to you.",
+    "book.dimdungeons.thank_you_message": "Thank you for playing Dimensional Dungeons! I'm sorry I didn't finish the guidebook but I'm working very hard!",
 
     "enemy.dimdungeons.enderman": "Enderman",
     "enemy.dimdungeons.guardian": "Guardian",
