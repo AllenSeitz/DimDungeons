@@ -67,9 +67,9 @@ public class DimDungeons
 
     private void doClientStuff(final FMLClientSetupEvent event)
     {
-		RenderType translucent = RenderType.getTranslucent();
-		
-		RenderTypeLookup.setRenderLayer(BlockRegistrar.block_gold_portal, translucent);
+	RenderType translucent = RenderType.getTranslucent();
+
+	RenderTypeLookup.setRenderLayer(BlockRegistrar.block_gold_portal, translucent);
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)
