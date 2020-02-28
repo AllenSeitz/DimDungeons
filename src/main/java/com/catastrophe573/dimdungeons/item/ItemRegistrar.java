@@ -2,12 +2,28 @@ package com.catastrophe573.dimdungeons.item;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.registries.ObjectHolder;
 
 public class ItemRegistrar
 {
     public static int NUM_TROPHIES = 8;
+
+    @ObjectHolder("dimdungeons:" + ItemPortalKey.REG_NAME)
+    public static Item item_portal_key;
+
+    public static final ItemGroup CREATIVE_TAB = new ItemGroup(DimDungeons.MOD_ID)
+    {
+	@Override
+	public ItemStack createIcon()
+	{
+	    return new ItemStack(item_portal_key);
+	}
+    };
 
     public static void registerAllItems(RegistryEvent.Register<Item> event)
     {
@@ -20,6 +36,6 @@ public class ItemRegistrar
 	}
 
 	// register basic items
-	event.getRegistry().register(new ItemPortalKey());	
+	event.getRegistry().register(new ItemPortalKey());
     }
 }

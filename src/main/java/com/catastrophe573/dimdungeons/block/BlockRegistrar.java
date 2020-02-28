@@ -1,9 +1,10 @@
 package com.catastrophe573.dimdungeons.block;
 
+import com.catastrophe573.dimdungeons.item.ItemRegistrar;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.registries.ObjectHolder;
 
@@ -26,9 +27,9 @@ public class BlockRegistrar
     // this is called by the ItemRegistrar
     public static void registerAllItemBlocks(RegistryEvent.Register<Item> event)
     {
-	event.getRegistry().register(new BlockItem(block_gilded_portal, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_gilded_portal.getRegistryName()));
+	event.getRegistry().register(new BlockItem(block_gilded_portal, new Item.Properties().group(ItemRegistrar.CREATIVE_TAB)).setRegistryName(block_gilded_portal.getRegistryName()));
 	event.getRegistry().register(new BlockItem(block_gold_portal, new Item.Properties()).setRegistryName(block_gold_portal.getRegistryName()));
-	event.getRegistry().register(new BlockItem(block_portal_keyhole, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_portal_keyhole.getRegistryName()));
-	event.getRegistry().register(new BlockItem(block_portal_crown, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(block_portal_crown.getRegistryName()));
+	event.getRegistry().register(new BlockItem(block_portal_keyhole, new Item.Properties().group(ItemRegistrar.CREATIVE_TAB)).setRegistryName(block_portal_keyhole.getRegistryName()));
+	event.getRegistry().register(new BlockItem(block_portal_crown, new Item.Properties().group(ItemRegistrar.CREATIVE_TAB)).setRegistryName(block_portal_crown.getRegistryName()));
     } 
 }

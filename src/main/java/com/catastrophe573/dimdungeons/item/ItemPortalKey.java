@@ -49,7 +49,7 @@ public class ItemPortalKey extends Item
 
     public ItemPortalKey()
     {
-	super(new Item.Properties().group(ItemGroup.MISC).maxStackSize(1));
+	super(new Item.Properties().group(ItemGroup.MISC).maxStackSize(1).group(ItemRegistrar.CREATIVE_TAB));
 	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
 
 	// this is used to pick a custom model depending on the state of the key
