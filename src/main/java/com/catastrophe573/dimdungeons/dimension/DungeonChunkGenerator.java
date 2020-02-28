@@ -5,18 +5,24 @@ import java.util.Random;
 
 import com.catastrophe573.dimdungeons.feature.AdvancedDungeonFeature;
 import com.catastrophe573.dimdungeons.feature.BasicDungeonFeature;
+import com.catastrophe573.dimdungeons.feature.FeatureRegistrar;
+import com.google.common.collect.Lists;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityClassification;
+import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeManager;
 import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.OverworldChunkGenerator;
 import net.minecraft.world.gen.OverworldGenSettings;
 import net.minecraft.world.gen.WorldGenRegion;
+import net.minecraft.world.gen.feature.template.TemplateManager;
 
 public class DungeonChunkGenerator extends OverworldChunkGenerator
 {
@@ -45,9 +51,8 @@ public class DungeonChunkGenerator extends OverworldChunkGenerator
     @Override
     public List<Biome.SpawnListEntry> getPossibleCreatures(EntityClassification creatureType, BlockPos pos)
     {
-	// let the biome handle which mobs can spawn
-	// otherwise, implement exceptions and structure-specific logic here (witch huts, ocean monuments, etc)
-	return super.getPossibleCreatures(creatureType, pos);
+	// returning an empty list to ensure no other mods can add mobs
+	return Lists.newArrayList();
     }
 
     @Override
@@ -121,5 +126,32 @@ public class DungeonChunkGenerator extends OverworldChunkGenerator
     protected void makeBedrock(IChunk chunkIn, Random rand)
     {
 	// actually nah I'm good, lets keep the void world please because it looks better on a map
+    }
+
+    @Override
+    public void generateStructures(BiomeManager p_227058_1_, IChunk p_227058_2_, ChunkGenerator<?> p_227058_3_, TemplateManager p_227058_4_)
+    {
+	// intentionally do nothing
+    }
+
+    @Override
+    public void decorate(final WorldGenRegion region)
+    {
+	// these local variables are copied from the vanilla ChunkGenerator class
+	int i = region.getMainChunkX();
+	int j = region.getMainChunkZ();
+	int k = i * 16;
+	int l = j * 16;
+	BlockPos blockpos = new BlockPos(k, 0, l);
+	//Biome biome = this.func_225552_a_(region.getBiomeManager(), blockpos.add(8, 8, 8));
+	SharedSeedRandom sharedseedrandom = new SharedSeedRandom();
+	//long i1 = sharedseedrandom.setDecorationSeed(region.getSeed(), k, l);
+
+	// instead of doing this
+	//biome.decorate(generationstage$decoration, this, region, i1, sharedseedrandom, blockpos);
+
+	// let's just place the only two features that I care about. this prevents any other features from other mods from appearing
+	FeatureRegistrar.feature_basic_dungeon.place(region, this, sharedseedrandom, blockpos, null);
+	FeatureRegistrar.feature_advanced_dungeon.place(region, this, sharedseedrandom, blockpos, null);
     }
 }

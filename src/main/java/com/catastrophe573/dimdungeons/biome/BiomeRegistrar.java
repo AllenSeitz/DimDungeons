@@ -1,5 +1,7 @@
 package com.catastrophe573.dimdungeons.biome;
 
+import com.catastrophe573.dimdungeons.DimDungeons;
+
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Builder;
 import net.minecraftforge.event.RegistryEvent;
@@ -11,6 +13,6 @@ public class BiomeRegistrar
     
     public static void registerAllBiomes(RegistryEvent.Register<Biome> event)
     {
-	event.getRegistry().register(new BiomeDungeon(new Builder()).setRegistryName("biome_dungeon"));
+	event.getRegistry().register(new BiomeDungeon(new Builder()).setRegistryName(DimDungeons.MOD_ID, "biome_dungeon"));
     }
 }
