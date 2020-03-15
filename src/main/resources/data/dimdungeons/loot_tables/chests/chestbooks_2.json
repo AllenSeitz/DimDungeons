@@ -5,25 +5,13 @@
         "min": 1,
         "max": 1
       },
-  	  "name":"dimdungeons:books_1",	  
+  	  "name":"dimdungeons:chestbooks_2",	  
       "entries": [
         {
 		  "type": "item",
 		  "name": "minecraft:enchanted_book",
-		  "entryName": "dimdungeons:ebook_efficiency4",
+		  "entryName": "dimdungeons:ebook_efficiency",
 		  "weight": 2,
-		  "functions": [
-		    {
-			  "function": "set_nbt",
-			  "tag": "{StoredEnchantments:[{id:\"minecraft:efficiency\",lvl:4}]}"
-			}
-		  ]
-		},
-        {
-		  "type": "item",
-		  "name": "minecraft:enchanted_book",
-		  "entryName": "dimdungeons:ebook_efficiency5",
-		  "weight": 1,
 		  "functions": [
 		    {
 			  "function": "set_nbt",
@@ -34,20 +22,8 @@
         {
 		  "type": "item",
 		  "name": "minecraft:enchanted_book",
-		  "entryName": "dimdungeons:ebook_mending",
-		  "weight": 3,
-		  "functions": [
-		    {
-			  "function": "set_nbt",
-			  "tag": "{StoredEnchantments:[{id:\"minecraft:mending\",lvl:1}]}"
-			}
-		  ]
-		},
-        {
-		  "type": "item",
-		  "name": "minecraft:enchanted_book",
-		  "entryName": "dimdungeons:ebook_unbreaking3",
-		  "weight": 3,
+		  "entryName": "dimdungeons:ebook_unbreaking",
+		  "weight": 2,
 		  "functions": [
 		    {
 			  "function": "set_nbt",
@@ -58,8 +34,8 @@
         {
 		  "type": "item",
 		  "name": "minecraft:enchanted_book",
-		  "entryName": "dimdungeons:ebook_fortune3",
-		  "weight": 3,
+		  "entryName": "dimdungeons:ebook_fortune",
+		  "weight": 2,
 		  "functions": [
 		    {
 			  "function": "set_nbt",
@@ -70,7 +46,79 @@
         {
 		  "type": "item",
 		  "name": "minecraft:enchanted_book",
-		  "entryName": "dimdungeons:ebook_looting3",
+		  "entryName": "dimdungeons:ebook_protection",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:protection\",lvl:4}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_respiration",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:respiration\",lvl:3}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_thorns",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:thorns\",lvl:3}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_depth_strider",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:depth_strider\",lvl:3}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_sharpness",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:sharpness\",lvl:5}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_fire_aspect",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:fire_aspect\",lvl:2}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_looting",
 		  "weight": 2,
 		  "functions": [
 		    {
@@ -82,99 +130,75 @@
         {
 		  "type": "item",
 		  "name": "minecraft:enchanted_book",
-		  "entryName": "dimdungeons:ebook_feather_falling3",
-		  "weight": 1,
-		  "functions": [
-		    {
-			  "function": "set_nbt",
-			  "tag": "{StoredEnchantments:[{id:\"minecraft:feather_falling\",lvl:3}]}"
-			}
-		  ]
-		},
-        {
-		  "type": "item",
-		  "name": "minecraft:enchanted_book",
-		  "entryName": "dimdungeons:ebook_feather_falling4",
+		  "entryName": "dimdungeons:ebook_sweeping",
 		  "weight": 2,
 		  "functions": [
 		    {
 			  "function": "set_nbt",
-			  "tag": "{StoredEnchantments:[{id:\"minecraft:feather_falling\",lvl:4}]}"
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:sweeping\",lvl:3}]}"
 			}
 		  ]
 		},
         {
 		  "type": "item",
 		  "name": "minecraft:enchanted_book",
-		  "entryName": "dimdungeons:ebook_respiration2",
-		  "weight": 1,
-		  "functions": [
-		    {
-			  "function": "set_nbt",
-			  "tag": "{StoredEnchantments:[{id:\"minecraft:respiration\",lvl:2}]}"
-			}
-		  ]
-		},
-        {
-		  "type": "item",
-		  "name": "minecraft:enchanted_book",
-		  "entryName": "dimdungeons:ebook_respiration3",
+		  "entryName": "dimdungeons:ebook_power",
 		  "weight": 2,
 		  "functions": [
 		    {
 			  "function": "set_nbt",
-			  "tag": "{StoredEnchantments:[{id:\"minecraft:respiration\",lvl:3}]}"
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:power\",lvl:5}]}"
 			}
 		  ]
-		},		
+		},
         {
 		  "type": "item",
 		  "name": "minecraft:enchanted_book",
-		  "entryName": "dimdungeons:ebook_thorns2",
+		  "entryName": "dimdungeons:ebook_loyalty",
 		  "weight": 2,
 		  "functions": [
 		    {
 			  "function": "set_nbt",
-			  "tag": "{StoredEnchantments:[{id:\"minecraft:thorns\",lvl:2}]}"
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:loyalty\",lvl:3}]}"
 			}
 		  ]
 		},
         {
 		  "type": "item",
 		  "name": "minecraft:enchanted_book",
-		  "entryName": "dimdungeons:ebook_thorns3",
-		  "weight": 1,
-		  "functions": [
-		    {
-			  "function": "set_nbt",
-			  "tag": "{StoredEnchantments:[{id:\"minecraft:thorns\",lvl:3}]}"
-			}
-		  ]
-		},
-        {
-		  "type": "item",
-		  "name": "minecraft:enchanted_book",
-		  "entryName": "dimdungeons:ebook_frost_walker1",
-		  "weight": 1,
-		  "functions": [
-		    {
-			  "function": "set_nbt",
-			  "tag": "{StoredEnchantments:[{id:\"minecraft:frost_walker\",lvl:1}]}"
-			}
-		  ]
-		},
-        {
-		  "type": "item",
-		  "name": "minecraft:enchanted_book",
-		  "entryName": "dimdungeons:ebook_frost_walker2",
+		  "entryName": "dimdungeons:ebook_impaling",
 		  "weight": 2,
 		  "functions": [
 		    {
 			  "function": "set_nbt",
-			  "tag": "{StoredEnchantments:[{id:\"minecraft:frost_walker\",lvl:2}]}"
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:impaling\",lvl:5}]}"
 			}
 		  ]
-		}
+		},	
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_piercing",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:piercing\",lvl:4}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_quick_charge",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:quick_charge\",lvl:3}]}"
+			}
+		  ]
+		}		
       ]
     }
   ]

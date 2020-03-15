@@ -2,7 +2,7 @@
   "pools": [
     {
       "rolls": {
-        "min": 2,
+        "min": 1,
         "max": 2
       },
   	  "name":"dimdungeons:pool_super",
@@ -19,12 +19,7 @@
         },
         {
           "type": "loot_table",
-          "name": "minecraft:chests/village_weaponsmith",
-          "weight": 1
-        },
-        {
-          "type": "loot_table",
-          "name": "minecraft:chests/woodland_mansion",
+          "name": "minecraft:chests/village/village_weaponsmith",
           "weight": 1
         },
         {

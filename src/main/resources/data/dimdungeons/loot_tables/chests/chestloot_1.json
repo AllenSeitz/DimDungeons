@@ -5,32 +5,49 @@
         "min": 1,
         "max": 2
       },
-      "bonus_rolls": 1,
+      "bonus_rolls": {
+        "min": 1,
+        "max": 1
+	  },
   	  "name":"dimdungeons:pool_1",
       "entries": [
         {
           "type": "item",
-          "name": "minecraft:apple",
-          "weight": 4,
+          "name": "minecraft:iron_ore",
+          "weight": 3,
           "functions": [
             {
               "function": "set_count",
               "count": {
-                "min": 2,
-                "max": 4
+                "min": 16,
+                "max": 24
               }
             }
           ]
         },
         {
           "type": "item",
-          "name": "minecraft:potato",
-          "weight": 4,
+          "name": "minecraft:gold_ore",
+          "weight": 3,
           "functions": [
             {
               "function": "set_count",
               "count": {
-                "min": 4,
+                "min": 16,
+                "max": 24
+              }
+            }
+          ]
+        },
+        {
+          "type": "item",
+          "name": "minecraft:glowstone",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 8,
                 "max": 12
               }
             }
@@ -38,13 +55,13 @@
         },
         {
           "type": "item",
-          "name": "minecraft:carrot",
-          "weight": 4,
+          "name": "minecraft:obsidian",
+          "weight": 3,
           "functions": [
             {
               "function": "set_count",
               "count": {
-                "min": 4,
+                "min": 8,
                 "max": 12
               }
             }
@@ -52,42 +69,37 @@
         },
         {
           "type": "item",
-          "name": "minecraft:bread",
-          "weight": 4,
+          "name": "minecraft:quartz",
+          "weight": 3,
           "functions": [
             {
               "function": "set_count",
               "count": {
-                "min": 2,
-                "max": 4
+                "min": 16,
+                "max": 24
               }
             }
-          ]
+          ]		  
         },
         {
           "type": "item",
-          "name": "minecraft:shield",
-          "weight": 4
-        },
-        {
-          "type": "item",
-          "name": "minecraft:magma_cream",
-          "weight": 4,
+          "name": "minecraft:experience_bottle",
+          "weight": 3,
           "functions": [
             {
               "function": "set_count",
               "count": {
-                "min": 1,
-                "max": 2
+                "min": 6,
+                "max": 12
               }
             }
-          ]
+          ]		  
         },
         {
           "type": "item",
           "name": "minecraft:potion",
           "entryName":"dimdungeons:potion_luck",
-          "weight": 4,
+          "weight": 3,
           "functions": [
             {
               "function": "set_nbt",
@@ -105,13 +117,74 @@
         {
           "type": "item",
           "name": "minecraft:potion",
-          "entryName":"dimdungeons:potion_healing",
+          "entryName":"dimdungeons:potion_strong_healing",
           "weight": 4,
           "functions": [
             {
               "function": "set_nbt",
-              "tag": "{Potion:\"minecraft:healing\"}"
+              "tag": "{Potion:\"minecraft:strong_healing\"}"
             },
+            {
+              "function": "set_count",
+              "count": {
+                "min": 2,
+                "max": 4
+              }
+            }
+          ]
+        },
+        {
+          "type": "item",
+          "name": "minecraft:potion",
+          "entryName":"dimdungeons:potion_strong_swiftness",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "set_nbt",
+              "tag": "{Potion:\"minecraft:strong_swiftness\"}"
+            },
+            {
+              "function": "set_count",
+              "count": {
+                "min": 1,
+                "max": 2
+              }
+            }			
+          ]
+        },
+        {
+          "type": "item",
+          "name": "minecraft:magma_cream",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 2,
+                "max": 4
+              }
+            }
+          ]
+        },		
+        {
+          "type": "item",
+          "name": "minecraft:firework_rocket",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 24,
+                "max": 40
+              }
+            }
+          ]
+        },
+        {
+          "type": "item",
+          "name": "minecraft:map",
+          "weight": 3,
+          "functions": [
             {
               "function": "set_count",
               "count": {
@@ -123,40 +196,29 @@
         },
         {
           "type": "item",
-          "name": "minecraft:potion",
-          "entryName":"dimdungeons:potion_strong_swiftness",
-          "weight": 4,
+          "name": "minecraft:slime_ball",
+          "weight": 3,
           "functions": [
             {
-              "function": "set_nbt",
-              "tag": "{Potion:\"minecraft:strong_swiftness\"}"
+              "function": "set_count",
+              "count": {
+                "min": 8,
+                "max": 12
+              }
             }
           ]
         },
         {
           "type": "item",
-          "name": "minecraft:spectral_arrow",
-          "weight": 4,
+          "name": "minecraft:ender_pearl",
+          "weight": 3,
           "functions": [
             {
               "function": "set_count",
-              "count": 16
-            }
-          ]
-        },
-        {
-          "type": "item",
-          "name": "minecraft:tipped_arrow",
-          "entryName":"dimdungeons:tipped_arrow_poison",
-          "weight": 4,
-          "functions": [
-            {
-              "function": "set_nbt",
-              "tag": "{Potion:\"minecraft:poison\"}"
-            },
-            {
-              "function": "set_count",
-              "count": 8
+              "count": {
+                "min": 4,
+                "max": 6
+              }
             }
           ]
         },
@@ -173,91 +235,21 @@
               }
             }
           ]
-        },
+        },		
         {
-          "type": "item",
-          "name": "minecraft:lead",
-          "weight": 4,
-          "functions": [
-            {
-              "function": "set_count",
-              "count": 1
-            }
-          ]
-        },
-        {
-          "type": "item",
-          "name": "minecraft:clay_ball",
-          "weight": 4,
-          "functions": [
-            {
-              "function": "set_count",
-              "count": 64
-            }
-          ]
-        },
-        {
-          "type": "item",
-          "name": "minecraft:redstone",
-          "weight": 4,
-          "functions": [
-            {
-              "function": "set_count",
-              "count": {
-                "min": 8,
-                "max": 16
-              }
-            }
-          ]
-        },
-        {
-          "type": "item",
-          "name": "minecraft:quartz",
-          "weight": 4,
-          "functions": [
-            {
-              "function": "set_count",
-              "count": {
-                "min": 8,
-                "max": 16
-              }
-            }
-          ]
-        },
-        {
-          "type": "item",
-          "name": "minecraft:coal",
-          "weight": 4,
-          "functions": [
-            {
-              "function": "set_count",
-              "count": {
-                "min": 8,
-                "max": 16
-              }
-            }
-          ]
-        },
-        {
-          "type": "item",
-          "name": "minecraft:item_frame",
-          "weight": 4,
-          "functions": [
-            {
-              "function": "set_count",
-              "count": 1
-            }
-          ]
+          "type": "loot_table",
+          "name": "dimdungeons:chests/kit_random",
+          "weight": 20
         },
         {
           "type": "loot_table",
-          "name": "dimdungeons:chests/trophy",
+          "name": "dimdungeons:chests/trophy_1",
           "weight": 1
         },
         {
           "type": "loot_table",
           "name": "dimdungeons:chests/chestbooks_1",
-          "weight": 27
+          "weight": 32
         }
       ]
     }
