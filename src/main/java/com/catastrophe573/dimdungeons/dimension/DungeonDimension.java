@@ -85,7 +85,11 @@ public class DungeonDimension extends Dimension
 	{
 	    return true;
 	}
-	if (block.getRegistryName().getNamespace() == "gravestones")
+	if (block.getRegistryName().getNamespace() == "gravestone") // GraveStone Modby henkelmax
+	{
+	    return true;
+	}
+	if (block.getRegistryName().getNamespace() == "gravestone_lite") // a second version of the above mod by the same author
 	{
 	    return true;
 	}
