@@ -50,13 +50,14 @@ public class ItemGuidebook extends Item
 	}
 	else
 	{
-	    // delete this item
-	    ItemStack itemstack = playerIn.getHeldItem(handIn);
-	    itemstack.shrink(1);
-
 	    // create the new guidebook and give it to the player
 	    ItemStack newbook = makeTempGuidebook();
-	    playerIn.addItemStackToInventory(newbook);
+	    if (playerIn.addItemStackToInventory(newbook))
+	    {
+		// delete this item
+		ItemStack itemstack = playerIn.getHeldItem(handIn);
+		itemstack.shrink(1);
+	    }
 	}
 
 	return ActionResult.func_226248_a_(ItemStack.EMPTY); // return action result type success
