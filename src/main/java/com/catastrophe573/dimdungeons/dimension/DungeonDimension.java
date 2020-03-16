@@ -85,15 +85,15 @@ public class DungeonDimension extends Dimension
 	{
 	    return true;
 	}
-	if (block.getRegistryName().getNamespace() == "gravestone") // GraveStone Modby henkelmax
+	if (block.getRegistryName().toString().contains("gravestone")) // GraveStone Mod by henkelmax, also catches "gravestone_lite"
 	{
 	    return true;
 	}
-	if (block.getRegistryName().getNamespace() == "gravestone_lite") // a second version of the above mod by the same author
+	if (block.getRegistryName().toString().contains("gravestone_lite")) // a second version of the above mod by the same author
 	{
 	    return true;
 	}
-	if (block.getRegistryName().getNamespace() == "tombstone") // Corail Tombstone, allow players to interact with and break it
+	if (block.getRegistryName().toString().contains("tombstone")) // Corail Tombstone, allow players to interact with and break it
 	{
 	    return true;
 	}
