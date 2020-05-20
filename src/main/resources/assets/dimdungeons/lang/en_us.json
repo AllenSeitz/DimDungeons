@@ -171,6 +171,17 @@
     "book.dimdungeons.open_guide_message": "Catastrophe573 suddenly appears for just a moment, hastily writes into the book, and hands it back to you.",
     "book.dimdungeons.thank_you_message": "Thank you for playing Dimensional Dungeons! I'm sorry I didn't finish the guidebook but I'm working very hard!",
 
+    "error.dimdungeons.portal_error_1": "This portal key is not activated. Blank keys must be activated before being used.",
+    "error.dimdungeons.portal_error_2": "The two blocks below the portal keyhole must be open.",
+    "error.dimdungeons.portal_error_3": "A block is missing in the portal frame.",
+    "error.dimdungeons.portal_error_4": "Portal frames should be built out of Stone Brick, not ",
+    "error.dimdungeons.portal_error_5": "A block is missing in one of the portal spires. Are they the correct distance and height?",
+    "error.dimdungeons.portal_error_6": "Portal spires should be built out of Stone Brick, not ",
+    "error.dimdungeons.portal_error_7": "Portal spires need to have a Gilded Portal Block on top, not ",
+    "error.dimdungeons.portal_error_8": "Two Portal Crown Blocks must be placed on top of the portal before advanced keys can be used.",
+    "error.dimdungeons.portal_error_9": "White or purple banners must be hung on the spires before advanced keys can be used.",
+    "error.dimdungeons.portal_error_10": "The banner pattern on either or both banners is not correct for advanced keys.",
+
     "enemy.dimdungeons.enderman": "Enderman",
     "enemy.dimdungeons.guardian": "Guardian",
     "enemy.dimdungeons.witch": "Witch",

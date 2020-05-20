@@ -1,5 +1,6 @@
 package com.catastrophe573.dimdungeons.block;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.annotation.Nullable;
@@ -33,10 +34,16 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
 
 public class BlockPortalKeyhole extends Block
 {
@@ -66,7 +73,7 @@ public class BlockPortalKeyhole extends Block
     public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
 	boolean hasPortalBlockBelow = worldIn.getBlockState(pos.down()).getBlock() == BlockRegistrar.block_gold_portal;
-	
+
 	if (stateIn.get(LIT) && hasPortalBlockBelow)
 	{
 	    Direction enumfacing = (Direction) stateIn.get(FACING);
@@ -108,79 +115,68 @@ public class BlockPortalKeyhole extends Block
     }
 
     // called when the player right clicks this block
-	@Override
-	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) 
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
+    {
+	ItemStack playerItem = player.getHeldItem(handIn);
+	TileEntity tileEntity = worldIn.getTileEntity(pos);
+	TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
+
+	// insert or remove an item from this block
+	if (myEntity != null)
 	{
-		/* removed in 1.15?
-		// client side
-		if (EffectiveSide.get() == LogicalSide.CLIENT)
+	    ItemStack insideItem = myEntity.getObjectInserted();
+
+	    // if the keyhole is currently empty
+	    if (insideItem.isEmpty())
+	    {
+		if (!playerItem.isEmpty())
 		{
-			return ActionResultType.PASS;
+		    // DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString()
+		    // + " inside keyhole...");
+		    myEntity.setContents(playerItem.copy());
+		    playerItem.shrink(1);
+
+		    // recalculate the boolean block states
+		    BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
+		    worldIn.setBlockState(pos, newBlockState);
+
+		    // this function prints no message on success
+		    checkForProblemsAndLiterallySpeakToPlayer(worldIn, pos, state, myEntity, player);
+
+		    // should portal blocks be spawned?
+		    if (isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
+		    {
+			worldIn.setBlockState(pos.down(), BlockRegistrar.block_gold_portal.getDefaultState());
+			worldIn.setBlockState(pos.down(2), BlockRegistrar.block_gold_portal.getDefaultState());
+		    }
+		    return ActionResultType.SUCCESS;
 		}
-		*/
-
-		ItemStack playerItem = player.getHeldItem(handIn);
-		TileEntity tileEntity = worldIn.getTileEntity(pos);
-		TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
-
-		// insert or remove an item from this block
-		if (myEntity != null)
+	    }
+	    // if the keyhole is currently full
+	    else
+	    {
+		// DimDungeons.LOGGER.info("Taking thing out of keyhole...");
+		if (playerItem.isEmpty())
 		{
-			ItemStack insideItem = myEntity.getObjectInserted();
-
-			// if the keyhole is currently empty
-			if (insideItem.isEmpty())
-			{
-				if (!playerItem.isEmpty())
-				{
-					// DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString()
-					// + " inside keyhole...");
-					myEntity.setContents(playerItem.copy());
-					playerItem.shrink(1);
-
-					// recalculate the boolean block states
-					BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled())
-							.with(LIT, myEntity.isActivated());
-					worldIn.setBlockState(pos, newBlockState);
-
-					// should portal blocks be spawned?
-					if (isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
-					{
-						worldIn.setBlockState(pos.down(), BlockRegistrar.block_gold_portal.getDefaultState());
-						worldIn.setBlockState(pos.down(2), BlockRegistrar.block_gold_portal.getDefaultState());
-
-						// TODO: is this needed?
-						// get a block on the destination side to pregen the chunk where this portal
-						// goes
-						// worldIn.getMinecraftServer().getWorld(573).getBlockState(pos.down());
-					}
-					return ActionResultType.SUCCESS;
-				}
-			}
-			// if the keyhole is currently full
-			else 
-			{
-				// DimDungeons.LOGGER.info("Taking thing out of keyhole...");
-				if (playerItem.isEmpty())
-				{
-					player.setHeldItem(handIn, insideItem); // hand it to the player
-				}
-				else if (!player.addItemStackToInventory(insideItem)) // okay put it in their inventory
-				{
-					player.dropItem(insideItem, false); // whatever drop it on the ground
-				}
-
-				myEntity.removeContents();
-
-				// recalculate the boolean block states
-				BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
-				worldIn.setBlockState(pos, newBlockState, 3);
-
-				return ActionResultType.SUCCESS;
-			}
+		    player.setHeldItem(handIn, insideItem); // hand it to the player
 		}
-		return ActionResultType.PASS;
+		else if (!player.addItemStackToInventory(insideItem)) // okay put it in their inventory
+		{
+		    player.dropItem(insideItem, false); // whatever drop it on the ground
+		}
+
+		myEntity.removeContents();
+
+		// recalculate the boolean block states
+		BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
+		worldIn.setBlockState(pos, newBlockState, 3);
+
+		return ActionResultType.SUCCESS;
+	    }
 	}
+	return ActionResultType.PASS;
+    }
 
     // helper function for checkForPortalCreation
     protected boolean isOkayToSpawnPortalBlocks(World worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole myEntity)
@@ -330,5 +326,148 @@ public class BlockPortalKeyhole extends Block
     public BlockState mirror(BlockState state, Mirror mirrorIn)
     {
 	return state.with(FACING, mirrorIn.mirror(((Direction) state.get(FACING))));
+    }
+
+    public int predictPortalError(World worldIn, PlayerEntity playerIn)
+    {
+	return 0; // no error! We're good!
+    }
+
+    @SuppressWarnings("deprecation")
+    protected void checkForProblemsAndLiterallySpeakToPlayer(World worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole tileEntity, PlayerEntity player)
+    {
+	// only run this function once, either on the client or on the server. I choose client because this function does nothing logical.
+	if (EffectiveSide.get() != LogicalSide.CLIENT)
+	{
+	    return;
+	}
+	
+	// error #1: the key is not activated
+	ItemStack item = tileEntity.getObjectInserted();
+	int keyLevel = 0;
+	if (item.getItem() instanceof ItemPortalKey)
+	{
+	    ItemPortalKey key = (ItemPortalKey) item.getItem();
+	    if (!key.isActivated(item))
+	    {
+		speakLiterallyToPlayerAboutProblems(worldIn, player, 1, null);
+		return;
+	    }
+	    keyLevel = key.getKeyLevel(item);
+	}
+	else
+	{
+	    return; // item inserted is not even a key!
+	}
+
+	// error #2: no room to spawn portal
+	if (!isOkayToSpawnPortalBlocks(worldIn, pos, state, tileEntity))
+	{
+	    speakLiterallyToPlayerAboutProblems(worldIn, player, 2, null);
+	    return;
+	}
+
+	// error #3, error #4: the frame is not complete or contains an invalid block
+	ArrayList<BlockState> blocks;
+	if (state.get(BlockPortalKeyhole.FACING) == Direction.WEST || state.get(BlockPortalKeyhole.FACING) == Direction.EAST)
+	{
+	    blocks = BlockGoldPortal.getPortalFrameMaterialsNorthSouth(worldIn, pos);
+	}
+	else
+	{
+	    blocks = BlockGoldPortal.getPortalFrameMaterialsWestEast(worldIn, pos);
+	}
+	for (int i = 0; i < 5; i++)
+	{
+	    BlockState b = blocks.get(i);
+	    if (b.isAir())
+	    {
+		speakLiterallyToPlayerAboutProblems(worldIn, player, 3, null);
+		return;
+	    }
+	    if (!BlockGoldPortal.isValidPortalFrameBlock(b.getBlock()))
+	    {
+		speakLiterallyToPlayerAboutProblems(worldIn, player, 4, b);
+		return;
+	    }
+	}
+
+	// error #5, error #6: the spires are incomplete
+	for (int i = 5; i < 9; i++)
+	{
+	    BlockState b = blocks.get(i);
+	    if (b.isAir())
+	    {
+		speakLiterallyToPlayerAboutProblems(worldIn, player, 5, null);
+		return;
+	    }
+	    if (!BlockGoldPortal.isValidPortalFrameBlock(b.getBlock()))
+	    {
+		speakLiterallyToPlayerAboutProblems(worldIn, player, 6, b);
+		return;
+	    }
+	}
+
+	// error #7: the gilded portal blocks on top of the spires are missing
+	for (int i = 9; i < 11; i++)
+	{
+	    BlockState b = blocks.get(i);
+	    if (b.getBlock() != BlockRegistrar.block_gilded_portal)
+	    {
+		speakLiterallyToPlayerAboutProblems(worldIn, player, 7, b);
+		return;
+	    }
+	}
+
+	// only continue performing advanced checks for advanced portal keys
+	if (keyLevel < 2)
+	{
+	    return; // success!
+	}
+
+	// error #8: missing crowns
+	for (int i = 11; i < 13; i++)
+	{
+	    BlockState b = blocks.get(i);
+	    if (b.getBlock() != BlockRegistrar.block_portal_crown)
+	    {
+		speakLiterallyToPlayerAboutProblems(worldIn, player, 8, null);
+		return;
+	    }
+	}
+
+	// error #9: missing banners
+	BlockState leftSpireA = blocks.get(13);
+	BlockState leftSpireB = blocks.get(14);
+	BlockState rightSpireA = blocks.get(15);
+	BlockState rightSpireB = blocks.get(16);
+
+	if (!(leftSpireA.getBlock() == Blocks.WHITE_WALL_BANNER || leftSpireA.getBlock() == Blocks.PURPLE_WALL_BANNER || leftSpireB.getBlock() == Blocks.WHITE_WALL_BANNER || leftSpireB.getBlock() == Blocks.PURPLE_WALL_BANNER))
+	{
+	    speakLiterallyToPlayerAboutProblems(worldIn, player, 9, null);
+	    return;
+	}
+	if (!(rightSpireA.getBlock() == Blocks.WHITE_WALL_BANNER || rightSpireA.getBlock() == Blocks.PURPLE_WALL_BANNER || rightSpireB.getBlock() == Blocks.WHITE_WALL_BANNER || rightSpireB.getBlock() == Blocks.PURPLE_WALL_BANNER))
+	{
+	    speakLiterallyToPlayerAboutProblems(worldIn, player, 9, null);
+	    return;
+	}
+
+	return; // success!
+    }
+
+    public void speakLiterallyToPlayerAboutProblems(World worldIn, PlayerEntity playerIn, int problemID, @Nullable BlockState problemBlock)
+    {
+	// a message that does not call out a specific block
+	if (problemBlock == null)
+	{
+	    ITextComponent text1 = new TranslationTextComponent(new TranslationTextComponent("error.dimdungeons.portal_error_" + problemID).getString());
+	    playerIn.sendMessage(text1.setStyle(new Style().setItalic(true).setColor(TextFormatting.BLUE)));
+	}
+	else
+	{
+	    ITextComponent text1 = new TranslationTextComponent(new TranslationTextComponent("error.dimdungeons.portal_error_" + problemID).getString() + problemBlock.getBlock().getRegistryName() + ".");
+	    playerIn.sendMessage(text1.setStyle(new Style().setItalic(true).setColor(TextFormatting.BLUE)));
+	}
     }
 }
