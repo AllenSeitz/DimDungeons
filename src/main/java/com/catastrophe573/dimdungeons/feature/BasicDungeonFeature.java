@@ -223,6 +223,10 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	{
 	    DungeonBuilderTestShapes.MakeTestDungeonThreesAndFours(dbl);
 	}
+	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugFour"))
+	{
+	    DungeonBuilderTestShapes.MakeTestDungeonContentFour(dbl);
+	}
 	else
 	{
 	    // generate the entire dungeon, a normal dungeon

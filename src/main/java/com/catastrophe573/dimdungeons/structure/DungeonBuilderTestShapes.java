@@ -121,4 +121,38 @@ public class DungeonBuilderTestShapes
 	dbl.placeRoomShape(5, 5, "mazenotfound_2", RoomType.THREEWAY, Rotation.NONE);	
 	dbl.placeRoomShape(6, 5, "mazenotfound_3", RoomType.HALLWAY, Rotation.NONE);	
     }
+    
+    public static void MakeTestDungeonContentFour(DungeonBuilderLogic dbl)
+    {
+	dbl.placeRoomShape(0, 0, "redspuzzle_4", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(1, 0, "morethree_4", RoomType.THREEWAY, Rotation.NONE);
+	dbl.placeRoomShape(2, 0, "morethree_5", RoomType.THREEWAY, Rotation.NONE);
+	dbl.placeRoomShape(3, 0, "morethree_6", RoomType.THREEWAY, Rotation.NONE);
+	dbl.placeRoomShape(4, 0, "library_hall", RoomType.HALLWAY, Rotation.NONE);
+	dbl.placeRoomShape(5, 0, "library_end", RoomType.END, Rotation.NONE);
+
+	dbl.placeRoomShape(0, 1, "crueltrap_1", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(1, 1, "crueltrap_2", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(2, 1, "crueltrap_3", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(3, 1, "blastchest_1", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(4, 1, "smeltery_v2", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(5, 1, "hiddenpath_3", RoomType.THREEWAY, Rotation.NONE);
+	dbl.placeRoomShape(6, 1, "hiddenpath_1", RoomType.THREEWAY, Rotation.NONE);
+	dbl.placeRoomShape(7, 1, "hiddenpath_2", RoomType.FOURWAY, Rotation.NONE);
+	
+	dbl.placeRoomShape(0, 2, "waterhall_1", RoomType.HALLWAY, Rotation.NONE);
+	dbl.placeRoomShape(1, 2, "yinyang_1", RoomType.HALLWAY, Rotation.NONE);
+	dbl.placeRoomShape(2, 2, "yinyang_2", RoomType.HALLWAY, Rotation.NONE);
+	dbl.placeRoomShape(3, 2, "magicpuzzle_1", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(4, 2, "beacon_1", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(5, 2, "beacon_2", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(6, 2, "freebie_1", RoomType.END, Rotation.NONE);
+
+	dbl.placeRoomShape(0, 4, "spawner_1", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(1, 4, "spawner_2", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(2, 4, "spawner_3", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(3, 4, "spawner_4", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(4, 4, "spawner_5", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(5, 4, "spawner_6", RoomType.END, Rotation.NONE);
+}    
 }
