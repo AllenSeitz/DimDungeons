@@ -1,7 +1,5 @@
 package com.catastrophe573.dimdungeons.item;
 
-import javax.annotation.Nullable;
-
 import com.catastrophe573.dimdungeons.DimDungeons;
 
 import net.minecraft.block.BlockState;
@@ -9,9 +7,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.EndPortalFrameBlock;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -20,7 +16,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -51,29 +46,23 @@ public class ItemPortalKey extends Item
     {
 	super(new Item.Properties().group(ItemGroup.MISC).maxStackSize(1).group(ItemRegistrar.CREATIVE_TAB));
 	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
-
-	// this is used to pick a custom model depending on the state of the key
-	this.addPropertyOverride(new ResourceLocation(DimDungeons.MOD_ID, "keytype"), new IItemPropertyGetter() {
-	    @OnlyIn(Dist.CLIENT)
-	    private double rotation;
-
-	    @OnlyIn(Dist.CLIENT)
-	    public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity)
-	    {
-		if (isActivated(stack))
-		{
-		    if (getWarpZ(stack) < 0)
-		    {
-			return 0.2f; // level 2 key
-		    }
-		    return 0.1f; // level 1 key
-		}
-
-		return 0.0f; // unactivated key
-	    }
-	});
     }
 
+    // used in the item model json to change the graphic based on the dimdungeons:keytype property
+    public static float getKeyLevelAsFloat(ItemStack stack)
+    {
+	if (((ItemPortalKey) stack.getItem()).isActivated(stack))
+	{
+	    if (((ItemPortalKey) stack.getItem()).getWarpZ(stack) < 0)
+	    {
+		return 0.2f; // level 2 key
+	    }
+	    return 0.1f; // level 1 key
+	}
+
+	return 0.0f; // unactivated key	
+    }
+    
     public int getKeyLevel(ItemStack stack)
     {
 	if ( !isActivated(stack) )
