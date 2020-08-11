@@ -12,8 +12,8 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -37,16 +37,21 @@ public class ItemGuidebook extends Item
 	{
 	    // just because
 	    ITextComponent text1 = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.open_guide_message").getString());
-	    playerIn.sendMessage(text1.setStyle(new Style().setBold(true).setColor(TextFormatting.DARK_PURPLE)));
+	    
+	    playerIn.sendMessage(((TranslationTextComponent) text1).func_240699_a_(TextFormatting.DARK_PURPLE), Util.DUMMY_UUID);
+	    
+	    // I LOVE 1.16 AND THE LACK OF MAPPINGS!
+	    // func_230529_a_ = appendSibling
+	    // func_240699_a_ = applyStyle probably
 	    ITextComponent text2a = new TranslationTextComponent("<");
 	    ITextComponent text2b = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.author").getString());
 	    ITextComponent text2c = new TranslationTextComponent("> ");
 	    ITextComponent text2d = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.thank_you_message").getString());
-	    text2a.setStyle(new Style().setColor(TextFormatting.WHITE));
-	    text2b.setStyle(new Style().setColor(TextFormatting.AQUA));
-	    text2c.setStyle(new Style().setColor(TextFormatting.WHITE));
-	    text2d.setStyle(new Style().setColor(TextFormatting.WHITE));
-	    playerIn.sendMessage(text2a.appendSibling(text2b).appendSibling(text2c).appendSibling(text2d));
+	    ((TranslationTextComponent) text2a).func_240699_a_(TextFormatting.WHITE);
+	    ((TranslationTextComponent) text2b).func_240699_a_(TextFormatting.AQUA);
+	    ((TranslationTextComponent) text2c).func_240699_a_(TextFormatting.WHITE);
+	    ((TranslationTextComponent) text2d).func_240699_a_(TextFormatting.WHITE);
+	    playerIn.sendMessage(((TranslationTextComponent) text2a).func_230529_a_(text2b).func_230529_a_(text2c).func_230529_a_(text2d), Util.DUMMY_UUID);
 	}
 	else
 	{
@@ -60,7 +65,7 @@ public class ItemGuidebook extends Item
 	    }
 	}
 
-	return ActionResult.func_226248_a_(ItemStack.EMPTY); // return action result type success
+	return ActionResult.resultSuccess(ItemStack.EMPTY); // return action result type success
     }
 
     public ItemStack makeTempGuidebook()
