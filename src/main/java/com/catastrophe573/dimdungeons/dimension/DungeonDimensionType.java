@@ -6,8 +6,8 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.Dimension;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.Dimension;
+import net.minecraft.world.DimensionType;
 import net.minecraftforge.common.ModDimension;
 
 public class DungeonDimensionType extends ModDimension

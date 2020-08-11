@@ -1,0 +1,44 @@
+{
+  "type": "dimdungeons:dungeon_dimension",
+  "generator":
+  {
+    "type": "minecraft:flat",
+    "settings":
+	{
+	  "layers":
+	  {	    
+	  },
+	  "biome": "dimdungeons:biome_dungeon",
+	  "lakes": false,
+	  "features": true,
+      "structures":
+	  {
+        "structures":
+		{
+          "dimdungeons:basic_dungeon":
+		  {
+            "spacing": 1,
+            "separation": 1,
+            "salt": 12345678
+          },
+          "dimdungeons:advanced_dungeon":
+		  {
+            "spacing": 1,
+            "separation": 1,
+            "salt": 77777777
+          }
+        }
+      },
+      "default_block":
+	  {
+        "Name": "minecraft:stone"
+      },
+      "default_fluid":
+	  {
+        "Name": "minecraft:air"
+      },
+      "sea_level": 0,
+      "disable_mob_generation": true
+    }
+  }
+}

@@ -9,18 +9,18 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.Dimension;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.ModDimension;
-import net.minecraftforge.event.world.RegisterDimensionsEvent;
+import net.minecraft.world.Dimension;
+import net.minecraft.world.DimensionType;
+//import net.minecraftforge.common.DimensionManager;
+//import net.minecraftforge.common.ModDimension;
+//import net.minecraftforge.event.world.RegisterDimensionsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-// thank you tterrag for showing me how this is done in Tropicraft
+// thank you tterrag for showing me how this is done in Tropicraft (1.14)
 public class DimensionRegistrar
 {
     public static final String dungeon_basic_regname = "dungeon_dimension";

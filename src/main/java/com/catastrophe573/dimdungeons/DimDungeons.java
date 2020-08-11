@@ -4,12 +4,15 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -25,6 +28,7 @@ import com.catastrophe573.dimdungeons.biome.BiomeRegistrar;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.dimension.DimensionRegistrar;
+import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -67,9 +71,12 @@ public class DimDungeons
 
     private void doClientStuff(final FMLClientSetupEvent event)
     {
-	RenderType translucent = RenderType.getTranslucent();
+	RenderTypeLookup.setRenderLayer(BlockRegistrar.block_gold_portal, RenderType.getTranslucent());
 
-	RenderTypeLookup.setRenderLayer(BlockRegistrar.block_gold_portal, translucent);
+	// register the custom property for the keys that allows for switching their model
+        ItemModelsProperties.func_239418_a_(ItemRegistrar.item_portal_key, new ResourceLocation("keytype"), (stack, world, entity) -> {
+            return ItemPortalKey.getKeyLevelAsFloat(stack);
+        });
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)
