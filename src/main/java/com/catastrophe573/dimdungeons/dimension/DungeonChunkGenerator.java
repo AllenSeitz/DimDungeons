@@ -7,11 +7,13 @@ import com.catastrophe573.dimdungeons.feature.AdvancedDungeonFeature;
 import com.catastrophe573.dimdungeons.feature.BasicDungeonFeature;
 import com.catastrophe573.dimdungeons.feature.FeatureRegistrar;
 import com.google.common.collect.Lists;
+import com.mojang.serialization.Codec;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.biome.Biome;
@@ -19,12 +21,14 @@ import net.minecraft.world.biome.BiomeManager;
 import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.Heightmap.Type;
 import net.minecraft.world.gen.OverworldChunkGenerator;
 import net.minecraft.world.gen.OverworldGenSettings;
 import net.minecraft.world.gen.WorldGenRegion;
+import net.minecraft.world.gen.feature.structure.StructureManager;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 
-public class DungeonChunkGenerator extends OverworldChunkGenerator
+public class DungeonChunkGenerator extends ChunkGenerator
 {
     // I still want a random seed, like the overworld, for use in structures
     private Random randomSeed;
@@ -49,12 +53,12 @@ public class DungeonChunkGenerator extends OverworldChunkGenerator
     }
 
     @Override
-    public List<Biome.SpawnListEntry> getPossibleCreatures(EntityClassification creatureType, BlockPos pos)
-    {
-	// returning an empty list to ensure no other mods can add mobs
+    //public List<Biome.SpawnListEntry> getPossibleCreatures(EntityClassification creatureType, BlockPos pos)
+    public List<Biome.SpawnListEntry> func_230353_a_(Biome p_230353_1_, StructureManager p_230353_2_, EntityClassification p_230353_3_, BlockPos p_230353_4_) {
 	return Lists.newArrayList();
-    }
+	   }
 
+    
     @Override
     public int getGroundHeight()
     {
@@ -153,5 +157,47 @@ public class DungeonChunkGenerator extends OverworldChunkGenerator
 	// let's just place the only two features that I care about. this prevents any other features from other mods from appearing
 	FeatureRegistrar.feature_basic_dungeon.place(region, this, sharedseedrandom, blockpos, null);
 	FeatureRegistrar.feature_advanced_dungeon.place(region, this, sharedseedrandom, blockpos, null);
+    }
+
+    @Override
+    protected Codec<? extends ChunkGenerator> func_230347_a_()
+    {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public ChunkGenerator func_230349_a_(long p_230349_1_)
+    {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public void generateSurface(WorldGenRegion p_225551_1_, IChunk p_225551_2_)
+    {
+	// TODO Auto-generated method stub
+	
+    }
+
+    @Override
+    public void func_230352_b_(IWorld p_230352_1_, StructureManager p_230352_2_, IChunk p_230352_3_)
+    {
+	// TODO Auto-generated method stub
+	
+    }
+
+    @Override
+    public int func_222529_a(int p_222529_1_, int p_222529_2_, Type heightmapType)
+    {
+	// TODO Auto-generated method stub
+	return 0;
+    }
+
+    @Override
+    public IBlockReader func_230348_a_(int p_230348_1_, int p_230348_2_)
+    {
+	// TODO Auto-generated method stub
+	return null;
     }
 }

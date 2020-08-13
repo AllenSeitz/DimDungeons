@@ -26,7 +26,6 @@ import org.apache.logging.log4j.Logger;
 import com.catastrophe573.dimdungeons.biome.BiomeRegistrar;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
-import com.catastrophe573.dimdungeons.dimension.DimensionRegistrar;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 
@@ -40,6 +39,7 @@ public class DimDungeons
     // constants used by other classes
     public static final String MOD_ID = "dimdungeons"; // this must match mods.toml
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
+    public static final String dungeon_basic_regname = "dungeon_dimension";
 
     public DimDungeons()
     {
@@ -49,7 +49,6 @@ public class DimDungeons
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-	DimensionRegistrar.DIMENSIONS.register(FMLJavaModLoadingContext.get().getModEventBus());
 
 	// Register ourselves for server, registry and other game events we are interested in
 	MinecraftForge.EVENT_BUS.register(this);

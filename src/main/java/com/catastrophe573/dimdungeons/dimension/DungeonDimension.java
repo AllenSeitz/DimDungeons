@@ -26,7 +26,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class DungeonDimension extends Dimension
-{
     public DungeonDimension(World worldIn, DimensionType typeIn)
     {
     	super(worldIn, typeIn, 0); // the third parameter is new in 1.15? It is unnamed but seems to have something to do with time/celestial angle
