@@ -10,7 +10,6 @@ import net.minecraftforge.registries.ObjectHolder;
 
 public class BlockRegistrar
 {
-    // mod id required in 1.13.0 because reasons lol?
     @ObjectHolder("dimdungeons:block_gilded_portal") public static Block block_gilded_portal;    
     @ObjectHolder("dimdungeons:block_gold_portal") public static Block block_gold_portal;    
     @ObjectHolder("dimdungeons:block_portal_keyhole") public static Block block_portal_keyhole;    

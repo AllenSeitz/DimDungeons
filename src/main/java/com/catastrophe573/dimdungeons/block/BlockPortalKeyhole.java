@@ -32,10 +32,11 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
@@ -293,22 +294,6 @@ public class BlockPortalKeyhole extends Block
     }
 
     @Override
-    // this replaces all metadata in 1.13 forwards
-    //public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-    public BlockState getExtendedState(BlockState state, IBlockReader world, BlockPos pos)
-    {
-	BlockState retval = state;
-	TileEntity te = world.getTileEntity(pos);
-	if (te instanceof TileEntityPortalKeyhole)
-	{
-	    retval.with(FILLED, ((TileEntityPortalKeyhole) te).isFilled());
-	    retval.with(LIT, ((TileEntityPortalKeyhole) te).isActivated());
-	}
-
-	return retval;
-    }
-
-    @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
     {
 	builder.add(FACING, FILLED, LIT);
@@ -341,7 +326,7 @@ public class BlockPortalKeyhole extends Block
 	{
 	    return;
 	}
-	
+
 	// error #1: the key is not activated
 	ItemStack item = tileEntity.getObjectInserted();
 	int keyLevel = 0;
@@ -458,16 +443,17 @@ public class BlockPortalKeyhole extends Block
 
     public void speakLiterallyToPlayerAboutProblems(World worldIn, PlayerEntity playerIn, int problemID, @Nullable BlockState problemBlock)
     {
+	ITextComponent text1 = new TranslationTextComponent(new TranslationTextComponent("error.dimdungeons.portal_error_" + problemID).getString());
+
 	// a message that does not call out a specific block
-	if (problemBlock == null)
+	if (problemBlock != null)
 	{
-	    ITextComponent text1 = new TranslationTextComponent(new TranslationTextComponent("error.dimdungeons.portal_error_" + problemID).getString());
-	    playerIn.sendMessage(text1.setStyle(new Style().setItalic(true).setColor(TextFormatting.BLUE)));
+	    // this version of the error message expects a block name to be concatenated
+	    text1 = new TranslationTextComponent(new TranslationTextComponent("error.dimdungeons.portal_error_" + problemID).getString() + problemBlock.getBlock().getRegistryName() + ".");
 	}
-	else
-	{
-	    ITextComponent text1 = new TranslationTextComponent(new TranslationTextComponent("error.dimdungeons.portal_error_" + problemID).getString() + problemBlock.getBlock().getRegistryName() + ".");
-	    playerIn.sendMessage(text1.setStyle(new Style().setItalic(true).setColor(TextFormatting.BLUE)));
-	}
+	text1.getStyle().setItalic(true);
+	text1.getStyle().setColor(Color.func_240744_a_(TextFormatting.BLUE));
+	playerIn.sendMessage(text1, Util.DUMMY_UUID);
+
     }
 }

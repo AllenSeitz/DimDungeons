@@ -4,6 +4,7 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
@@ -33,9 +34,9 @@ public class TileEntityPortalKeyhole extends TileEntity
     private static final String ITEM_PROPERTY_KEY = "objectInserted";
 
     @Override
-    public void read(CompoundNBT compound)
+    public void read(BlockState stateIn, CompoundNBT compound)
     {
-	super.read(compound);
+	super.read(stateIn, compound);
 	readMyNBTData(compound);
     }
 
@@ -48,23 +49,9 @@ public class TileEntityPortalKeyhole extends TileEntity
 
     // synchronize on chunk loading
     @Override
-    public void handleUpdateTag(CompoundNBT nbt)
-    {
-	read(nbt);
-    }
-
-    // synchronize on chunk loading
-    @Override
     public CompoundNBT getUpdateTag()
     {
 	return write(new CompoundNBT());
-    }
-
-    // synchronize on block updates
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet)
-    {
-	read(packet.getNbtCompound());
     }
 
     // synchronize on block updates
