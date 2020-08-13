@@ -7,7 +7,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -26,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import com.catastrophe573.dimdungeons.biome.BiomeRegistrar;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
+import com.catastrophe573.dimdungeons.dimension.DungeonChunkGenerator;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 
@@ -72,9 +75,10 @@ public class DimDungeons
 	RenderTypeLookup.setRenderLayer(BlockRegistrar.block_gold_portal, RenderType.getTranslucent());
 
 	// register the custom property for the keys that allows for switching their model
-        ItemModelsProperties.func_239418_a_(ItemRegistrar.item_portal_key, new ResourceLocation("keytype"), (stack, world, entity) -> {
-            return ItemPortalKey.getKeyLevelAsFloat(stack);
-        });
+	ItemModelsProperties.func_239418_a_(ItemRegistrar.item_portal_key, new ResourceLocation("keytype"), (stack, world, entity) ->
+	{
+	    return ItemPortalKey.getKeyLevelAsFloat(stack);
+	});
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)
@@ -123,6 +127,12 @@ public class DimDungeons
 	public static void registerBiomes(RegistryEvent.Register<Biome> biomeRegistryEvent)
 	{
 	    BiomeRegistrar.registerAllBiomes(biomeRegistryEvent);
+	}
+
+	@SubscribeEvent
+	public static void registerChunkGenerators(RegistryEvent.Register<? extends ChunkGenerator> cgRegistryEvent)
+	{
+	    Registry.register(Registry.field_239690_aB_, "dimdungeon_chunkgen", DungeonChunkGenerator.field_235948_a_);
 	}
     }
 }

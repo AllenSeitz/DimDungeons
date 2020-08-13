@@ -1,17 +1,14 @@
 package com.catastrophe573.dimdungeons.feature;
 
 import java.util.Random;
-import java.util.function.Function;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
+import com.catastrophe573.dimdungeons.block.BlockGoldPortal;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
-import com.catastrophe573.dimdungeons.dimension.DungeonDimensionType;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonRoom;
-import com.catastrophe573.dimdungeons.structure.DungeonBuilderTestShapes;
-import com.mojang.datafixers.Dynamic;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -40,28 +37,25 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.GenerationSettings;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.template.PlacementSettings;
 import net.minecraft.world.gen.feature.template.Template;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 
-public class BasicDungeonFeature extends Feature<NoFeatureConfig>
+// temporarily, make this not a Feature, because 1.16.2 is going to break it again
+public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 {
     public static String FEATURE_ID = "feature_basic_dungeon";
 
-    public BasicDungeonFeature(Function<Dynamic<?>, ? extends NoFeatureConfig> function)
+    public BasicDungeonFeature()
     {
-	super(function);
     }
 
-    @Override
     // vanilla worldgen calls this function at some point in the complicated decoration process
-    public boolean place(IWorld world, ChunkGenerator<? extends GenerationSettings> chunkGenerator, Random rand, BlockPos pos, NoFeatureConfig config)
+    public boolean place(IWorld world, ChunkGenerator chunkGenerator, Random rand, BlockPos pos, NoFeatureConfig config)
     {
 	// only put dungeons on the right chunks, and only in the dungeon dimension
-	if (world.getDimension().getType() != DungeonDimensionType.getDimensionType())
+	if ( !BlockGoldPortal.isDimensionDungeon(world.getWorld()))
 	{
 	    DimDungeons.LOGGER.info("DIMDUNGEONS WEIRD ERROR: why is there a dungeon biome outside of the dungeon dimension?");
 	    return false;
@@ -116,21 +110,24 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
     {
 	ChunkPos cpos = new ChunkPos((int) x, (int) z);
 	MinecraftServer minecraftserver = world.getWorld().getServer();
-	TemplateManager templatemanager = minecraftserver.getWorld(world.getDimension().getType()).getStructureTemplateManager();
+	TemplateManager templatemanager = BlockGoldPortal.getDungeonWorld(minecraftserver).getStructureTemplateManager();
 
 	Template template = templatemanager.getTemplate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "basic_template"));
 	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunk(cpos);
 	placementsettings.setBoundingBox(placementsettings.getBoundingBox());
 	placementsettings.setRotation(Rotation.NONE);
-	BlockPos position = new BlockPos(cpos.getXStart(), 50, cpos.getZStart());
-	template.addBlocksToWorld(world, position, placementsettings, 2);
+	BlockPos position = new BlockPos(cpos.getXStart(), 50, cpos.getZStart());	
+	BlockPos sizeRange = new BlockPos(16, 13, 16);
+	
+	// I assume this function is addBlocksToWorld()	
+	template.func_237146_a_(world, position, sizeRange, placementsettings, world.getRandom(), 2);
     }
 
     // used by the place() function to actually place rooms
     public static boolean putRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room)
     {
 	MinecraftServer minecraftserver = world.getWorld().getServer();
-	TemplateManager templatemanager = minecraftserver.getWorld(world.getDimension().getType()).getStructureTemplateManager();
+	TemplateManager templatemanager = BlockGoldPortal.getDungeonWorld(minecraftserver).getStructureTemplateManager();
 
 	Template template = templatemanager.getTemplate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + room.structure));
 	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunk(cpos);
@@ -138,6 +135,7 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 
 	placementsettings.setRotation(room.rotation);
 	BlockPos position = new BlockPos(cpos.getXStart(), 50, cpos.getZStart());
+	BlockPos sizeRange = new BlockPos(16, 13, 16);
 
 	if (template == null)
 	{
@@ -169,8 +167,12 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	    // north: no rotation
 	    placementsettings.setRotation(Rotation.NONE);
 	}
+	
 	//DimDungeons.LOGGER.info("Placing a room: " + room.structure);
-	boolean success = template.addBlocksToWorld(world, position, placementsettings, 2);
+	//boolean success = template.addBlocksToWorld(world, position, placementsettings, 2); // old 1.15 way
+	
+	// I assume this function is addBlocksToWorld()	
+	boolean success = template.func_237146_a_(world, position, sizeRange, placementsettings, world.getRandom(), 2);
 
 	// handle data blocks - this code block is copied from TemplateStructurePiece
 	//Map<BlockPos, String> map = template.getDataBlocks(position, placementsettings); // 1.12 / 1.13 version
@@ -208,26 +210,26 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	}
 
 	// this is the date structure for an entire dungeon
-	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getSeed(), entranceX, entranceZ);
+	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceX, entranceZ);
 
-	// trigger some debug code for test layouts
-	if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugOne"))
-	{
-	    DungeonBuilderTestShapes.MakeTestDungeonEnds(dbl);
-	}
-	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugTwo"))
-	{
-	    DungeonBuilderTestShapes.MakeTestDungeonTwos(dbl);
-	}
-	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugThree"))
-	{
-	    DungeonBuilderTestShapes.MakeTestDungeonThreesAndFours(dbl);
-	}
-	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugFour"))
-	{
-	    DungeonBuilderTestShapes.MakeTestDungeonContentFour(dbl);
-	}
-	else
+//	// trigger some debug code for test layouts
+//	if (world getWorldInfo(). getWorldName().equalsIgnoreCase("DimDungeonsDebugOne"))
+//	{
+//	    DungeonBuilderTestShapes.MakeTestDungeonEnds(dbl);
+//	}
+//	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugTwo"))
+//	{
+//	    DungeonBuilderTestShapes.MakeTestDungeonTwos(dbl);
+//	}
+//	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugThree"))
+//	{
+//	    DungeonBuilderTestShapes.MakeTestDungeonThreesAndFours(dbl);
+//	}
+//	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugFour"))
+//	{
+//	    DungeonBuilderTestShapes.MakeTestDungeonContentFour(dbl);
+//	}
+//	else
 	{
 	    // generate the entire dungeon, a normal dungeon
 	    dbl.calculateDungeonShape(25);
@@ -256,116 +258,6 @@ public class BasicDungeonFeature extends Feature<NoFeatureConfig>
 	    }
 	    System.out.println(dungeonRowShape);
 	}
-    }
-
-    // TODO: delete this function
-    public void UNUSEDgenerateDungeonAroundChunk(long x, long z, IWorld world, Random rand)
-    {
-	MinecraftServer minecraftserver = world.getWorld().getServer();
-	TemplateManager templatemanager = minecraftserver.getWorld(world.getDimension().getType()).getStructureTemplateManager();
-
-	// x,z is the position of the entrance room, which is located at (4,7) in this map
-	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getSeed(), x, z);
-	dbl.calculateDungeonShape(10);
-
-	// debug - print map
-	//*
-	System.out.println("Making a dungeon at " + x + ", " + z + "!");
-	for (int j = 0; j < 8; j++)
-	{
-	    String dungeonRowShape = "";
-	    for (int i = 0; i < 8; i++)
-	    {
-		dungeonRowShape += dbl.finalLayout[i][j].hasRoom() ? "*" : ".";
-	    }
-	    System.out.println(dungeonRowShape);
-	}
-	//*/
-
-	// for each structure, put them onto the map
-	for (int i = 0; i < 8; i++)
-	{
-	    for (int j = 0; j < 8; j++)
-	    {
-		DungeonRoom nextRoom = dbl.finalLayout[i][j];
-		if (!nextRoom.hasRoom())
-		{
-		    System.out.println("NO ROOM AT " + i + ", " + j + "!");
-		    continue; // do nothing for blank chunks. Not every cell in the 7x7 will be filled
-		}
-		// get the position of the top left corner of the corner in block coordinates
-		ChunkPos chunkpos = new ChunkPos((int) x + i, (int) z + j);
-		BlockPos position = new BlockPos(chunkpos.getXStart(), 50, chunkpos.getZStart());
-
-		if (!world.chunkExists(chunkpos.x, chunkpos.z))
-		{
-		    DimDungeons.LOGGER.info("CHUNK DOES NOT EXIST! DO NOT BUILD HERE! " + chunkpos.x + ", " + chunkpos.z);
-		    continue;
-		}
-
-		// default placement settings
-		Template template = templatemanager.getTemplate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + nextRoom.structure));
-		PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunk(chunkpos);
-		placementsettings.setBoundingBox(placementsettings.getBoundingBox());
-		boolean success = false;
-
-		// next if the structure is to be rotated then it must also be offset, because rotating a structure also moves it
-		if (nextRoom.rotation == Rotation.COUNTERCLOCKWISE_90)
-		{
-		    // west: rotate CCW and push +Z
-		    placementsettings.setRotation(Rotation.COUNTERCLOCKWISE_90);
-		    position = position.add(0, 0, template.getSize().getZ() - 1);
-		    System.out.println("template placement CCW: " + position.toString() + " " + nextRoom.structure);
-		    success = template.addBlocksToWorld(world, position, placementsettings, 2);
-		}
-		else if (nextRoom.rotation == Rotation.CLOCKWISE_90)
-		{
-		    // east rotate CW and push +X
-		    placementsettings.setRotation(Rotation.CLOCKWISE_90);
-		    position = position.add(template.getSize().getX() - 1, 0, 0);
-		    System.out.println("template placement CW: " + position.toString() + " " + nextRoom.structure);
-		    success = template.addBlocksToWorld(world, position, placementsettings, 2);
-		}
-		else if (nextRoom.rotation == Rotation.CLOCKWISE_180)
-		{
-		    // south: rotate 180 and push both +X and +Z
-		    placementsettings.setRotation(Rotation.CLOCKWISE_180);
-		    position = position.add(template.getSize().getX() - 1, 0, template.getSize().getZ() - 1);
-		    System.out.println("template placement 180: " + position.toString() + " " + nextRoom.structure);
-		    success = template.addBlocksToWorld(world, position, placementsettings, 2);
-		}
-		else //if (nextRoom.rotation == Rotation.NONE)
-		{
-		    // north: no rotation
-		    placementsettings.setRotation(Rotation.NONE);
-		    System.out.println("template placement NONE: " + position.toString() + " " + nextRoom.structure);
-		    success = template.addBlocksToWorld(world, position, placementsettings, 2);
-		}
-
-		if (!success)
-		{
-		    DimDungeons.LOGGER.info("FAILED TO PLACE THAT LAST STRUCTURE? Moving on. ");
-		    continue;
-		}
-
-		// handle data blocks
-		//Map<BlockPos, String> map = template.getDataBlocks(position, placementsettings); // 1.12 / 1.13 version
-		//List<Template.BlockInfo> dblocks = template.func_215386_a(position, placementsettings, Blocks.STRUCTURE_BLOCK, true); // my old 1.14.2 method
-		// this code block is copied from TemplateStructurePiece
-		for (Template.BlockInfo template$blockinfo : template.func_215381_a(position, placementsettings, Blocks.STRUCTURE_BLOCK))
-		{
-		    if (template$blockinfo.nbt != null)
-		    {
-			StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt.getString("mode"));
-			if (structuremode == StructureMode.DATA)
-			{
-			    //handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, rand, placementsettings.getBoundingBox(), dbl);
-			}
-		    }
-		}
-	    }
-	}
-	//DimDungeons.LOGGER.info("DIMDUNGEONS FINISHED BUILDING DUNGEON");
     }
 
     // resembles TemplateStructurePiece.handleDataMarker()

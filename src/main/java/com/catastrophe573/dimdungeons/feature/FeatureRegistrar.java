@@ -28,16 +28,17 @@ public class FeatureRegistrar
     @SubscribeEvent
     public static void onFeaturesRegistry(RegistryEvent.Register<Feature<?>> event)
     {
-	registerFeature(event, new BasicDungeonFeature(NoFeatureConfig::deserialize), BasicDungeonFeature.FEATURE_ID);
-	registerFeature(event, new AdvancedDungeonFeature(NoFeatureConfig::deserialize), AdvancedDungeonFeature.FEATURE_ID);
+	// this is going to be deleted in 1.16.2 anyway
+	//registerFeature(event, new BasicDungeonFeature(NoFeatureConfig::deserialize), BasicDungeonFeature.FEATURE_ID);
+	//registerFeature(event, new AdvancedDungeonFeature(NoFeatureConfig::deserialize), AdvancedDungeonFeature.FEATURE_ID);
     }
 
-    // a helper function for onFeaturesRegistry(), copied from Laton95's mod Rune-Mysteries
-    private static void registerFeature(RegistryEvent.Register<Feature<?>> event, Feature<?> feature, String name)
-    {
-	feature.setRegistryName(DimDungeons.MOD_ID, name);
-	event.getRegistry().register(feature);
-    }
+//    // a helper function for onFeaturesRegistry(), copied from Laton95's mod Rune-Mysteries
+//    private static void registerFeature(RegistryEvent.Register<Feature<?>> event, Feature<?> feature, String name)
+//    {
+//	feature.setRegistryName(DimDungeons.MOD_ID, name);
+//	event.getRegistry().register(feature);
+//    }
 
     @SubscribeEvent
     public static void applyFeatures(FMLCommonSetupEvent event)

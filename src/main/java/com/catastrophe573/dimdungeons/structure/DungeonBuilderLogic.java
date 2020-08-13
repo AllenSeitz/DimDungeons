@@ -100,11 +100,11 @@ public class DungeonBuilderLogic
     // this is initialized during the constructor with values from the ChunkGenerator, to ensure the dungeons use the world seed
     protected Random rand;
 
-    public DungeonBuilderLogic(long worldSeed, long chunkX, long chunkZ)
+    public DungeonBuilderLogic(Random rand, long chunkX, long chunkZ)
     {
 	// copied the seed logic from the vanilla decorate function (which may be flawed, but since I only use the +X/+Z quadrant it won't matter)
-	long newSeed = (worldSeed + (long) (chunkX * chunkX * 4987142) + (long) (chunkX * 5947611) + (long) (chunkZ * chunkZ) * 4392871L + (long) (chunkZ * 389711) ^ worldSeed);
-	rand = new Random(newSeed);
+	//long newSeed = (worldSeed + (long) (chunkX * chunkX * 4987142) + (long) (chunkX * 5947611) + (long) (chunkZ * chunkZ) * 4392871L + (long) (chunkZ * 389711) ^ worldSeed);
+	//rand = new Random(newSeed);
 	//DimDungeons.LOGGER.info("DUNGEON SEED: " + newSeed);
 
 	shuffleArray(entrance);

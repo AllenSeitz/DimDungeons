@@ -5,77 +5,69 @@ import java.util.Random;
 
 import com.catastrophe573.dimdungeons.feature.AdvancedDungeonFeature;
 import com.catastrophe573.dimdungeons.feature.BasicDungeonFeature;
-import com.catastrophe573.dimdungeons.feature.FeatureRegistrar;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityClassification;
-import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Blockreader;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeManager;
 import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.DimensionSettings;
+import net.minecraft.world.gen.FlatChunkGenerator;
+import net.minecraft.world.gen.FlatGenerationSettings;
 import net.minecraft.world.gen.Heightmap.Type;
-import net.minecraft.world.gen.OverworldChunkGenerator;
-import net.minecraft.world.gen.OverworldGenSettings;
 import net.minecraft.world.gen.WorldGenRegion;
 import net.minecraft.world.gen.feature.structure.StructureManager;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 
 public class DungeonChunkGenerator extends ChunkGenerator
 {
-    // I still want a random seed, like the overworld, for use in structures
-    private Random randomSeed;
+    // this is unused, I just need it to compile
+    public static final Codec<FlatChunkGenerator> dummyCodec = FlatGenerationSettings.field_236932_a_.fieldOf("settings").xmap(FlatChunkGenerator::new, FlatChunkGenerator::func_236073_g_).codec();
 
-    public DungeonChunkGenerator(IWorld world, BiomeProvider provider, OverworldGenSettings settingsIn)
+    // this however is used
+    public long worldSeed;
+
+    public DungeonChunkGenerator(BiomeProvider p_i231903_1_, long p_i231903_2_, DimensionSettings p_i231903_4_)
     {
-	super(world, provider, settingsIn);
-
-	randomSeed = world.getRandom();
+	this(p_i231903_1_, p_i231903_1_, p_i231903_2_, p_i231903_4_);
     }
 
-    @Override
-    public void spawnMobs(WorldGenRegion region)
+    private DungeonChunkGenerator(BiomeProvider p_i231904_1_, BiomeProvider p_i231904_2_, long p_i231904_3_, DimensionSettings p_i231904_5_)
     {
-	// nope, not in this dungeon
-    }
-
-    @Override
-    public void spawnMobs(ServerWorld worldIn, boolean spawnHostileMobs, boolean spawnPeacefulMobs)
-    {
-	// nope, not in this dungeon
+	super(p_i231904_2_, p_i231904_2_, p_i231904_5_.func_236108_a_(), p_i231904_3_);
+	worldSeed = p_i231904_3_;
     }
 
     @Override
     //public List<Biome.SpawnListEntry> getPossibleCreatures(EntityClassification creatureType, BlockPos pos)
-    public List<Biome.SpawnListEntry> func_230353_a_(Biome p_230353_1_, StructureManager p_230353_2_, EntityClassification p_230353_3_, BlockPos p_230353_4_) {
-	return Lists.newArrayList();
-	   }
-
-    
-    @Override
-    public int getGroundHeight()
+    public List<Biome.SpawnListEntry> func_230353_a_(Biome p_230353_1_, StructureManager p_230353_2_, EntityClassification p_230353_3_, BlockPos p_230353_4_)
     {
-	return this.world.getSeaLevel() + 1;
+	return Lists.newArrayList(); // intentionally prevent creatures from spawning
     }
 
     @Override
-    public int getSeaLevel()
+    public int getGroundHeight()
     {
-	return 20; // no reason, and should never matter for my purposes
+	return 55;
     }
 
     public void makeBase(IWorld worldIn, IChunk chunkIn)
     {
+	// I still want a random seed, like the overworld, for use in structures
+	Random randomSeed = worldIn.getRandom();
+
 	int x = chunkIn.getPos().x;
 	int z = chunkIn.getPos().z;
-	long worldSeed = world.getSeed();
 	randomSeed.setSeed((worldSeed + (long) (x * x * 4987142) + (long) (x * 5947611) + (long) (z * z) * 4392871L + (long) (z * 389711) ^ worldSeed));
 
 	// first generate a superflat world - sandstone where dungeons can appear, and void otherwise
@@ -127,77 +119,52 @@ public class DungeonChunkGenerator extends ChunkGenerator
     }
 
     @Override
-    protected void makeBedrock(IChunk chunkIn, Random rand)
+    public void func_235954_a_(StructureManager p_235954_1_, IChunk p_235954_2_, TemplateManager p_235954_3_, long p_235954_4_)
     {
-	// actually nah I'm good, lets keep the void world please because it looks better on a map
+	// do not place features
     }
 
     @Override
-    public void generateStructures(BiomeManager p_227058_1_, IChunk p_227058_2_, ChunkGenerator<?> p_227058_3_, TemplateManager p_227058_4_)
+    public void func_235953_a_(IWorld p_235953_1_, StructureManager p_235953_2_, IChunk p_235953_3_)
     {
-	// intentionally do nothing
+	// do not place structure starts
+    }
+
+    public void func_230352_b_(IWorld p_230352_1_, StructureManager p_230352_2_, IChunk p_230352_3_)
+    {
     }
 
     @Override
-    public void decorate(final WorldGenRegion region)
-    {
-	// these local variables are copied from the vanilla ChunkGenerator class
-	int i = region.getMainChunkX();
-	int j = region.getMainChunkZ();
-	int k = i * 16;
-	int l = j * 16;
-	BlockPos blockpos = new BlockPos(k, 0, l);
-	//Biome biome = this.func_225552_a_(region.getBiomeManager(), blockpos.add(8, 8, 8));
-	SharedSeedRandom sharedseedrandom = new SharedSeedRandom();
-	//long i1 = sharedseedrandom.setDecorationSeed(region.getSeed(), k, l);
-
-	// instead of doing this
-	//biome.decorate(generationstage$decoration, this, region, i1, sharedseedrandom, blockpos);
-
-	// let's just place the only two features that I care about. this prevents any other features from other mods from appearing
-	FeatureRegistrar.feature_basic_dungeon.place(region, this, sharedseedrandom, blockpos, null);
-	FeatureRegistrar.feature_advanced_dungeon.place(region, this, sharedseedrandom, blockpos, null);
-    }
-
-    @Override
+    // getGeneratorCodec()
     protected Codec<? extends ChunkGenerator> func_230347_a_()
     {
-	// TODO Auto-generated method stub
-	return null;
+	return dummyCodec;
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
+    // getSeededGenerator()
     public ChunkGenerator func_230349_a_(long p_230349_1_)
     {
-	// TODO Auto-generated method stub
-	return null;
+	return new DungeonChunkGenerator(this.biomeProvider.func_230320_a_(p_230349_1_), p_230349_1_, null);
     }
 
     @Override
     public void generateSurface(WorldGenRegion p_225551_1_, IChunk p_225551_2_)
     {
-	// TODO Auto-generated method stub
-	
+	makeBase(p_225551_1_, p_225551_2_);
     }
 
-    @Override
-    public void func_230352_b_(IWorld p_230352_1_, StructureManager p_230352_2_, IChunk p_230352_3_)
-    {
-	// TODO Auto-generated method stub
-	
-    }
-
-    @Override
+    // getHeight() but idk what for
     public int func_222529_a(int p_222529_1_, int p_222529_2_, Type heightmapType)
     {
-	// TODO Auto-generated method stub
-	return 0;
+	return 0; // if anyone asks, the answer is 'void'
     }
 
-    @Override
+    // getBlockReader()
     public IBlockReader func_230348_a_(int p_230348_1_, int p_230348_2_)
     {
-	// TODO Auto-generated method stub
-	return null;
+	// no idea what this is for but it seems to be used by structures that need blocks replaced, which my dimension doesn't need
+	return new Blockreader(new BlockState[0]); // so this is the stubbed out implementation from the DebugChunkGenerator
     }
 }

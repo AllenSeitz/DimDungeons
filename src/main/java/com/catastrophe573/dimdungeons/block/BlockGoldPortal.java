@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
-import com.catastrophe573.dimdungeons.dimension.DimensionRegistrar;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 //import com.google.common.collect.Lists;
 //import com.mojang.datafixers.util.Pair;
@@ -111,20 +110,20 @@ public class BlockGoldPortal extends BreakableBlock
     }
 
     // this is the best idea I have for unmapped 1.16.1
-    public boolean isDimensionDungeon(World worldIn)
+    public static boolean isDimensionDungeon(World worldIn)
     {
-	return worldIn.func_234923_W_().func_240901_a_() == new ResourceLocation(DimDungeons.MOD_ID, DimensionRegistrar.dungeon_basic_regname);
+	return worldIn.func_234923_W_().func_240901_a_() == new ResourceLocation(DimDungeons.MOD_ID, DimDungeons.dungeon_basic_regname);
     }
 
+    // this ends up used by the old 'Feature' class and should be moved to a generic location...
     public static ServerWorld getDungeonWorld(MinecraftServer server)
     {
-	ResourceLocation resourceLocation = new ResourceLocation(DimDungeons.MOD_ID, DimensionRegistrar.dungeon_basic_regname);
+	ResourceLocation resourceLocation = new ResourceLocation(DimDungeons.MOD_ID, DimDungeons.dungeon_basic_regname);
 	RegistryKey<World> regkey = RegistryKey.func_240903_a_(Registry.WORLD_KEY, resourceLocation);
 	return server.getWorld(regkey);
     }
     
     // World.field_234918_g_ is the Overworld. This block has different behavior in the Overworld than in the Dungeon Dimension
-
     public boolean isDimensionOverworld(World worldIn)
     {
 	return worldIn.func_234923_W_() == World.field_234918_g_;
@@ -185,7 +184,7 @@ public class BlockGoldPortal extends BreakableBlock
 	    else
 	    {
 		// no keyhole? this could be a return portal
-		if (worldIn.func_234923_W_().func_240901_a_() == new ResourceLocation(DimDungeons.MOD_ID, DimensionRegistrar.dungeon_basic_regname))
+		if (worldIn.func_234923_W_().func_240901_a_() == new ResourceLocation(DimDungeons.MOD_ID, DimDungeons.dungeon_basic_regname))
 		{
 		    sendPlayerBackHome((ServerPlayerEntity) entityIn);
 		}
