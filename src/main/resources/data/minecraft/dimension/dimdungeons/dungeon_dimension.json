@@ -13,21 +13,6 @@
 	  "features": true,
       "structures":
 	  {
-        "structures":
-		{
-          "dimdungeons:basic_dungeon":
-		  {
-            "spacing": 1,
-            "separation": 1,
-            "salt": 12345678
-          },
-          "dimdungeons:advanced_dungeon":
-		  {
-            "spacing": 1,
-            "separation": 1,
-            "salt": 77777777
-          }
-        }
       },
       "default_block":
 	  {

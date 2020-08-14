@@ -67,7 +67,7 @@ public class DimDungeons
 
     private void doCommonStuff(final FMLCommonSetupEvent event)
     {
-	BiomeDictionary.addTypes(BiomeRegistrar.biome_dungeon, BiomeDictionary.Type.VOID);
+	//BiomeDictionary.addTypes(BiomeRegistrar.biome_dungeon, BiomeDictionary.Type.VOID);
     }
 
     private void doClientStuff(final FMLClientSetupEvent event)

@@ -31,7 +31,7 @@ public class BiomeDungeon extends Biome
 
         //this.myPersonalAddFeature(GenerationStage.Decoration.SURFACE_STRUCTURES, BasicDungeonFeature);
         //this.myPersonalAddFeature(GenerationStage.Decoration.SURFACE_STRUCTURES, AdvancedDungeonFeature);
-        this.setRegistryName("biome_dungeon");	
+        //this.setRegistryName("biome_dungeon");	
 	
 	// this dimension spawns no monsters or entities
 	this.getSpawns(EntityClassification.AMBIENT).clear();
