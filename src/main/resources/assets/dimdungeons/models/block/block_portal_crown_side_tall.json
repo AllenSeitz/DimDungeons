@@ -1,5 +1,5 @@
 {
-    "parent": "block/wall_inventory",
+    "parent": "block/template_wall_side_tall",
     "textures": {
         "wall": "dimdungeons:block/portal_crown"
     }

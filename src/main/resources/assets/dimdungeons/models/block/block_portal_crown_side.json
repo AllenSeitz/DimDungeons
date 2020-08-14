@@ -1,6 +1,6 @@
 {
     "parent": "block/template_wall_side",
     "textures": {
-        "wall": "block/gold_block"
+        "wall": "dimdungeons:block/portal_crown"
     }
 }
