@@ -67,7 +67,7 @@ public class DimDungeons
 
     private void doCommonStuff(final FMLCommonSetupEvent event)
     {
-	//BiomeDictionary.addTypes(BiomeRegistrar.biome_dungeon, BiomeDictionary.Type.VOID);
+	BiomeDictionary.addTypes(BiomeRegistrar.biome_dungeon, BiomeDictionary.Type.VOID);
     }
 
     private void doClientStuff(final FMLClientSetupEvent event)
@@ -127,12 +127,18 @@ public class DimDungeons
 	public static void registerBiomes(RegistryEvent.Register<Biome> biomeRegistryEvent)
 	{
 	    BiomeRegistrar.registerAllBiomes(biomeRegistryEvent);
+	    
+	    // because the other event isn't fired?
+	    System.out.println("DIMDUNGEONS TEST: REGISTERING CHUNK GENERATOR!");
+	    Registry.register(Registry.field_239690_aB_, "dimdungeons:dimdungeon_chunkgen", DungeonChunkGenerator.field_235948_a_);
 	}
 
 	@SubscribeEvent
+	// this isn't called?
 	public static void registerChunkGenerators(RegistryEvent.Register<? extends ChunkGenerator> cgRegistryEvent)
 	{
-	    Registry.register(Registry.field_239690_aB_, "dimdungeon_chunkgen", DungeonChunkGenerator.field_235948_a_);
+	    //System.out.println("DIMDUNGEONS TEST: REGISTERING CHUNK GENERATOR!");
+	    //Registry.register(Registry.field_239690_aB_, "dimdungeons:dimdungeon_chunkgen", DungeonChunkGenerator.field_235948_a_);
 	}
     }
 }

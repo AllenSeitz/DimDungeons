@@ -99,30 +99,27 @@ public class BlockGoldPortal extends BreakableBlock
 	return true;
     }
 
-    public boolean isOpaqueCube(BlockState state)
-    {
-	return false;
-    }
-
-    public boolean isFullCube(BlockState state)
-    {
-	return false; // it is but it isn't idk
-    }
-
     // this is the best idea I have for unmapped 1.16.1
     public static boolean isDimensionDungeon(World worldIn)
     {
+	if (worldIn == null)
+	{
+	    System.out.println("FATAL ERROR: This 1.16 port is still broken.");
+	    return false;
+	}
 	return worldIn.func_234923_W_().func_240901_a_() == new ResourceLocation(DimDungeons.MOD_ID, DimDungeons.dungeon_basic_regname);
     }
 
     // this ends up used by the old 'Feature' class and should be moved to a generic location...
     public static ServerWorld getDungeonWorld(MinecraftServer server)
     {
-	ResourceLocation resourceLocation = new ResourceLocation(DimDungeons.MOD_ID, DimDungeons.dungeon_basic_regname);
+	ResourceLocation resourceLocation = new ResourceLocation("dimdungeons:dungeon_dimension");
+	// new ResourceLocation(DimDungeons.MOD_ID, DimDungeons.dungeon_basic_regname);
 	RegistryKey<World> regkey = RegistryKey.func_240903_a_(Registry.WORLD_KEY, resourceLocation);
+	System.out.println("TRYING REGKEY: " + regkey.toString());
 	return server.getWorld(regkey);
     }
-    
+
     // World.field_234918_g_ is the Overworld. This block has different behavior in the Overworld than in the Dungeon Dimension
     public boolean isDimensionOverworld(World worldIn)
     {
@@ -133,10 +130,8 @@ public class BlockGoldPortal extends BreakableBlock
     @Override
     public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn)
     {
-	//super.onEntityCollision(state, worldIn, pos, entityIn);
-
 	// do not process this block on the client
-	if (EffectiveSide.get() == LogicalSide.CLIENT)
+	if (worldIn.isRemote)
 	{
 	    return;
 	}
@@ -175,7 +170,7 @@ public class BlockGoldPortal extends BreakableBlock
 			}
 			else
 			{
-			    //System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + "). in dim...");
+			    System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");
 			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, getDungeonWorld(worldIn.getServer()), warpX + 0.5f, 55.1D, warpZ + 0.5f, 0);
 			}
 		    }
@@ -224,7 +219,7 @@ public class BlockGoldPortal extends BreakableBlock
 	    lastX = respawn.get().getX();
 	    lastY = respawn.get().getY() + 3; // plus 3 to stand on the bed
 	    lastZ = respawn.get().getZ();
-	}	
+	}
 	else
 	{
 	    // fallback: send the player to the overworld spawn
