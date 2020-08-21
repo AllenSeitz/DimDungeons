@@ -1,0 +1,17 @@
+{
+	"generator": 
+	{
+        "type": "dimdungeons:dimdungeons_chunkgen",
+        "seed": 0,
+        "settings":
+		{
+			"biome": "minecraft:plains",
+			"layers": [],
+			"structures": 
+			{
+				"structures": {}
+			}
+		}
+	},
+	"type": "dimdungeons:dungeon_dimension"
+}

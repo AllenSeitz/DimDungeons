@@ -35,7 +35,9 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableBoundingBox;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.template.PlacementSettings;
@@ -55,7 +57,7 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
     public boolean place(IWorld world, ChunkGenerator chunkGenerator, Random rand, BlockPos pos, NoFeatureConfig config)
     {
 	// only put dungeons on the right chunks, and only in the dungeon dimension
-	if ( !BlockGoldPortal.isDimensionDungeon(world.getWorld()))
+	if ( !BlockGoldPortal.isDimensionDungeon((World)world))
 	{
 	    DimDungeons.LOGGER.info("DIMDUNGEONS WEIRD ERROR: why is there a dungeon biome outside of the dungeon dimension?");
 	    return false;
@@ -109,7 +111,7 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
     public static void putTestStructureHere(long x, long z, IWorld world)
     {
 	ChunkPos cpos = new ChunkPos((int) x, (int) z);
-	MinecraftServer minecraftserver = world.getWorld().getServer();
+	MinecraftServer minecraftserver = ((World)world).getServer();
 	TemplateManager templatemanager = BlockGoldPortal.getDungeonWorld(minecraftserver).getStructureTemplateManager();
 
 	Template template = templatemanager.getTemplate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "basic_template"));
@@ -120,13 +122,13 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 	BlockPos sizeRange = new BlockPos(16, 13, 16);
 	
 	// I assume this function is addBlocksToWorld()	
-	template.func_237146_a_(world, position, sizeRange, placementsettings, world.getRandom(), 2);
+	template.func_237146_a_((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
     }
 
     // used by the place() function to actually place rooms
     public static boolean putRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room)
     {
-	MinecraftServer minecraftserver = world.getWorld().getServer();
+	MinecraftServer minecraftserver = ((World)world).getServer();
 	TemplateManager templatemanager = BlockGoldPortal.getDungeonWorld(minecraftserver).getStructureTemplateManager();
 
 	Template template = templatemanager.getTemplate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + room.structure));
@@ -172,7 +174,7 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 	//boolean success = template.addBlocksToWorld(world, position, placementsettings, 2); // old 1.15 way
 	
 	// I assume this function is addBlocksToWorld()	
-	boolean success = template.func_237146_a_(world, position, sizeRange, placementsettings, world.getRandom(), 2);
+	boolean success = template.func_237146_a_((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
 
 	// handle data blocks - this code block is copied from TemplateStructurePiece
 	//Map<BlockPos, String> map = template.getDataBlocks(position, placementsettings); // 1.12 / 1.13 version
@@ -447,57 +449,57 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 
 	if ("witch".contentEquals(casualName))
 	{
-	    mob = EntityType.WITCH.create(world.getWorld());
+	    mob = EntityType.WITCH.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("enderman".contentEquals(casualName))
 	{
-	    mob = EntityType.ENDERMAN.create(world.getWorld());
+	    mob = EntityType.ENDERMAN.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 2, pos.getZ());
 	}
 	else if ("guardian".contentEquals(casualName))
 	{
-	    mob = EntityType.GUARDIAN.create(world.getWorld());
+	    mob = EntityType.GUARDIAN.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("zombie".contentEquals(casualName))
 	{
-	    mob = EntityType.ZOMBIE.create(world.getWorld());
+	    mob = EntityType.ZOMBIE.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("husk".contentEquals(casualName))
 	{
-	    mob = EntityType.HUSK.create(world.getWorld());
+	    mob = EntityType.HUSK.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("drowned".contentEquals(casualName))
 	{
-	    mob = EntityType.DROWNED.create(world.getWorld());
+	    mob = EntityType.DROWNED.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("skeleton".contentEquals(casualName))
 	{
-	    mob = EntityType.SKELETON.create(world.getWorld());
+	    mob = EntityType.SKELETON.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("wither_skeleton".contentEquals(casualName))
 	{
-	    mob = EntityType.WITHER_SKELETON.create(world.getWorld());
+	    mob = EntityType.WITHER_SKELETON.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("stray".contentEquals(casualName))
 	{
-	    mob = EntityType.STRAY.create(world.getWorld());
+	    mob = EntityType.STRAY.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("spider".contentEquals(casualName))
 	{
-	    mob = EntityType.SPIDER.create(world.getWorld());
+	    mob = EntityType.SPIDER.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("pillager".contentEquals(casualName))
 	{
-	    mob = EntityType.PILLAGER.create(world.getWorld());
+	    mob = EntityType.PILLAGER.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else
@@ -513,7 +515,7 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 	mob.moveToBlockPosAndAngles(pos, 0.0F, 0.0F);
 	mob.enablePersistence();
 
-	mob.onInitialSpawn(world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
+	mob.onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
 	world.addEntity(mob);
     }
 

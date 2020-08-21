@@ -142,10 +142,7 @@ public class BlockGoldPortal extends BreakableBlock
 	    return;
 	}
 
-	if (entityIn.timeUntilPortal > 0)
-	{
-	    return; // not yet
-	}
+	// TODO: manually check/use portal cooldown
 
 	if (!entityIn.isPassenger() && !entityIn.isBeingRidden() && entityIn.isNonBoss())
 	{
@@ -189,7 +186,7 @@ public class BlockGoldPortal extends BreakableBlock
 
     protected Entity actuallyPerformTeleport(ServerPlayerEntity player, ServerWorld dim, double x, double y, double z, double yaw)
     {
-	player.timeUntilPortal = 200; // 300 ticks, same as vanilla nether portal (hijacking this also affects nether portals, which is intentional) 
+	// TODO: manually set portal cooldown
 
 	float destPitch = player.getPitchYaw().x;
 	float destYaw = player.getPitchYaw().y;
@@ -236,7 +233,7 @@ public class BlockGoldPortal extends BreakableBlock
     public boolean checkPortalIntegrity(BlockState state, IWorld worldIn, BlockPos pos)
     {
 	// valid portal shapes are not needed for persistence in the dungeon dimension
-	return isDimensionDungeon(worldIn.getWorld()) || isPortalShapeIntact(state, worldIn, pos);
+	return isDimensionDungeon((World)worldIn) || isPortalShapeIntact(state, worldIn, pos);
     }
 
     private boolean isPortalShapeIntact(BlockState state, IWorld worldIn, BlockPos pos)

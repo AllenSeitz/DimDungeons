@@ -38,7 +38,9 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MutableBoundingBox;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.template.PlacementSettings;
@@ -59,7 +61,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
     public boolean place(IWorld world, ChunkGenerator chunkGenerator, Random rand, BlockPos pos, NoFeatureConfig config)
     {
 	// only put dungeons on the right chunks, and only in the dungeon dimension
-	if ( !BlockGoldPortal.isDimensionDungeon(world.getWorld()))
+	if ( !BlockGoldPortal.isDimensionDungeon((World)world) )
 	{
 	    DimDungeons.LOGGER.info("DIMDUNGEONS WEIRD ERROR: why is there a dungeon biome outside of the dungeon dimension?");
 	    return false;
@@ -112,7 +114,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
     // used by the place() function to actually place rooms
     public static boolean putRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room)
     {
-	MinecraftServer minecraftserver = world.getWorld().getServer();
+	MinecraftServer minecraftserver = ((World)world).getServer();
 	TemplateManager templatemanager = BlockGoldPortal.getDungeonWorld(minecraftserver).getStructureTemplateManager();
 
 	Template template = templatemanager.getTemplate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + room.structure));
@@ -158,7 +160,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
 	//boolean success = template.addBlocksToWorld(world, position, placementsettings, 2);
 
 	// I assume this function is addBlocksToWorld()	
-	boolean success = template.func_237146_a_(world, position, sizeRange, placementsettings, world.getRandom(), 2);	
+	boolean success = template.func_237146_a_((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);	
 	
 	// handle data blocks - this code block is copied from TemplateStructurePiece
 	//Map<BlockPos, String> map = template.getDataBlocks(position, placementsettings); // 1.12 / 1.13 version
@@ -433,7 +435,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
 
 	if ("witch".contentEquals(casualName))
 	{
-	    mob = EntityType.WITCH.create(world.getWorld());
+	    mob = EntityType.WITCH.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
 	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(40.0f);
@@ -441,7 +443,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
 	}
 	else if ("enderman".contentEquals(casualName))
 	{
-	    mob = EntityType.ENDERMAN.create(world.getWorld());
+	    mob = EntityType.ENDERMAN.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 2, pos.getZ());
 	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.4f);
 	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(50.0f);
@@ -449,7 +451,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
 	}
 	else if ("guardian".contentEquals(casualName))
 	{
-	    mob = EntityType.GUARDIAN.create(world.getWorld());
+	    mob = EntityType.GUARDIAN.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.4f);
 	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(40.0f);
@@ -457,7 +459,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
 	}
 	else if ("zombie".contentEquals(casualName))
 	{
-	    mob = EntityType.ZOMBIE.create(world.getWorld());
+	    mob = EntityType.ZOMBIE.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
 	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
@@ -465,7 +467,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
 	}
 	else if ("husk".contentEquals(casualName))
 	{
-	    mob = EntityType.HUSK.create(world.getWorld());
+	    mob = EntityType.HUSK.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
 	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
@@ -473,7 +475,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
 	}
 	else if ("drowned".contentEquals(casualName))
 	{
-	    mob = EntityType.DROWNED.create(world.getWorld());
+	    mob = EntityType.DROWNED.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
 	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
@@ -481,7 +483,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
 	}
 	else if ("skeleton".contentEquals(casualName))
 	{
-	    mob = EntityType.SKELETON.create(world.getWorld());
+	    mob = EntityType.SKELETON.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.4f);
 	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
@@ -489,7 +491,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
 	}
 	else if ("wither_skeleton".contentEquals(casualName))
 	{
-	    mob = EntityType.WITHER_SKELETON.create(world.getWorld());
+	    mob = EntityType.WITHER_SKELETON.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
 	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
@@ -497,7 +499,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
 	}
 	else if ("stray".contentEquals(casualName))
 	{
-	    mob = EntityType.STRAY.create(world.getWorld());
+	    mob = EntityType.STRAY.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.45f);
 	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
@@ -505,7 +507,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
 	}
 	else if ("spider".contentEquals(casualName))
 	{
-	    mob = EntityType.SPIDER.create(world.getWorld());
+	    mob = EntityType.SPIDER.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.4f);
 	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(36.0f);
@@ -513,7 +515,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
 	}
 	else if ("pillager".contentEquals(casualName))
 	{
-	    mob = EntityType.PILLAGER.create(world.getWorld());
+	    mob = EntityType.PILLAGER.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
 	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(36.0f);
@@ -521,7 +523,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
 	}
 	else if ("blaze".contentEquals(casualName))
 	{
-	    mob = EntityType.BLAZE.create(world.getWorld());
+	    mob = EntityType.BLAZE.create((World)world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
 	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
 	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
@@ -542,7 +544,7 @@ public class AdvancedDungeonFeature //extends Feature<NoFeatureConfig>
 	mob.addPotionEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 9999999));
 	mob.addPotionEffect(new EffectInstance(Effects.JUMP_BOOST, 9999999, 3));
 
-	mob.onInitialSpawn(world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
+	mob.onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
 	world.addEntity(mob);
     }
 

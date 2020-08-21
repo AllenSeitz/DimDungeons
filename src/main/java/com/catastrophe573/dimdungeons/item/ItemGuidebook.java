@@ -38,7 +38,7 @@ public class ItemGuidebook extends Item
 	    // just because
 	    ITextComponent text1 = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.open_guide_message").getString());
 	    
-	    playerIn.sendMessage(((TranslationTextComponent) text1).func_240699_a_(TextFormatting.DARK_PURPLE), Util.DUMMY_UUID);
+	    playerIn.sendMessage(((TranslationTextComponent) text1).mergeStyle(TextFormatting.DARK_PURPLE), Util.DUMMY_UUID);
 	    
 	    // I LOVE 1.16 AND THE LACK OF MAPPINGS!
 	    // func_230529_a_ = appendSibling
@@ -47,11 +47,11 @@ public class ItemGuidebook extends Item
 	    ITextComponent text2b = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.author").getString());
 	    ITextComponent text2c = new TranslationTextComponent("> ");
 	    ITextComponent text2d = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.thank_you_message").getString());
-	    ((TranslationTextComponent) text2a).func_240699_a_(TextFormatting.WHITE);
-	    ((TranslationTextComponent) text2b).func_240699_a_(TextFormatting.AQUA);
-	    ((TranslationTextComponent) text2c).func_240699_a_(TextFormatting.WHITE);
-	    ((TranslationTextComponent) text2d).func_240699_a_(TextFormatting.WHITE);
-	    playerIn.sendMessage(((TranslationTextComponent) text2a).func_230529_a_(text2b).func_230529_a_(text2c).func_230529_a_(text2d), Util.DUMMY_UUID);
+	    ((TranslationTextComponent) text2a).mergeStyle(TextFormatting.WHITE);
+	    ((TranslationTextComponent) text2b).mergeStyle(TextFormatting.AQUA);
+	    ((TranslationTextComponent) text2c).mergeStyle(TextFormatting.WHITE);
+	    ((TranslationTextComponent) text2d).mergeStyle(TextFormatting.WHITE);
+	    playerIn.sendMessage(((TranslationTextComponent) text2a).append(text2b).append(text2c).append(text2d), Util.DUMMY_UUID);
 	}
 	else
 	{

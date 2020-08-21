@@ -8,9 +8,8 @@ import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraftforge.common.BiomeDictionary;
+import net.minecraft.world.gen.NoiseChunkGenerator;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -25,7 +24,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.catastrophe573.dimdungeons.biome.BiomeRegistrar;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.dimension.DungeonChunkGenerator;
@@ -67,7 +65,6 @@ public class DimDungeons
 
     private void doCommonStuff(final FMLCommonSetupEvent event)
     {
-	BiomeDictionary.addTypes(BiomeRegistrar.biome_dungeon, BiomeDictionary.Type.VOID);
     }
 
     private void doClientStuff(final FMLClientSetupEvent event)
@@ -121,24 +118,16 @@ public class DimDungeons
 	    TileEntityType<TileEntityPortalKeyhole> tetPortalKeyhole = TileEntityType.Builder.create(TileEntityPortalKeyhole::new).build(null);
 	    tetPortalKeyhole.setRegistryName(MOD_ID, TileEntityPortalKeyhole.REG_NAME);
 	    teRegistryEvent.getRegistry().register(tetPortalKeyhole);
+
+	    Registry.register(Registry.CHUNK_GENERATOR_CODEC, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.field_236069_d_);
 	}
 
 	@SubscribeEvent
-	public static void registerBiomes(RegistryEvent.Register<Biome> biomeRegistryEvent)
-	{
-	    BiomeRegistrar.registerAllBiomes(biomeRegistryEvent);
-	    
-	    // because the other event isn't fired?
-	    System.out.println("DIMDUNGEONS TEST: REGISTERING CHUNK GENERATOR!");
-	    Registry.register(Registry.field_239690_aB_, "dimdungeons:dimdungeon_chunkgen", DungeonChunkGenerator.field_235948_a_);
-	}
-
-	@SubscribeEvent
-	// this isn't called?
+	// this isn't called? wrong type?
 	public static void registerChunkGenerators(RegistryEvent.Register<? extends ChunkGenerator> cgRegistryEvent)
 	{
-	    //System.out.println("DIMDUNGEONS TEST: REGISTERING CHUNK GENERATOR!");
-	    //Registry.register(Registry.field_239690_aB_, "dimdungeons:dimdungeon_chunkgen", DungeonChunkGenerator.field_235948_a_);
+	    System.out.println("DIMDUNGEONS TEST: REGISTERING CHUNK GENERATOR!");
+	    //Registry.register(Registry.CHUNK_GENERATOR_KEY, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.field_235948_a_);
 	}
     }
 }
