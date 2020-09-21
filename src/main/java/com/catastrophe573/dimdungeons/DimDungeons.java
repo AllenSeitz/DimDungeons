@@ -9,7 +9,6 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.NoiseChunkGenerator;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -72,7 +71,7 @@ public class DimDungeons
 	RenderTypeLookup.setRenderLayer(BlockRegistrar.block_gold_portal, RenderType.getTranslucent());
 
 	// register the custom property for the keys that allows for switching their model
-	ItemModelsProperties.func_239418_a_(ItemRegistrar.item_portal_key, new ResourceLocation("keytype"), (stack, world, entity) ->
+	ItemModelsProperties.registerProperty(ItemRegistrar.item_portal_key, new ResourceLocation("keytype"), (stack, world, entity) ->
 	{
 	    return ItemPortalKey.getKeyLevelAsFloat(stack);
 	});
@@ -119,6 +118,7 @@ public class DimDungeons
 	    tetPortalKeyhole.setRegistryName(MOD_ID, TileEntityPortalKeyhole.REG_NAME);
 	    teRegistryEvent.getRegistry().register(tetPortalKeyhole);
 
+	    // register a chunk generator here because I can get away with it
 	    Registry.register(Registry.CHUNK_GENERATOR_CODEC, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.field_236069_d_);
 	}
 
@@ -126,7 +126,7 @@ public class DimDungeons
 	// this isn't called? wrong type?
 	public static void registerChunkGenerators(RegistryEvent.Register<? extends ChunkGenerator> cgRegistryEvent)
 	{
-	    System.out.println("DIMDUNGEONS TEST: REGISTERING CHUNK GENERATOR!");
+	    //System.out.println("DIMDUNGEONS TEST: REGISTERING CHUNK GENERATOR!");
 	    //Registry.register(Registry.CHUNK_GENERATOR_KEY, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.field_235948_a_);
 	}
     }

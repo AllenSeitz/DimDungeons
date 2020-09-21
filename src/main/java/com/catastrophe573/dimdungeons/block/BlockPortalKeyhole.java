@@ -452,7 +452,7 @@ public class BlockPortalKeyhole extends Block
 	    text1 = new TranslationTextComponent(new TranslationTextComponent("error.dimdungeons.portal_error_" + problemID).getString() + problemBlock.getBlock().getRegistryName() + ".");
 	}
 	text1.getStyle().setItalic(true);
-	text1.getStyle().setColor(Color.func_240744_a_(TextFormatting.BLUE));
+	text1.getStyle().setColor(Color.fromTextFormatting(TextFormatting.BLUE));
 	playerIn.sendMessage(text1, Util.DUMMY_UUID);
 
     }

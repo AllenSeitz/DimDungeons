@@ -15,17 +15,20 @@ public class DungeonBuilderLogic
     protected String[] entrance = { "entrance_1", "entrance_2", "entrance_3", "entrance_4", "entrance_5", "entrance_6", "entrance_7", "entrance_8" };
 
     // dead ends contain one door
-    protected String end[] = { "deadend_1", "deadend_2", "deadend_3", "deadend_4", "deadend_5", "deadend_6", "deadend_7", "deadend_8", "coffin_1", "advice_room_1", "restroom_1", "shoutout_1", "spawner_1", "redspuzzle_1", "deathtrap_1", "keyroom_1", "library_end", "crueltrap_1", "blastchest_1", "magicpuzzle_1", "beacon_1", "freebie_1" };
+    protected String end[] = { "deadend_1", "deadend_2", "deadend_3", "deadend_4", "deadend_5", "deadend_6", "deadend_7", "deadend_8", "coffin_1", "advice_room_1", "restroom_1", "shoutout_1", "spawner_1", "redspuzzle_1", "deathtrap_1", "keyroom_1",
+	    "library_end", "crueltrap_1", "blastchest_1", "magicpuzzle_1", "beacon_1", "freebie_1" };
 
     // corners contain two doors on adjacent sides
     protected String corner[] = { "corner_1", "corner_2", "corner_3", "corner_4", "corner_5", "corner_6", "corner_7", "corner_8", "redstrap_3", "longcorner_1", "longcorner_2", "longcorner_3", "longcorner_4", "longcorner_5", "skullcorner",
 	    "mazenotfound_1" };
 
     // hallways contain two doors on opposite sides
-    protected String hallway[] = { "hallway_1", "hallway_2", "hallway_3", "hallway_4", "hallway_5", "hallway_6", "advice_room_3", "tempt_1", "redstrap_2", "extrahall_1", "extrahall_2", "extrahall_3", "coalhall_1", "moohall", "mazenotfound_3", "library_hall", "waterhall_1", "yinyang_1" };
+    protected String hallway[] = { "hallway_1", "hallway_2", "hallway_3", "hallway_4", "hallway_5", "hallway_6", "advice_room_3", "tempt_1", "redstrap_2", "extrahall_1", "extrahall_2", "extrahall_3", "coalhall_1", "moohall", "mazenotfound_3",
+	    "library_hall", "waterhall_1", "yinyang_1" };
 
     // threeways contain three doors and one wall
-    protected String threeway[] = { "threeway_1", "threeway_2", "threeway_3", "threeway_4", "threeway_5", "advice_room_2", "redstrap_4", "morethree_1", "morethree_2", "morethree_3", "tetris_1", "mazenotfound_2", "morethree_4", "morethree_5", "morethree_6" };
+    protected String threeway[] = { "threeway_1", "threeway_2", "threeway_3", "threeway_4", "threeway_5", "advice_room_2", "redstrap_4", "morethree_1", "morethree_2", "morethree_3", "tetris_1", "mazenotfound_2", "morethree_4", "morethree_5",
+	    "morethree_6" };
 
     // fourways simply have all four possible doors open
     protected String fourway[] = { "fourway_1", "fourway_2", "fourway_3", "fourway_4", "fourway_5", "fourway_6", "fourway_7", "fourway_8", "fourway_9", "combat_1", "combat_1", "redstrap_1", "disco_1", "hiddenpath_1" };
@@ -100,12 +103,14 @@ public class DungeonBuilderLogic
     // this is initialized during the constructor with values from the ChunkGenerator, to ensure the dungeons use the world seed
     protected Random rand;
 
-    public DungeonBuilderLogic(Random rand, long chunkX, long chunkZ)
+    public DungeonBuilderLogic(Random randIn, long chunkX, long chunkZ)
     {
+	System.out.println("START CONSTRUCTOR");
 	// copied the seed logic from the vanilla decorate function (which may be flawed, but since I only use the +X/+Z quadrant it won't matter)
 	//long newSeed = (worldSeed + (long) (chunkX * chunkX * 4987142) + (long) (chunkX * 5947611) + (long) (chunkZ * chunkZ) * 4392871L + (long) (chunkZ * 389711) ^ worldSeed);
 	//rand = new Random(newSeed);
 	//DimDungeons.LOGGER.info("DUNGEON SEED: " + newSeed);
+	rand = randIn;
 
 	shuffleArray(entrance);
 	shuffleArray(end);
@@ -124,11 +129,13 @@ public class DungeonBuilderLogic
 
 	enemyVariation1 = rand.nextInt(3);
 	enemyVariation2 = rand.nextInt(3);
+	System.out.println("EMD CONSTRUCTOR");
     }
 
     // when this function is done you may read the dungeon layout from the public variable finalLayout
     public void calculateDungeonShape(int maxNumRooms)
     {
+	System.out.println("START CALC DUNGEON SHAPE");
 	// temp hacks for advanced room placement until I change how the random room selection works
 	boolean allowHardRooms = maxNumRooms > 42;
 	RoomType mazeNotFoundVariations[] = { RoomType.THREEWAY, RoomType.CORNER, RoomType.HALLWAY };
@@ -789,6 +796,8 @@ public class DungeonBuilderLogic
 	    shuffleArray(openings);
 	    //DimDungeons.LOGGER.info("Num openings: " + openings.size());
 	}
+	
+	System.out.println("END CALC DUNGEON SHAPE");
     }
 
     // returns true if another chunk has a door leading into this chunk from the specified direction

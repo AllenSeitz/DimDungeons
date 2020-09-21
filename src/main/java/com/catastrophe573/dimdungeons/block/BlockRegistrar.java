@@ -30,5 +30,5 @@ public class BlockRegistrar
 	event.getRegistry().register(new BlockItem(block_gold_portal, new Item.Properties()).setRegistryName(block_gold_portal.getRegistryName()));
 	event.getRegistry().register(new BlockItem(block_portal_keyhole, new Item.Properties().group(ItemRegistrar.CREATIVE_TAB)).setRegistryName(block_portal_keyhole.getRegistryName()));
 	event.getRegistry().register(new BlockItem(block_portal_crown, new Item.Properties().group(ItemRegistrar.CREATIVE_TAB)).setRegistryName(block_portal_crown.getRegistryName()));
-    } 
+    }
 }

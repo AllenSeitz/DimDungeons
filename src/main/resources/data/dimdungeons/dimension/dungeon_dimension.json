@@ -5,7 +5,7 @@
         "seed": 0,
         "settings":
 		{
-			"biome": "minecraft:plains",
+			"biome": "dimdungeons:biome_dungeon",
 			"layers": [],
 			"structures": 
 			{

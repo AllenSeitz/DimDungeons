@@ -1,14 +1,13 @@
-package com.catastrophe573.dimdungeons.feature;
+package com.catastrophe573.dimdungeons.structure;
 
 import java.util.Random;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
-import com.catastrophe573.dimdungeons.block.BlockGoldPortal;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
-import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonRoom;
+import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -16,11 +15,14 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.state.properties.StructureMode;
 import net.minecraft.tileentity.BarrelTileEntity;
@@ -38,38 +40,32 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.template.PlacementSettings;
 import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.world.gen.feature.template.Template.BlockInfo;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 
-// temporarily, make this not a Feature, because 1.16.2 is going to break it again
-public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
+//temporarily, make this not a Feature, because 1.16.2 is going to break it again
+public class DungeonPlacementLogicAdvanced
 {
-    public static String FEATURE_ID = "feature_basic_dungeon";
+    public static String FEATURE_ID = "feature_advanced_dungeon";
 
-    public BasicDungeonFeature()
+    public DungeonPlacementLogicAdvanced()
     {
     }
 
     // vanilla worldgen calls this function at some point in the complicated decoration process
-    public boolean place(IWorld world, ChunkGenerator chunkGenerator, Random rand, BlockPos pos, NoFeatureConfig config)
+    public static boolean place(IChunk chunk, IWorld world, ChunkGenerator chunkGenerator, Random rand, ChunkPos cpos, NoFeatureConfig config)
     {
-	// only put dungeons on the right chunks, and only in the dungeon dimension
-	if ( !BlockGoldPortal.isDimensionDungeon((World)world))
-	{
-	    DimDungeons.LOGGER.info("DIMDUNGEONS WEIRD ERROR: why is there a dungeon biome outside of the dungeon dimension?");
-	    return false;
-	}
-
-	ChunkPos cpos = new ChunkPos(pos);
 	if (isDungeonChunk(cpos.x, cpos.z))
 	{
-	    DungeonRoom room = getRoomForChunk(cpos, world);
+	    DungeonRoom room = getRoomForChunk(cpos, rand);
 	    if (room != null)
 	    {
-		boolean success = putRoomHere(cpos, world, room);
+		boolean success = putRoomHere(cpos, world, chunk, room);
 		if (!success)
 		{
 		    DimDungeons.LOGGER.info("DIMDUNGEONS STRUCTURE ERROR: failed to place structure " + room.structure + " at " + cpos.x + ", " + cpos.z);
@@ -84,52 +80,34 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
     // also used to by the DungeonChunkGenerator, note that the dimension check is not done here
     public static boolean isDungeonChunk(long x, long z)
     {
-	if (x < 0 || z < 0)
+	if (x < 0 || z > 0)
 	{
-	    return false; // dungeons only spawn in the +x/+z quadrant
+	    return false; // advanced dungeons only spawn in the +x/-z quadrant
 	}
 
 	long plotX = x % 16;
 	long plotZ = z % 16;
-	return plotX > 3 && plotX < 12 && plotZ > 3 && plotZ < 12;
+	return plotX > 3 && plotX < 12 && plotZ < -4 && plotZ > -13;
     }
 
     // also used to by the DungeonChunkGenerator, note that the dimension check is not done here
     public static boolean isEntranceChunk(long x, long z)
     {
-	if (x < 0 || z < 0)
+	if (x < 0 || z > 0)
 	{
-	    return false; // dungeons only spawn in the +x/+z quadrant
+	    return false; // advanced dungeons only spawn in the +x/-z quadrant
 	}
 
 	long plotX = x % 16;
 	long plotZ = z % 16;
-	return plotX == 8 && plotZ == 11;
-    }
-
-    // a test/debugging function that shouldn't be used in the final version
-    public static void putTestStructureHere(long x, long z, IWorld world)
-    {
-	ChunkPos cpos = new ChunkPos((int) x, (int) z);
-	MinecraftServer minecraftserver = ((World)world).getServer();
-	TemplateManager templatemanager = BlockGoldPortal.getDungeonWorld(minecraftserver).getStructureTemplateManager();
-
-	Template template = templatemanager.getTemplate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "basic_template"));
-	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunk(cpos);
-	placementsettings.setBoundingBox(placementsettings.getBoundingBox());
-	placementsettings.setRotation(Rotation.NONE);
-	BlockPos position = new BlockPos(cpos.getXStart(), 50, cpos.getZStart());	
-	BlockPos sizeRange = new BlockPos(16, 13, 16);
-	
-	// I assume this function is addBlocksToWorld()	
-	template.func_237146_a_((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
+	return plotX == 8 && plotZ == -5;
     }
 
     // used by the place() function to actually place rooms
-    public static boolean putRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room)
+    public static boolean putRoomHere(ChunkPos cpos, IWorld world, IChunk chunk, DungeonRoom room)
     {
-	MinecraftServer minecraftserver = ((World)world).getServer();
-	TemplateManager templatemanager = BlockGoldPortal.getDungeonWorld(minecraftserver).getStructureTemplateManager();
+	MinecraftServer minecraftserver = ((World) world).getServer();
+	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureTemplateManager();
 
 	Template template = templatemanager.getTemplate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + room.structure));
 	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunk(cpos);
@@ -169,11 +147,9 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 	    // north: no rotation
 	    placementsettings.setRotation(Rotation.NONE);
 	}
-	
-	//DimDungeons.LOGGER.info("Placing a room: " + room.structure);
-	//boolean success = template.addBlocksToWorld(world, position, placementsettings, 2); // old 1.15 way
-	
+
 	// I assume this function is addBlocksToWorld()	
+	DimDungeons.LOGGER.info("Placing a room: " + room.structure);
 	boolean success = template.func_237146_a_((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
 
 	// handle data blocks - this code block is copied from TemplateStructurePiece
@@ -190,19 +166,26 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 		}
 	    }
 	}
+
+	// replace all red carpet in entrance rooms with green carpet
+	for (BlockInfo info : template.func_215381_a(position, placementsettings, Blocks.RED_CARPET))
+	{
+	    world.setBlockState(info.pos, Blocks.GREEN_CARPET.getDefaultState(), 3);
+	}
+
 	return success;
     }
 
     // this function assumes the chunk isDungeonChunk() and may return null if the dungeon doesn't have a room at that position
-    public static DungeonRoom getRoomForChunk(ChunkPos cpos, IWorld world)
+    public static DungeonRoom getRoomForChunk(ChunkPos cpos, Random random)
     {
 	// start by calculating the position of the entrance chunk for this dungeon
 	int entranceX = cpos.x;
 	int entranceZ = cpos.z;
 	int distToEntranceX = 8 - (entranceX % 16);
-	int distToEntranceZ = 11 - (entranceZ % 16);
+	int distToEntranceZ = 5 + (entranceZ % 16);
 	entranceX += distToEntranceX;
-	entranceZ += distToEntranceZ;
+	entranceZ -= distToEntranceZ;
 
 	// assert that my math is not bad
 	if (!isEntranceChunk(entranceX, entranceZ))
@@ -212,34 +195,30 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 	}
 
 	// this is the date structure for an entire dungeon
-	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceX, entranceZ);
+	DungeonBuilderLogic dbl = new DungeonBuilderLogic(random, entranceX, entranceZ);
 
-//	// trigger some debug code for test layouts
-//	if (world getWorldInfo(). getWorldName().equalsIgnoreCase("DimDungeonsDebugOne"))
-//	{
-//	    DungeonBuilderTestShapes.MakeTestDungeonEnds(dbl);
-//	}
-//	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugTwo"))
-//	{
-//	    DungeonBuilderTestShapes.MakeTestDungeonTwos(dbl);
-//	}
-//	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugThree"))
-//	{
-//	    DungeonBuilderTestShapes.MakeTestDungeonThreesAndFours(dbl);
-//	}
-//	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugFour"))
-//	{
-//	    DungeonBuilderTestShapes.MakeTestDungeonContentFour(dbl);
-//	}
-//	else
+	//	// trigger some debug code for test layouts
+	//	if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugOne"))
+	//	{
+	//	    DungeonBuilderTestShapes.MakeTestDungeonEnds(dbl);
+	//	}
+	//	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugTwo"))
+	//	{
+	//	    DungeonBuilderTestShapes.MakeTestDungeonTwos(dbl);
+	//	}
+	//	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugThree"))
+	//	{
+	//	    DungeonBuilderTestShapes.MakeTestDungeonThreesAndFours(dbl);
+	//	}
+	//	else
 	{
-	    // generate the entire dungeon, a normal dungeon
-	    dbl.calculateDungeonShape(25);
+	    // generate the entire dungeon, an advanced dungeon
+	    dbl.calculateDungeonShape(52);
 	}
 
 	// pick the room we want, for example the entrance room is at [4][7] in this array
 	int i = (cpos.x % 16) - 4;
-	int j = (cpos.z % 16) - 4;
+	int j = (cpos.z % 16) + 12;
 	DungeonRoom nextRoom = dbl.finalLayout[i][j];
 	if (!nextRoom.hasRoom())
 	{
@@ -267,26 +246,14 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
     {
 	//DimDungeons.LOGGER.info("DATA BLOCK NAME: " + name);
 
-	if ("LockIt".equals(name))
+	if ("ReturnPortal".equals(name))
 	{
-	    LockDispensersAround(world, pos);
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block 
-	}
-	else if ("LockItStoneBrick".equals(name))
-	{
-	    LockDispensersAround(world, pos);
-	    world.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), 2); // erase this data block 
-	}
-	else if ("ReturnPortal".equals(name))
-	{
-	    LockDispensersAround(world, pos);
 	    world.setBlockState(pos, BlockRegistrar.block_gold_portal.getDefaultState(), 2); // erase this data block 
 	}
 	else if ("FortuneTeller".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), 2); // erase this data block 
 	    faceContainerTowardsAir(world, pos.down());
-	    LockDispensersAround(world, pos.down());
 
 	    // put a message inside the dispenser
 	    TileEntity te = world.getTileEntity(pos.down());
@@ -307,16 +274,16 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 	    int lucky = rand.nextInt(100);
 	    if (lucky < 80)
 	    {
-		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), world, rand);
+		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_3"), world, rand);
 	    }
 	    else
 	    {
-		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
+		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_4"), world, rand);
 	    }
 	}
 	else if ("ChestLoot2".equals(name))
 	{
-	    fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
+	    fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_4"), world, rand);
 	}
 	else if ("ChestLootLucky".equals(name))
 	{
@@ -324,7 +291,7 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 	    int lucky = rand.nextInt(100);
 	    if (lucky < 30)
 	    {
-		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_lucky"), world, rand);
+		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_crazy"), world, rand);
 	    }
 	    else
 	    {
@@ -339,7 +306,7 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 	    if (te != null)
 	    {
 		te.clear();
-		te.setLootTable(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), rand.nextLong());
+		te.setLootTable(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_3"), rand.nextLong());
 	    }
 	}
 	else if ("BarrelLoot1".equals(name))
@@ -348,11 +315,11 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 	    int lucky = rand.nextInt(100);
 	    if (lucky < 80)
 	    {
-		fillBarrelBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), world, rand);
+		fillBarrelBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_3"), world, rand);
 	    }
 	    else
 	    {
-		fillBarrelBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
+		fillBarrelBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_4"), world, rand);
 	    }
 	}
 	else if ("PlaceL2Key".equals(name))
@@ -366,6 +333,7 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 		{
 		    ((ItemPortalKey) key.getItem()).activateKeyLevel2(key);
 		    te.setContents(key);
+		    //te.updateContainingBlockInfo();
 		}
 	    }
 	}
@@ -377,15 +345,7 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 	else if ("SummonWaterEnemy".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	    int chance = rand.nextInt(100);
-	    if (chance < 80)
-	    {
-		spawnEnemyHere(pos, "guardian", world);
-	    }
-	    else
-	    {
-		spawnEnemyHere(pos, "drowned", world);
-	    }
+	    spawnEnemyHere(pos, "guardian", world);
 	}
 	else if ("SummonEnderman".equals(name))
 	{
@@ -394,7 +354,7 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 	}
 	else if ("SummonEnemy1".equals(name))
 	{
-	    // 50% chance of a weak enemy
+	    // 50% chance of a weak enemy OR BLAZE
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
 	    int chance = rand.nextInt(100);
 	    if (chance < 16)
@@ -409,7 +369,11 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 	    {
 		spawnEnemyHere(pos, "drowned", world);
 	    }
-	    else if (chance < 64)
+	    else if (chance < 74)
+	    {
+		spawnEnemyHere(pos, "blaze", world);
+	    }
+	    else
 	    {
 		spawnEnemyHere(pos, "spider", world);
 	    }
@@ -449,58 +413,99 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 
 	if ("witch".contentEquals(casualName))
 	{
-	    mob = EntityType.WITCH.create((World)world);
+	    mob = EntityType.WITCH.create((World) world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
+	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(40.0f);
+	    mob.setHealth(40.0f);
 	}
 	else if ("enderman".contentEquals(casualName))
 	{
-	    mob = EntityType.ENDERMAN.create((World)world);
+	    mob = EntityType.ENDERMAN.create((World) world);
 	    mob.setPosition(pos.getX(), pos.getY() + 2, pos.getZ());
+	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.4f);
+	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(50.0f);
+	    mob.setHealth(50.0f);
 	}
 	else if ("guardian".contentEquals(casualName))
 	{
-	    mob = EntityType.GUARDIAN.create((World)world);
+	    mob = EntityType.GUARDIAN.create((World) world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.4f);
+	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(40.0f);
+	    mob.setHealth(40.0f);
 	}
 	else if ("zombie".contentEquals(casualName))
 	{
-	    mob = EntityType.ZOMBIE.create((World)world);
+	    mob = EntityType.ZOMBIE.create((World) world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
+	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
+	    mob.setHealth(32.0f);
 	}
 	else if ("husk".contentEquals(casualName))
 	{
-	    mob = EntityType.HUSK.create((World)world);
+	    mob = EntityType.HUSK.create((World) world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
+	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
+	    mob.setHealth(32.0f);
 	}
 	else if ("drowned".contentEquals(casualName))
 	{
-	    mob = EntityType.DROWNED.create((World)world);
+	    mob = EntityType.DROWNED.create((World) world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
+	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
+	    mob.setHealth(32.0f);
 	}
 	else if ("skeleton".contentEquals(casualName))
 	{
-	    mob = EntityType.SKELETON.create((World)world);
+	    mob = EntityType.SKELETON.create((World) world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.4f);
+	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
+	    mob.setHealth(40.0f);
 	}
 	else if ("wither_skeleton".contentEquals(casualName))
 	{
-	    mob = EntityType.WITHER_SKELETON.create((World)world);
+	    mob = EntityType.WITHER_SKELETON.create((World) world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
+	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
+	    mob.setHealth(30.0f);
 	}
 	else if ("stray".contentEquals(casualName))
 	{
-	    mob = EntityType.STRAY.create((World)world);
+	    mob = EntityType.STRAY.create((World) world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.45f);
+	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
+	    mob.setHealth(40.0f);
 	}
 	else if ("spider".contentEquals(casualName))
 	{
-	    mob = EntityType.SPIDER.create((World)world);
+	    mob = EntityType.SPIDER.create((World) world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.4f);
+	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(36.0f);
+	    mob.setHealth(36.0f);
 	}
 	else if ("pillager".contentEquals(casualName))
 	{
-	    mob = EntityType.PILLAGER.create((World)world);
+	    mob = EntityType.PILLAGER.create((World) world);
 	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
+	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(36.0f);
+	    mob.setHealth(36.0f);
+	}
+	else if ("blaze".contentEquals(casualName))
+	{
+	    mob = EntityType.BLAZE.create((World) world);
+	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
+	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
+	    mob.setHealth(30.0f);
 	}
 	else
 	{
@@ -510,10 +515,12 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 
 	mob.setCanPickUpLoot(false);
 	//mob.setCustomName(new StringTextComponent(I18n.format("enemy.dimdungeons." + casualName)));
-	mob.setCustomName(new TranslationTextComponent("enemy.dimdungeons." + casualName));
+	mob.setCustomName(new TranslationTextComponent("enemy.dimdungeons." + casualName + "2"));
 	mob.setHomePosAndDistance(pos, 8);
 	mob.moveToBlockPosAndAngles(pos, 0.0F, 0.0F);
 	mob.enablePersistence();
+	mob.addPotionEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 9999999));
+	mob.addPotionEffect(new EffectInstance(Effects.JUMP_BOOST, 9999999, 3));
 
 	mob.onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
 	world.addEntity(mob);
@@ -561,33 +568,10 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 	stack.setTag(new CompoundNBT());
 
 	// randomize book contents
-	int bookType = rand.nextInt(3);
 	int messageVariation = rand.nextInt(8) + 1;
-	String body = "";
-	String title = "";
 
-	if (bookType == 0)
-	{
-	    //title = I18n.format("book.dimdungeons.title_1");
-	    //body = I18n.format("book.dimdungeons.fun_message_" + messageVariation);
-	    title = new TranslationTextComponent("book.dimdungeons.title_1").getString();
-	    body = new TranslationTextComponent("book.dimdungeons.fun_message_" + messageVariation).getString();
-
-	}
-	else if (bookType == 1)
-	{
-	    //title = I18n.format("book.dimdungeons.title_2");
-	    //body = I18n.format("book.dimdungeons.helpful_message_" + messageVariation);
-	    title = new TranslationTextComponent("book.dimdungeons.title_2").getString();
-	    body = new TranslationTextComponent("book.dimdungeons.helpful_message_" + messageVariation).getString();
-	}
-	else
-	{
-	    //title = I18n.format("book.dimdungeons.title_3");
-	    //body = I18n.format("book.dimdungeons.dangerous_message_" + messageVariation);
-	    title = new TranslationTextComponent("book.dimdungeons.title_3").getString();
-	    body = new TranslationTextComponent("book.dimdungeons.dangerous_message_" + messageVariation).getString();
-	}
+	String title = new TranslationTextComponent("book.dimdungeons.title_4").getString();
+	String body = new TranslationTextComponent("book.dimdungeons.advanced_message_" + messageVariation).getString();
 
 	// create the complicated NBT tag list for the list of pages in the book
 	ListNBT pages = new ListNBT();
@@ -605,40 +589,6 @@ public class BasicDungeonFeature //extends Feature<NoFeatureConfig>
 	stack.getTag().putString("title", title);
 	stack.getTag().putString("author", new TranslationTextComponent("book.dimdungeons.author").getString());
 	return stack;
-    }
-
-    // this function might not be needed unless the DungeonDimension::canMineBlock() returns true for Dispensers
-    private static void LockDispensersAround(IWorld world, BlockPos pos)
-    {
-	//	Random r = new Random((world.getSeed() + (long) (pos.getX() * pos.getX() * 4987142) + (long) (pos.getX() * 5947611) + (long) (pos.getZ() * pos.getZ()) * 4392871L + (long) (pos.getZ() * 389711) ^ world.getSeed()));
-	//
-	//	// make sure the player cannot be holding an item with this name
-	//	LockCode code = new LockCode("ThisIsIntentionallyLongerThanCanNormallyBePossiblePlus" + r.nextLong());
-	//
-	//	if (world.getBlockState(pos.up()).getBlock() == Blocks.DISPENSER)
-	//	{
-	//	    //((DispenserTileEntity) world.getTileEntity(pos.up())).setLockCode(code);
-	//	}
-	//	if (world.getBlockState(pos.down()).getBlock() == Blocks.DISPENSER)
-	//	{
-	//	    //((DispenserTileEntity) world.getTileEntity(pos.down())).setLockCode(code);
-	//	}
-	//	if (world.getBlockState(pos.north()).getBlock() == Blocks.DISPENSER)
-	//	{
-	//	    //((DispenserTileEntity) world.getTileEntity(pos.north())).setLockCode(code);
-	//	}
-	//	if (world.getBlockState(pos.south()).getBlock() == Blocks.DISPENSER)
-	//	{
-	//	    //((DispenserTileEntity) world.getTileEntity(pos.south())).setLockCode(code);
-	//	}
-	//	if (world.getBlockState(pos.west()).getBlock() == Blocks.DISPENSER)
-	//	{
-	//	    //((DispenserTileEntity) world.getTileEntity(pos.west())).setLockCode(code);
-	//	}
-	//	if (world.getBlockState(pos.east()).getBlock() == Blocks.DISPENSER)
-	//	{
-	//	    //((DispenserTileEntity) world.getTileEntity(pos.east())).setLockCode(code);
-	//	}
     }
 
     // used on dispensers and chests, particularly ones created by data blocks

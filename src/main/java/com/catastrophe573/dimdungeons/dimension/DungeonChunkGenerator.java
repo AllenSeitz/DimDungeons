@@ -3,8 +3,8 @@ package com.catastrophe573.dimdungeons.dimension;
 import java.util.Arrays;
 import java.util.Random;
 
-import com.catastrophe573.dimdungeons.feature.AdvancedDungeonFeature;
-import com.catastrophe573.dimdungeons.feature.BasicDungeonFeature;
+import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicAdvanced;
+import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicBasic;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.block.BlockState;
@@ -18,10 +18,12 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.FlatGenerationSettings;
+import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.WorldGenRegion;
 import net.minecraft.world.gen.feature.structure.StructureManager;
-
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.biome.BiomeManager;
 import net.minecraft.world.biome.provider.SingleBiomeProvider;
 
 public final class DungeonChunkGenerator extends ChunkGenerator
@@ -54,10 +56,28 @@ public final class DungeonChunkGenerator extends ChunkGenerator
     }
 
     @SuppressWarnings("deprecation")
+    @Override
     public void generateSurface(WorldGenRegion p_225551_1_, IChunk p_225551_2_)
     {
-	System.out.println("GENERATE DIMDUNGEONS CHUNK BASE");
-	makeBase(p_225551_1_.getWorld(), p_225551_2_);
+	// generate my sandstone base and void chunks, which usually don't matter at all but might as well
+	ServerWorld world = p_225551_1_.getWorld();
+	makeBase(world, p_225551_2_);
+	
+	// and intentionally do nothing with structures
+    }
+
+    // is this decorate()?
+    @Override
+    public void func_230351_a_(WorldGenRegion p_230351_1_, StructureManager p_230351_2_)
+    {
+	// in vanilla this function basically does this:
+	//biome.func_242427_a(p_230351_2_, this, p_230351_1_, i1, sharedseedrandom, blockpos);
+    }
+
+    @Override
+    // I think this is Carve()
+    public void func_230350_a_(long p_230350_1_, BiomeManager p_230350_3_, IChunk p_230350_4_, GenerationStage.Carving p_230350_5_)
+    {
     }
 
     public int getGroundHeight()
@@ -140,7 +160,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	randomSeed.setSeed((worldSeed + (long) (x * x * 4987142) + (long) (x * 5947611) + (long) (z * z) * 4392871L + (long) (z * 389711) ^ worldSeed));
 
 	// first generate a superflat world - sandstone where dungeons can appear, and void otherwise
-	if (BasicDungeonFeature.isDungeonChunk(x, z) || AdvancedDungeonFeature.isDungeonChunk(x, z))
+	if (DungeonPlacementLogicBasic.isDungeonChunk(x, z) || DungeonPlacementLogicAdvanced.isDungeonChunk(x, z))
 	{
 	    for (int px = 0; px < 16; px++)
 	    {
@@ -155,7 +175,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 			else if (py < 50)
 			{
 			    // for debugging mostly but it also kind of looks good when you're in creative mode
-			    if (BasicDungeonFeature.isEntranceChunk(x, z) || AdvancedDungeonFeature.isEntranceChunk(x, z))
+			    if (DungeonPlacementLogicBasic.isEntranceChunk(x, z) || DungeonPlacementLogicAdvanced.isEntranceChunk(x, z))
 			    {
 				chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.GRANITE.getDefaultState(), false);
 			    }

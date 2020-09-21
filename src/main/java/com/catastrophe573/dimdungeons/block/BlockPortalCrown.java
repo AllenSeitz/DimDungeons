@@ -13,7 +13,6 @@ public class BlockPortalCrown extends WallBlock
     
     public BlockPortalCrown()
     {
-	//super(Block.Builder.create(Material.ROCK).hardnessAndResistance(2).sound(SoundType.METAL));
 	super(Block.Properties.create(Material.ROCK).hardnessAndResistance(2).sound(SoundType.METAL));
 	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);    
     }

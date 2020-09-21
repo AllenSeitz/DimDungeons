@@ -3,11 +3,9 @@ package com.catastrophe573.dimdungeons.block;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -97,12 +95,6 @@ public class TileEntityPortalKeyhole extends TileEntity
 	{
 	    ItemPortalKey key = (ItemPortalKey) item.getItem();
 	    return key.isActivated(item);
-	}
-	// three vanilla blocks will also open portals to the 3 vanilla dimensions?
-	else if (Block.getBlockFromItem(item.getItem()) != null)
-	{
-//	    Block b = Block.getBlockFromItem(item.getItem());
-//	    return b == Blocks.NETHERRACK || b == Blocks.END_STONE || b == Blocks.GRASS_BLOCK;
 	}
 
 	return false;

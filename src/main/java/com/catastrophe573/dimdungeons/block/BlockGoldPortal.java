@@ -11,6 +11,7 @@ import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 //import com.google.common.collect.Lists;
 //import com.mojang.datafixers.util.Pair;
+import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -26,23 +27,17 @@ import net.minecraft.item.ItemStack;
 //import net.minecraft.nbt.CompoundNBT;
 //import net.minecraft.nbt.ListNBT;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.BannerPattern;
 //import net.minecraft.tileentity.BannerTileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.LogicalSide;
 //import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
 
 public class BlockGoldPortal extends BreakableBlock
 {
@@ -99,33 +94,6 @@ public class BlockGoldPortal extends BreakableBlock
 	return true;
     }
 
-    // this is the best idea I have for unmapped 1.16.1
-    public static boolean isDimensionDungeon(World worldIn)
-    {
-	if (worldIn == null)
-	{
-	    System.out.println("FATAL ERROR: This 1.16 port is still broken.");
-	    return false;
-	}
-	return worldIn.func_234923_W_().func_240901_a_() == new ResourceLocation(DimDungeons.MOD_ID, DimDungeons.dungeon_basic_regname);
-    }
-
-    // this ends up used by the old 'Feature' class and should be moved to a generic location...
-    public static ServerWorld getDungeonWorld(MinecraftServer server)
-    {
-	ResourceLocation resourceLocation = new ResourceLocation("dimdungeons:dungeon_dimension");
-	// new ResourceLocation(DimDungeons.MOD_ID, DimDungeons.dungeon_basic_regname);
-	RegistryKey<World> regkey = RegistryKey.func_240903_a_(Registry.WORLD_KEY, resourceLocation);
-	System.out.println("TRYING REGKEY: " + regkey.toString());
-	return server.getWorld(regkey);
-    }
-
-    // World.field_234918_g_ is the Overworld. This block has different behavior in the Overworld than in the Dungeon Dimension
-    public boolean isDimensionOverworld(World worldIn)
-    {
-	return worldIn.func_234923_W_() == World.field_234918_g_;
-    }
-
     // called When an entity collides with the Block
     @Override
     public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn)
@@ -155,7 +123,7 @@ public class BlockGoldPortal extends BreakableBlock
 		if (!item.isEmpty())
 		{
 		    // World.field_234918_g_ is the Overworld. This block has different behavior in the Overworld than in the Dungeon Dimension
-		    if (item.getItem() instanceof ItemPortalKey && isDimensionOverworld(worldIn))
+		    if (item.getItem() instanceof ItemPortalKey && DungeonUtils.isDimensionOverworld(worldIn))
 		    {
 			ItemPortalKey key = (ItemPortalKey) item.getItem();
 			float warpX = key.getWarpX(item);
@@ -168,7 +136,7 @@ public class BlockGoldPortal extends BreakableBlock
 			else
 			{
 			    System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");
-			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, getDungeonWorld(worldIn.getServer()), warpX + 0.5f, 55.1D, warpZ + 0.5f, 0);
+			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonUtils.getDungeonWorld(worldIn.getServer()), warpX + 0.5f, 55.1D, warpZ + 0.5f, 0);
 			}
 		    }
 		}
@@ -176,7 +144,7 @@ public class BlockGoldPortal extends BreakableBlock
 	    else
 	    {
 		// no keyhole? this could be a return portal
-		if (worldIn.func_234923_W_().func_240901_a_() == new ResourceLocation(DimDungeons.MOD_ID, DimDungeons.dungeon_basic_regname))
+		if (worldIn.getDimensionKey() == DungeonUtils.getDungeonWorld(worldIn.getServer()).getDimensionKey() )
 		{
 		    sendPlayerBackHome((ServerPlayerEntity) entityIn);
 		}
@@ -192,7 +160,7 @@ public class BlockGoldPortal extends BreakableBlock
 	float destYaw = player.getPitchYaw().y;
 
 	// if the player just entered a dungeon then force them to face north 
-	if (isDimensionDungeon(dim))
+	if (DungeonUtils.isDimensionDungeon(dim))
 	{
 	    destPitch = 0;
 	    destYaw = 180;
@@ -220,20 +188,19 @@ public class BlockGoldPortal extends BreakableBlock
 	else
 	{
 	    // fallback: send the player to the overworld spawn
-	    lastX = player.getServer().getWorld(World.field_234918_g_).getWorldInfo().getSpawnX();
-	    lastY = player.getServer().getWorld(World.field_234918_g_).getWorldInfo().getSpawnY() + 2; // plus 2 to stand on the ground I guess
-	    lastZ = player.getServer().getWorld(World.field_234918_g_).getWorldInfo().getSpawnZ();
+	    lastX = player.getServer().getWorld(World.OVERWORLD).getWorldInfo().getSpawnX();
+	    lastY = player.getServer().getWorld(World.OVERWORLD).getWorldInfo().getSpawnY() + 2; // plus 2 to stand on the ground I guess
+	    lastZ = player.getServer().getWorld(World.OVERWORLD).getWorldInfo().getSpawnZ();
 	}
 
-	// the second parameter is a crazy way to obtain the Overworld
-	actuallyPerformTeleport(player, player.getServer().getWorld(World.field_234918_g_).getWorldServer(), lastX, lastY, lastZ, lastYaw);
+	actuallyPerformTeleport(player, player.getServer().getWorld(World.OVERWORLD).getWorldServer(), lastX, lastY, lastZ, lastYaw);
     }
 
     // this function returns boolean and relies on another function to actually destroy the block
     public boolean checkPortalIntegrity(BlockState state, IWorld worldIn, BlockPos pos)
     {
 	// valid portal shapes are not needed for persistence in the dungeon dimension
-	return isDimensionDungeon((World)worldIn) || isPortalShapeIntact(state, worldIn, pos);
+	return DungeonUtils.isDimensionDungeon((World) worldIn) || isPortalShapeIntact(state, worldIn, pos);
     }
 
     private boolean isPortalShapeIntact(BlockState state, IWorld worldIn, BlockPos pos)
@@ -478,83 +445,6 @@ public class BlockGoldPortal extends BreakableBlock
 
 	return 2; // so now any white or purple banner is acceptable
     }
-
-    //    // it's okay if the block here isn't a banner, I check for that too
-    //    public int oldGetBannerLevel(IWorld worldIn, BlockPos pos)
-    //    {
-    //	boolean level2 = false;
-    //	boolean level3 = false;
-    //	Block banner = worldIn.getBlockState(pos).getBlock();
-    //
-    //	// first ensure that the tile entity is going to exist
-    //	if (!(banner == Blocks.WHITE_WALL_BANNER || banner == Blocks.PURPLE_WALL_BANNER))
-    //	{
-    //	    return 0;
-    //	}
-    //	BannerTileEntity te = (BannerTileEntity) worldIn.getTileEntity(pos);
-    //	if (te == null)
-    //	{
-    //	    return 0;
-    //	}
-    //	List<Pair<BannerPattern, DyeColor>> patterns = null;
-    //
-    //	// starting in 1.15 the getPatternList() function was removed from the dedicated server environment
-    //	if (EffectiveSide.get() == LogicalSide.CLIENT)
-    //	{
-    //	    patterns = te.getPatternList(); // the correct way
-    //	}
-    //	else
-    //	{
-    //	    // the gross hack to access private data that Mojang doesn't need for the vanilla game, but I do
-    //	    Object tempList = ObfuscationReflectionHelper.getPrivateValue(BannerTileEntity.class, te, "field_175118_f");
-    //	    ListNBT nbt = (ListNBT) tempList;
-    //	    if (nbt == null)
-    //	    {
-    //		return 0; // legit possible
-    //	    }
-    //
-    //	    // rewrite and steal func_230138_a_() and getPatternList(). Thanks Mojang!
-    //	    patterns = Lists.newArrayList();
-    //	    //patterns.add(Pair.of(BannerPattern.BASE, baseColor)); // we already know the banner is white or purple at this point
-    //	    for (int i = 0; i < nbt.size(); ++i)
-    //	    {
-    //		CompoundNBT compoundnbt = nbt.getCompound(i);
-    //		BannerPattern bannerpattern = getBannerForHash(compoundnbt.getString("Pattern"));
-    //		if (bannerpattern != null)
-    //		{
-    //		    int j = compoundnbt.getInt("Color");
-    //		    patterns.add(Pair.of(bannerpattern, DyeColor.byId(j)));
-    //		}
-    //	    }
-    //	}
-    //
-    //	// check the banner patterns, any matches are fine, any extras are ignored
-    //	for (int i = 0; i < patterns.size(); i++)
-    //	{
-    //	    Pair<BannerPattern, DyeColor> p = patterns.get(i);
-    //	    //DimDungeons.LOGGER.info("DIMDUNGEONS: pattern is " + p + ", " + c);
-    //
-    //	    if (banner == Blocks.WHITE_WALL_BANNER && p.getFirst() == BannerPattern.DIAGONAL_RIGHT && p.getSecond() == DyeColor.PURPLE)
-    //	    {
-    //		level2 = true;
-    //	    }
-    //	    if (banner == Blocks.PURPLE_WALL_BANNER && p.getFirst() == BannerPattern.DIAGONAL_LEFT && p.getSecond() == DyeColor.WHITE)
-    //	    {
-    //		level2 = true;
-    //	    }
-    //	    // TODO: check for my custom banner pattern for level 3
-    //	}
-    //
-    //	if (level2 && level3)
-    //	{
-    //	    return 3;
-    //	}
-    //	else if (level2)
-    //	{
-    //	    return 2;
-    //	}
-    //	return 0;
-    //    }
 
     /**
      * Called periodically client side on blocks near the player to show effects (like furnace fire particles). Note that
