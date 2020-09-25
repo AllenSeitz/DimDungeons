@@ -37,12 +37,10 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.template.PlacementSettings;
 import net.minecraft.world.gen.feature.template.Template;
 import net.minecraft.world.gen.feature.template.TemplateManager;
+import net.minecraft.world.server.ServerWorld;
 
 // temporarily, make this not a Feature, because 1.16.2 is going to break it again
 public class DungeonPlacementLogicBasic
@@ -53,27 +51,50 @@ public class DungeonPlacementLogicBasic
     {
     }
 
-    // vanilla worldgen calls this function at some point in the complicated decoration process
-    public static boolean place(IChunk chunk, IWorld world, ChunkGenerator chunkGenerator, Random rand, ChunkPos cpos, NoFeatureConfig config)
+    // this is the function that actually writes the 8x8 chunk structure to the world, and ALL AT ONCE
+    //public static boolean place(IChunk chunk, IWorld world, ChunkGenerator chunkGenerator, Random rand, ChunkPos cpos, NoFeatureConfig config)
+    public static boolean place(ServerWorld world, long x, long z)
     {
-	if (isDungeonChunk(cpos.x, cpos.z))
+	long entranceChunkX = (x/16)+8;
+	long entranceChunkZ = (z/16)+11;
+	if (!isEntranceChunk(entranceChunkX, entranceChunkZ))
 	{
-	    DungeonRoom room = getRoomForChunk(cpos, rand);
-	    if (room != null)
+	    DimDungeons.LOGGER.error("DIMDUNGEONS FATAL ERROR: basic dungeon does not start at " + x + ", " + z);
+	    return false;
+	}
+	DimDungeons.LOGGER.debug("DIMDUNGEONS START BASIC STRUCTURE at " + x + ", " + z);
+
+	// this is the date structure for an entire dungeon
+	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ);
+	dbl.calculateDungeonShape(25);
+
+	// place all 64 rooms (many will be blank), for example the entrance room is at [4][7] in this array
+	for (int i = 0; i < 8; i++)
+	{
+	    for (int j = 0; j < 8; j++)
 	    {
-		boolean success = putRoomHere(cpos, world, chunk, room);
-		if (!success)
+		DungeonRoom nextRoom = dbl.finalLayout[i][j];
+		if (!nextRoom.hasRoom())
 		{
-		    DimDungeons.LOGGER.info("DIMDUNGEONS STRUCTURE ERROR: failed to place structure " + room.structure + " at " + cpos.x + ", " + cpos.z);
+		    continue;
 		}
-		return true;
+		else
+		{
+		    // calculate the chunkpos of the room at 0,0 in the top left of the map
+		    // I'm not sure what the +4 is for, but it is needed
+		    ChunkPos cpos = new ChunkPos(((int)x/16) + i + 4, ((int)z/16) + j + 4);
+		    
+		    if (!putRoomHere(cpos, world, nextRoom))
+		    {
+			DimDungeons.LOGGER.error("DIMDUNGEONS ERROR UNABLE TO PLACE STRUCTURE: " + nextRoom.structure);
+		    }
+		}
 	    }
 	}
 
-	return false;
+	return true;
     }
 
-    // also used to by the DungeonChunkGenerator, note that the dimension check is not done here
     public static boolean isDungeonChunk(long x, long z)
     {
 	if (x < 0 || z < 0)
@@ -86,7 +107,6 @@ public class DungeonPlacementLogicBasic
 	return plotX > 3 && plotX < 12 && plotZ > 3 && plotZ < 12;
     }
 
-    // also used to by the DungeonChunkGenerator, note that the dimension check is not done here
     public static boolean isEntranceChunk(long x, long z)
     {
 	if (x < 0 || z < 0)
@@ -118,7 +138,7 @@ public class DungeonPlacementLogicBasic
     }
 
     // used by the place() function to actually place rooms
-    public static boolean putRoomHere(ChunkPos cpos, IWorld world, IChunk chunk, DungeonRoom room)
+    public static boolean putRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room)
     {
 	MinecraftServer minecraftserver = ((World) world).getServer();
 	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureTemplateManager();
@@ -136,7 +156,6 @@ public class DungeonPlacementLogicBasic
 	    DimDungeons.LOGGER.info("DIMDUNGEONS FATAL ERROR: Structure does not exist (" + room.structure + ")");
 	    return false;
 	}
-	DimDungeons.LOGGER.info("PUT ROOM HERE: BETA");
 
 	// next if the structure is to be rotated then it must also be offset, because rotating a structure also moves it
 	if (room.rotation == Rotation.COUNTERCLOCKWISE_90)
@@ -166,9 +185,7 @@ public class DungeonPlacementLogicBasic
 	// formerly: call Template.addBlocksToWorld()
 	DimDungeons.LOGGER.info("Placing a room: " + room.structure);
 	boolean success = template.func_237146_a_((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
-	
-	DimDungeons.LOGGER.info("RETURNED FROM addBlocksToWorld()? " + success);
-	
+
 	// handle data blocks - this code block is copied from TemplateStructurePiece
 	//Map<BlockPos, String> map = template.getDataBlocks(position, placementsettings); // 1.12 / 1.13 version
 	//List<Template.BlockInfo> dblocks = template.func_215386_a(position, placementsettings, Blocks.STRUCTURE_BLOCK, true); // my old 1.14.2 method
@@ -183,7 +200,6 @@ public class DungeonPlacementLogicBasic
 		}
 	    }
 	}
-	DimDungeons.LOGGER.info("PUT ROOM HERE: OMEGA");
 	return success;
     }
 

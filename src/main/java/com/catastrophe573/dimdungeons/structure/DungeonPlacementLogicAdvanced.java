@@ -40,12 +40,10 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.template.PlacementSettings;
 import net.minecraft.world.gen.feature.template.Template;
 import net.minecraft.world.gen.feature.template.Template.BlockInfo;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 
 //temporarily, make this not a Feature, because 1.16.2 is going to break it again
@@ -57,24 +55,51 @@ public class DungeonPlacementLogicAdvanced
     {
     }
 
-    // vanilla worldgen calls this function at some point in the complicated decoration process
-    public static boolean place(IChunk chunk, IWorld world, ChunkGenerator chunkGenerator, Random rand, ChunkPos cpos, NoFeatureConfig config)
+    public static boolean place(ServerWorld world, long x, long z)
     {
-	if (isDungeonChunk(cpos.x, cpos.z))
+	if (!isEntranceChunk(x, z))
 	{
-	    DungeonRoom room = getRoomForChunk(cpos, rand);
-	    if (room != null)
+	    DimDungeons.LOGGER.error("DIMDUNGEONS FATAL ERROR: advanced dungeon does not start at " + x + ", " + z);
+	    return false;
+	}
+	DimDungeons.LOGGER.debug("DIMDUNGEONS START ADVANCED STRUCTURE at " + x + ", " + z);
+
+	// start by calculating the position of the entrance chunk for this dungeon
+	int entranceX = (int) (x % 16);
+	int entranceZ = (int) (z % 16);
+	int distToEntranceX = 8 - (entranceX % 16);
+	int distToEntranceZ = 5 - (entranceZ % 16); // TODO: THIS MAY BE WRONG!
+	entranceX += distToEntranceX;
+	entranceZ += distToEntranceZ;
+
+	// this is the date structure for an entire dungeon
+	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceX, entranceZ);
+	dbl.calculateDungeonShape(42);
+
+	// place all 64 rooms (many will be blank), for example the entrance room is at [4][7] in this array
+	for (int i = 0; i < 8; i++)
+	{
+	    for (int j = 0; j < 8; j++)
 	    {
-		boolean success = putRoomHere(cpos, world, chunk, room);
-		if (!success)
+		DungeonRoom nextRoom = dbl.finalLayout[i][j];
+		if (!nextRoom.hasRoom())
 		{
-		    DimDungeons.LOGGER.info("DIMDUNGEONS STRUCTURE ERROR: failed to place structure " + room.structure + " at " + cpos.x + ", " + cpos.z);
+		    continue;
 		}
-		return true;
+		else
+		{
+		    // calculate the chunkpos of the room at 0,0 in the top left of the map
+		    ChunkPos cpos = new ChunkPos(entranceX - (4-i), entranceZ - (7-j));
+		    
+		    if (!putRoomHere(cpos, world, nextRoom))
+		    {
+			DimDungeons.LOGGER.error("DIMDUNGEONS ERROR UNABLE TO PLACE STRUCTURE: " + nextRoom.structure);
+		    }
+		}
 	    }
 	}
 
-	return false;
+	return true;
     }
 
     // also used to by the DungeonChunkGenerator, note that the dimension check is not done here
@@ -104,7 +129,7 @@ public class DungeonPlacementLogicAdvanced
     }
 
     // used by the place() function to actually place rooms
-    public static boolean putRoomHere(ChunkPos cpos, IWorld world, IChunk chunk, DungeonRoom room)
+    public static boolean putRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room)
     {
 	MinecraftServer minecraftserver = ((World) world).getServer();
 	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureTemplateManager();

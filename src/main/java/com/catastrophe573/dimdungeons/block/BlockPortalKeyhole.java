@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
+import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -36,7 +37,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.Color;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
@@ -118,7 +118,7 @@ public class BlockPortalKeyhole extends Block
     // called when the player right clicks this block
     @Override
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
-    {
+    {	
 	ItemStack playerItem = player.getHeldItem(handIn);
 	TileEntity tileEntity = worldIn.getTileEntity(pos);
 	TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
@@ -135,6 +135,16 @@ public class BlockPortalKeyhole extends Block
 		{
 		    // DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString()
 		    // + " inside keyhole...");
+		    
+		    // should we build the dungeon on the other side?
+		    if (playerItem.getItem() instanceof ItemPortalKey)
+		    {
+			if (shouldBuildDungeon(playerItem))
+			{
+			    DungeonUtils.buildDungeon(worldIn, playerItem);
+			    playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
+			}
+		    }
 		    myEntity.setContents(playerItem.copy());
 		    playerItem.shrink(1);
 
@@ -151,6 +161,7 @@ public class BlockPortalKeyhole extends Block
 			worldIn.setBlockState(pos.down(), BlockRegistrar.block_gold_portal.getDefaultState());
 			worldIn.setBlockState(pos.down(2), BlockRegistrar.block_gold_portal.getDefaultState());
 		    }
+
 		    return ActionResultType.SUCCESS;
 		}
 	    }
@@ -208,6 +219,19 @@ public class BlockPortalKeyhole extends Block
 	    return key.isActivated(item);
 	}
 
+	return false;
+    }
+
+    protected boolean shouldBuildDungeon(ItemStack stack)
+    {
+	if (stack.getItem() instanceof ItemPortalKey)
+	{
+	    ItemPortalKey key = (ItemPortalKey) stack.getItem();
+	    if (key.isActivated(stack))
+	    {
+		return !key.isDungeonBuilt(stack);
+	    }
+	}
 	return false;
     }
 
@@ -443,7 +467,7 @@ public class BlockPortalKeyhole extends Block
 
     public void speakLiterallyToPlayerAboutProblems(World worldIn, PlayerEntity playerIn, int problemID, @Nullable BlockState problemBlock)
     {
-	ITextComponent text1 = new TranslationTextComponent(new TranslationTextComponent("error.dimdungeons.portal_error_" + problemID).getString());
+	TranslationTextComponent text1 = new TranslationTextComponent(new TranslationTextComponent("error.dimdungeons.portal_error_" + problemID).getString());
 
 	// a message that does not call out a specific block
 	if (problemBlock != null)
@@ -451,8 +475,8 @@ public class BlockPortalKeyhole extends Block
 	    // this version of the error message expects a block name to be concatenated
 	    text1 = new TranslationTextComponent(new TranslationTextComponent("error.dimdungeons.portal_error_" + problemID).getString() + problemBlock.getBlock().getRegistryName() + ".");
 	}
-	text1.getStyle().setItalic(true);
-	text1.getStyle().setColor(Color.fromTextFormatting(TextFormatting.BLUE));
+	text1.mergeStyle(text1.getStyle().setItalic(true));
+	text1.mergeStyle(text1.getStyle().setColor(Color.fromTextFormatting(TextFormatting.BLUE)));
 	playerIn.sendMessage(text1, Util.DUMMY_UUID);
 
     }

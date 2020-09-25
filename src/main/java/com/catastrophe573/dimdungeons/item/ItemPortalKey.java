@@ -31,6 +31,7 @@ public class ItemPortalKey extends Item
     public static final String REG_NAME = "item_portal_key";
 
     public static final String NBT_KEY_ACTIVATED = "key_activated";
+    public static final String NBT_BUILT = "built";
     public static final String NBT_KEY_DESTINATION_X = "dest_x";
     public static final String NBT_KEY_DESTINATION_Z = "dest_z";
     public static final String NBT_NAME_TYPE = "name_type";
@@ -80,6 +81,7 @@ public class ItemPortalKey extends Item
     {
 	CompoundNBT data = new CompoundNBT();
 	data.putBoolean(NBT_KEY_ACTIVATED, true);
+	data.putBoolean(NBT_BUILT, false);
 
 	// where is this key going?
 	int destX = random.nextInt(RANDOM_COORDINATE_RANGE);
@@ -109,6 +111,7 @@ public class ItemPortalKey extends Item
     {
 	CompoundNBT data = new CompoundNBT();
 	data.putBoolean(NBT_KEY_ACTIVATED, true);
+	data.putBoolean(NBT_BUILT, false);
 
 	// where is this key going?
 	int destX = random.nextInt(RANDOM_COORDINATE_RANGE);
@@ -136,6 +139,26 @@ public class ItemPortalKey extends Item
 	return false;
     }
 
+    public boolean isDungeonBuilt(ItemStack stack)
+    {
+	if (stack.hasTag())
+	{
+	    if (stack.getTag().contains(NBT_BUILT))
+	    {
+		return stack.getTag().getBoolean(NBT_BUILT);
+	    }
+	}
+	return false;
+    }    
+
+    public void setDungeonBuilt(ItemStack stack)
+    {
+	if (stack.hasTag())
+	{
+	    stack.getTag().putBoolean(NBT_BUILT, true);
+	}
+    }    
+    
     @OnlyIn(Dist.CLIENT)
     @Override
     public ITextComponent getDisplayName(ItemStack stack)
@@ -219,7 +242,7 @@ public class ItemPortalKey extends Item
 	}
 	return -1;
     }
-
+    
     public float getWarpZ(ItemStack stack)
     {
 	if (stack != null && !stack.isEmpty())
@@ -233,7 +256,33 @@ public class ItemPortalKey extends Item
 	}
 	return -1;
     }
+    
+    public long getDungeonTopLeftX(ItemStack stack)
+    {
+	if (stack != null && !stack.isEmpty())
+	{
+	    CompoundNBT itemData = stack.getTag();
+	    if (itemData != null && itemData.contains(NBT_KEY_DESTINATION_X))
+	    {
+		return (itemData.getInt(NBT_KEY_DESTINATION_X) * BLOCKS_APART_PER_DUNGEON);
+	    }
+	}
+	return -1;	
+    }
 
+    public long getDungeonTopLeftZ(ItemStack stack)
+    {
+	if (stack != null && !stack.isEmpty())
+	{
+	    CompoundNBT itemData = stack.getTag();
+	    if (itemData != null && itemData.contains(NBT_KEY_DESTINATION_Z))
+	    {
+		return (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_DUNGEON);
+	    }
+	}
+	return -1;	
+    }    
+    
     @Override
     //public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     public ActionResultType onItemUse(ItemUseContext parameters)
