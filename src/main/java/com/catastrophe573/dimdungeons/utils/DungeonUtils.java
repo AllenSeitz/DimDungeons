@@ -15,7 +15,7 @@ import net.minecraft.world.server.ServerWorld;
 
 // basically just global functions
 public class DungeonUtils
-{
+{    
     // World.field_234918_g_ is the Overworld. This block has different behavior in the Overworld than in the Dungeon Dimension
     public static boolean isDimensionOverworld(World worldIn)
     {

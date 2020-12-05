@@ -9,15 +9,16 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Blockreader;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.FlatGenerationSettings;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.WorldGenRegion;
@@ -28,13 +29,16 @@ import net.minecraft.world.biome.provider.SingleBiomeProvider;
 
 public final class DungeonChunkGenerator extends ChunkGenerator
 {
-    public static final Codec<DungeonChunkGenerator> field_236069_d_ = FlatGenerationSettings.field_236932_a_.fieldOf("settings").xmap(DungeonChunkGenerator::new, DungeonChunkGenerator::func_236073_g_).codec();
-    private final FlatGenerationSettings field_236070_e_;
+    public static final Codec<DungeonChunkGenerator> field_236069_d_ = DungeonGenerationSettings.field_236932_a_.fieldOf("settings").xmap(DungeonChunkGenerator::new, DungeonChunkGenerator::func_236073_g_).codec();
+    private final DungeonGenerationSettings field_236070_e_;
     private long worldSeed = 0;
 
-    public DungeonChunkGenerator(FlatGenerationSettings p_i231902_1_)
+    public static String singleBiome = "dimdungeons:biome_dungeon";
+    public static ResourceLocation singleBiomeLoc = new ResourceLocation("minecraft", "the_void");
+
+    public DungeonChunkGenerator(DungeonGenerationSettings p_i231902_1_)
     {
-	super(new SingleBiomeProvider(p_i231902_1_.func_236942_c_()), new SingleBiomeProvider(p_i231902_1_.getBiome()), p_i231902_1_.func_236943_d_(), 0L);
+	super(new SingleBiomeProvider(ForgeRegistries.BIOMES.getValue(singleBiomeLoc)), new SingleBiomeProvider(ForgeRegistries.BIOMES.getValue(singleBiomeLoc)), p_i231902_1_.func_236943_d_(), 0L);	
 	this.field_236070_e_ = p_i231902_1_;
     }
 
@@ -50,10 +54,26 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	return this;
     }
 
-    public FlatGenerationSettings func_236073_g_()
+    public DungeonGenerationSettings func_236073_g_()
     {
+	//Biome single = ForgeRegistries.BIOMES.getValue(new ResourceLocation(DimDungeons.MOD_ID, "biome_dungeon"));
 	return this.field_236070_e_;
     }
+
+//    public static DungeonGenerationSettings makeHardcodedFlatSettings()
+//    {
+//	DimensionStructuresSettings dimensionstructuressettings = new DimensionStructuresSettings(Optional.of(DimensionStructuresSettings.field_236192_c_),
+//		Maps.newHashMap(ImmutableMap.of(Structure.field_236381_q_, DimensionStructuresSettings.field_236191_b_.get(Structure.field_236381_q_))));
+//	Registry<Biome> registry = DynamicRegistries.Impl.func_239770_b_().getRegistry(Registry.BIOME_KEY);
+//	List<FlatLayerInfo> layers = Lists.newArrayList();
+//	Supplier<Biome> supplier = () ->
+//	{
+//	    return DynamicRegistries.Impl.func_239770_b_().getRegistry(Registry.BIOME_KEY).getOrThrow(Biomes.BEACH);
+//	};
+//	Optional<Supplier<Biome>> biomeSupplier = Optional.of(supplier);
+//	DungeonGenerationSettings flatgenerationsettings = new DungeonGenerationSettings(registry, dimensionstructuressettings, layers, false, false, biomeSupplier);
+//	return flatgenerationsettings;
+//    }
 
     @SuppressWarnings("deprecation")
     @Override
@@ -62,7 +82,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	// generate my sandstone base and void chunks, which usually don't matter at all but might as well
 	ServerWorld world = p_225551_1_.getWorld();
 	makeBase(world, p_225551_2_);
-	
+
 	// and intentionally do nothing with structures
     }
 

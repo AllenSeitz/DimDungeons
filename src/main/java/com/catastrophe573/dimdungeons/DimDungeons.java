@@ -6,8 +6,10 @@ import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -40,6 +42,8 @@ public class DimDungeons
     public static final String MOD_ID = "dimdungeons"; // this must match mods.toml
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
     public static final String dungeon_basic_regname = "dungeon_dimension";
+    
+    public static final RegistryKey<World> MINING_DIMENSION = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(MOD_ID, dungeon_basic_regname));
 
     public DimDungeons()
     {
@@ -71,7 +75,7 @@ public class DimDungeons
 	RenderTypeLookup.setRenderLayer(BlockRegistrar.block_gold_portal, RenderType.getTranslucent());
 
 	// register the custom property for the keys that allows for switching their model
-	ItemModelsProperties.registerProperty(ItemRegistrar.item_portal_key, new ResourceLocation("keytype"), (stack, world, entity) ->
+	ItemModelsProperties.registerProperty(ItemRegistrar.item_portal_key, new ResourceLocation(DimDungeons.MOD_ID, "keytype"), (stack, world, entity) ->
 	{
 	    return ItemPortalKey.getKeyLevelAsFloat(stack);
 	});
