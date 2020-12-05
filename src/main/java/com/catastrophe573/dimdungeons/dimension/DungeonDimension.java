@@ -7,6 +7,7 @@ import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -97,6 +98,9 @@ public class DungeonDimension extends Dimension
 	{
 	    return true;
 	}
+	if (block instanceof ShulkerBoxBlock){
+	    return true;
+    }
 	
 	/* TODO: someday make this a config option
 	if (player.hasPermissionLevel(2))
