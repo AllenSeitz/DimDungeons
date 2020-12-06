@@ -30,21 +30,15 @@ public class DungeonUtils
 	    System.out.println("FATAL ERROR: This 1.16 port is still broken.");
 	    return false;
 	}
-	return getDimensionRegistryKey() == worldIn.getDimensionKey();
+	return worldIn.getDimensionKey().getLocation().getPath() == DimDungeons.dungeon_basic_regname;
     }
     
     // this is used by the dungeon building logic
     public static ServerWorld getDungeonWorld(MinecraftServer server)
     {
-	return server.getWorld(getDimensionRegistryKey());
+	return server.getWorld(DimDungeons.DUNGEON_DIMENSION);
     }    
 
-    // only used by the two functions above
-    private static RegistryKey<World> getDimensionRegistryKey()
-    {
-	return RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(DimDungeons.MOD_ID, DimDungeons.dungeon_basic_regname));	
-    }
-    
     public static void buildDungeon(World worldIn, ItemStack stack)
     {
 	// only build dungeons on the server

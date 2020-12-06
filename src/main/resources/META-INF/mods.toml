@@ -6,7 +6,7 @@
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[33,)" #mandatory (24 is current forge version)
+loaderVersion="[35,)" #mandatory (24 is current forge version)
 license="All rights reserved"
 # A URL to refer people to when problems occur with this mod
 #issueTrackerURL="" #optional
@@ -15,7 +15,7 @@ license="All rights reserved"
 # The modid of the mod
 modId="dimdungeons" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="1.16.3-1.08" #mandatory
+version="1.16.4-1.08" #mandatory
 # A display name for the mod
 displayName="Dimensional Dungeons" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
@@ -33,21 +33,22 @@ description='''
 This mod implements limitless proceedurally generated dungeons! These dungeons are placed in their own single dimension. Hence the name: Dimensional Dungeons.
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.examplemod]] #optional
+[[dependencies.dimdungeons]] #optional
     # the modid of the dependency
     modId="forge" #mandatory
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[34,)" #mandatory
+    versionRange="[35,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="BOTH"
 # Here's another dependency
-[[dependencies.examplemod]]
+[[dependencies.dimdungeons]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.1]"
+# This version range declares a minimum of the current minecraft version up to but not including the next major version
+    versionRange="[1.16.4,1.17)"
     ordering="NONE"
     side="BOTH"

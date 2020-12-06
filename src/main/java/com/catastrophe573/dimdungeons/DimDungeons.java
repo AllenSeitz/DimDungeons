@@ -9,6 +9,8 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.Dimension;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraftforge.common.MinecraftForge;
@@ -43,7 +45,7 @@ public class DimDungeons
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
     public static final String dungeon_basic_regname = "dungeon_dimension";
     
-    public static final RegistryKey<World> MINING_DIMENSION = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(MOD_ID, dungeon_basic_regname));
+    public static final RegistryKey<World> DUNGEON_DIMENSION = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(MOD_ID, dungeon_basic_regname));
 
     public DimDungeons()
     {
@@ -123,14 +125,15 @@ public class DimDungeons
 	    teRegistryEvent.getRegistry().register(tetPortalKeyhole);
 
 	    // register a chunk generator here because I can get away with it
-	    Registry.register(Registry.CHUNK_GENERATOR_CODEC, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.field_236069_d_);
+	    Registry.register(Registry.CHUNK_GENERATOR_CODEC, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.myCodec);
+	    
 	}
-
+		
 	@SubscribeEvent
 	// this isn't called? wrong type?
 	public static void registerChunkGenerators(RegistryEvent.Register<? extends ChunkGenerator> cgRegistryEvent)
 	{
-	    //System.out.println("DIMDUNGEONS TEST: REGISTERING CHUNK GENERATOR!");
+	    System.out.println("DIMDUNGEONS TEST: REGISTERING CHUNK GENERATOR!");
 	    //Registry.register(Registry.CHUNK_GENERATOR_KEY, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.field_235948_a_);
 	}
     }
