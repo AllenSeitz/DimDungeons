@@ -110,7 +110,11 @@ public class BlockGoldPortal extends BreakableBlock
 	    return;
 	}
 
-	// TODO: manually check/use portal cooldown
+	// manually check/use portal 
+	if ( entityIn.func_242280_ah() ) // unmapped name of isEntityPortalCooldownActive()
+	{
+	    return;
+	}
 
 	if (!entityIn.isPassenger() && !entityIn.isBeingRidden() && entityIn.isNonBoss())
 	{
@@ -154,7 +158,8 @@ public class BlockGoldPortal extends BreakableBlock
 
     protected Entity actuallyPerformTeleport(ServerPlayerEntity player, ServerWorld dim, double x, double y, double z, double yaw)
     {
-	// TODO: manually set portal cooldown
+	// manually set portal cooldown
+	player.func_242279_ag(); // unmapped version of startEntityPortalCooldown()
 
 	float destPitch = player.getPitchYaw().x;
 	float destYaw = player.getPitchYaw().y;
