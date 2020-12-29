@@ -3,21 +3,18 @@ package com.catastrophe573.dimdungeons.dimension;
 import java.util.Arrays;
 import java.util.Random;
 
-import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicAdvanced;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicBasic;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Blockreader;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.FlatGenerationSettings;
@@ -34,8 +31,6 @@ public final class DungeonChunkGenerator extends ChunkGenerator
     public static final Codec<DungeonChunkGenerator> myCodec = FlatGenerationSettings.field_236932_a_.fieldOf("settings").xmap(DungeonChunkGenerator::new, DungeonChunkGenerator::func_236073_g_).codec();
     private final FlatGenerationSettings field_236070_e_;
     private long worldSeed = 0;
-
-    //public static ResourceLocation singleBiomeLoc = new ResourceLocation(DimDungeons.MOD_ID, "biome_dungeon");
 
     public DungeonChunkGenerator(FlatGenerationSettings p_i231902_1_)
     {
@@ -57,7 +52,6 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 
     public FlatGenerationSettings func_236073_g_()
     {
-	//Biome single = ForgeRegistries.BIOMES.getValue(new ResourceLocation(DimDungeons.MOD_ID, "biome_dungeon"));
 	return this.field_236070_e_;
     }
 
@@ -196,7 +190,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	}
 	else
 	{
-	    // add barrier blocks to the void, just to be sure (players could escape with ender pearls, use elytra with fireworks, etc)
+	    // add barrier blocks to the void in case the player escapes (although these are escapable, too)
 	    if (x % 16 == 0 || z % 16 == 0)
 	    {
 		for (int px = 0; px < 16; px++)

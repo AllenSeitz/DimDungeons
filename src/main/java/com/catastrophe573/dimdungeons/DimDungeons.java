@@ -10,7 +10,6 @@ import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -62,8 +61,6 @@ public class DimDungeons
     private void setup(final FMLCommonSetupEvent event)
     {
 	//MinecraftForge.EVENT_BUS.register(new PlayerDungeonDataEvents());
-
-	//CapabilityManager.INSTANCE.register(IPlayerDungeonData.class, new PlayerDungeonDataStorage(), DefaultPlayerDungeonData::new);
     }
 
     private void doCommonStuff(final FMLCommonSetupEvent event)
@@ -126,13 +123,13 @@ public class DimDungeons
 	    Registry.register(Registry.CHUNK_GENERATOR_CODEC, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.myCodec);
 	    
 	}
-		
-	@SubscribeEvent
+	
+	//@SubscribeEvent
 	// this isn't called? wrong type?
-	public static void registerChunkGenerators(RegistryEvent.Register<? extends ChunkGenerator> cgRegistryEvent)
-	{
-	    System.out.println("DIMDUNGEONS TEST: REGISTERING CHUNK GENERATOR!");
-	    Registry.register(Registry.CHUNK_GENERATOR_CODEC, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.myCodec);
-	}
+	//public static void registerChunkGenerators(RegistryEvent.Register<? extends ChunkGenerator> cgRegistryEvent)
+	//{
+	//    System.out.println("DIMDUNGEONS TEST: REGISTERING CHUNK GENERATOR!");
+	//    Registry.register(Registry.CHUNK_GENERATOR_CODEC, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.myCodec);
+	//}
     }
 }

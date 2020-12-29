@@ -40,9 +40,6 @@ public class ItemGuidebook extends Item
 	    
 	    playerIn.sendMessage(((TranslationTextComponent) text1).mergeStyle(TextFormatting.DARK_PURPLE), Util.DUMMY_UUID);
 	    
-	    // I LOVE 1.16 AND THE LACK OF MAPPINGS!
-	    // func_230529_a_ = appendSibling
-	    // func_240699_a_ = applyStyle probably
 	    ITextComponent text2a = new TranslationTextComponent("<");
 	    ITextComponent text2b = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.author").getString());
 	    ITextComponent text2c = new TranslationTextComponent("> ");

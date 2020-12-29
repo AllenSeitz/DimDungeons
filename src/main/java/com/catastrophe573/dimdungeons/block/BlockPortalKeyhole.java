@@ -70,7 +70,6 @@ public class BlockPortalKeyhole extends Block
     // based on code from vanilla furnaces, which also play a sound effect and make particles when their TileEntity is being productive
     @OnlyIn(Dist.CLIENT)
     @Override
-    //public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
     public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
 	boolean hasPortalBlockBelow = worldIn.getBlockState(pos.down()).getBlock() == BlockRegistrar.block_gold_portal;
@@ -133,8 +132,7 @@ public class BlockPortalKeyhole extends Block
 	    {
 		if (!playerItem.isEmpty())
 		{
-		    // DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString()
-		    // + " inside keyhole...");
+		    // DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
 		    
 		    // should we build the dungeon on the other side?
 		    if (playerItem.getItem() instanceof ItemPortalKey)
@@ -296,10 +294,14 @@ public class BlockPortalKeyhole extends Block
 	return true;
     }
 
-    // returns 1 number if the block is filled with any item stack, and 0 otherwise
+    // returns 2 if a usable key is inside, 1 if the block is filled with any item stack, and 0 otherwise
     @Override
     public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos)
     {
+	if ( blockState.get(LIT) )
+	{
+	    return 2;
+	}
 	return blockState.get(FILLED) ? 1 : 0;
     }
 
@@ -339,7 +341,7 @@ public class BlockPortalKeyhole extends Block
 
     public int predictPortalError(World worldIn, PlayerEntity playerIn)
     {
-	return 0; // no error! We're good!
+	return 0;
     }
 
     @SuppressWarnings("deprecation")
@@ -478,6 +480,5 @@ public class BlockPortalKeyhole extends Block
 	text1.mergeStyle(text1.getStyle().setItalic(true));
 	text1.mergeStyle(text1.getStyle().setColor(Color.fromTextFormatting(TextFormatting.BLUE)));
 	playerIn.sendMessage(text1, Util.DUMMY_UUID);
-
     }
 }
