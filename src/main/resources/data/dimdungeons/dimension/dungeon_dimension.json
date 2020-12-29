@@ -1,12 +1,14 @@
 {
   "generator": {
     "type": "dimdungeons:dimdungeons_chunkgen",
-    "biome_source": {
-      "type": "minecraft:fixed",
-      "biome": "minecraft:the_void"
-    },
     "seed": 0,
-    "settings": "minecraft:end"
+    "settings": {
+	  "biome": "dimdungeons:biome_dungeon",
+      "layers": [],
+      "structures": {
+        "structures": {}
+      }
+    }
   },
   "type": "dimdungeons:dungeon_dimension"
 }

@@ -3,6 +3,7 @@ package com.catastrophe573.dimdungeons.dimension;
 import java.util.Arrays;
 import java.util.Random;
 
+import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicAdvanced;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicBasic;
 import com.mojang.serialization.Codec;
@@ -34,12 +35,11 @@ public final class DungeonChunkGenerator extends ChunkGenerator
     private final FlatGenerationSettings field_236070_e_;
     private long worldSeed = 0;
 
-    public static String singleBiome = "dimdungeons:biome_dungeon";
-    public static ResourceLocation singleBiomeLoc = new ResourceLocation("dimdungeons", "biome_dungeon");
+    //public static ResourceLocation singleBiomeLoc = new ResourceLocation(DimDungeons.MOD_ID, "biome_dungeon");
 
     public DungeonChunkGenerator(FlatGenerationSettings p_i231902_1_)
     {
-	super(new SingleBiomeProvider(ForgeRegistries.BIOMES.getValue(singleBiomeLoc)), new SingleBiomeProvider(ForgeRegistries.BIOMES.getValue(singleBiomeLoc)), p_i231902_1_.func_236943_d_(), 0L);	
+	super(new SingleBiomeProvider(p_i231902_1_.getBiome()), new SingleBiomeProvider(p_i231902_1_.getBiome()), p_i231902_1_.func_236943_d_(), 0L);	
 	this.field_236070_e_ = p_i231902_1_;
     }
 

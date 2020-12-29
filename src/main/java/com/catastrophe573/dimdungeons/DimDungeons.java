@@ -132,7 +132,7 @@ public class DimDungeons
 	public static void registerChunkGenerators(RegistryEvent.Register<? extends ChunkGenerator> cgRegistryEvent)
 	{
 	    System.out.println("DIMDUNGEONS TEST: REGISTERING CHUNK GENERATOR!");
-	    //Registry.register(Registry.CHUNK_GENERATOR_KEY, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.field_235948_a_);
+	    Registry.register(Registry.CHUNK_GENERATOR_CODEC, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.myCodec);
 	}
     }
 }
