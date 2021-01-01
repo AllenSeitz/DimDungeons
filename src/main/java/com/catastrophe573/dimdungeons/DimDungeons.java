@@ -44,6 +44,8 @@ public class DimDungeons
     
     public static final RegistryKey<World> DUNGEON_DIMENSION = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(MOD_ID, dungeon_basic_regname));
 
+    public static final PlayerDungeonEvents eventHandler = new PlayerDungeonEvents();
+    
     public DimDungeons()
     {
 	// register event listeners that don't use the event bus
@@ -60,7 +62,7 @@ public class DimDungeons
     // some preinit code	
     private void setup(final FMLCommonSetupEvent event)
     {
-	//MinecraftForge.EVENT_BUS.register(new PlayerDungeonDataEvents());
+	MinecraftForge.EVENT_BUS.register(eventHandler);
     }
 
     private void doCommonStuff(final FMLCommonSetupEvent event)
