@@ -57,23 +57,17 @@ public class DungeonPlacementLogicAdvanced
 
     public static boolean place(ServerWorld world, long x, long z)
     {
-	if (!isEntranceChunk(x, z))
+	long entranceChunkX = (x/16)+8;
+	long entranceChunkZ = (z/16)+11;
+	if (!isEntranceChunk(entranceChunkX, entranceChunkZ))
 	{
 	    DimDungeons.LOGGER.error("DIMDUNGEONS FATAL ERROR: advanced dungeon does not start at " + x + ", " + z);
 	    return false;
 	}
 	DimDungeons.LOGGER.debug("DIMDUNGEONS START ADVANCED STRUCTURE at " + x + ", " + z);
 
-	// start by calculating the position of the entrance chunk for this dungeon
-	int entranceX = (int) (x % 16);
-	int entranceZ = (int) (z % 16);
-	int distToEntranceX = 8 - (entranceX % 16);
-	int distToEntranceZ = 5 - (entranceZ % 16); // TODO: THIS MAY BE WRONG!
-	entranceX += distToEntranceX;
-	entranceZ += distToEntranceZ;
-
-	// this is the date structure for an entire dungeon
-	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceX, entranceZ);
+	// this is the data structure for an entire dungeon
+	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ);
 	dbl.calculateDungeonShape(42);
 
 	// place all 64 rooms (many will be blank), for example the entrance room is at [4][7] in this array
@@ -89,7 +83,8 @@ public class DungeonPlacementLogicAdvanced
 		else
 		{
 		    // calculate the chunkpos of the room at 0,0 in the top left of the map
-		    ChunkPos cpos = new ChunkPos(entranceX - (4-i), entranceZ - (7-j));
+		    // I'm not sure what the +4 is for, but it is needed
+		    ChunkPos cpos = new ChunkPos(((int)x/16) + i + 4, ((int)z/16) + j + 4);
 		    
 		    if (!putRoomHere(cpos, world, nextRoom))
 		    {
@@ -275,6 +270,14 @@ public class DungeonPlacementLogicAdvanced
 	{
 	    world.setBlockState(pos, BlockRegistrar.block_gold_portal.getDefaultState(), 2); // erase this data block 
 	}
+	else if ("LockItStoneBrick".equals(name))
+	{
+	    world.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), 2); // erase this data block 
+	}
+	else if ("LockIt".equals(name))
+	{
+	    // do nothing!
+	}	
 	else if ("FortuneTeller".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), 2); // erase this data block 
@@ -544,8 +547,8 @@ public class DungeonPlacementLogicAdvanced
 	mob.setHomePosAndDistance(pos, 8);
 	mob.moveToBlockPosAndAngles(pos, 0.0F, 0.0F);
 	mob.enablePersistence();
-	mob.addPotionEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 9999999));
-	mob.addPotionEffect(new EffectInstance(Effects.JUMP_BOOST, 9999999, 3));
+	mob.addPotionEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 9999999, 1, false, false));
+	mob.addPotionEffect(new EffectInstance(Effects.JUMP_BOOST, 9999999, 3, false, false));
 
 	mob.onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
 	world.addEntity(mob);

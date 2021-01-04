@@ -134,15 +134,17 @@ public class BlockPortalKeyhole extends Block
 		{
 		    // DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
 		    
-		    // should we build the dungeon on the other side?
-		    if (playerItem.getItem() instanceof ItemPortalKey)
+		    // should we build the dungeon on the other side?		    
+		    if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isRemote)
 		    {
 			if (shouldBuildDungeon(playerItem))
 			{
+			    DimDungeons.LOGGER.info("BUILDING A NEW DUNGEON!");
 			    DungeonUtils.buildDungeon(worldIn, playerItem);
 			    playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
 			}
 		    }
+		    
 		    myEntity.setContents(playerItem.copy());
 		    playerItem.shrink(1);
 

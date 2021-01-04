@@ -5,8 +5,10 @@ import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicAdvanced;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicBasic;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
@@ -36,18 +38,19 @@ public class DungeonUtils
 	return server.getWorld(DimDungeons.DUNGEON_DIMENSION);
     }    
 
-    public static void buildDungeon(World worldIn, ItemStack stack)
+    // now returns true if a dungeon was built
+    public static boolean buildDungeon(World worldIn, ItemStack stack)
     {
 	// only build dungeons on the server
 	if (worldIn.isRemote)
 	{
-	    return;
+	    return false;
 	}	
 	
 	if (!(stack.getItem() instanceof ItemPortalKey))
 	{
 	    System.out.println("FATAL ERROR: Using a non-key item to build a dungeon? What happened?");
-	    return;
+	    return false;
 	}
 	
 	ItemPortalKey key = (ItemPortalKey)stack.getItem();
@@ -57,19 +60,42 @@ public class DungeonUtils
 	long entranceX = buildX + (8*16);
 	long entranceZ = buildZ + (11*16);
 	ServerWorld dungeonWorld = DungeonUtils.getDungeonWorld(worldIn.getServer());
+
+	if ( dungeonAlreadyExistsHere(dungeonWorld, entranceX, entranceZ))
+	{
+	    System.out.println("Cancelling dungeon contruction. A dungeon already exists here.");
+	    return false;
+	}
 	
 	// actually place the dungeon
 	if (DungeonPlacementLogicBasic.isEntranceChunk(entranceX/16, entranceZ/16))
 	{
 	    DungeonPlacementLogicBasic.place(dungeonWorld, buildX, buildZ);
+	    return true;
 	}
 	else if (DungeonPlacementLogicAdvanced.isEntranceChunk(entranceX/16, entranceZ/16))
 	{
 	    DungeonPlacementLogicAdvanced.place(dungeonWorld, buildX, buildZ);
+	    return true;
 	}
 	else
 	{
 	    DimDungeons.LOGGER.error("DIMDUNGEONS FATAL ERROR: trying to build a dungeon at coordinates where no dungeon is supposed to start?");
 	}
+	
+	return false;
+    }
+    
+    @SuppressWarnings("deprecation")
+    public static boolean dungeonAlreadyExistsHere(World worldIn, long entranceX, long entranceZ)
+    {
+	BlockState temp = worldIn.getBlockState(new BlockPos(entranceX, 51, entranceZ));
+	if ( temp.isAir() )
+	{
+	    return false;
+	}
+	
+	System.out.println("Cancelling dungeon contruction. A dungeon already exists here: " + temp.getBlock().getRegistryName());
+	return true;
     }
 }

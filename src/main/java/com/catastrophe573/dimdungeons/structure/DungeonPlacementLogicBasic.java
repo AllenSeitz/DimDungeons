@@ -64,7 +64,7 @@ public class DungeonPlacementLogicBasic
 	}
 	DimDungeons.LOGGER.debug("DIMDUNGEONS START BASIC STRUCTURE at " + x + ", " + z);
 
-	// this is the date structure for an entire dungeon
+	// this is the data structure for an entire dungeon
 	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ);
 	dbl.calculateDungeonShape(25);
 
@@ -281,6 +281,14 @@ public class DungeonPlacementLogicBasic
 	{
 	    world.setBlockState(pos, BlockRegistrar.block_gold_portal.getDefaultState(), 2); // erase this data block 
 	}
+	else if ("LockItStoneBrick".equals(name))
+	{
+	    world.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), 2); // erase this data block 
+	}	
+	else if ("LockIt".equals(name))
+	{
+	    // do nothing!
+	}	
 	else if ("FortuneTeller".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), 2); // erase this data block 
