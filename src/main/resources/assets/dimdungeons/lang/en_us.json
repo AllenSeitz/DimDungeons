@@ -9,7 +9,6 @@
     "block.dimdungeons.block_portal_keyhole": "Portal Keystone",
     "block.dimdungeons.block_portal_crown": "Portal Crown Block",
 
-// neither of these names will appear in the game since they both get replaced in different ways
     "item.dimdungeons.item_portal_key": "Blank Portal Key",
     "item.dimdungeons.item_guidebook": "Dimensional Dungeons Guidebook",
 
@@ -143,7 +142,7 @@
     "book.dimdungeons.dangerous_message_2": "The room with 4 trapped chests is unfair. Be careful not to lose all of your items!",
     "book.dimdungeons.dangerous_message_3": "In the room with the piston bridge over lava, it may be required to jump over the sides!",
     "book.dimdungeons.dangerous_message_4": "In this dimension fire cannot be extinguished by punching it. Fire pits are very dangerous!",
-    "book.dimdungeons.dangerous_message_5": "Breaking a lever or button is never the answer to a puzzle, and doing so may trap you.",
+    "book.dimdungeons.dangerous_message_5": "If you somehow get outside of the dungeon's walls, you'll fall into a void.",
     "book.dimdungeons.dangerous_message_6": "The falling anvil trap never gets old.",
     "book.dimdungeons.dangerous_message_7": "Minecraft has dozens of inspirational death messages.",
     "book.dimdungeons.dangerous_message_8": "I've designed many rooms to feature handy lava traps for you to push the enemies into.",
