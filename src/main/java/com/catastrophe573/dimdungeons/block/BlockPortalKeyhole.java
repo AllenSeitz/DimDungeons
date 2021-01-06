@@ -6,6 +6,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
+import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
@@ -83,33 +84,36 @@ public class BlockPortalKeyhole extends Block
 	    double d4 = rand.nextDouble() * 0.6D - 0.3D;
 
 	    // play sound effects randomly
-	    if (rand.nextDouble() < 0.1D)
+	    if (rand.nextDouble() < 0.1D && DungeonConfig.playPortalSounds)
 	    {
 		worldIn.playSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 1.0F, 3.0F, false);
 	    }
 
-	    switch (enumfacing)
+	    if (DungeonConfig.showParticles)
 	    {
-	    case WEST:
-		worldIn.addParticle(ParticleTypes.PORTAL, d0 - 0.52D, d1, d2 + d4, -1.0D, 1.0D, 0.0D);
-		//worldIn.addParticle(ParticleTypes.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
-		//worldIn.addParticle(ParticleTypes.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, -0.23D);
-		break;
-	    case EAST:
-		worldIn.addParticle(ParticleTypes.PORTAL, d0 + 0.52D, d1, d2 + d4, 1.0D, 1.0D, 0.0D);
-		//worldIn.addParticle(ParticleTypes.FIREWORK, d0 + 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
-		//worldIn.addParticle(ParticleTypes.FIREWORK, d0 + 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, -0.23D);
-		break;
-	    case NORTH:
-		worldIn.addParticle(ParticleTypes.PORTAL, d0 + d4, d1, d2 - 0.52D, 0.0D, 1.0D, -1.0D);
-		//worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, 0.23D, 0.0D, 0.0D);
-		//worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, -0.23D, 0.0D, 0.0D);
-		break;
-	    default:
-	    case SOUTH:
-		worldIn.addParticle(ParticleTypes.PORTAL, d0 + d4, d1, d2 + 0.52D, 0.0D, 1.0D, 1.0D);
-		//worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, 0.23D, 0.0D, 0.0D);
-		//worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, -0.23D, 0.0D, 0.0D);
+		switch (enumfacing)
+		{
+		case WEST:
+		    worldIn.addParticle(ParticleTypes.PORTAL, d0 - 0.52D, d1, d2 + d4, -1.0D, 1.0D, 0.0D);
+		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
+		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, -0.23D);
+		    break;
+		case EAST:
+		    worldIn.addParticle(ParticleTypes.PORTAL, d0 + 0.52D, d1, d2 + d4, 1.0D, 1.0D, 0.0D);
+		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 + 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
+		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 + 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, -0.23D);
+		    break;
+		case NORTH:
+		    worldIn.addParticle(ParticleTypes.PORTAL, d0 + d4, d1, d2 - 0.52D, 0.0D, 1.0D, -1.0D);
+		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, 0.23D, 0.0D, 0.0D);
+		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, -0.23D, 0.0D, 0.0D);
+		    break;
+		default:
+		case SOUTH:
+		    worldIn.addParticle(ParticleTypes.PORTAL, d0 + d4, d1, d2 + 0.52D, 0.0D, 1.0D, 1.0D);
+		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, 0.23D, 0.0D, 0.0D);
+		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, -0.23D, 0.0D, 0.0D);
+		}
 	    }
 	}
     }
@@ -117,7 +121,7 @@ public class BlockPortalKeyhole extends Block
     // called when the player right clicks this block
     @Override
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
-    {	
+    {
 	ItemStack playerItem = player.getHeldItem(handIn);
 	TileEntity tileEntity = worldIn.getTileEntity(pos);
 	TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
@@ -133,7 +137,7 @@ public class BlockPortalKeyhole extends Block
 		if (!playerItem.isEmpty())
 		{
 		    // DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
-		    
+
 		    // should we build the dungeon on the other side?		    
 		    if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isRemote)
 		    {
@@ -144,7 +148,7 @@ public class BlockPortalKeyhole extends Block
 			    playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
 			}
 		    }
-		    
+
 		    myEntity.setContents(playerItem.copy());
 		    playerItem.shrink(1);
 
@@ -300,7 +304,7 @@ public class BlockPortalKeyhole extends Block
     @Override
     public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos)
     {
-	if ( blockState.get(LIT) )
+	if (blockState.get(LIT))
 	{
 	    return 2;
 	}

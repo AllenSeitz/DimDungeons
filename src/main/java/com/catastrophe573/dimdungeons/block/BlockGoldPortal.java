@@ -7,6 +7,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
+import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 //import com.google.common.collect.Lists;
@@ -111,7 +112,7 @@ public class BlockGoldPortal extends BreakableBlock
 	}
 
 	// manually check/use portal 
-	if ( entityIn.func_242280_ah() ) // unmapped name of isEntityPortalCooldownActive()
+	if (entityIn.func_242280_ah()) // unmapped name of isEntityPortalCooldownActive()
 	{
 	    return;
 	}
@@ -148,7 +149,7 @@ public class BlockGoldPortal extends BreakableBlock
 	    else
 	    {
 		// no keyhole? this could be a return portal
-		if (worldIn.getDimensionKey() == DungeonUtils.getDungeonWorld(worldIn.getServer()).getDimensionKey() )
+		if (worldIn.getDimensionKey() == DungeonUtils.getDungeonWorld(worldIn.getServer()).getDimensionKey())
 		{
 		    sendPlayerBackHome((ServerPlayerEntity) entityIn);
 		}
@@ -459,12 +460,15 @@ public class BlockGoldPortal extends BreakableBlock
     @OnlyIn(Dist.CLIENT)
     public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
-	double d0 = (double) ((float) pos.getX() + rand.nextFloat());
-	double d1 = (double) ((float) pos.getY() + 0.8F);
-	double d2 = (double) ((float) pos.getZ() + rand.nextFloat());
-	double xspeed = rand.nextFloat() * (rand.nextInt(3) - 1) / 9;
-	double zspeed = rand.nextFloat() * (rand.nextInt(3) - 1) / 9;
-	worldIn.addParticle(ParticleTypes.END_ROD, d0, d1, d2, xspeed, 0.0D, zspeed);
+	if (DungeonConfig.showParticles)
+	{
+	    double d0 = (double) ((float) pos.getX() + rand.nextFloat());
+	    double d1 = (double) ((float) pos.getY() + 0.8F);
+	    double d2 = (double) ((float) pos.getZ() + rand.nextFloat());
+	    double xspeed = rand.nextFloat() * (rand.nextInt(3) - 1) / 9;
+	    double zspeed = rand.nextFloat() * (rand.nextInt(3) - 1) / 9;
+	    worldIn.addParticle(ParticleTypes.END_ROD, d0, d1, d2, xspeed, 0.0D, zspeed);
+	}
     }
 
     // copy/pasted from BannerPattern.byHash() because it was needed for a 1.15 workaround

@@ -16,65 +16,98 @@ public class PlayerDungeonEvents
     //public void pickupItem(EntityItemPickupEvent event)
     //{
     //}
-    
+
     @SubscribeEvent
     public void explosionStart(ExplosionEvent.Start event)
     {
     }
-    
+
     @SubscribeEvent
     public void explosionModify(ExplosionEvent.Detonate event)
     {
     }
-    
+
     @SubscribeEvent
     public void blockBreak(BlockEvent.BreakEvent event)
     {
+	if (!DungeonConfig.globalBlockProtection)
+	{
+	    return; // config disabled
+	}
+
 	// I only care about blocks breaking in the Dungeon Dimension
-	if ( !DungeonUtils.isDimensionDungeon((World)event.getWorld()) )	
+	if (!DungeonUtils.isDimensionDungeon((World) event.getWorld()))
 	{
 	    return;
 	}
-	
+
+	// check for a possible whitelist exception
+	BlockState targetBlock = event.getWorld().getBlockState(event.getPos());
+	if (DungeonConfig.blockBreakWhitelist.contains(targetBlock.getBlock()))
+	{
+	    //DimDungeons.LOGGER.info("dimdungeons: the WHITELIST ALLOWED to break: " + targetBlock.getBlock().getTranslatedName().getString());
+	    return;
+	}
+
 	event.setCanceled(true);
     }
-    
+
     @SubscribeEvent
     public void blockPlace(BlockEvent.EntityPlaceEvent event)
     {
+	if (!DungeonConfig.globalBlockProtection)
+	{
+	    return; // config disabled
+	}
+
 	// I only care about placing blocks in the Dungeon Dimension
-	if ( !DungeonUtils.isDimensionDungeon((World)event.getWorld()) )
+	if (!DungeonUtils.isDimensionDungeon((World) event.getWorld()))
 	{
 	    return;
 	}
-	
+
 	event.setCanceled(true);
     }
 
     @SubscribeEvent
     public void fillBucket(FillBucketEvent event)
     {
+	if (!DungeonConfig.globalBlockProtection)
+	{
+	    return; // config disabled
+	}
+
 	// I only care about taking liquids in the Dungeon Dimension
-	if ( !DungeonUtils.isDimensionDungeon((World)event.getWorld()) )
+	if (!DungeonUtils.isDimensionDungeon((World) event.getWorld()))
 	{
 	    return;
 	}
-	
+
 	event.setCanceled(true);
     }
-    
+
     @SubscribeEvent
     public void rightClickBlock(RightClickBlock event)
     {
+	if (!DungeonConfig.globalBlockProtection)
+	{
+	    return; // config disabled
+	}
+
 	// I only care about restricting access in the Dungeon Dimension
-	if ( !DungeonUtils.isDimensionDungeon((World)event.getWorld()) )
+	if (!DungeonUtils.isDimensionDungeon((World) event.getWorld()))
 	{
 	    return;
 	}
-	
-	BlockState targetBlock = event.getWorld().getBlockState(event.getPos());
-	DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() + " just interacted with: " + targetBlock.getBlock().getTranslatedName().getString());
 
-	
+	// now the blacklist needs to be checked
+	BlockState targetBlock = event.getWorld().getBlockState(event.getPos());
+	if (DungeonConfig.blockInteractBlacklist.contains(targetBlock.getBlock()))
+	{
+	    //DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() + " was BLACKLISTED from touching: " + targetBlock.getBlock().getTranslatedName().getString());
+	    event.setCanceled(true);
+	    return;
+	}
+	//DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() + " just interacted with: " + targetBlock.getBlock().getTranslatedName().getString());
     }
 }

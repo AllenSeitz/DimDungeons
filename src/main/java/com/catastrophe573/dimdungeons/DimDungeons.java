@@ -13,7 +13,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
@@ -54,9 +56,14 @@ public class DimDungeons
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modConfig);
 
 	// Register ourselves for server, registry and other game events we are interested in
 	MinecraftForge.EVENT_BUS.register(this);
+	
+	ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, DungeonConfig.SERVER_SPEC);
+	ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, DungeonConfig.CLIENT_SPEC);
+	ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DungeonConfig.COMMON_SPEC);
     }
 
     // some preinit code	
@@ -97,6 +104,19 @@ public class DimDungeons
 	// do something when the server starts
     }
 
+    public void modConfig(ModConfig.ModConfigEvent event)
+    {
+        ModConfig config = event.getConfig();
+        if (config.getSpec() == DungeonConfig.CLIENT_SPEC)
+        {
+            DungeonConfig.refreshClient();
+        }
+        else if (config.getSpec() == DungeonConfig.SERVER_SPEC)
+        {
+            DungeonConfig.refreshServer();
+        }
+    }
+    
     // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD event bus
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents

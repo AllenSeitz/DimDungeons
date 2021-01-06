@@ -181,6 +181,15 @@
     "error.dimdungeons.portal_error_9": "White or purple banners must be hung on the spires before advanced keys can be used.",
     "error.dimdungeons.portal_error_10": "The banner pattern on either or both banners is not correct for advanced keys.",
 
+	// server configs
+	"config.dimdungeons.globalBlockProtection": "globalBlockProtection",
+	"config.dimdungeons.breakingWhitelist": "breakingWhitelist",
+	"config.dimdungeons.interactionBlacklist": "interactionBlacklist",
+	
+	// client configs
+	"config.dimdungeons.showParticles": "showParticles",
+	"config.dimdungeons.playPortalSounds": "playPortalSounds",
+
     "enemy.dimdungeons.enderman": "Enderman",
     "enemy.dimdungeons.guardian": "Guardian",
     "enemy.dimdungeons.witch": "Witch",
