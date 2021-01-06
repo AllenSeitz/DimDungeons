@@ -59,7 +59,8 @@ public class DimDungeons
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modConfig);
 
 	// Register ourselves for server, registry and other game events we are interested in
-	MinecraftForge.EVENT_BUS.register(this);
+	//MinecraftForge.EVENT_BUS.register(this);
+	MinecraftForge.EVENT_BUS.register(eventHandler);
 	
 	ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, DungeonConfig.SERVER_SPEC);
 	ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, DungeonConfig.CLIENT_SPEC);
@@ -69,7 +70,6 @@ public class DimDungeons
     // some preinit code	
     private void setup(final FMLCommonSetupEvent event)
     {
-	MinecraftForge.EVENT_BUS.register(eventHandler);
     }
 
     private void doCommonStuff(final FMLCommonSetupEvent event)
