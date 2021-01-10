@@ -1,8 +1,12 @@
 package com.catastrophe573.dimdungeons;
 
+import java.util.List;
+
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
+import com.google.common.collect.Lists;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
@@ -25,6 +29,26 @@ public class PlayerDungeonEvents
     @SubscribeEvent
     public void explosionModify(ExplosionEvent.Detonate event)
     {
+	// I only care about explosions in the Dungeon Dimension
+	if (!DungeonUtils.isDimensionDungeon((World) event.getWorld()))
+	{
+	    return;
+	}
+	
+	// allow only cracked stone bricks to be broken
+	List<BlockPos> crackedBricks = Lists.newArrayList();
+	
+	for ( int i = 0; i < event.getAffectedBlocks().size(); i++ )
+	{
+	    if ( event.getWorld().getBlockState(event.getAffectedBlocks().get(i)).getBlock().getRegistryName().getPath().equals("cracked_stone_bricks") )
+	    {
+		crackedBricks.add(event.getAffectedBlocks().get(i));
+	    }
+	}
+	
+	//DimDungeons.LOGGER.info("EXPLODING BRICKS: " + crackedBricks.size());
+	event.getExplosion().clearAffectedBlockPositions();
+	event.getAffectedBlocks().addAll(crackedBricks);
     }
 
     @SubscribeEvent
