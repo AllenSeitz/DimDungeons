@@ -7,7 +7,7 @@ import net.minecraft.util.Rotation;
 // this class exists to produce some hardcoded test dungeons for me to test with
 public class DungeonBuilderTestShapes
 {
-    public static void MakeTestDungeonEnds(DungeonBuilderLogic dbl)
+    public static void MakeTestDungeonOne(DungeonBuilderLogic dbl)
     {
 	for (int i = 1; i <= 8; i++)
 	{
@@ -47,7 +47,7 @@ public class DungeonBuilderTestShapes
 	}
     }
 
-    public static void MakeTestDungeonTwos(DungeonBuilderLogic dbl)
+    public static void MakeTestDungeonTwo(DungeonBuilderLogic dbl)
     {
 	for (int i = 1; i <= 8; i++)
 	{
@@ -83,7 +83,7 @@ public class DungeonBuilderTestShapes
 	dbl.placeRoomShape(6, 5, "yinyang_2", RoomType.HALLWAY, Rotation.NONE);
     }
 
-    public static void MakeTestDungeonThreesAndFours(DungeonBuilderLogic dbl)
+    public static void MakeTestDungeonThree(DungeonBuilderLogic dbl)
     {
 	for (int i = 1; i <= 4; i++)
 	{
@@ -122,7 +122,7 @@ public class DungeonBuilderTestShapes
 	dbl.placeRoomShape(6, 5, "mazenotfound_3", RoomType.HALLWAY, Rotation.NONE);
     }
 
-    public static void MakeTestDungeonContentFour(DungeonBuilderLogic dbl)
+    public static void MakeTestDungeonFour(DungeonBuilderLogic dbl)
     {
 	dbl.placeRoomShape(0, 0, "redspuzzle_4", RoomType.END, Rotation.NONE);
 	dbl.placeRoomShape(1, 0, "morethree_4", RoomType.THREEWAY, Rotation.NONE);

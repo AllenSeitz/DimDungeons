@@ -50,6 +50,7 @@ public class DungeonConfig
 
     // server options
     public static boolean globalBlockProtection = true;
+    public static boolean enableDebugCheats = false;
     public static Set<Block> blockBreakWhitelist = Sets.newHashSet();
     public static Set<Block> blockInteractBlacklist = Sets.newHashSet();
 

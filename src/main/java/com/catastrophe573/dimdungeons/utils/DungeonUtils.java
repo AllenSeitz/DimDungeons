@@ -4,6 +4,7 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicAdvanced;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicBasic;
+import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicDebug;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -65,6 +66,31 @@ public class DungeonUtils
 	{
 	    System.out.println("Cancelling dungeon contruction. A dungeon already exists here.");
 	    return false;
+	}
+	
+	if ( stack.hasDisplayName() )
+	{
+	    String name = stack.getDisplayName().getUnformattedComponentText();
+	    if ( name.contentEquals("DebugOne") )
+	    {
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 1);
+		return true;
+	    }
+	    if ( name.contentEquals("DebugTwo") )
+	    {
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 2);
+		return true;
+	    }
+	    if ( name.contentEquals("DebugThree") )
+	    {
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 3);
+		return true;
+	    }
+	    if ( name.contentEquals("DebugFour") )
+	    {
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 4);
+		return true;
+	    }
 	}
 	
 	// actually place the dungeon
