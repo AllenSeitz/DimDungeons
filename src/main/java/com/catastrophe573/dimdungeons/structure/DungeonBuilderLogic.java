@@ -12,12 +12,14 @@ import net.minecraft.util.Rotation;
 public class DungeonBuilderLogic
 {
     // entrance structures appear once per dungeon as the start room
-    protected String[] entrance = { "entrance_1", "entrance_2", "entrance_3", "entrance_4", "entrance_5", "entrance_6", "entrance_7", "entrance_8" };
+    protected String[] entrance = { "entrance_1", "entrance_2", "entrance_3", "entrance_4", "entrance_5", "entrance_6", "entrance_7", "entrance_8", "entrance_9" };
 
     // dead ends contain one door
     protected String end[] = { "deadend_1", "deadend_2", "deadend_3", "deadend_4", "deadend_5", "deadend_6", "deadend_7", "deadend_8", "coffin_1", "advice_room_1", "restroom_1", "shoutout_1", "spawner_1", "redspuzzle_1", "deathtrap_1", "keyroom_1",
-	    "library_end", "crueltrap_1", "blastchest_1", "magicpuzzle_1", "beacon_1", "freebie_1" };
+	    "library_end", "crueltrap_1", "beacon_1", "freebie_1" };
 
+    // removed "magicpuzzle_1" because the new block protection prevents it from working
+    
     // corners contain two doors on adjacent sides
     protected String corner[] = { "corner_1", "corner_2", "corner_3", "corner_4", "corner_5", "corner_6", "corner_7", "corner_8", "redstrap_3", "longcorner_1", "longcorner_2", "longcorner_3", "longcorner_4", "longcorner_5", "skullcorner",
 	    "mazenotfound_1" };
@@ -105,7 +107,7 @@ public class DungeonBuilderLogic
 
     public DungeonBuilderLogic(Random randIn, long chunkX, long chunkZ)
     {
-	System.out.println("START CONSTRUCTOR");
+	//System.out.println("START CONSTRUCTOR");
 	// copied the seed logic from the vanilla decorate function (which may be flawed, but since I only use the +X/+Z quadrant it won't matter)
 	//long newSeed = (worldSeed + (long) (chunkX * chunkX * 4987142) + (long) (chunkX * 5947611) + (long) (chunkZ * chunkZ) * 4392871L + (long) (chunkZ * 389711) ^ worldSeed);
 	//rand = new Random(newSeed);
@@ -129,13 +131,13 @@ public class DungeonBuilderLogic
 
 	enemyVariation1 = rand.nextInt(3);
 	enemyVariation2 = rand.nextInt(3);
-	System.out.println("EMD CONSTRUCTOR");
+	//System.out.println("EMD CONSTRUCTOR");
     }
 
     // when this function is done you may read the dungeon layout from the public variable finalLayout
     public void calculateDungeonShape(int maxNumRooms)
     {
-	System.out.println("START CALC DUNGEON SHAPE");
+	//System.out.println("START CALC DUNGEON SHAPE");
 	// temp hacks for advanced room placement until I change how the random room selection works
 	boolean allowHardRooms = maxNumRooms > 42;
 	RoomType mazeNotFoundVariations[] = { RoomType.THREEWAY, RoomType.CORNER, RoomType.HALLWAY };
@@ -710,6 +712,12 @@ public class DungeonBuilderLogic
 		    int variation = rand.nextInt(5) + 1;
 		    nextRoom = nextRoom.replace("1", "" + variation);
 		}
+		if (nextRoom == "freebie_1")
+		{
+		    // the freebie room appears at most once per dungeon, and there are 3 variations of it
+		    int variation = rand.nextInt(3) + 1;
+		    nextRoom = nextRoom.replace("1", "" + variation);
+		}		
 		if (nextRoom == "restroom_1")
 		{
 		    // the break room appears at most once per dungeon, and there are 5 variations of it
@@ -797,7 +805,7 @@ public class DungeonBuilderLogic
 	    //DimDungeons.LOGGER.info("Num openings: " + openings.size());
 	}
 	
-	System.out.println("END CALC DUNGEON SHAPE");
+	//System.out.println("END CALC DUNGEON SHAPE");
     }
 
     // returns true if another chunk has a door leading into this chunk from the specified direction

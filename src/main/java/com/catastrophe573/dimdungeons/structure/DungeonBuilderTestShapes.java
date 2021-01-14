@@ -17,6 +17,9 @@ public class DungeonBuilderTestShapes
 	{
 	    dbl.placeRoomShape(i - 1, 1, "redspuzzle_" + i, RoomType.END, Rotation.NONE);
 	}
+	dbl.placeRoomShape(5, 1, "freebie_1", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(6, 1, "freebie_2", RoomType.END, Rotation.NONE);
+	dbl.placeRoomShape(7, 1, "freebie_3", RoomType.END, Rotation.NONE);
 	for (int i = 1; i <= 6; i++)
 	{
 	    dbl.placeRoomShape(i - 1, 2, "spawner_" + i, RoomType.END, Rotation.NONE);
@@ -45,6 +48,7 @@ public class DungeonBuilderTestShapes
 	{
 	    dbl.placeRoomShape(i - 1 + 4, 6, "keyroom_" + i, RoomType.END, Rotation.NONE);
 	}
+	dbl.placeRoomShape(7, 7, "entrance_9", RoomType.ENTRANCE, Rotation.NONE);
     }
 
     public static void MakeTestDungeonTwo(DungeonBuilderLogic dbl)
@@ -57,6 +61,7 @@ public class DungeonBuilderTestShapes
 	{
 	    dbl.placeRoomShape(i - 1, 1, "hallway_" + i, RoomType.HALLWAY, Rotation.NONE);
 	}
+	dbl.placeRoomShape(7, 1, "entrance_9", RoomType.ENTRANCE, Rotation.NONE);
 	for (int i = 1; i <= 5; i++)
 	{
 	    dbl.placeRoomShape(i - 1, 2, "extrahall_" + i, RoomType.HALLWAY, Rotation.NONE);
@@ -146,7 +151,6 @@ public class DungeonBuilderTestShapes
 	dbl.placeRoomShape(3, 2, "magicpuzzle_1", RoomType.END, Rotation.NONE);
 	dbl.placeRoomShape(4, 2, "beacon_1", RoomType.END, Rotation.NONE);
 	dbl.placeRoomShape(5, 2, "beacon_2", RoomType.END, Rotation.NONE);
-	dbl.placeRoomShape(6, 2, "freebie_1", RoomType.END, Rotation.NONE);
 
 	dbl.placeRoomShape(0, 4, "spawner_1", RoomType.END, Rotation.NONE);
 	dbl.placeRoomShape(1, 4, "spawner_2", RoomType.END, Rotation.NONE);
