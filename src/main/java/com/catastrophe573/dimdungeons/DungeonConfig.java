@@ -72,10 +72,12 @@ public class DungeonConfig
 	{
 	    // these are the blocks that the vanilla design does not want the player to 'open', right click, or use
 	    List<String> hardcodedDefaultInteractionBlacklist = Lists.newArrayList();
+	    
+	    // most of these are crafting stations I don't want the player to use inside the dungeon
+	    // dispensers, hoppers, droppers, and redstone are the most urgently blacklisted blocks, since they define puzzles
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:dispenser");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:dropper");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:hopper");
-	    hardcodedDefaultInteractionBlacklist.add("minecraft:flower_pot");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:anvil");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:chipped_anvil");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:damaged_anvil");
@@ -83,6 +85,7 @@ public class DungeonConfig
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:note_block");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:repeater");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:comparator");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:redstone_wire");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:beacon");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:crafting_table");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:enchanting_table");
@@ -99,6 +102,7 @@ public class DungeonConfig
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:beehive");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:bee_nest");
 
+	    // or I could add support for mixing tags and block ids in the blacklist
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:black_bed");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:blue_bed");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:brown_bed");
@@ -116,6 +120,38 @@ public class DungeonConfig
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:white_bed");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:yellow_bed");
 
+	    // also a good argument for tags
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:flower_pot");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_dandelion");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_poppy");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_blue_orchid");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_allium");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_azure_bluet");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_red_tulip");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_orange_tulip");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_white_tulip");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_pink_tulip");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_oxeye_daisy");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_cornflower");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_lily_of_the_valley");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_wither_rose");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_oak_sapling");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_spruce_sapling");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_birch_sapling");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_jungle_sapling");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_acacia_sapling");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_dark_oak_sapling");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_red_mushroom");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_brown_mushroom");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_fern");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_dead_bush");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_cactus");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_bamboo");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_crimson_fungus");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_warped_fungus");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_crimson_roots");
+	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_warped_roots");
+	    
 	    // list of server options and comments
 	    builder.comment("Options for general mod behavior.").push("general");
 	    globalBlockProtection = builder.comment("If set to FALSE the block protection on the dungeon dimension will be disabled, making the options in the next section useless.").translation("config.dimdungeons.globalBlockProtection")
