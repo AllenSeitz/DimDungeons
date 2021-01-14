@@ -34,18 +34,26 @@ public class PlayerDungeonEvents
 	{
 	    return;
 	}
-	
+
 	// allow only cracked stone bricks to be broken
 	List<BlockPos> crackedBricks = Lists.newArrayList();
-	
-	for ( int i = 0; i < event.getAffectedBlocks().size(); i++ )
+
+	for (int i = 0; i < event.getAffectedBlocks().size(); i++)
 	{
-	    if ( event.getWorld().getBlockState(event.getAffectedBlocks().get(i)).getBlock().getRegistryName().getPath().equals("cracked_stone_bricks") )
+	    if (event.getWorld().getBlockState(event.getAffectedBlocks().get(i)).getBlock().getRegistryName().getPath().equals("cracked_stone_bricks"))
+	    {
+		crackedBricks.add(event.getAffectedBlocks().get(i));
+	    }
+	    if (event.getWorld().getBlockState(event.getAffectedBlocks().get(i)).getBlock().getRegistryName().getPath().equals("trapped_chest"))
+	    {
+		crackedBricks.add(event.getAffectedBlocks().get(i));
+	    }
+	    if (event.getWorld().getBlockState(event.getAffectedBlocks().get(i)).getBlock().getRegistryName().getPath().equals("tnt"))
 	    {
 		crackedBricks.add(event.getAffectedBlocks().get(i));
 	    }
 	}
-	
+
 	//DimDungeons.LOGGER.info("EXPLODING BRICKS: " + crackedBricks.size());
 	event.getExplosion().clearAffectedBlockPositions();
 	event.getAffectedBlocks().addAll(crackedBricks);
@@ -132,6 +140,7 @@ public class PlayerDungeonEvents
 	    event.setCanceled(true);
 	    return;
 	}
+
 	//DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() + " just interacted with: " + targetBlock.getBlock().getTranslatedName().getString());
     }
 }
