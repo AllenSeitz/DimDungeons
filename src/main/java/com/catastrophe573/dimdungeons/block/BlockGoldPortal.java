@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
+import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 //import com.google.common.collect.Lists;
 //import com.mojang.datafixers.util.Pair;
@@ -115,7 +116,7 @@ public class BlockGoldPortal extends BreakableBlock
 	if (entityIn.func_242280_ah()) // unmapped name of isEntityPortalCooldownActive()
 	{
 	    return;
-	}
+	}	
 
 	if (!entityIn.isPassenger() && !entityIn.isBeingRidden() && entityIn.isNonBoss())
 	{
@@ -172,6 +173,8 @@ public class BlockGoldPortal extends BreakableBlock
 	    destYaw = 180;
 	}
 
+	CustomTeleporter tele = new CustomTeleporter(dim);
+	player.changeDimension(dim, tele);
 	player.teleport(dim, x, y, z, destYaw, destPitch);
 	return player;
     }

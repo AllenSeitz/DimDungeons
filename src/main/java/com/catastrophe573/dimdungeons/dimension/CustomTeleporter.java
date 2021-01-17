@@ -30,7 +30,7 @@ public class CustomTeleporter implements net.minecraftforge.common.util.ITelepor
     {
 	// TODO: make the entity always face north after entering the dimension
         return new PortalInfo(entity.getPositionVec(), Vector3d.ZERO, entity.rotationYaw, entity.rotationPitch);
-    }    
+    }
 
     // no idea what this was ever used for in previous versions
     public boolean placeInPortal(Entity p_222268_1_, float p_222268_2_)
