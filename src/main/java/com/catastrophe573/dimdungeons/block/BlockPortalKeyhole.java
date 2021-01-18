@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
+import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.block.Block;
@@ -143,8 +144,12 @@ public class BlockPortalKeyhole extends Block
 					{
 						if (shouldBuildDungeon(playerItem))
 						{
+							DungeonGenData genData = DungeonGenData.Create()
+									.setKeyItem(playerItem)
+									.setReturnPoint(getReturnPoint(state, pos));
+
 							DimDungeons.LOGGER.info("BUILDING A NEW DUNGEON!");
-							DungeonUtils.buildDungeon(worldIn, playerItem);
+							DungeonUtils.buildDungeon(worldIn, genData);
 							playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
 						}
 					}
@@ -207,6 +212,24 @@ public class BlockPortalKeyhole extends Block
 				te.setDestination(key.getWarpX(keyStack), 55.1D, key.getWarpZ(keyStack));
 			}
 
+		}
+	}
+
+	protected BlockPos getReturnPoint(BlockState state, BlockPos pos)
+	{
+		Direction dir = (Direction) state.get(FACING);
+		switch (dir)
+		{
+			case WEST:
+				return pos.west().down(2);
+			case EAST:
+				return pos.east().down(2);
+			case NORTH:
+				return pos.north().down(2);
+			case SOUTH:
+				return pos.south().down(2);
+			default:
+				return pos.down(2);
 		}
 	}
 

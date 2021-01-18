@@ -40,7 +40,7 @@ public class DungeonUtils
     }    
 
     // now returns true if a dungeon was built
-    public static boolean buildDungeon(World worldIn, ItemStack stack)
+    public static boolean buildDungeon(World worldIn, DungeonGenData genData)
     {
 	// only build dungeons on the server
 	if (worldIn.isRemote)
@@ -48,16 +48,16 @@ public class DungeonUtils
 	    return false;
 	}	
 	
-	if (!(stack.getItem() instanceof ItemPortalKey))
+	if (!(genData.keyItem.getItem() instanceof ItemPortalKey))
 	{
 	    System.out.println("FATAL ERROR: Using a non-key item to build a dungeon? What happened?");
 	    return false;
 	}
 	
-	ItemPortalKey key = (ItemPortalKey)stack.getItem();
+	ItemPortalKey key = (ItemPortalKey)genData.keyItem.getItem();
 	
-	long buildX = (long) key.getDungeonTopLeftX(stack);
-	long buildZ = (long) key.getDungeonTopLeftZ(stack);
+	long buildX = (long) key.getDungeonTopLeftX(genData.keyItem);
+	long buildZ = (long) key.getDungeonTopLeftZ(genData.keyItem);
 	long entranceX = buildX + (8*16);
 	long entranceZ = buildZ + (11*16);
 	ServerWorld dungeonWorld = DungeonUtils.getDungeonWorld(worldIn.getServer());
@@ -68,9 +68,9 @@ public class DungeonUtils
 	    return false;
 	}
 	
-	if ( stack.hasDisplayName() )
+	if ( genData.keyItem.hasDisplayName() )
 	{
-	    String name = stack.getDisplayName().getUnformattedComponentText();
+	    String name = genData.keyItem.getDisplayName().getUnformattedComponentText();
 	    if ( name.contentEquals("DebugOne") )
 	    {
 		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 1);
@@ -96,12 +96,12 @@ public class DungeonUtils
 	// actually place the dungeon
 	if (DungeonPlacementLogicBasic.isEntranceChunk(entranceX/16, entranceZ/16))
 	{
-	    DungeonPlacementLogicBasic.place(dungeonWorld, buildX, buildZ);
+	    DungeonPlacementLogicBasic.place(dungeonWorld, buildX, buildZ, genData);
 	    return true;
 	}
 	else if (DungeonPlacementLogicAdvanced.isEntranceChunk(entranceX/16, entranceZ/16))
 	{
-	    DungeonPlacementLogicAdvanced.place(dungeonWorld, buildX, buildZ);
+	    DungeonPlacementLogicAdvanced.place(dungeonWorld, buildX, buildZ, genData);
 	    return true;
 	}
 	else

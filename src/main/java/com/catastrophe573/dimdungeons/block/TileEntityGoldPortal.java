@@ -11,7 +11,7 @@ import net.minecraftforge.registries.ObjectHolder;
 
 public class TileEntityGoldPortal extends TileEntity
 {
-    public static final String REG_NAME = "tileentity_portal_keyhole";
+    public static final String REG_NAME = "tileentity_gold_portal";
 
     @ObjectHolder(DimDungeons.RESOURCE_PREFIX + REG_NAME)
     public static TileEntityType<TileEntityGoldPortal> TYPE;

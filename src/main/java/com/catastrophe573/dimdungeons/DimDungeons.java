@@ -143,6 +143,7 @@ public class DimDungeons
 	    tetPortalKeyhole.setRegistryName(MOD_ID, TileEntityPortalKeyhole.REG_NAME);
 	    tetGoldPortal.setRegistryName(MOD_ID, TileEntityGoldPortal.REG_NAME);
 	    teRegistryEvent.getRegistry().register(tetPortalKeyhole);
+        teRegistryEvent.getRegistry().register(tetGoldPortal);
 
 	    // register a chunk generator here because I can get away with it
 	    Registry.register(Registry.CHUNK_GENERATOR_CODEC, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.myCodec);
