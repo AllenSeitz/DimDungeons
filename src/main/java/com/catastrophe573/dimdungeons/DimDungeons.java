@@ -1,5 +1,6 @@
 package com.catastrophe573.dimdungeons;
 
+import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -138,7 +139,9 @@ public class DimDungeons
 	public static void registerTE(RegistryEvent.Register<TileEntityType<?>> teRegistryEvent)
 	{
 	    TileEntityType<TileEntityPortalKeyhole> tetPortalKeyhole = TileEntityType.Builder.create(TileEntityPortalKeyhole::new).build(null);
+        TileEntityType<TileEntityGoldPortal> tetGoldPortal = TileEntityType.Builder.create(TileEntityGoldPortal::new).build(null);
 	    tetPortalKeyhole.setRegistryName(MOD_ID, TileEntityPortalKeyhole.REG_NAME);
+	    tetGoldPortal.setRegistryName(MOD_ID, TileEntityGoldPortal.REG_NAME);
 	    teRegistryEvent.getRegistry().register(tetPortalKeyhole);
 
 	    // register a chunk generator here because I can get away with it

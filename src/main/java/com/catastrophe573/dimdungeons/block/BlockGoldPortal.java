@@ -31,6 +31,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.BannerPattern;
 //import net.minecraft.tileentity.BannerTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
@@ -100,109 +101,119 @@ public class BlockGoldPortal extends BreakableBlock
     @Override
     public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn)
     {
-	// do not process this block on the client
-	if (worldIn.isRemote)
-	{
-	    return;
-	}
-
-	// only teleport players! items and mobs and who knows what else must stay behind
-	if (!(entityIn instanceof ServerPlayerEntity))
-	{
-	    return;
-	}
-
-	// manually check/use portal 
-	if (entityIn.func_242280_ah()) // unmapped name of isEntityPortalCooldownActive()
-	{
-	    return;
-	}	
-
-	if (!entityIn.isPassenger() && !entityIn.isBeingRidden() && entityIn.isNonBoss())
-	{
-	    //DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
-
-	    TileEntityPortalKeyhole te = findKeyholeForThisPortal(state, worldIn, pos);
-	    if (te != null)
-	    {
-		ItemStack item = te.getObjectInserted();
-		if (!item.isEmpty())
+		// do not process this block on the client
+		if (worldIn.isRemote)
 		{
-		    // World.field_234918_g_ is the Overworld. This block has different behavior in the Overworld than in the Dungeon Dimension
-		    if (item.getItem() instanceof ItemPortalKey && DungeonUtils.isDimensionOverworld(worldIn))
-		    {
-			ItemPortalKey key = (ItemPortalKey) item.getItem();
-			float warpX = key.getWarpX(item);
-			float warpZ = key.getWarpZ(item);
+			return;
+		}
 
-			if (warpX == -1 || warpZ == -1)
-			{
-			    System.out.println("Player somehow used an unactivated key? Doing nothing.");
-			}
-			else
-			{
-			    System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");
-			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonUtils.getDungeonWorld(worldIn.getServer()), warpX + 0.5f, 55.1D, warpZ + 0.5f, 0);
-			}
-		    }
-		}
-	    }
-	    else
-	    {
-		// no keyhole? this could be a return portal
-		if (worldIn.getDimensionKey() == DungeonUtils.getDungeonWorld(worldIn.getServer()).getDimensionKey())
+		// only teleport players! items and mobs and who knows what else must stay behind
+		if (!(entityIn instanceof ServerPlayerEntity))
 		{
-		    sendPlayerBackHome((ServerPlayerEntity) entityIn);
+			return;
 		}
-	    }
-	}
+
+		// manually check/use portal
+		if (entityIn.func_242280_ah()) // unmapped name of isEntityPortalCooldownActive()
+		{
+			return;
+		}
+
+		if (!entityIn.isPassenger() && !entityIn.isBeingRidden() && entityIn.isNonBoss())
+		{
+			//DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
+
+			//TileEntityPortalKeyhole te = findKeyholeForThisPortal(state, worldIn, pos);
+
+			TileEntityGoldPortal te = (TileEntityGoldPortal) worldIn.getTileEntity(pos);
+
+			if (te != null && te instanceof TileEntityGoldPortal)
+			{
+				// World.field_234918_g_ is the Overworld. This block has different behavior in the Overworld than in the Dungeon Dimension
+
+				BlockPos destination = te.getDestination();
+				float warpX = destination.getX();
+				float warpY = destination.getY();
+				float warpZ = destination.getZ();
+
+				//if (destination.getX() == -1 || warpZ == -1)
+				//{
+				//	System.out.println("Player somehow used an unactivated key? Doing nothing.");
+				//}
+				//else
+				//{
+					if (DungeonUtils.isDimensionOverworld(worldIn))
+					{
+						System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");
+						actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonUtils.getDungeonWorld(worldIn.getServer()), warpX + 0.5f, 55.1D, warpZ + 0.5f, 0);
+					}
+					else if (worldIn.getDimensionKey() == DungeonUtils.getDungeonWorld(worldIn.getServer()).getDimensionKey())
+					{
+						System.out.println("Player is returning from a dungeon at (" + warpX + " " + warpY + " " + warpZ + ").");
+						actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonUtils.getDungeonWorld(worldIn.getServer()), warpX + 0.5f, warpY + 0.5f, warpZ + 0.5f, 0);
+					}
+				//}
+			}
+		}
     }
+
+	@Override
+	public boolean hasTileEntity(BlockState state)
+	{
+		return true;
+	}
+
+	@Override
+	public TileEntity createTileEntity(BlockState state, IBlockReader world)
+	{
+		return new TileEntityGoldPortal();
+	}
 
     protected Entity actuallyPerformTeleport(ServerPlayerEntity player, ServerWorld dim, double x, double y, double z, double yaw)
     {
-	// manually set portal cooldown
-	player.func_242279_ag(); // unmapped version of startEntityPortalCooldown()
+		// manually set portal cooldown
+		player.func_242279_ag(); // unmapped version of startEntityPortalCooldown()
 
-	float destPitch = player.getPitchYaw().x;
-	float destYaw = player.getPitchYaw().y;
+		float destPitch = player.getPitchYaw().x;
+		float destYaw = player.getPitchYaw().y;
 
-	// if the player just entered a dungeon then force them to face north 
-	if (DungeonUtils.isDimensionDungeon(dim))
-	{
-	    destPitch = 0;
-	    destYaw = 180;
-	}
+		// if the player just entered a dungeon then force them to face north
+		if (DungeonUtils.isDimensionDungeon(dim))
+		{
+			destPitch = 0;
+			destYaw = 180;
+		}
 
-	CustomTeleporter tele = new CustomTeleporter(dim);
-	player.changeDimension(dim, tele);
-	player.teleport(dim, x, y, z, destYaw, destPitch);
-	return player;
+		CustomTeleporter tele = new CustomTeleporter(dim);
+		player.changeDimension(dim, tele);
+		player.teleport(dim, x, y, z, destYaw, destPitch);
+		return player;
     }
 
     protected void sendPlayerBackHome(ServerPlayerEntity player)
     {
-	float lastX = 0;
-	float lastY = 0;
-	float lastZ = 0;
-	float lastYaw = player.getPitchYaw().y;
+		float lastX = 0;
+		float lastY = 0;
+		float lastZ = 0;
+		float lastYaw = player.getPitchYaw().y;
 
-	// send the player to their bed
-	Optional<BlockPos> respawn = player.getBedPosition();
-	if (respawn.isPresent())
-	{
-	    lastX = respawn.get().getX();
-	    lastY = respawn.get().getY() + 3; // plus 3 to stand on the bed
-	    lastZ = respawn.get().getZ();
-	}
-	else
-	{
-	    // fallback: send the player to the overworld spawn
-	    lastX = player.getServer().getWorld(World.OVERWORLD).getWorldInfo().getSpawnX();
-	    lastY = player.getServer().getWorld(World.OVERWORLD).getWorldInfo().getSpawnY() + 2; // plus 2 to stand on the ground I guess
-	    lastZ = player.getServer().getWorld(World.OVERWORLD).getWorldInfo().getSpawnZ();
-	}
+		// send the player to their bed
+		Optional<BlockPos> respawn = player.getBedPosition();
+		if (respawn.isPresent())
+		{
+			lastX = respawn.get().getX();
+			lastY = respawn.get().getY() + 3; // plus 3 to stand on the bed
+			lastZ = respawn.get().getZ();
+		}
+		else
+		{
+			// fallback: send the player to the overworld spawn
+			lastX = player.getServer().getWorld(World.OVERWORLD).getWorldInfo().getSpawnX();
+			lastY = player.getServer().getWorld(World.OVERWORLD).getWorldInfo().getSpawnY() + 2; // plus 2 to stand on the ground I guess
+			lastZ = player.getServer().getWorld(World.OVERWORLD).getWorldInfo().getSpawnZ();
+		}
 
-	actuallyPerformTeleport(player, player.getServer().getWorld(World.OVERWORLD).getWorldServer(), lastX, lastY, lastZ, lastYaw);
+		actuallyPerformTeleport(player, player.getServer().getWorld(World.OVERWORLD).getWorldServer(), lastX, lastY, lastZ, lastYaw);
     }
 
     // this function returns boolean and relies on another function to actually destroy the block
