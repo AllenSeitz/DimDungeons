@@ -1,7 +1,6 @@
 package com.catastrophe573.dimdungeons.block;
 
 import java.util.ArrayList;
-import java.util.Optional;
 //import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;

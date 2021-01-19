@@ -7,7 +7,6 @@ import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicBasic;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicDebug;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
