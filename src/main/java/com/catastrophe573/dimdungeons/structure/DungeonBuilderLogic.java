@@ -19,7 +19,7 @@ public class DungeonBuilderLogic
 	    "library_end", "crueltrap_1", "beacon_1", "freebie_1" };
 
     // removed "magicpuzzle_1" because the new block protection prevents it from working
-    
+
     // corners contain two doors on adjacent sides
     protected String corner[] = { "corner_1", "corner_2", "corner_3", "corner_4", "corner_5", "corner_6", "corner_7", "corner_8", "redstrap_3", "longcorner_1", "longcorner_2", "longcorner_3", "longcorner_4", "longcorner_5", "skullcorner",
 	    "mazenotfound_1" };
@@ -717,7 +717,7 @@ public class DungeonBuilderLogic
 		    // the freebie room appears at most once per dungeon, and there are 3 variations of it
 		    int variation = rand.nextInt(3) + 1;
 		    nextRoom = nextRoom.replace("1", "" + variation);
-		}		
+		}
 		if (nextRoom == "restroom_1")
 		{
 		    // the break room appears at most once per dungeon, and there are 5 variations of it
@@ -804,7 +804,7 @@ public class DungeonBuilderLogic
 	    shuffleArray(openings);
 	    //DimDungeons.LOGGER.info("Num openings: " + openings.size());
 	}
-	
+
 	//System.out.println("END CALC DUNGEON SHAPE");
     }
 

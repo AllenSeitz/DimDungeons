@@ -51,8 +51,8 @@ public class DungeonPlacementLogicDebug
     // this is something hardcoded and personal, and not meant to be invoked by players
     public static boolean place(ServerWorld world, long x, long z, int debugType)
     {
-	long entranceChunkX = (x/16)+8;
-	long entranceChunkZ = (z/16)+11;
+	long entranceChunkX = (x / 16) + 8;
+	long entranceChunkZ = (z / 16) + 11;
 	if (!isEntranceChunk(entranceChunkX, entranceChunkZ))
 	{
 	    DimDungeons.LOGGER.error("DIMDUNGEONS FATAL ERROR: basic dungeon does not start at " + x + ", " + z);
@@ -62,7 +62,7 @@ public class DungeonPlacementLogicDebug
 
 	// this is the data structure for an entire dungeon
 	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ);
-	switch(debugType)
+	switch (debugType)
 	{
 	case 1:
 	    DungeonBuilderTestShapes.MakeTestDungeonOne(dbl);
@@ -92,8 +92,8 @@ public class DungeonPlacementLogicDebug
 		{
 		    // calculate the chunkpos of the room at 0,0 in the top left of the map
 		    // I'm not sure what the +4 is for, but it is needed
-		    ChunkPos cpos = new ChunkPos(((int)x/16) + i + 4, ((int)z/16) + j + 4);
-		    
+		    ChunkPos cpos = new ChunkPos(((int) x / 16) + i + 4, ((int) z / 16) + j + 4);
+
 		    if (!putRoomHere(cpos, world, nextRoom))
 		    {
 			DimDungeons.LOGGER.error("DIMDUNGEONS ERROR UNABLE TO PLACE STRUCTURE: " + nextRoom.structure);
@@ -239,11 +239,11 @@ public class DungeonPlacementLogicDebug
 	else if ("LockItStoneBrick".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), 2); // erase this data block 
-	}	
+	}
 	else if ("LockIt".equals(name))
 	{
 	    // do nothing!
-	}	
+	}
 	else if ("FortuneTeller".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), 2); // erase this data block 

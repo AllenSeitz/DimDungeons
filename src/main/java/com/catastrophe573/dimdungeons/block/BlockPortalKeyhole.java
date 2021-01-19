@@ -123,115 +123,113 @@ public class BlockPortalKeyhole extends Block
     @Override
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
-		ItemStack playerItem = player.getHeldItem(handIn);
-		TileEntity tileEntity = worldIn.getTileEntity(pos);
-		TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
+	ItemStack playerItem = player.getHeldItem(handIn);
+	TileEntity tileEntity = worldIn.getTileEntity(pos);
+	TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
 
-		// insert or remove an item from this block
-		if (myEntity != null)
+	// insert or remove an item from this block
+	if (myEntity != null)
+	{
+	    ItemStack insideItem = myEntity.getObjectInserted();
+
+	    // if the keyhole is currently empty
+	    if (insideItem.isEmpty())
+	    {
+		if (!playerItem.isEmpty())
 		{
-			ItemStack insideItem = myEntity.getObjectInserted();
+		    // DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
 
-			// if the keyhole is currently empty
-			if (insideItem.isEmpty())
+		    // should we build the dungeon on the other side?
+		    if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isRemote)
+		    {
+			if (shouldBuildDungeon(playerItem))
 			{
-				if (!playerItem.isEmpty())
-				{
-					// DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
+			    DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setReturnPoint(getReturnPoint(state, pos));
 
-					// should we build the dungeon on the other side?
-					if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isRemote)
-					{
-						if (shouldBuildDungeon(playerItem))
-						{
-							DungeonGenData genData = DungeonGenData.Create()
-									.setKeyItem(playerItem)
-									.setReturnPoint(getReturnPoint(state, pos));
-
-							DimDungeons.LOGGER.info("BUILDING A NEW DUNGEON!");
-							DungeonUtils.buildDungeon(worldIn, genData);
-							playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
-						}
-					}
-
-					myEntity.setContents(playerItem.copy());
-
-					// recalculate the boolean block states
-					BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
-					worldIn.setBlockState(pos, newBlockState);
-
-					// should portal blocks be spawned?
-					if (isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
-					{
-						addGoldenPortalBlock(worldIn, pos.down(), playerItem);
-						addGoldenPortalBlock(worldIn, pos.down(2), playerItem);
-					}
-
-					// this function prints no message on success
-					checkForProblemsAndLiterallySpeakToPlayer(worldIn, pos, state, myEntity, player);
-
-					playerItem.shrink(1);
-
-					return ActionResultType.SUCCESS;
-				}
+			    //DimDungeons.LOGGER.info("BUILDING A NEW DUNGEON!");
+			    DungeonUtils.buildDungeon(worldIn, genData);
+			    playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
 			}
-			// if the keyhole is currently full
-			else
-			{
-				// DimDungeons.LOGGER.info("Taking thing out of keyhole...");
-				if (playerItem.isEmpty())
-				{
-					player.setHeldItem(handIn, insideItem); // hand it to the player
-				}
-				else if (!player.addItemStackToInventory(insideItem)) // okay put it in their inventory
-				{
-					player.dropItem(insideItem, false); // whatever drop it on the ground
-				}
+		    }
 
-				myEntity.removeContents();
+		    myEntity.setContents(playerItem.copy());
 
-				// recalculate the boolean block states
-				BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
-				worldIn.setBlockState(pos, newBlockState, 3);
+		    // recalculate the boolean block states
+		    BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
+		    worldIn.setBlockState(pos, newBlockState);
 
-				return ActionResultType.SUCCESS;
-			}
+		    // should portal blocks be spawned?
+		    if (isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
+		    {
+			addGoldenPortalBlock(worldIn, pos.down(), playerItem);
+			addGoldenPortalBlock(worldIn, pos.down(2), playerItem);
+		    }
+
+		    // this function prints no message on success
+		    checkForProblemsAndLiterallySpeakToPlayer(worldIn, pos, state, myEntity, player);
+
+		    playerItem.shrink(1);
+
+		    return ActionResultType.SUCCESS;
 		}
-		return ActionResultType.PASS;
+	    }
+	    // if the keyhole is currently full
+	    else
+	    {
+		// DimDungeons.LOGGER.info("Taking thing out of keyhole...");
+		if (playerItem.isEmpty())
+		{
+		    player.setHeldItem(handIn, insideItem); // hand it to the player
+		}
+		else if (!player.addItemStackToInventory(insideItem)) // okay put it in their inventory
+		{
+		    player.dropItem(insideItem, false); // whatever drop it on the ground
+		}
+
+		myEntity.removeContents();
+
+		// recalculate the boolean block states
+		BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
+		worldIn.setBlockState(pos, newBlockState, 3);
+
+		return ActionResultType.SUCCESS;
+	    }
+	}
+	return ActionResultType.PASS;
     }
 
     protected void addGoldenPortalBlock(World worldIn, BlockPos pos, ItemStack keyStack)
+    {
+	worldIn.setBlockState(pos, BlockRegistrar.block_gold_portal.getDefaultState());
+	TileEntityGoldPortal te = (TileEntityGoldPortal) worldIn.getTileEntity(pos);
+	if (te != null && te instanceof TileEntityGoldPortal)
 	{
-		worldIn.setBlockState(pos, BlockRegistrar.block_gold_portal.getDefaultState());
-		TileEntityGoldPortal te = (TileEntityGoldPortal) worldIn.getTileEntity(pos);
-		if(te != null && te instanceof TileEntityGoldPortal)
-		{
-			ItemPortalKey key = (ItemPortalKey) keyStack.getItem();
-			if(key != null)
-			{
-				te.setDestination(key.getWarpX(keyStack), 55.1D, key.getWarpZ(keyStack));
-			}
+	    ItemPortalKey key = (ItemPortalKey) keyStack.getItem();
+	    if (key != null)
+	    {
+		te.setDestination(key.getWarpX(keyStack), 55.1D, key.getWarpZ(keyStack));
+	    }
 
-		}
 	}
+    }
 
-	protected BlockPos getReturnPoint(BlockState state, BlockPos pos)
+    protected BlockPos getReturnPoint(BlockState state, BlockPos pos)
+    {
+	Direction dir = (Direction) state.get(FACING);
+	switch (dir)
 	{
-		Direction dir = (Direction) state.get(FACING);
-		switch (dir)
-		{
-			case WEST:
-				return pos.west().down(2);
-			case EAST:
-				return pos.east().down(2);
-			case NORTH:
-				return pos.north().down(2);
-			case SOUTH:
-				return pos.south().down(2);
-			default:
-				return pos.down(2);
-		}
+	case WEST:
+	    return pos.west().down(2);
+	case EAST:
+	    return pos.east().down(2);
+	case NORTH:
+	    return pos.north().down(2);
+	case SOUTH:
+	    return pos.south().down(2);
+	default:
+	    return pos.down(2);
 	}
+    }
 
     // helper function for checkForPortalCreation
     protected boolean isOkayToSpawnPortalBlocks(World worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole myEntity)

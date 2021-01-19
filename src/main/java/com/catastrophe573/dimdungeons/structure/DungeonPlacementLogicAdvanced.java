@@ -59,8 +59,8 @@ public class DungeonPlacementLogicAdvanced
 
     public static boolean place(ServerWorld world, long x, long z, DungeonGenData genData)
     {
-	long entranceChunkX = (x/16)+8;
-	long entranceChunkZ = (z/16)+11;
+	long entranceChunkX = (x / 16) + 8;
+	long entranceChunkZ = (z / 16) + 11;
 	if (!isEntranceChunk(entranceChunkX, entranceChunkZ))
 	{
 	    DimDungeons.LOGGER.error("DIMDUNGEONS FATAL ERROR: advanced dungeon does not start at " + x + ", " + z);
@@ -86,8 +86,8 @@ public class DungeonPlacementLogicAdvanced
 		{
 		    // calculate the chunkpos of the room at 0,0 in the top left of the map
 		    // I'm not sure what the +4 is for, but it is needed
-		    ChunkPos cpos = new ChunkPos(((int)x/16) + i + 4, ((int)z/16) + j + 4);
-		    
+		    ChunkPos cpos = new ChunkPos(((int) x / 16) + i + 4, ((int) z / 16) + j + 4);
+
 		    if (!putRoomHere(cpos, world, nextRoom, genData))
 		    {
 			DimDungeons.LOGGER.error("DIMDUNGEONS ERROR UNABLE TO PLACE STRUCTURE: " + nextRoom.structure);
@@ -271,11 +271,11 @@ public class DungeonPlacementLogicAdvanced
 	if ("ReturnPortal".equals(name))
 	{
 	    world.setBlockState(pos, BlockRegistrar.block_gold_portal.getDefaultState(), 2); // erase this data block
-		TileEntityGoldPortal te = (TileEntityGoldPortal) world.getTileEntity(pos);
-		if(te != null)
-		{
-			te.setDestination(genData.returnPoint.getX() + 0.5D, genData.returnPoint.getY() + 0.1D, genData.returnPoint.getZ() + 0.5D);
-		}
+	    TileEntityGoldPortal te = (TileEntityGoldPortal) world.getTileEntity(pos);
+	    if (te != null)
+	    {
+		te.setDestination(genData.returnPoint.getX() + 0.5D, genData.returnPoint.getY() + 0.1D, genData.returnPoint.getZ() + 0.5D);
+	    }
 	}
 	else if ("LockItStoneBrick".equals(name))
 	{
@@ -284,7 +284,7 @@ public class DungeonPlacementLogicAdvanced
 	else if ("LockIt".equals(name))
 	{
 	    // do nothing!
-	}	
+	}
 	else if ("FortuneTeller".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), 2); // erase this data block 

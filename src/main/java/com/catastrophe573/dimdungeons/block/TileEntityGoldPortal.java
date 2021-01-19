@@ -19,43 +19,44 @@ public class TileEntityGoldPortal extends TileEntity
 
     public TileEntityGoldPortal()
     {
-        super(TYPE);
+	super(TYPE);
     }
 
-    public TileEntityGoldPortal(TileEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public TileEntityGoldPortal(TileEntityType<?> tileEntityTypeIn)
+    {
+	super(tileEntityTypeIn);
     }
 
     @Override
     public void read(BlockState stateIn, CompoundNBT compound)
     {
-        super.read(stateIn, compound);
-        if(compound.contains("destX") && compound.contains("destY") && compound.contains("destZ"))
-        {
-            this.destX = compound.getDouble("destX");
-            this.destY = compound.getDouble("destY");
-            this.destZ = compound.getDouble("destZ");
-        }
+	super.read(stateIn, compound);
+	if (compound.contains("destX") && compound.contains("destY") && compound.contains("destZ"))
+	{
+	    this.destX = compound.getDouble("destX");
+	    this.destY = compound.getDouble("destY");
+	    this.destZ = compound.getDouble("destZ");
+	}
     }
 
     @Override
     public CompoundNBT write(CompoundNBT compound)
     {
-        compound.putDouble("destX", this.destX);
-        compound.putDouble("destY", this.destY);
-        compound.putDouble("destZ", this.destZ);
-        return super.write(compound);
+	compound.putDouble("destX", this.destX);
+	compound.putDouble("destY", this.destY);
+	compound.putDouble("destZ", this.destZ);
+	return super.write(compound);
     }
 
     public void setDestination(double posX, double posY, double posZ)
     {
-        this.destX = posX;
-        this.destY = posY;
-        this.destZ = posZ;
+	this.destX = posX;
+	this.destY = posY;
+	this.destZ = posZ;
     }
 
     public BlockPos getDestination()
     {
-        return new BlockPos(destX, destY, destZ);
+	return new BlockPos(destX, destY, destZ);
     }
 }
