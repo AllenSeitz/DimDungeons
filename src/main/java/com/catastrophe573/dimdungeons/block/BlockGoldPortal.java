@@ -128,31 +128,24 @@ public class BlockGoldPortal extends BreakableBlock
 	    if (tile != null && tile instanceof TileEntityGoldPortal)
 	    {
 		TileEntityGoldPortal te = (TileEntityGoldPortal) worldIn.getTileEntity(pos);
-		// World.field_234918_g_ is the Overworld. This block has different behavior in the Overworld than in the Dungeon Dimension
 
 		BlockPos destination = te.getDestination();
 		float warpX = destination.getX();
 		float warpY = destination.getY();
 		float warpZ = destination.getZ();
 
-		//if (destination.getX() == -1 || warpZ == -1)
-		//{
-		//	System.out.println("Player somehow used an unactivated key? Doing nothing.");
-		//}
-		//else
-		//{
 		if (DungeonUtils.isDimensionOverworld(worldIn))
 		{
-		    System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");
-		    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonUtils.getDungeonWorld(worldIn.getServer()), warpX + 0.5f, 55.1D, warpZ + 0.5f, 0);
+		    // intentionally don't add 0.5f to the X, so the player is centered between the two blocks of the doorway
+		    System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");		    
+		    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonUtils.getDungeonWorld(worldIn.getServer()), warpX, 55.1D, warpZ + 0.5f, 0);
 		}
 		else if (worldIn.getDimensionKey() == DungeonUtils.getDungeonWorld(worldIn.getServer()).getDimensionKey())
 		{
 		    System.out.println("Player is returning from a dungeon at (" + warpX + " " + warpY + " " + warpZ + ").");
-		    ServerPlayerEntity player = (ServerPlayerEntity) entityIn;
+		    ServerPlayerEntity player = (ServerPlayerEntity) entityIn;		    
 		    actuallyPerformTeleport(player, player.getServer().getWorld(World.OVERWORLD), warpX + 0.5f, warpY + 0.5f, warpZ + 0.5f, 0);
 		}
-		//}
 	    }
 	}
     }

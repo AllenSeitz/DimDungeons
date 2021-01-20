@@ -1,6 +1,7 @@
 package com.catastrophe573.dimdungeons.utils;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
+import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicAdvanced;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicBasic;
@@ -120,7 +121,32 @@ public class DungeonUtils
 	    return false;
 	}
 
-	//System.out.println("Cancelling dungeon contruction. A dungeon already exists here: " + temp.getBlock().getRegistryName());
+	//System.out.println("Canceling dungeon construction. A dungeon already exists here: " + temp.getBlock().getRegistryName());
 	return true;
+    }
+
+    public static void reprogramExistingExitDoorway(World worldIn, long entranceX, long entranceZ, DungeonGenData genData)
+    {
+	World ddim = DungeonUtils.getDungeonWorld(worldIn.getServer());
+	
+	for (int x = 0; x <= 1; x++)
+	{
+	    for (int y = 55; y <= 57; y++)
+	    {
+		BlockPos pos = new BlockPos(entranceX-x, y, entranceZ+2);
+
+		TileEntityGoldPortal te = (TileEntityGoldPortal) ddim.getTileEntity(pos);
+		if (te != null)
+		{
+		    te.setDestination(genData.returnPoint.getX() + 0.5D, genData.returnPoint.getY() + 0.1D, genData.returnPoint.getZ() + 0.5D);
+		    //DimDungeons.LOGGER.error("DIMDUNGEONS INFO: Reprogrammed exit door at (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")");
+		}
+		else
+		{
+		    DimDungeons.LOGGER.error("DIMDUNGEONS ERROR: why is there no exit portal here? (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")" );
+		    //DimDungeons.LOGGER.error("DIMDUNGEONS ERROR: found " + ddim.getBlockState(pos).getBlock().getRegistryName().getPath() );		    
+		}
+	    }
+	}
     }
 }

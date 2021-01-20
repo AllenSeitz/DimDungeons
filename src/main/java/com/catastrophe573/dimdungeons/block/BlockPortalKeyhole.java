@@ -142,13 +142,22 @@ public class BlockPortalKeyhole extends Block
 		    // should we build the dungeon on the other side?
 		    if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isRemote)
 		    {
+			DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setReturnPoint(getReturnPoint(state, pos));
+			ItemPortalKey key = (ItemPortalKey) playerItem.getItem();
+
 			if (shouldBuildDungeon(playerItem))
 			{
-			    DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setReturnPoint(getReturnPoint(state, pos));
-
 			    //DimDungeons.LOGGER.info("BUILDING A NEW DUNGEON!");
 			    DungeonUtils.buildDungeon(worldIn, genData);
 			    playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
+			}
+
+			// regardless of if this is a new or old dungeon, reprogram the exit door
+			if (key != null)
+			{
+			    float entranceX = key.getWarpX(playerItem);
+			    float entranceZ = key.getWarpZ(playerItem);
+			    DungeonUtils.reprogramExistingExitDoorway(worldIn, (long)entranceX, (long)entranceZ, genData);
 			}
 		    }
 
@@ -195,6 +204,7 @@ public class BlockPortalKeyhole extends Block
 		return ActionResultType.SUCCESS;
 	    }
 	}
+
 	return ActionResultType.PASS;
     }
 
@@ -209,7 +219,6 @@ public class BlockPortalKeyhole extends Block
 	    {
 		te.setDestination(key.getWarpX(keyStack), 55.1D, key.getWarpZ(keyStack));
 	    }
-
 	}
     }
 
