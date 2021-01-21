@@ -182,6 +182,7 @@
     "error.dimdungeons.portal_error_10": "The banner pattern on either or both banners is not correct for advanced keys.",
 
 	// server configs
+	"config.dimdungeons.configVersion": "configVersion",
 	"config.dimdungeons.globalBlockProtection": "globalBlockProtection",
 	"config.dimdungeons.breakingWhitelist": "breakingWhitelist",
 	"config.dimdungeons.interactionBlacklist": "interactionBlacklist",
@@ -189,6 +190,20 @@
 	// client configs
 	"config.dimdungeons.showParticles": "showParticles",
 	"config.dimdungeons.playPortalSounds": "playPortalSounds",
+
+	// common configs
+	"config.dimdungeons.basicEntrances": "basicEntrances",
+	"config.dimdungeons.basicFourways": "basicFourways",
+	"config.dimdungeons.basicThreeways": "basicThreeways",
+	"config.dimdungeons.basicHallways": "basicHallways",
+	"config.dimdungeons.basicCorners": "basicCorners",
+	"config.dimdungeons.basicEnds": "basicEnds",
+	"config.dimdungeons.advancedEntrances": "advancedEntrances",
+	"config.dimdungeons.advancedFourways": "advancedFourways",
+	"config.dimdungeons.advancedThreeways": "advancedThreeways",
+	"config.dimdungeons.advancedHallways": "advancedHallways",
+	"config.dimdungeons.advancedCorners": "advancedCorners",
+	"config.dimdungeons.advancedEnds": "advancedEnds",
 
     "enemy.dimdungeons.enderman": "Enderman",
     "enemy.dimdungeons.guardian": "Guardian",

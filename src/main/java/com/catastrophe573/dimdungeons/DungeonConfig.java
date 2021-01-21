@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
@@ -49,6 +50,7 @@ public class DungeonConfig
     }
 
     // server options
+    public static int configVersion = 1;
     public static boolean globalBlockProtection = true;
     public static boolean enableDebugCheats = false;
     public static Set<Block> blockBreakWhitelist = Sets.newHashSet();
@@ -59,10 +61,23 @@ public class DungeonConfig
     public static boolean playPortalSounds = true;
 
     // common options
-    // (none)
+    public static List<? extends List<String>> basicEntrances;
+    public static List<? extends List<String>> basicFourways;
+    public static List<? extends List<String>> basicThreeways;
+    public static List<? extends List<String>> basicHallways;
+    public static List<? extends List<String>> basicCorners;
+    public static List<? extends List<String>> basicEnds;
+    public static List<? extends List<String>> advancedEntrances;
+    public static List<? extends List<String>> advancedFourways;
+    public static List<? extends List<String>> advancedThreeways;
+    public static List<? extends List<String>> advancedHallways;
+    public static List<? extends List<String>> advancedCorners;
+    public static List<? extends List<String>> advancedEnds;
 
     public static class ServerConfig
     {
+	public final ConfigValue<Integer> configVersion;
+
 	public final ForgeConfigSpec.BooleanValue globalBlockProtection;
 
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> breakingWhitelist;
@@ -72,7 +87,7 @@ public class DungeonConfig
 	{
 	    // these are the blocks that the vanilla design does not want the player to 'open', right click, or use
 	    List<String> hardcodedDefaultInteractionBlacklist = Lists.newArrayList();
-	    
+
 	    // most of these are crafting stations I don't want the player to use inside the dungeon
 	    // dispensers, hoppers, droppers, and redstone are the most urgently blacklisted blocks, since they define puzzles
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:dispenser");
@@ -151,9 +166,12 @@ public class DungeonConfig
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_warped_fungus");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_crimson_roots");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_warped_roots");
-	    
+
 	    // list of server options and comments
 	    builder.comment("Options for general mod behavior.").push("general");
+
+	    configVersion = builder.comment("You shouldn't manually change the version number.").translation("config.dimdungeons.configVersion").define("configVersion", 1);
+
 	    globalBlockProtection = builder.comment("If set to FALSE the block protection on the dungeon dimension will be disabled, making the options in the next section useless.").translation("config.dimdungeons.globalBlockProtection")
 		    .define("globalBlockProtection", true);
 	    builder.pop();
@@ -185,8 +203,545 @@ public class DungeonConfig
     // any config that has to deal with datapacks
     public static class CommonConfig
     {
+	// tier 1
+	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> basicEntrances;
+	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> basicFourways;
+	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> basicThreeways;
+	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> basicHallways;
+	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> basicCorners;
+	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> basicEnds;
+
+	// tier 2
+	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedEntrances;
+	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedFourways;
+	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedThreeways;
+	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedHallways;
+	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedCorners;
+	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedEnds;	
+	
 	CommonConfig(ForgeConfigSpec.Builder builder)
 	{
+	    //
+	    // basic entrances
+	    //
+	    List<List<String>> tempBasicEntrances = Lists.newArrayList();
+	    List<String> temp = Lists.newArrayList();
+	    temp.add("dimdungeons:entrance_1");
+	    temp.add("dimdungeons:entrance_2");
+	    temp.add("dimdungeons:entrance_3");
+	    temp.add("dimdungeons:entrance_4");
+	    temp.add("dimdungeons:entrance_5");
+	    temp.add("dimdungeons:entrance_6");
+	    temp.add("dimdungeons:entrance_7");
+	    temp.add("dimdungeons:entrance_8");
+	    temp.add("dimdungeons:entrance_9");
+	    tempBasicEntrances.add(Lists.newArrayList(temp));
+	    temp.clear();
+
+	    //
+	    // basic fourways
+	    //
+	    List<List<String>> tempBasicFourways = Lists.newArrayList();
+	    // add all fourways as separate pools
+	    for (int i = 1; i <= 9; i++)
+	    {
+		temp.add("dimdungeons:fourway_" + i);
+		tempBasicFourways.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // add all combats as separate pools - TWICE
+	    for (int i = 1; i <= 6; i++)
+	    {
+		temp.add("dimdungeons:combat_" + i);
+		tempBasicFourways.add(Lists.newArrayList(temp));
+		tempBasicFourways.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // individual room pools
+	    temp.add("dimdungeons:disco_1");
+	    temp.add("dimdungeons:disco_2");
+	    temp.add("dimdungeons:disco_3");
+	    temp.add("dimdungeons:disco_4");
+	    tempBasicFourways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:redstrap_1");
+	    tempBasicFourways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:hiddenpath_1");
+	    tempBasicFourways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:hiddenpath_2");
+	    temp.add("dimdungeons:hiddenpath_3");
+	    tempBasicFourways.add(Lists.newArrayList(temp));
+	    temp.clear();
+
+	    //
+	    // basic threeways
+	    //
+	    List<List<String>> tempBasicThreeways = Lists.newArrayList();
+	    // add all threeways as separate pools
+	    for (int i = 1; i <= 5; i++)
+	    {
+		temp.add("dimdungeons:threeway_" + i);
+		tempBasicThreeways.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // add all morethrees as separate pools
+	    for (int i = 1; i <= 6; i++)
+	    {
+		temp.add("dimdungeons:morethree_" + i);
+		tempBasicThreeways.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // individual room pools
+	    temp.add("dimdungeons:tetris_1");
+	    temp.add("dimdungeons:tetris_2");
+	    temp.add("dimdungeons:tetris_3");
+	    tempBasicThreeways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:redstrap_4");
+	    tempBasicThreeways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:advice_2");
+	    tempBasicThreeways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:mazenotfound_2");
+	    tempBasicThreeways.add(Lists.newArrayList(temp));
+	    temp.clear();
+
+	    //
+	    // basic hallways
+	    //
+	    List<List<String>> tempBasicHallways = Lists.newArrayList();
+	    // add all hallways as separate pools
+	    for (int i = 1; i <= 6; i++)
+	    {
+		temp.add("dimdungeons:hallway_" + i);
+		tempBasicHallways.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // add all extrahall as separate pools
+	    for (int i = 1; i <= 5; i++)
+	    {
+		temp.add("dimdungeons:extrahall_" + i);
+		tempBasicHallways.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // individual room pools
+	    temp.add("dimdungeons:coalhall_1");
+	    temp.add("dimdungeons:coalhall_2");
+	    temp.add("dimdungeons:coalhall_3");
+	    tempBasicHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:juke_1");
+	    tempBasicHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:advice_3");
+	    tempBasicHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:library_2");
+	    tempBasicHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:moohall_1");
+	    tempBasicHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:redstrap_2");
+	    tempBasicHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:mazenotfound_3");
+	    tempBasicHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:yinyang_1");
+	    temp.add("dimdungeons:yinyang_2");
+	    tempBasicHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:waterhall_1");
+	    tempBasicHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:tempt_1");
+	    temp.add("dimdungeons:tempt_2");
+	    temp.add("dimdungeons:tempt_3");
+	    temp.add("dimdungeons:tempt_4");
+	    tempBasicHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+
+	    //
+	    // basic corners
+	    //
+	    List<List<String>> tempBasicCorners = Lists.newArrayList();
+	    // add all corners as separate pools
+	    for (int i = 1; i <= 8; i++)
+	    {
+		temp.add("dimdungeons:corner_" + i);
+		tempBasicCorners.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // add all longcorner as separate pools
+	    for (int i = 1; i <= 5; i++)
+	    {
+		temp.add("dimdungeons:longcorner_" + i);
+		tempBasicCorners.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // individual room pools
+	    temp.add("dimdungeons:redstrap_3");
+	    tempBasicCorners.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:skullcorner_1");
+	    tempBasicCorners.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:mazenotfound_1");
+	    tempBasicCorners.add(Lists.newArrayList(temp));
+	    temp.clear();
+
+	    //
+	    // basic ends
+	    //
+	    List<List<String>> tempBasicEnds = Lists.newArrayList();
+	    // add all deadends as separate pools
+	    for (int i = 1; i <= 8; i++)
+	    {
+		temp.add("dimdungeons:deadend_" + i);
+		tempBasicEnds.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // individual room pools
+	    temp.add("dimdungeons:coffin_1");
+	    temp.add("dimdungeons:coffin_2");
+	    temp.add("dimdungeons:coffin_3");
+	    temp.add("dimdungeons:coffin_4");
+	    temp.add("dimdungeons:coffin_5");
+	    tempBasicEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:advice_1");
+	    tempBasicEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:restroom_1");
+	    tempBasicEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    tempBasicEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:restroom_2");
+	    temp.add("dimdungeons:restroom_3");
+	    temp.add("dimdungeons:restroom_4");
+	    temp.add("dimdungeons:restroom_5");
+	    tempBasicEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:shoutout_1");
+	    temp.add("dimdungeons:shoutout_2");
+	    temp.add("dimdungeons:shoutout_3");
+	    tempBasicEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:spawner_1");
+	    temp.add("dimdungeons:spawner_2");
+	    temp.add("dimdungeons:spawner_3");
+	    temp.add("dimdungeons:spawner_4");
+	    temp.add("dimdungeons:spawner_5");
+	    temp.add("dimdungeons:spawner_6");
+	    temp.add("dimdungeons:spawner_6");
+	    temp.add("dimdungeons:spawner_6");
+	    tempBasicEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:redspuzzle_1");
+	    temp.add("dimdungeons:redspuzzle_2");
+	    temp.add("dimdungeons:redspuzzle_3");
+	    temp.add("dimdungeons:redspuzzle_4");
+	    tempBasicEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:deathtrap_1");
+	    temp.add("dimdungeons:deathtrap_2");
+	    temp.add("dimdungeons:deathtrap_3");
+	    temp.add("dimdungeons:deathtrap_4");
+	    tempBasicEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:keyroom_1");
+	    temp.add("dimdungeons:keyroom_2");
+	    tempBasicEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:keyroom_3");
+	    temp.add("dimdungeons:keyroom_4");
+	    tempBasicEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:library_1");
+	    tempBasicEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:crueltrap_1");
+	    temp.add("dimdungeons:crueltrap_2");
+	    temp.add("dimdungeons:crueltrap_3");
+	    tempBasicEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:beacon_2");
+	    tempBasicEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:freebie_1");
+	    temp.add("dimdungeons:freebie_2");
+	    temp.add("dimdungeons:freebie_3");
+	    tempBasicEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    
+	    //
+	    // advanced entrances
+	    //
+	    List<List<String>> tempAdvancedEntrances = Lists.newArrayList();
+	    temp.add("dimdungeons:entrance_1");
+	    temp.add("dimdungeons:entrance_2");
+	    temp.add("dimdungeons:entrance_3");
+	    temp.add("dimdungeons:entrance_4");
+	    temp.add("dimdungeons:entrance_5");
+	    temp.add("dimdungeons:entrance_6");
+	    temp.add("dimdungeons:entrance_7");
+	    temp.add("dimdungeons:entrance_8");
+	    temp.add("dimdungeons:entrance_9");
+	    tempAdvancedEntrances.add(Lists.newArrayList(temp));
+	    temp.clear();    
+
+	    //
+	    // advanced fourways
+	    //
+	    List<List<String>> tempAdvancedFourways = Lists.newArrayList();
+	    // add all fourways as separate pools
+	    for (int i = 1; i <= 9; i++)
+	    {
+		temp.add("dimdungeons:fourway_" + i);
+		tempAdvancedFourways.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // add all combats as separate pools - TWICE
+	    for (int i = 1; i <= 6; i++)
+	    {
+		temp.add("dimdungeons:combat_" + i);
+		tempAdvancedFourways.add(Lists.newArrayList(temp));
+		tempAdvancedFourways.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // individual room pools
+	    temp.add("dimdungeons:disco_1");
+	    temp.add("dimdungeons:disco_2");
+	    temp.add("dimdungeons:disco_3");
+	    temp.add("dimdungeons:disco_4");
+	    tempAdvancedFourways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:redstrap_1");
+	    tempAdvancedFourways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:hiddenpath_1");
+	    temp.add("dimdungeons:swimmaze_1");
+	    tempAdvancedFourways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:hiddenpath_2");
+	    temp.add("dimdungeons:hiddenpath_3");
+	    tempAdvancedFourways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    tempAdvancedFourways.add(Lists.newArrayList(temp));
+	    temp.clear();
+
+	    //
+	    // advanced threeways
+	    //
+	    List<List<String>> tempAdvancedThreeways = Lists.newArrayList();
+	    // add all threeways as separate pools
+	    for (int i = 1; i <= 5; i++)
+	    {
+		temp.add("dimdungeons:threeway_" + i);
+		tempAdvancedThreeways.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // add all morethrees as separate pools
+	    for (int i = 1; i <= 6; i++)
+	    {
+		temp.add("dimdungeons:morethree_" + i);
+		tempAdvancedThreeways.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // individual room pools
+	    temp.add("dimdungeons:tetris_1");
+	    temp.add("dimdungeons:tetris_2");
+	    temp.add("dimdungeons:tetris_3");
+	    tempAdvancedThreeways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:redstrap_4");
+	    tempAdvancedThreeways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:advice_2");
+	    tempAdvancedThreeways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:mazenotfound_2");
+	    tempAdvancedThreeways.add(Lists.newArrayList(temp));
+	    temp.clear();
+
+	    //
+	    // advanced hallways
+	    //
+	    List<List<String>> tempAdvancedHallways = Lists.newArrayList();
+	    // add all hallways as separate pools
+	    for (int i = 1; i <= 6; i++)
+	    {
+		temp.add("dimdungeons:hallway_" + i);
+		tempAdvancedHallways.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // add all extrahall as separate pools
+	    for (int i = 1; i <= 5; i++)
+	    {
+		temp.add("dimdungeons:extrahall_" + i);
+		tempAdvancedHallways.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // individual room pools
+	    temp.add("dimdungeons:coalhall_1");
+	    temp.add("dimdungeons:coalhall_2");
+	    temp.add("dimdungeons:coalhall_3");
+	    tempAdvancedHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:juke_1");
+	    tempAdvancedHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:advice_3");
+	    tempAdvancedHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:library_2");
+	    tempAdvancedHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:moohall_1");
+	    tempAdvancedHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:redstrap_2");
+	    tempAdvancedHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:mazenotfound_3");
+	    tempAdvancedHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:yinyang_1");
+	    temp.add("dimdungeons:yinyang_2");
+	    tempAdvancedHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:waterhall_1");
+	    tempAdvancedHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:tempt_1");
+	    temp.add("dimdungeons:tempt_2");
+	    temp.add("dimdungeons:tempt_3");
+	    temp.add("dimdungeons:tempt_4");
+	    tempAdvancedHallways.add(Lists.newArrayList(temp));
+	    temp.clear();
+
+	    //
+	    // advanced corners
+	    //
+	    List<List<String>> tempAdvancedCorners = Lists.newArrayList();
+	    // add all corners as separate pools
+	    for (int i = 1; i <= 8; i++)
+	    {
+		temp.add("dimdungeons:corner_" + i);
+		tempAdvancedCorners.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // add all longcorner as separate pools
+	    for (int i = 1; i <= 5; i++)
+	    {
+		temp.add("dimdungeons:longcorner_" + i);
+		tempAdvancedCorners.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // individual room pools
+	    temp.add("dimdungeons:redstrap_3");
+	    tempAdvancedCorners.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:skullcorner_1");
+	    tempAdvancedCorners.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:mazenotfound_1");
+	    tempAdvancedCorners.add(Lists.newArrayList(temp));
+	    temp.clear();
+
+	    //
+	    // advanced ends
+	    //
+	    List<List<String>> tempAdvancedEnds = Lists.newArrayList();
+	    // add all deadends as separate pools
+	    for (int i = 1; i <= 8; i++)
+	    {
+		temp.add("dimdungeons:deadend_" + i);
+		tempAdvancedEnds.add(Lists.newArrayList(temp));
+		temp.clear();
+	    }
+	    // individual room pools
+	    temp.add("dimdungeons:coffin_1");
+	    temp.add("dimdungeons:coffin_2");
+	    temp.add("dimdungeons:coffin_4");
+	    tempAdvancedEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:advice_1");
+	    tempAdvancedEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:restroom_1");
+	    tempAdvancedEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    tempAdvancedEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:shoutout_1");
+	    temp.add("dimdungeons:shoutout_2");
+	    temp.add("dimdungeons:shoutout_3");
+	    tempAdvancedEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:spawner_1");
+	    temp.add("dimdungeons:spawner_2");
+	    temp.add("dimdungeons:spawner_3");
+	    temp.add("dimdungeons:spawner_4");
+	    temp.add("dimdungeons:spawner_5");
+	    temp.add("dimdungeons:spawner_6");
+	    tempAdvancedEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:redspuzzle_1");
+	    temp.add("dimdungeons:redspuzzle_2");
+	    temp.add("dimdungeons:redspuzzle_3");
+	    temp.add("dimdungeons:redspuzzle_4");
+	    tempAdvancedEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:deathtrap_1");
+	    temp.add("dimdungeons:deathtrap_2");
+	    temp.add("dimdungeons:deathtrap_3");
+	    temp.add("dimdungeons:deathtrap_4");
+	    tempAdvancedEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:keytrap_1");
+	    temp.add("dimdungeons:keytrap_2");
+	    temp.add("dimdungeons:keytrap_3");
+	    temp.add("dimdungeons:keytrap_4");
+	    temp.add("dimdungeons:keytrap_5");
+	    tempAdvancedEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:library_1");
+	    tempAdvancedEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:crueltrap_1");
+	    temp.add("dimdungeons:crueltrap_2");
+	    temp.add("dimdungeons:crueltrap_3");
+	    tempAdvancedEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:beacon_1");
+	    tempAdvancedEnds.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    
+	    // room generation for tier 1 dungeons
+	    builder.comment("Room Selections for Basic Dungeons").push("roomsTier1");
+	    basicEntrances = builder.translation("config.dimdungeons.basicEntrances").define("basicEntrances", tempBasicEntrances);
+	    basicFourways = builder.translation("config.dimdungeons.basicFourways").define("basicFourways", tempBasicFourways);
+	    basicThreeways = builder.translation("config.dimdungeons.basicThreeways").define("basicThreeways", tempBasicThreeways);
+	    basicHallways = builder.translation("config.dimdungeons.basicHallways").define("basicHallways", tempBasicHallways);
+	    basicCorners = builder.translation("config.dimdungeons.basicCorners").define("basicCorners", tempBasicCorners);
+	    basicEnds = builder.translation("config.dimdungeons.basicEnds").define("basicEnds", tempBasicEnds);
+	    builder.pop();
+	    
+	    // room generation for tier 2 dungeons
+	    builder.comment("Room Selections for Advanced Dungeons").push("roomsTier2");
+	    advancedEntrances = builder.translation("config.dimdungeons.advancedEntrances").define("advancedEntrances", tempAdvancedEntrances);
+	    advancedFourways = builder.translation("config.dimdungeons.advancedFourways").define("advancedFourways", tempAdvancedFourways);
+	    advancedThreeways = builder.translation("config.dimdungeons.advancedThreeways").define("advancedThreeways", tempAdvancedThreeways);
+	    advancedHallways = builder.translation("config.dimdungeons.advancedHallways").define("advancedHallways", tempAdvancedHallways);
+	    advancedCorners = builder.translation("config.dimdungeons.advancedCorners").define("advancedCorners", tempAdvancedCorners);
+	    advancedEnds = builder.translation("config.dimdungeons.advancedEnds").define("advancedEnds", tempAdvancedEnds);
+	    builder.pop();	    
 	}
     }
 
@@ -198,9 +753,23 @@ public class DungeonConfig
 
     public static void refreshServer()
     {
-	// this is also where COMMON config would be refreshed
+	// this is also where COMMON config is refreshed
+	basicEntrances = COMMON.basicEntrances.get();
+	basicFourways = COMMON.basicFourways.get();
+	basicThreeways = COMMON.basicThreeways.get();
+	basicHallways = COMMON.basicHallways.get();
+	basicCorners = COMMON.basicCorners.get();
+	basicEnds = COMMON.basicEnds.get();
 
+	advancedEntrances = COMMON.advancedEntrances.get();
+	advancedFourways = COMMON.advancedFourways.get();
+	advancedThreeways = COMMON.advancedThreeways.get();
+	advancedHallways = COMMON.advancedHallways.get();
+	advancedCorners = COMMON.advancedCorners.get();
+	advancedEnds = COMMON.advancedEnds.get();
+	
 	// refresh SERVER
+	configVersion = SERVER.configVersion.get();
 	globalBlockProtection = SERVER.globalBlockProtection.get();
 	blockBreakWhitelist = SERVER.breakingWhitelist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
 	blockInteractBlacklist = SERVER.interactionBlacklist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
