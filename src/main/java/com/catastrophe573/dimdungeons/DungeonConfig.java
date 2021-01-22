@@ -419,8 +419,6 @@ public class DungeonConfig
 	    temp.add("dimdungeons:restroom_1");
 	    tempBasicEnds.add(Lists.newArrayList(temp));
 	    temp.clear();
-	    tempBasicEnds.add(Lists.newArrayList(temp));
-	    temp.clear();
 	    temp.add("dimdungeons:restroom_2");
 	    temp.add("dimdungeons:restroom_3");
 	    temp.add("dimdungeons:restroom_4");
@@ -530,8 +528,6 @@ public class DungeonConfig
 	    temp.clear();
 	    temp.add("dimdungeons:hiddenpath_2");
 	    temp.add("dimdungeons:hiddenpath_3");
-	    tempAdvancedFourways.add(Lists.newArrayList(temp));
-	    temp.clear();
 	    tempAdvancedFourways.add(Lists.newArrayList(temp));
 	    temp.clear();
 
@@ -675,8 +671,6 @@ public class DungeonConfig
 	    tempAdvancedEnds.add(Lists.newArrayList(temp));
 	    temp.clear();
 	    temp.add("dimdungeons:restroom_1");
-	    tempAdvancedEnds.add(Lists.newArrayList(temp));
-	    temp.clear();
 	    tempAdvancedEnds.add(Lists.newArrayList(temp));
 	    temp.clear();
 	    temp.add("dimdungeons:shoutout_1");
