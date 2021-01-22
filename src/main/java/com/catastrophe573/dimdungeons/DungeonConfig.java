@@ -217,8 +217,8 @@ public class DungeonConfig
 	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedThreeways;
 	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedHallways;
 	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedCorners;
-	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedEnds;	
-	
+	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedEnds;
+
 	CommonConfig(ForgeConfigSpec.Builder builder)
 	{
 	    //
@@ -476,7 +476,7 @@ public class DungeonConfig
 	    temp.add("dimdungeons:freebie_3");
 	    tempBasicEnds.add(Lists.newArrayList(temp));
 	    temp.clear();
-	    
+
 	    //
 	    // advanced entrances
 	    //
@@ -491,7 +491,7 @@ public class DungeonConfig
 	    temp.add("dimdungeons:entrance_8");
 	    temp.add("dimdungeons:entrance_9");
 	    tempAdvancedEntrances.add(Lists.newArrayList(temp));
-	    temp.clear();    
+	    temp.clear();
 
 	    //
 	    // advanced fourways
@@ -535,13 +535,19 @@ public class DungeonConfig
 	    // advanced threeways
 	    //
 	    List<List<String>> tempAdvancedThreeways = Lists.newArrayList();
-	    // add all threeways as separate pools
-	    for (int i = 1; i <= 5; i++)
-	    {
-		temp.add("dimdungeons:threeway_" + i);
-		tempAdvancedThreeways.add(Lists.newArrayList(temp));
-		temp.clear();
-	    }
+	    temp.add("dimdungeons:threeway_1");
+	    temp.add("dimdungeons:threeway_2");
+	    tempAdvancedThreeways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:threeway_3");
+	    tempAdvancedThreeways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:threeway_4");
+	    tempAdvancedThreeways.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:threeway_5"); // also hiddenpath_1
+	    tempAdvancedThreeways.add(Lists.newArrayList(temp));
+	    temp.clear();
 	    // add all morethrees as separate pools
 	    for (int i = 1; i <= 6; i++)
 	    {
@@ -716,7 +722,7 @@ public class DungeonConfig
 	    temp.add("dimdungeons:beacon_1");
 	    tempAdvancedEnds.add(Lists.newArrayList(temp));
 	    temp.clear();
-	    
+
 	    // room generation for tier 1 dungeons
 	    builder.comment("Room Selections for Basic Dungeons").push("roomsTier1");
 	    basicEntrances = builder.translation("config.dimdungeons.basicEntrances").define("basicEntrances", tempBasicEntrances);
@@ -726,7 +732,7 @@ public class DungeonConfig
 	    basicCorners = builder.translation("config.dimdungeons.basicCorners").define("basicCorners", tempBasicCorners);
 	    basicEnds = builder.translation("config.dimdungeons.basicEnds").define("basicEnds", tempBasicEnds);
 	    builder.pop();
-	    
+
 	    // room generation for tier 2 dungeons
 	    builder.comment("Room Selections for Advanced Dungeons").push("roomsTier2");
 	    advancedEntrances = builder.translation("config.dimdungeons.advancedEntrances").define("advancedEntrances", tempAdvancedEntrances);
@@ -735,7 +741,7 @@ public class DungeonConfig
 	    advancedHallways = builder.translation("config.dimdungeons.advancedHallways").define("advancedHallways", tempAdvancedHallways);
 	    advancedCorners = builder.translation("config.dimdungeons.advancedCorners").define("advancedCorners", tempAdvancedCorners);
 	    advancedEnds = builder.translation("config.dimdungeons.advancedEnds").define("advancedEnds", tempAdvancedEnds);
-	    builder.pop();	    
+	    builder.pop();
 	}
     }
 
@@ -761,7 +767,7 @@ public class DungeonConfig
 	advancedHallways = COMMON.advancedHallways.get();
 	advancedCorners = COMMON.advancedCorners.get();
 	advancedEnds = COMMON.advancedEnds.get();
-	
+
 	// refresh SERVER
 	configVersion = SERVER.configVersion.get();
 	globalBlockProtection = SERVER.globalBlockProtection.get();
