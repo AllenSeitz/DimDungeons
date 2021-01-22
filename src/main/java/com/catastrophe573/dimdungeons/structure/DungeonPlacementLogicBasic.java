@@ -8,6 +8,7 @@ import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonRoom;
+import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
@@ -67,7 +68,7 @@ public class DungeonPlacementLogicBasic
 	DimDungeons.LOGGER.debug("DIMDUNGEONS START BASIC STRUCTURE at " + x + ", " + z);
 
 	// this is the data structure for an entire dungeon
-	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ);
+	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.BASIC);
 	dbl.calculateDungeonShape(25);
 
 	// place all 64 rooms (many will be blank), for example the entrance room is at [4][7] in this array
@@ -145,7 +146,7 @@ public class DungeonPlacementLogicBasic
 	MinecraftServer minecraftserver = ((World) world).getServer();
 	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureTemplateManager();
 
-	Template template = templatemanager.getTemplate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + room.structure));
+	Template template = templatemanager.getTemplate(new ResourceLocation(room.structure));
 	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunk(cpos);
 	placementsettings.setBoundingBox(placementsettings.getBoundingBox());
 
@@ -224,7 +225,7 @@ public class DungeonPlacementLogicBasic
 	}
 
 	// this is the date structure for an entire dungeon
-	DungeonBuilderLogic dbl = new DungeonBuilderLogic(random, entranceX, entranceZ);
+	DungeonBuilderLogic dbl = new DungeonBuilderLogic(random, entranceX, entranceZ, DungeonType.BASIC);
 
 	//	// trigger some debug code for test layouts
 	//	if (world getWorldInfo(). getWorldName().equalsIgnoreCase("DimDungeonsDebugOne"))

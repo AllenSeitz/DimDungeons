@@ -5,40 +5,25 @@ import java.util.Random;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
+import com.catastrophe573.dimdungeons.DungeonConfig;
+import com.google.common.collect.Lists;
+
 import net.minecraft.util.Direction;
 import net.minecraft.util.Rotation;
 
 // this class is used by the DungeonChunkGenerator to design dungeons
 public class DungeonBuilderLogic
 {
-    // entrance structures appear once per dungeon as the start room
-    protected String[] entrance = { "entrance_1", "entrance_2", "entrance_3", "entrance_4", "entrance_5", "entrance_6", "entrance_7", "entrance_8", "entrance_9" };
-
-    // dead ends contain one door
-    protected String end[] = { "deadend_1", "deadend_2", "deadend_3", "deadend_4", "deadend_5", "deadend_6", "deadend_7", "deadend_8", "coffin_1", "advice_room_1", "restroom_1", "shoutout_1", "spawner_1", "redspuzzle_1", "deathtrap_1", "keyroom_1",
-	    "library_end", "crueltrap_1", "beacon_1", "freebie_1" };
-
-    // removed "magicpuzzle_1" because the new block protection prevents it from working
-
-    // corners contain two doors on adjacent sides
-    protected String corner[] = { "corner_1", "corner_2", "corner_3", "corner_4", "corner_5", "corner_6", "corner_7", "corner_8", "redstrap_3", "longcorner_1", "longcorner_2", "longcorner_3", "longcorner_4", "longcorner_5", "skullcorner",
-	    "mazenotfound_1" };
-
-    // hallways contain two doors on opposite sides
-    protected String hallway[] = { "hallway_1", "hallway_2", "hallway_3", "hallway_4", "hallway_5", "hallway_6", "advice_room_3", "tempt_1", "redstrap_2", "extrahall_1", "extrahall_2", "extrahall_3", "coalhall_1", "moohall", "mazenotfound_3",
-	    "library_hall", "waterhall_1", "yinyang_1" };
-
-    // threeways contain three doors and one wall
-    protected String threeway[] = { "threeway_1", "threeway_2", "threeway_3", "threeway_4", "threeway_5", "advice_room_2", "redstrap_4", "morethree_1", "morethree_2", "morethree_3", "tetris_1", "mazenotfound_2", "morethree_4", "morethree_5",
-	    "morethree_6" };
-
-    // fourways simply have all four possible doors open
-    protected String fourway[] = { "fourway_1", "fourway_2", "fourway_3", "fourway_4", "fourway_5", "fourway_6", "fourway_7", "fourway_8", "fourway_9", "combat_1", "combat_1", "redstrap_1", "disco_1", "hiddenpath_1" };
-
     // an enumeration of the six room types, used internally for randomization and classification
     enum RoomType
     {
 	ENTRANCE, END, CORNER, HALLWAY, THREEWAY, FOURWAY, NONE
+    };
+
+    // an enumeration of dungeon types
+    enum DungeonType
+    {
+	BASIC, ADVANCED
     };
 
     // dungeons are a maximum of 8x8 chunks (always much smaller) where each chunk is a structure at a specific rotation
@@ -94,7 +79,15 @@ public class DungeonBuilderLogic
     public int enemyVariation1 = 0;
     public int enemyVariation2 = 0;
 
-    // after shuffling the list of structures, these are used to ensure no duplicates
+    // these contain the candidates from pool selection, from the config file
+    ArrayList<String> entrance = Lists.newArrayList();
+    ArrayList<String> fourway = Lists.newArrayList();
+    ArrayList<String> threeway = Lists.newArrayList();
+    ArrayList<String> hallway = Lists.newArrayList();
+    ArrayList<String> corner = Lists.newArrayList();
+    ArrayList<String> end = Lists.newArrayList();
+
+    // after shuffling the list of structures these are used to ensure no duplicates
     protected int entranceIndex = 0;
     protected int endIndex = 0;
     protected int cornerIndex = 0;
@@ -103,23 +96,100 @@ public class DungeonBuilderLogic
     protected int fourwayIndex = 0;
 
     // this is initialized during the constructor with values from the ChunkGenerator, to ensure the dungeons use the world seed
+    // or at least that was the intent in 1.14 anyways, but as of 1.16 dungeons are no longer built insid
     protected Random rand;
 
-    public DungeonBuilderLogic(Random randIn, long chunkX, long chunkZ)
+    public DungeonBuilderLogic(Random randIn, long chunkX, long chunkZ, DungeonType type)
     {
-	//System.out.println("START CONSTRUCTOR");
-	// copied the seed logic from the vanilla decorate function (which may be flawed, but since I only use the +X/+Z quadrant it won't matter)
-	//long newSeed = (worldSeed + (long) (chunkX * chunkX * 4987142) + (long) (chunkX * 5947611) + (long) (chunkZ * chunkZ) * 4392871L + (long) (chunkZ * 389711) ^ worldSeed);
-	//rand = new Random(newSeed);
-	//DimDungeons.LOGGER.info("DUNGEON SEED: " + newSeed);
 	rand = randIn;
 
-	shuffleArray(entrance);
-	shuffleArray(end);
-	shuffleArray(corner);
-	shuffleArray(hallway);
-	shuffleArray(threeway);
-	shuffleArray(fourway);
+	if (type == DungeonType.BASIC)
+	{
+	    // pick one candidate from each pool
+	    for (int i = 0; i < DungeonConfig.basicEntrances.size(); i++)
+	    {
+		int poolSize = DungeonConfig.basicEntrances.get(i).size();
+		int index = rand.nextInt(poolSize);
+		entrance.add(DungeonConfig.basicEntrances.get(i).get(index));
+	    }
+	    for (int i = 0; i < DungeonConfig.basicFourways.size(); i++)
+	    {
+		int poolSize = DungeonConfig.basicFourways.get(i).size();
+		int index = rand.nextInt(poolSize);
+		fourway.add(DungeonConfig.basicFourways.get(i).get(index));
+	    }
+	    for (int i = 0; i < DungeonConfig.basicThreeways.size(); i++)
+	    {
+		int poolSize = DungeonConfig.basicThreeways.get(i).size();
+		int index = rand.nextInt(poolSize);
+		threeway.add(DungeonConfig.basicThreeways.get(i).get(index));
+	    }
+	    for (int i = 0; i < DungeonConfig.basicHallways.size(); i++)
+	    {
+		int poolSize = DungeonConfig.basicHallways.get(i).size();
+		int index = rand.nextInt(poolSize);
+		hallway.add(DungeonConfig.basicHallways.get(i).get(index));
+	    }
+	    for (int i = 0; i < DungeonConfig.basicCorners.size(); i++)
+	    {
+		int poolSize = DungeonConfig.basicCorners.get(i).size();
+		int index = rand.nextInt(poolSize);
+		corner.add(DungeonConfig.basicCorners.get(i).get(index));
+	    }
+	    for (int i = 0; i < DungeonConfig.basicEnds.size(); i++)
+	    {
+		int poolSize = DungeonConfig.basicEnds.get(i).size();
+		int index = rand.nextInt(poolSize);
+		end.add(DungeonConfig.basicEnds.get(i).get(index));
+	    }
+	}
+	else if (type == DungeonType.ADVANCED)
+	{
+	    // pick one candidate from each pool
+	    for (int i = 0; i < DungeonConfig.advancedEntrances.size(); i++)
+	    {
+		int poolSize = DungeonConfig.advancedEntrances.get(i).size();
+		int index = rand.nextInt(poolSize);
+		entrance.add(DungeonConfig.advancedEntrances.get(i).get(index));
+	    }
+	    for (int i = 0; i < DungeonConfig.advancedFourways.size(); i++)
+	    {
+		int poolSize = DungeonConfig.advancedFourways.get(i).size();
+		int index = rand.nextInt(poolSize);
+		fourway.add(DungeonConfig.advancedFourways.get(i).get(index));
+	    }
+	    for (int i = 0; i < DungeonConfig.advancedThreeways.size(); i++)
+	    {
+		int poolSize = DungeonConfig.advancedThreeways.get(i).size();
+		int index = rand.nextInt(poolSize);
+		threeway.add(DungeonConfig.advancedThreeways.get(i).get(index));
+	    }
+	    for (int i = 0; i < DungeonConfig.advancedHallways.size(); i++)
+	    {
+		int poolSize = DungeonConfig.advancedHallways.get(i).size();
+		int index = rand.nextInt(poolSize);
+		hallway.add(DungeonConfig.advancedHallways.get(i).get(index));
+	    }
+	    for (int i = 0; i < DungeonConfig.advancedCorners.size(); i++)
+	    {
+		int poolSize = DungeonConfig.advancedCorners.get(i).size();
+		int index = rand.nextInt(poolSize);
+		corner.add(DungeonConfig.advancedCorners.get(i).get(index));
+	    }
+	    for (int i = 0; i < DungeonConfig.advancedEnds.size(); i++)
+	    {
+		int poolSize = DungeonConfig.advancedEnds.get(i).size();
+		int index = rand.nextInt(poolSize);
+		end.add(DungeonConfig.advancedEnds.get(i).get(index));
+	    }
+	}
+
+	shuffleStringArray(entrance);
+	shuffleStringArray(fourway);
+	shuffleStringArray(threeway);
+	shuffleStringArray(hallway);
+	shuffleStringArray(corner);
+	shuffleStringArray(end);
 
 	for (int i = 0; i < 8; i++)
 	{
@@ -131,20 +201,15 @@ public class DungeonBuilderLogic
 
 	enemyVariation1 = rand.nextInt(3);
 	enemyVariation2 = rand.nextInt(3);
-	//System.out.println("EMD CONSTRUCTOR");
     }
 
     // when this function is done you may read the dungeon layout from the public variable finalLayout
     public void calculateDungeonShape(int maxNumRooms)
     {
 	//System.out.println("START CALC DUNGEON SHAPE");
-	// temp hacks for advanced room placement until I change how the random room selection works
-	boolean allowHardRooms = maxNumRooms > 42;
-	RoomType mazeNotFoundVariations[] = { RoomType.THREEWAY, RoomType.CORNER, RoomType.HALLWAY };
-	RoomType mazeVariationAllowed = mazeNotFoundVariations[rand.nextInt(3)];
 
 	// step 1: place a constant entrance at the center of the bottom row
-	placeRoomShape(4, 7, entrance[entranceIndex], RoomType.ENTRANCE, Rotation.NONE);
+	placeRoomShape(4, 7, entrance.get(entranceIndex), RoomType.ENTRANCE, Rotation.NONE);
 	entranceIndex++;
 	int numRoomsPlaced = 1;
 
@@ -603,175 +668,28 @@ public class DungeonBuilderLogic
 	    String nextRoom = "";
 	    if (nextType == RoomType.FOURWAY)
 	    {
-		nextRoom = fourway[fourwayIndex];
-		if (nextRoom == "fourway_1" && allowHardRooms && rand.nextInt(2) == 1)
-		{
-		    // a very exclusive, very difficult room
-		    nextRoom = "swimmaze_1";
-		}
-		if (nextRoom == "combat_1")
-		{
-		    // the combat room appears at most twice per dungeon, and there are 5 variations of it
-		    int variation = rand.nextInt(5) + 1;
-		    nextRoom = nextRoom.replace("1", "" + variation);
-		}
-		if (nextRoom == "disco_1")
-		{
-		    // the disco room appears at most once per dungeon, and there are 4 variations of it
-		    int variation = rand.nextInt(4) + 1;
-		    nextRoom = nextRoom.replace("1", "" + variation);
-		}
-		if (nextRoom == "hiddenpath_1")
-		{
-		    // the secret room appears at most once per dungeon, and there are 3 variations of it
-		    int variation = rand.nextInt(3) + 1;
-		    nextRoom = nextRoom.replace("1", "" + variation);
-		}
-		fourwayIndex = fourwayIndex == fourway.length - 1 ? 0 : fourwayIndex + 1;
+		nextRoom = fourway.get(fourwayIndex);
+		fourwayIndex = fourwayIndex == fourway.size() - 1 ? 0 : fourwayIndex + 1;
 	    }
 	    if (nextType == RoomType.THREEWAY)
 	    {
-		nextRoom = threeway[threewayIndex];
-		if (nextRoom.contains("mazenotfound") && mazeVariationAllowed != RoomType.THREEWAY)
-		{
-		    // skip it and take the next room - THIS CHECK MUST BE FIRST
-		    threewayIndex = threewayIndex == threeway.length - 1 ? 0 : threewayIndex + 1;
-		    nextRoom = threeway[threewayIndex];
-		}
-		if (nextRoom == "tetris_1")
-		{
-		    // the tetris room appears at most once per dungeon, and there are 3 variations of it
-		    int variation = rand.nextInt(3) + 1;
-		    nextRoom = nextRoom.replace("1", "" + variation);
-		}
-		threewayIndex = threewayIndex == threeway.length - 1 ? 0 : threewayIndex + 1;
+		nextRoom = threeway.get(threewayIndex);
+		threewayIndex = threewayIndex == threeway.size() - 1 ? 0 : threewayIndex + 1;
 	    }
 	    if (nextType == RoomType.HALLWAY)
 	    {
-		nextRoom = hallway[hallwayIndex];
-		if (nextRoom.contains("mazenotfound") && mazeVariationAllowed != RoomType.HALLWAY)
-		{
-		    // skip it and take the next room - THIS CHECK MUST BE FIRST
-		    hallwayIndex = hallwayIndex == hallway.length - 1 ? 0 : hallwayIndex + 1;
-		    nextRoom = hallway[hallwayIndex];
-		}
-		if (nextRoom == "tempt_1")
-		{
-		    // the chest chance room appears at most once per dungeon, and there are 4 variations of it
-		    int variation = rand.nextInt(4) + 1;
-		    nextRoom = nextRoom.replace("1", "" + variation);
-		}
-		if (nextRoom == "extrahall_3")
-		{
-		    // the ender hallway room appears at most once per dungeon, and there are 3 variations of it
-		    int variation = rand.nextInt(3) + 3;
-		    nextRoom = nextRoom.replace("1", "" + variation);
-		}
-		if (nextRoom == "coalhall_1")
-		{
-		    // the coal room appears at most once per dungeon, and there are 3 variations of it
-		    int variation = rand.nextInt(3) + 1;
-		    nextRoom = nextRoom.replace("1", "" + variation);
-		}
-		if (nextRoom == "yinyang_1")
-		{
-		    // the yinyang room appears at most once per dungeon, and there are 2 variations of it
-		    int variation = rand.nextInt(2) + 1;
-		    nextRoom = nextRoom.replace("1", "" + variation);
-		}
-		hallwayIndex = hallwayIndex == hallway.length - 1 ? 0 : hallwayIndex + 1;
+		nextRoom = hallway.get(hallwayIndex);
+		hallwayIndex = hallwayIndex == hallway.size() - 1 ? 0 : hallwayIndex + 1;
 	    }
 	    if (nextType == RoomType.CORNER)
 	    {
-		nextRoom = corner[cornerIndex];
-		if (nextRoom.contains("mazenotfound") && mazeVariationAllowed != RoomType.CORNER)
-		{
-		    // skip it and take the next room - THIS CHECK MUST BE FIRST
-		    cornerIndex = cornerIndex == corner.length - 1 ? 0 : cornerIndex + 1;
-		    nextRoom = corner[cornerIndex];
-		}
-		cornerIndex = cornerIndex == corner.length - 1 ? 0 : cornerIndex + 1;
+		nextRoom = corner.get(cornerIndex);
+		cornerIndex = cornerIndex == corner.size() - 1 ? 0 : cornerIndex + 1;
 	    }
 	    if (nextType == RoomType.END)
 	    {
-		nextRoom = end[endIndex];
-		if (nextRoom == "beacon_1" && !allowHardRooms)
-		{
-		    // replace the very difficult beacon_1 with the easier beacon_2
-		    nextRoom = "beacon_2";
-		}
-		if (nextRoom == "crueltrap_1")
-		{
-		    // the cruel trap room appears at most once per dungeon, and there are 3 variations of it
-		    int variation = rand.nextInt(3) + 1;
-		    nextRoom = nextRoom.replace("1", "" + variation);
-		}
-		if (nextRoom == "coffin_1")
-		{
-		    // the coffin room appears at most once per dungeon, and there are 5 variations of it
-		    int variation = rand.nextInt(5) + 1;
-		    nextRoom = nextRoom.replace("1", "" + variation);
-		}
-		if (nextRoom == "freebie_1")
-		{
-		    // the freebie room appears at most once per dungeon, and there are 3 variations of it
-		    int variation = rand.nextInt(3) + 1;
-		    nextRoom = nextRoom.replace("1", "" + variation);
-		}
-		if (nextRoom == "restroom_1")
-		{
-		    // the break room appears at most once per dungeon, and there are 5 variations of it
-		    int variation = rand.nextInt(5) + 1;
-		    nextRoom = nextRoom.replace("1", "" + variation);
-		}
-		if (nextRoom == "shoutout_1")
-		{
-		    // the reference to other mods room appears at most once per dungeon, and there are 2 variations of it
-		    int variation = rand.nextInt(2) + 1;
-		    nextRoom = nextRoom.replace("1", "" + variation);
-		}
-		if (nextRoom == "redspuzzle_1")
-		{
-		    // the puzzle/reward room appears at most once per dungeon, and there are 4 variations of it
-		    int variation = rand.nextInt(4) + 1;
-		    nextRoom = nextRoom.replace("1", "" + variation);
-		}
-		if (nextRoom == "deathtrap_1")
-		{
-		    // yet another puzzle/reward room appears at most once per dungeon, and there are 4 unrelated variations of this room as well
-		    int variation = rand.nextInt(4) + 1;
-		    nextRoom = nextRoom.replace("1", "" + variation);
-		}
-		if (nextRoom == "keyroom_1")
-		{
-		    if (allowHardRooms)
-		    {
-			// this is the room that looks like restroom_2, but has a keyhole instead of a dispenser
-			nextRoom = "keytrap_1";
-			int variation = rand.nextInt(5) + 1;
-			nextRoom = nextRoom.replace("1", "" + variation);
-		    }
-		    else
-		    {
-			// this is the basic "level 2 portal demonstration" room, and there are 4 variations of it
-			int variation = rand.nextInt(4) + 1;
-			nextRoom = nextRoom.replace("1", "" + variation);
-		    }
-		}
-		if (nextRoom == "spawner_1")
-		{
-		    // the spawner room appears at most once per dungeon, and there are 6 weighted variations of it
-		    int variation = rand.nextInt(8) + 1;
-		    if (variation < 6)
-		    {
-			nextRoom = nextRoom.replace("1", "" + variation);
-		    }
-		    else
-		    {
-			nextRoom = nextRoom.replace("1", "6");
-		    }
-		}
-		endIndex = endIndex == end.length - 1 ? 0 : endIndex + 1;
+		nextRoom = end.get(endIndex);
+		endIndex = endIndex == end.size() - 1 ? 0 : endIndex + 1;
 	    }
 
 	    // commit the room to the blueprint and open any potential new doors for the next loop to work with
@@ -871,16 +789,15 @@ public class DungeonBuilderLogic
 	//DimDungeons.LOGGER.info("Put a " + room + " at (" + x + ", " + z + ") with rotation " + rot.toString() + ".");
     }
 
-    private void shuffleArray(String[] array)
+    private void shuffleStringArray(ArrayList<String> array)
     {
-	for (int i = array.length - 1; i > 0; i--)
+	for (int i = array.size() - 1; i > 0; i--)
 	{
 	    int index = rand.nextInt(i + 1);
 
-	    // Simple swap
-	    String temp = array[index];
-	    array[index] = array[i];
-	    array[i] = temp;
+	    String temp = array.get(index);
+	    array.set(index, array.get(i));
+	    array.set(i, temp);
 	}
     }
 

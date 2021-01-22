@@ -7,6 +7,7 @@ import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonRoom;
+import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonType;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.block.BlockState;
@@ -61,7 +62,7 @@ public class DungeonPlacementLogicDebug
 	DimDungeons.LOGGER.debug("DIMDUNGEONS START DEBUG STRUCTURE at " + x + ", " + z);
 
 	// this is the data structure for an entire dungeon
-	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ);
+	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.BASIC);
 	switch (debugType)
 	{
 	case 1:
