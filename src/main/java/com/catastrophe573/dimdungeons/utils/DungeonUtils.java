@@ -128,12 +128,13 @@ public class DungeonUtils
     public static void reprogramExistingExitDoorway(World worldIn, long entranceX, long entranceZ, DungeonGenData genData)
     {
 	World ddim = DungeonUtils.getDungeonWorld(worldIn.getServer());
+	int zoffset = entranceZ < 0 ? +1 : +2;
 	
 	for (int x = 0; x <= 1; x++)
 	{
 	    for (int y = 55; y <= 57; y++)
 	    {
-		BlockPos pos = new BlockPos(entranceX-x, y, entranceZ+2);
+		BlockPos pos = new BlockPos(entranceX-x, y, entranceZ+zoffset);
 
 		TileEntityGoldPortal te = (TileEntityGoldPortal) ddim.getTileEntity(pos);
 		if (te != null)
