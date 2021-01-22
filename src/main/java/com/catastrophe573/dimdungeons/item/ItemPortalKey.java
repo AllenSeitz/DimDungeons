@@ -63,20 +63,20 @@ public class ItemPortalKey extends Item
 
 	return 0.0f; // unactivated key	
     }
-    
+
     public int getKeyLevel(ItemStack stack)
     {
-	if ( !isActivated(stack) )
+	if (!isActivated(stack))
 	{
 	    return 0;
 	}
-	if ( getWarpZ(stack) < 0 )
+	if (getWarpZ(stack) < 0)
 	{
 	    return 2;
 	}
 	return 1;
     }
-    
+
     public void activateKey(ItemStack stack)
     {
 	CompoundNBT data = new CompoundNBT();
@@ -149,7 +149,7 @@ public class ItemPortalKey extends Item
 	    }
 	}
 	return false;
-    }    
+    }
 
     public void setDungeonBuilt(ItemStack stack)
     {
@@ -157,8 +157,8 @@ public class ItemPortalKey extends Item
 	{
 	    stack.getTag().putBoolean(NBT_BUILT, true);
 	}
-    }    
-    
+    }
+
     @OnlyIn(Dist.CLIENT)
     @Override
     public ITextComponent getDisplayName(ItemStack stack)
@@ -242,7 +242,7 @@ public class ItemPortalKey extends Item
 	}
 	return -1;
     }
-    
+
     public float getWarpZ(ItemStack stack)
     {
 	if (stack != null && !stack.isEmpty())
@@ -256,7 +256,7 @@ public class ItemPortalKey extends Item
 	}
 	return -1;
     }
-    
+
     public long getDungeonTopLeftX(ItemStack stack)
     {
 	if (stack != null && !stack.isEmpty())
@@ -267,7 +267,7 @@ public class ItemPortalKey extends Item
 		return (itemData.getInt(NBT_KEY_DESTINATION_X) * BLOCKS_APART_PER_DUNGEON);
 	    }
 	}
-	return -1;	
+	return -1;
     }
 
     public long getDungeonTopLeftZ(ItemStack stack)
@@ -280,9 +280,9 @@ public class ItemPortalKey extends Item
 		return (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_DUNGEON);
 	    }
 	}
-	return -1;	
-    }    
-    
+	return -1;
+    }
+
     @Override
     //public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     public ActionResultType onItemUse(ItemUseContext parameters)
