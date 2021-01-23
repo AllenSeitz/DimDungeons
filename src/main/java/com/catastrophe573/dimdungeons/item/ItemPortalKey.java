@@ -328,28 +328,7 @@ public class ItemPortalKey extends Item
 			    }
 			    else
 			    {
-				//System.out.println("Triggered special event to initialize key!");
-				worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-				if (pos.getX() == 0 && pos.getZ() == 0)
-				{
-				    activateKeyLevel2(itemstack); // for debugging only, End Portal Frames should never appear at (0,0) in the Overworld and this is not intended
-				}
-				else
-				{
-				    activateKey(itemstack);
-				}
-
-				// more particle effects for this special event!
-				for (int i = 0; i < 32; i++)
-				{
-				    double d0 = (double) ((float) pos.getX() + 0.5F);
-				    double d1 = (double) ((float) pos.getY() + 0.8F);
-				    double d2 = (double) ((float) pos.getZ() + 0.5F);
-				    double xspeed = (random.nextFloat() * 0.04) * (random.nextBoolean() ? 1 : -1);
-				    double yspeed = random.nextFloat() * 0.125;
-				    double zspeed = (random.nextFloat() * 0.04) * (random.nextBoolean() ? 1 : -1);
-				    worldIn.addParticle(ParticleTypes.FIREWORK, d0, d1, d2, xspeed, yspeed, zspeed);
-				}
+				performActivationRitual(itemstack, worldIn, pos);
 			    }
 			}
 		    }
@@ -384,6 +363,20 @@ public class ItemPortalKey extends Item
 		    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_GLASS_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 	    }
+	    else if (worldIn.getBlockState(pos).getBlock().getRegistryName().getNamespace().equals("endrem"))
+	    {
+		// compatibility for End:Remastered
+		String blockid = worldIn.getBlockState(pos).getBlock().getRegistryName().getPath();
+		if (isActivated(itemstack))
+		{
+		    //System.out.println("Key already activated!");
+		    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_METAL_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+		}
+		else if (blockid.equals("end_creator") || blockid.equals("end_creator_activated"))
+		{
+		    performActivationRitual(itemstack, worldIn, pos);
+		}
+	    }
 	    else
 	    {
 		// hit the side of the block
@@ -392,6 +385,32 @@ public class ItemPortalKey extends Item
 	}
 
 	return ActionResultType.PASS;
+    }
+
+    private void performActivationRitual(ItemStack itemstack, World worldIn, BlockPos pos)
+    {
+	//System.out.println("Triggered special event to initialize key!");
+	worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+	if (pos.getX() == 0 && pos.getZ() == 0)
+	{
+	    activateKeyLevel2(itemstack); // for debugging only, End Portal Frames should never appear at (0,0) in the Overworld and this is not intended
+	}
+	else
+	{
+	    activateKey(itemstack);
+	}
+
+	// more particle effects for this special event!
+	for (int i = 0; i < 32; i++)
+	{
+	    double d0 = (double) ((float) pos.getX() + 0.5F);
+	    double d1 = (double) ((float) pos.getY() + 0.8F);
+	    double d2 = (double) ((float) pos.getZ() + 0.5F);
+	    double xspeed = (random.nextFloat() * 0.04) * (random.nextBoolean() ? 1 : -1);
+	    double yspeed = random.nextFloat() * 0.125;
+	    double zspeed = (random.nextFloat() * 0.04) * (random.nextBoolean() ? 1 : -1);
+	    worldIn.addParticle(ParticleTypes.FIREWORK, d0, d1, d2, xspeed, yspeed, zspeed);
+	}
     }
 
     /**
