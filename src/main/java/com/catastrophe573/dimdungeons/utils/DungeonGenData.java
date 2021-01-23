@@ -7,7 +7,8 @@ import net.minecraft.util.math.BlockPos;
 public class DungeonGenData
 {
     //The key that was used to open the dungeon.
-    ItemStack keyItem;
+    public ItemStack keyItem;
+    
     //The calculated point to teleport the player to when exiting the dungeon.
     public BlockPos returnPoint;
 

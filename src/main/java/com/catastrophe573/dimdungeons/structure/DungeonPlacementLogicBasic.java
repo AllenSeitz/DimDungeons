@@ -5,6 +5,7 @@ import java.util.Random;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
+import com.catastrophe573.dimdungeons.block.TileEntityLocalTeleporter;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonRoom;
@@ -288,6 +289,18 @@ public class DungeonPlacementLogicBasic
 	    {
 		te.setDestination(genData.returnPoint.getX() + 0.5D, genData.returnPoint.getY() + 0.1D, genData.returnPoint.getZ() + 0.5D);
 	    }
+	}
+	else if ("BackToEntrance".equals(name))
+	{
+	    world.setBlockState(pos, BlockRegistrar.block_local_teleporter.getDefaultState(), 2); // erase this data block
+	    TileEntityLocalTeleporter te = (TileEntityLocalTeleporter) world.getTileEntity(pos);
+	    if (te != null)
+	    {
+		ItemPortalKey key = (ItemPortalKey)genData.keyItem.getItem();
+		double entranceX = key.getWarpX(genData.keyItem);
+		double entranceZ = key.getWarpZ(genData.keyItem);
+		te.setDestination(entranceX, 55.1D, entranceZ, 0.0f, 180.0f);
+	    }	    
 	}
 	else if ("LockItStoneBrick".equals(name))
 	{
