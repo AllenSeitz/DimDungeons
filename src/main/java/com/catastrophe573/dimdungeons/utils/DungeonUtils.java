@@ -73,22 +73,22 @@ public class DungeonUtils
 	    String name = genData.keyItem.getDisplayName().getUnformattedComponentText();
 	    if (name.contentEquals("DebugOne"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 1);
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 1, genData);
 		return true;
 	    }
 	    if (name.contentEquals("DebugTwo"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 2);
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 2, genData);
 		return true;
 	    }
 	    if (name.contentEquals("DebugThree"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 3);
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 3, genData);
 		return true;
 	    }
 	    if (name.contentEquals("DebugFour"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 4);
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 4, genData);
 		return true;
 	    }
 	}

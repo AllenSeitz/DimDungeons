@@ -1,6 +1,8 @@
 package com.catastrophe573.dimdungeons;
 
 import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
+import com.catastrophe573.dimdungeons.block.TileEntityLocalTeleporter;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -44,11 +46,11 @@ public class DimDungeons
     public static final String MOD_ID = "dimdungeons"; // this must match mods.toml
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
     public static final String dungeon_basic_regname = "dungeon_dimension";
-    
+
     public static final RegistryKey<World> DUNGEON_DIMENSION = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(MOD_ID, dungeon_basic_regname));
 
     public static final PlayerDungeonEvents eventHandler = new PlayerDungeonEvents();
-    
+
     public DimDungeons()
     {
 	// register event listeners that don't use the event bus
@@ -62,7 +64,7 @@ public class DimDungeons
 	// Register ourselves for server, registry and other game events we are interested in
 	//MinecraftForge.EVENT_BUS.register(this);
 	MinecraftForge.EVENT_BUS.register(eventHandler);
-	
+
 	ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, DungeonConfig.SERVER_SPEC);
 	ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, DungeonConfig.CLIENT_SPEC);
 	ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DungeonConfig.COMMON_SPEC);
@@ -80,6 +82,7 @@ public class DimDungeons
     private void doClientStuff(final FMLClientSetupEvent event)
     {
 	RenderTypeLookup.setRenderLayer(BlockRegistrar.block_gold_portal, RenderType.getTranslucent());
+	RenderTypeLookup.setRenderLayer(BlockRegistrar.block_local_teleporter, RenderType.getTranslucent());
 
 	// register the custom property for the keys that allows for switching their model
 	ItemModelsProperties.registerProperty(ItemRegistrar.item_portal_key, new ResourceLocation(DimDungeons.MOD_ID, "keytype"), (stack, world, entity) ->
@@ -107,17 +110,17 @@ public class DimDungeons
 
     public void modConfig(ModConfig.ModConfigEvent event)
     {
-        ModConfig config = event.getConfig();
-        if (config.getSpec() == DungeonConfig.CLIENT_SPEC)
-        {
-            DungeonConfig.refreshClient();
-        }
-        else if (config.getSpec() == DungeonConfig.SERVER_SPEC)
-        {
-            DungeonConfig.refreshServer();
-        }
+	ModConfig config = event.getConfig();
+	if (config.getSpec() == DungeonConfig.CLIENT_SPEC)
+	{
+	    DungeonConfig.refreshClient();
+	}
+	else if (config.getSpec() == DungeonConfig.SERVER_SPEC)
+	{
+	    DungeonConfig.refreshServer();
+	}
     }
-    
+
     // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD event bus
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents
@@ -139,17 +142,20 @@ public class DimDungeons
 	public static void registerTE(RegistryEvent.Register<TileEntityType<?>> teRegistryEvent)
 	{
 	    TileEntityType<TileEntityPortalKeyhole> tetPortalKeyhole = TileEntityType.Builder.create(TileEntityPortalKeyhole::new).build(null);
-        TileEntityType<TileEntityGoldPortal> tetGoldPortal = TileEntityType.Builder.create(TileEntityGoldPortal::new).build(null);
+	    TileEntityType<TileEntityGoldPortal> tetGoldPortal = TileEntityType.Builder.create(TileEntityGoldPortal::new).build(null);
+	    TileEntityType<TileEntityLocalTeleporter> tetLocalTeleporter = TileEntityType.Builder.create(TileEntityLocalTeleporter::new).build(null);
 	    tetPortalKeyhole.setRegistryName(MOD_ID, TileEntityPortalKeyhole.REG_NAME);
 	    tetGoldPortal.setRegistryName(MOD_ID, TileEntityGoldPortal.REG_NAME);
+	    tetLocalTeleporter.setRegistryName(MOD_ID, TileEntityLocalTeleporter.REG_NAME);
 	    teRegistryEvent.getRegistry().register(tetPortalKeyhole);
-        teRegistryEvent.getRegistry().register(tetGoldPortal);
+	    teRegistryEvent.getRegistry().register(tetGoldPortal);
+	    teRegistryEvent.getRegistry().register(tetLocalTeleporter);
 
 	    // register a chunk generator here because I can get away with it
 	    Registry.register(Registry.CHUNK_GENERATOR_CODEC, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.myCodec);
-	    
+
 	}
-	
+
 	//@SubscribeEvent
 	// this isn't called? wrong type?
 	//public static void registerChunkGenerators(RegistryEvent.Register<? extends ChunkGenerator> cgRegistryEvent)

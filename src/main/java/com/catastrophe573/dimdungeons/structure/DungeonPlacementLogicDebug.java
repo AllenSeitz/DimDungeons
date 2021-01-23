@@ -4,10 +4,12 @@ import java.util.Random;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
+import com.catastrophe573.dimdungeons.block.TileEntityLocalTeleporter;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonRoom;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonType;
+import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.block.BlockState;
@@ -50,7 +52,7 @@ public class DungeonPlacementLogicDebug
     }
 
     // this is something hardcoded and personal, and not meant to be invoked by players
-    public static boolean place(ServerWorld world, long x, long z, int debugType)
+    public static boolean place(ServerWorld world, long x, long z, int debugType, DungeonGenData genData)
     {
 	long entranceChunkX = (x / 16) + 8;
 	long entranceChunkZ = (z / 16) + 11;
@@ -95,7 +97,7 @@ public class DungeonPlacementLogicDebug
 		    // I'm not sure what the +4 is for, but it is needed
 		    ChunkPos cpos = new ChunkPos(((int) x / 16) + i + 4, ((int) z / 16) + j + 4);
 
-		    if (!putRoomHere(cpos, world, nextRoom))
+		    if (!putRoomHere(cpos, world, nextRoom, genData))
 		    {
 			DimDungeons.LOGGER.error("DIMDUNGEONS ERROR UNABLE TO PLACE STRUCTURE: " + nextRoom.structure);
 		    }
@@ -149,7 +151,7 @@ public class DungeonPlacementLogicDebug
     }
 
     // used by the place() function to actually place rooms
-    public static boolean putRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room)
+    public static boolean putRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room, DungeonGenData genData)
     {
 	MinecraftServer minecraftserver = ((World) world).getServer();
 	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureTemplateManager();
@@ -207,7 +209,7 @@ public class DungeonPlacementLogicDebug
 		StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt.getString("mode"));
 		if (structuremode == StructureMode.DATA)
 		{
-		    handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox());
+		    handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox(), genData);
 		}
 	    }
 	}
@@ -229,13 +231,25 @@ public class DungeonPlacementLogicDebug
     }
 
     // resembles TemplateStructurePiece.handleDataMarker()
-    protected static void handleDataBlock(String name, BlockPos pos, IWorld world, Random rand, MutableBoundingBox bb)
+    protected static void handleDataBlock(String name, BlockPos pos, IWorld world, Random rand, MutableBoundingBox bb, DungeonGenData genData)
     {
 	//DimDungeons.LOGGER.info("DATA BLOCK NAME: " + name);
 
 	if ("ReturnPortal".equals(name))
 	{
 	    world.setBlockState(pos, BlockRegistrar.block_gold_portal.getDefaultState(), 2); // erase this data block 
+	}
+	else if ("BackToEntrance".equals(name))
+	{
+	    world.setBlockState(pos, BlockRegistrar.block_local_teleporter.getDefaultState(), 2); // erase this data block
+	    TileEntityLocalTeleporter te = (TileEntityLocalTeleporter) world.getTileEntity(pos);
+	    if (te != null)
+	    {
+		ItemPortalKey key = (ItemPortalKey) genData.keyItem.getItem();
+		double entranceX = key.getWarpX(genData.keyItem);
+		double entranceZ = key.getWarpZ(genData.keyItem);
+		te.setDestination(entranceX, 55.1D, entranceZ, 0.0f, 180.0f);
+	    }
 	}
 	else if ("LockItStoneBrick".equals(name))
 	{
