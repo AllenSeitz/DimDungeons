@@ -48,7 +48,7 @@ public class DungeonBuilderTestShapes
 	{
 	    dbl.placeRoomShape(i - 1 + 4, 6, "keyroom_" + i, RoomType.END, Rotation.NONE);
 	}
-	dbl.placeRoomShape(7, 7, "entrance_9", RoomType.ENTRANCE, Rotation.NONE);
+	dbl.placeRoomShape(4, 7, "entrance_9", RoomType.ENTRANCE, Rotation.NONE);
     }
 
     public static void MakeTestDungeonTwo(DungeonBuilderLogic dbl)
@@ -86,6 +86,8 @@ public class DungeonBuilderTestShapes
 	}
 	dbl.placeRoomShape(5, 5, "yinyang_1", RoomType.HALLWAY, Rotation.NONE);
 	dbl.placeRoomShape(6, 5, "yinyang_2", RoomType.HALLWAY, Rotation.NONE);
+	
+	dbl.placeRoomShape(4, 7, "entrance_9", RoomType.ENTRANCE, Rotation.NONE);
     }
 
     public static void MakeTestDungeonThree(DungeonBuilderLogic dbl)
@@ -125,6 +127,8 @@ public class DungeonBuilderTestShapes
 	dbl.placeRoomShape(4, 5, "mazenotfound_1", RoomType.CORNER, Rotation.NONE);
 	dbl.placeRoomShape(5, 5, "mazenotfound_2", RoomType.THREEWAY, Rotation.NONE);
 	dbl.placeRoomShape(6, 5, "mazenotfound_3", RoomType.HALLWAY, Rotation.NONE);
+	
+	dbl.placeRoomShape(4, 7, "entrance_9", RoomType.ENTRANCE, Rotation.NONE);
     }
 
     public static void MakeTestDungeonFour(DungeonBuilderLogic dbl)
@@ -158,5 +162,7 @@ public class DungeonBuilderTestShapes
 	dbl.placeRoomShape(3, 4, "spawner_4", RoomType.END, Rotation.NONE);
 	dbl.placeRoomShape(4, 4, "spawner_5", RoomType.END, Rotation.NONE);
 	dbl.placeRoomShape(5, 4, "spawner_6", RoomType.END, Rotation.NONE);
+	
+	dbl.placeRoomShape(4, 7, "entrance_9", RoomType.ENTRANCE, Rotation.NONE);
     }
 }
