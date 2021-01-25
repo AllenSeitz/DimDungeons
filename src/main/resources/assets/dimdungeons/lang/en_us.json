@@ -116,12 +116,12 @@
     "npart.dimdungeons.large_11": "Massive",
 
     "book.dimdungeons.title_1": "Good News",
-    "book.dimdungeons.title_2": "Urgent Message",
+    "book.dimdungeons.title_2": "Puzzle Hint",
     "book.dimdungeons.title_3": "Scroll of Ill Omen",
     "book.dimdungeons.title_4": "Secrets of the Dungeon",
     "book.dimdungeons.author": "Catastrophe573",
 
-    "book.dimdungeons.fun_message_1": "There are no creepers in this dungeon, nor in any other dungeon, because they tend to ruin puzzles.",
+    "book.dimdungeons.fun_message_1": "Consider bringing a few ender pearls with you. They can save you in trap rooms.",
     "book.dimdungeons.fun_message_2": "Many chests contain more dungeon keys in their loot table. So you can keep dungeoneering!",
     "book.dimdungeons.fun_message_3": "If you find another portal then you are very lucky! Be sure to take the rare key that is inside the keyhole.",
     "book.dimdungeons.fun_message_4": "These dungeons are an excellent source of enchanted books.",
@@ -137,16 +137,16 @@
     "book.dimdungeons.helpful_message_5": "A cubic zirconia is as good as a real diamond. But it is a fake prize.",
     "book.dimdungeons.helpful_message_6": "Some puzzles may require a potion of swiftness or two players to solve.",
     "book.dimdungeons.helpful_message_7": "Advanced portal frames require two special banners and two crown pieces. The crown pieces can be found as loot.",
-    "book.dimdungeons.helpful_message_8": "Consider bringing a few ender pearls with you. They can save you in trap rooms.",
+    "book.dimdungeons.helpful_message_8": "In the obsidian hallway try throwing some end stone onto the end stone, if nothing else seems to work.",
 
     "book.dimdungeons.dangerous_message_1": "I have tried very hard not to ever trap you inside a room. But if it does happen don't forget the /kill command.",
     "book.dimdungeons.dangerous_message_2": "The room with 4 trapped chests is unfair. Be careful not to lose all of your items!",
-    "book.dimdungeons.dangerous_message_3": "In the room with the piston bridge over lava, it may be required to jump over the sides!",
+    "book.dimdungeons.dangerous_message_3": "In the room with the piston bridge over lava it may be required to jump over the sides!",
     "book.dimdungeons.dangerous_message_4": "In this dimension fire cannot be extinguished by punching it. Fire pits are very dangerous!",
     "book.dimdungeons.dangerous_message_5": "If you somehow get outside of the dungeon's walls, you'll fall into a void.",
-    "book.dimdungeons.dangerous_message_6": "The falling anvil trap never gets old.",
+    "book.dimdungeons.dangerous_message_6": "The falling anvil trap never gets old. CLANG!",
     "book.dimdungeons.dangerous_message_7": "Minecraft has dozens of inspirational death messages.",
-    "book.dimdungeons.dangerous_message_8": "I've designed many rooms to feature handy lava traps for you to push the enemies into.",
+    "book.dimdungeons.dangerous_message_8": "Version 1.16 enables so many new beautiful and dangerous build possibilities!",
 
     "book.dimdungeons.advanced_message_1": "Enemies in advanced dungeons have extra health and are immune to fire. I couldn't make it too easy!",
     "book.dimdungeons.advanced_message_2": "Enemies in advanced dungeons move faster and have jump boost. You've probably noticed by now!",
@@ -181,6 +181,13 @@
     "error.dimdungeons.portal_error_8": "Two Portal Crown Blocks must be placed on top of the portal before advanced keys can be used.",
     "error.dimdungeons.portal_error_9": "White or purple banners must be hung on the spires before advanced keys can be used.",
     "error.dimdungeons.portal_error_10": "The banner pattern on either or both banners is not correct for advanced keys.",
+
+	// advancements
+	"advancements.dimdungeons.dungeons.root.title": "Dimensional Dungeons",
+	"advancements.dimdungeons.dungeons.root.desc": "A New dimension full of adventure!",
+	"advancements.dimdungeons.dungeons.root.a": "",
+	"advancements.dimdungeons.dungeons.root.b": "",
+	"advancements.dimdungeons.dungeons.": "",
 
 	// server configs
 	"config.dimdungeons.configVersion": "configVersion",

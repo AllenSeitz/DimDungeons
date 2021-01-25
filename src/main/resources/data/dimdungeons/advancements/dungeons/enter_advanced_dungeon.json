@@ -1,0 +1,32 @@
+{
+  "parent": "dimdungeons:dungeons/enter_dungeon",
+  "display": {
+    "icon": {
+      "item": "dimdungeons:block_portal_crown"
+    },
+    "title": "The Next Level",
+    "description": "Twice the peril, twice the loot!",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "advanced_dungeon": {
+      "trigger": "minecraft:location",
+			"conditions": {
+				"dimension": "dimdungeons:dungeon_dimension",
+				"position": {
+					"z": {
+						"max": -1
+					}
+				}
+			}
+    }
+  },
+  "requirements": [
+    [
+      "advanced_dungeon"
+    ]
+  ]
+}
