@@ -20,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 
+// this item is now unused
 public class ItemGuidebook extends Item
 {
     public static final String REG_NAME = "item_guidebook";

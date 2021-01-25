@@ -1,0 +1,43 @@
+{
+	"name": "Portals",
+	"icon": "dimdungeons:block_gilded_portal",
+	"category": "patchouli:introduction",
+	"sortnum": 2,
+	"pages": [
+		{
+			"type": "text",
+			"text": "First, here is a minimum raw materials list: $(li)9x Stone Bricks$(li)3x Chiseled Stone Bricks$(li)24x Gold Ingots$(li)1x Trapped Chest$(li)1x Eye of Ender$(br)You can also use cracked or mossy stone bricks.$(br2)Keep in mind you will also need to craft and activate keys. This is only the first step."
+		},
+		{
+			"type": "crafting",
+			"recipe": "dimdungeons:recipe_block_gilded_portal",
+			"text": "First craft three gilded portal blocks"
+		},
+		{
+			"type": "crafting",
+			"recipe": "dimdungeons:recipe_block_portal_keyhole",
+			"text": "Then use one to craft a portal keyhole block"
+		},
+		{
+			"type": "multiblock",
+			"multiblock": {
+				"pattern": [
+					[" "," "," ","K"," "," "," "],
+					["G"," ","B"," ","B"," ","G"],
+					["B"," ","B","0","B"," ","B"],
+					["B"," "," ","B"," "," ","B"]
+				],
+				"mapping": {
+					"K": "dimdungeons:block_portal_keyhole",
+					"G": "dimdungeons:block_gilded_portal",
+					"B": "minecraft:stone_bricks"
+				}
+			},
+			"text": "Then create a portal like this."
+		},
+		{
+			"type": "text",
+			"text": "With the exception of the required blocks, you can decorate the portal however you like, also any air blocks except the two in the middle where the portal forms, can be filled with whatever blocks you like."
+		}
+	]
+}

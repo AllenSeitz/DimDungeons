@@ -8,7 +8,17 @@
       "item": "minecraft:book"
     }
   ],
+  "conditions": [
+    {
+	  "type": "minecraft:item_exists",
+	  "item": "patchouli:patchy_guidebook"
+	},
+    {
+      "type": "forge:mod_loaded",
+      "modid": "patchouli"
+    }
+  ],
   "result": {
-    "item": "dimdungeons:item_guidebook"
+    "item": "patchouli:patchy_guidebook"
   }
 }

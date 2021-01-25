@@ -1,0 +1,16 @@
+{
+    "name": "Introduction",
+    "icon": "dimdungeons:item_portal_key",
+    "category": "patchouli:introduction",
+	"sortnum": 1,
+    "pages": [
+        {
+            "type": "text",
+            "text": "Within this universe there are an effectively infinite number of challenging dungeons. To access these Dungeons, you will need to craft a portal which is reusable, and a key which is not. Each key that you create is bound to a specific dungeon instance, and can be used in any portal to access that dungeon."
+        },
+        {
+            "type": "text",
+            "text": "Keys can also be removed from the portal into which they were inserted, which allows the portal to be re-used. The key can then be saved which will allow you to re-enter the dungeon in the future."
+		}
+    ]
+}

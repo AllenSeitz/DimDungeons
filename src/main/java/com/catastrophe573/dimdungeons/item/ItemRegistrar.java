@@ -17,9 +17,8 @@ public class ItemRegistrar
 
     @ObjectHolder("dimdungeons:" + ItemGuidebook.REG_NAME)
     public static Item item_guidebook;
-        
-    public static final ItemGroup CREATIVE_TAB = new ItemGroup(DimDungeons.MOD_ID)
-    {
+
+    public static final ItemGroup CREATIVE_TAB = new ItemGroup(DimDungeons.MOD_ID) {
 	@Override
 	public ItemStack createIcon()
 	{
@@ -39,6 +38,8 @@ public class ItemRegistrar
 
 	// register basic items
 	event.getRegistry().register(new ItemPortalKey());
-	event.getRegistry().register(new ItemGuidebook());
+
+	// this item is now unused because I've switched to Patchouli
+	//event.getRegistry().register(new ItemGuidebook());
     }
 }
