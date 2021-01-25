@@ -184,10 +184,19 @@
 
 	// advancements
 	"advancements.dimdungeons.dungeons.root.title": "Dimensional Dungeons",
-	"advancements.dimdungeons.dungeons.root.desc": "A New dimension full of adventure!",
-	"advancements.dimdungeons.dungeons.root.a": "",
-	"advancements.dimdungeons.dungeons.root.b": "",
-	"advancements.dimdungeons.dungeons.": "",
+	"advancements.dimdungeons.dungeons.root.description": "Craft the portal keyhole block.",
+	"advancements.dimdungeons.dungeons.activate_basic_key.title": "Seek The First Adventure",
+	"advancements.dimdungeons.dungeons.activate_basic_key.description": "Find an end portal frame and use it to activate a blank key.",
+	"advancements.dimdungeons.dungeons.enter_basic_dungeon.title": "Into The Dungeon",
+	"advancements.dimdungeons.dungeons.enter_basic_dungeon.description": "Welcome to your first Dimensional Dungeon.",
+	"advancements.dimdungeons.dungeons.find_crown.title": "King Me",
+	"advancements.dimdungeons.dungeons.find_crown.description": "Find two portal crown blocks in the dungeon.",
+	"advancements.dimdungeons.dungeons.find_advanced_key.title": "A Marvellous Key",
+	"advancements.dimdungeons.dungeons.find_advanced_key.description": "Find an advanced portal key in a dungeon.",
+	"advancements.dimdungeons.dungeons.enter_advanced_dungeon.title": "The Next Level",
+	"advancements.dimdungeons.dungeons.enter_advanced_dungeon.description": "Twice the peril, twice the loot!",
+	"advancements.dimdungeons.dungeons.all_trophies.title": "Collectionist",
+	"advancements.dimdungeons.dungeons.all_trophies.description": "Find all 8 unique trophies.",	
 
 	// server configs
 	"config.dimdungeons.configVersion": "configVersion",

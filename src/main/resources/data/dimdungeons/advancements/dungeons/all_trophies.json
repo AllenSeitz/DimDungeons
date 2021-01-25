@@ -1,13 +1,17 @@
 {
 	"display": {
 		"icon": {
-			"item": "dimdungeons:item_trophy_1"
+			"item": "minecraft:item_frame"
 		},
-		"title": "Collectionist",
-		"description": "Find all 8 unique trophies.",
+		"title": {
+			"translate": "advancements.dimdungeons.dungeons.all_trophies.title"
+		},
+		"description": {
+			"translate": "advancements.dimdungeons.dungeons.all_trophies.description"
+		},
 		"frame": "challenge"
 	},
-	"parent": "dimdungeons:dungeons/enter_advanced_dungeon",
+	"parent": "dimdungeons:dungeons/enter_basic_dungeon",
 	"rewards": {
 		"experience": 90
 	},
@@ -15,65 +19,81 @@
 		"1up": {
 			"trigger": "minecraft:inventory_changed",
 			"conditions": {
-				"items": [{
-					"item": "dimdungeons:item_trophy_1"
-				}]
+				"items": [
+					{
+						"item": "dimdungeons:item_trophy_1"
+					}
+				]
 			}
 		},
 		"master_sword": {
 			"trigger": "minecraft:inventory_changed",
 			"conditions": {
-				"items": [{
-					"item": "dimdungeons:item_trophy_2"
-				}]
+				"items": [
+					{
+						"item": "dimdungeons:item_trophy_2"
+					}
+				]
 			}
 		},
 		"ist_rune": {
 			"trigger": "minecraft:inventory_changed",
 			"conditions": {
-				"items": [{
-					"item": "dimdungeons:item_trophy_3"
-				}]
+				"items": [
+					{
+						"item": "dimdungeons:item_trophy_3"
+					}
+				]
 			}
 		},
 		"terrarian": {
 			"trigger": "minecraft:inventory_changed",
 			"conditions": {
-				"items": [{
-					"item": "dimdungeons:item_trophy_4"
-				}]
+				"items": [
+					{
+						"item": "dimdungeons:item_trophy_4"
+					}
+				]
 			}
 		},
 		"manipulator": {
 			"trigger": "minecraft:inventory_changed",
 			"conditions": {
-				"items": [{
-					"item": "dimdungeons:item_trophy_5"
-				}]
+				"items": [
+					{
+						"item": "dimdungeons:item_trophy_5"
+					}
+				]
 			}
 		},
 		"sun_medal": {
 			"trigger": "minecraft:inventory_changed",
 			"conditions": {
-				"items": [{
-					"item": "dimdungeons:item_trophy_6"
-				}]
+				"items": [
+					{
+						"item": "dimdungeons:item_trophy_6"
+					}
+				]
 			}
 		},
 		"arrowpanel": {
 			"trigger": "minecraft:inventory_changed",
 			"conditions": {
-				"items": [{
-					"item": "dimdungeons:item_trophy_7"
-				}]
+				"items": [
+					{
+						"item": "dimdungeons:item_trophy_7"
+					}
+				]
 			}
 		},
 		"ultros": {
 			"trigger": "minecraft:inventory_changed",
 			"conditions": {
-				"items": [{
-					"item": "dimdungeons:item_trophy_8"
-				}]
+				"items": [
+					{
+						"item": "dimdungeons:item_trophy_8"
+					}
+				]
 			}
 		}
 	}

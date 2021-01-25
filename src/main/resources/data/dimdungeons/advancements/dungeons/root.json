@@ -1,35 +1,35 @@
 {
-  "display": {
-    "icon": {
-      "item": "dimdungeons:block_portal_keyhole"
-    },
-    "title": {
-      "translate": "advancements.dimdungeons.root.title"
-    },
-    "description": {
-      "translate": "advancements.dimdungeons.root.description"
-    },
-    "frame": "task",
-    "show_toast": false,
-    "announce_to_chat": false,
-    "hidden": false,
-    "background": "minecraft:textures/block/stone_bricks.png"
-  },
-  "criteria": {
-    "keystone_block": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "item": "dimdungeons:block_portal_keyhole"
-          }
-        ]
-      }
-    }
-  },
-  "requirements": [
-    [
-      "keystone_block"
-    ]
-  ]
+	"display": {
+		"icon": {
+			"item": "dimdungeons:block_portal_keyhole"
+		},
+		"title": {
+			"translate": "advancements.dimdungeons.dungeons.root.title"
+		},
+		"description": {
+			"translate": "advancements.dimdungeons.dungeons.root.description"
+		},
+		"frame": "task",
+		"show_toast": false,
+		"announce_to_chat": false,
+		"hidden": false,
+		"background": "minecraft:textures/block/stone_bricks.png"
+	},
+	"criteria": {
+		"keystone_block": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"item": "dimdungeons:block_portal_keyhole"
+					}
+				]
+			}
+		}
+	},
+	"requirements": [
+		[
+			"keystone_block"
+		]
+	]
 }

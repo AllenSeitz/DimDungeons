@@ -1,0 +1,37 @@
+{
+	"parent": "dimdungeons:dungeons/root",
+	"display": {
+		"icon": {
+			"item": "dimdungeons:item_portal_key",
+			"nbt": "{key_activated:1,dest_x:1,dest_z:1}"
+		},
+		"title": {
+			"translate": "advancements.dimdungeons.dungeons.activate_basic_key.title"
+		},
+		"description": {
+			"translate": "advancements.dimdungeons.dungeons.activate_basic_key.description"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"getkey": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"item": "dimdungeons:item_portal_key",
+						"nbt": "{key_activated:1b}"
+					}
+				]
+			}
+		}
+	},
+	"requirements": [
+		[
+			"getkey"
+		]
+	]
+}
