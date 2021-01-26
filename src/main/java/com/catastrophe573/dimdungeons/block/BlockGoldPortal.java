@@ -1,6 +1,7 @@
 package com.catastrophe573.dimdungeons.block;
 
 import java.util.ArrayList;
+import java.util.Optional;
 //import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
@@ -137,14 +138,22 @@ public class BlockGoldPortal extends BreakableBlock
 		if (DungeonUtils.isDimensionOverworld(worldIn))
 		{
 		    // intentionally don't add 0.5f to the X, so the player is centered between the two blocks of the doorway
-		    System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");		    
+		    System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");
 		    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonUtils.getDungeonWorld(worldIn.getServer()), warpX, 55.1D, warpZ + 0.5f, 0);
 		}
 		else if (worldIn.getDimensionKey() == DungeonUtils.getDungeonWorld(worldIn.getServer()).getDimensionKey())
 		{
-		    System.out.println("Player is returning from a dungeon at (" + warpX + " " + warpY + " " + warpZ + ").");
-		    ServerPlayerEntity player = (ServerPlayerEntity) entityIn;		    
-		    actuallyPerformTeleport(player, player.getServer().getWorld(World.OVERWORLD), warpX + 0.5f, warpY + 0.5f, warpZ + 0.5f, 0);
+		    // first check for an unassigned gold portal block
+		    if (destination.getX() == 0 && destination.getZ() == 0)
+		    {
+			sendPlayerBackHome((ServerPlayerEntity) entityIn);
+		    }
+		    else
+		    {
+			//System.out.println("Player is returning from a dungeon at (" + warpX + " " + warpY + " " + warpZ + ").");
+			ServerPlayerEntity player = (ServerPlayerEntity) entityIn;
+			actuallyPerformTeleport(player, player.getServer().getWorld(World.OVERWORLD), warpX + 0.5f, warpY + 0.5f, warpZ + 0.5f, 0);
+		    }
 		}
 	    }
 	}
@@ -181,6 +190,33 @@ public class BlockGoldPortal extends BreakableBlock
 	player.changeDimension(dim, tele);
 	player.teleport(dim, x, y, z, destYaw, destPitch);
 	return player;
+    }
+
+    // this is now only used a fail safe in case a BlockGoldPortal somehow ends up 'unassigned' (such as a world being imported from 1.15)
+    protected void sendPlayerBackHome(ServerPlayerEntity player)
+    {
+	float lastX = 0;
+	float lastY = 0;
+	float lastZ = 0;
+	float lastYaw = player.getPitchYaw().y;
+
+	// send the player to their bed
+	Optional<BlockPos> respawn = player.getBedPosition();
+	if (respawn.isPresent())
+	{
+	    lastX = respawn.get().getX();
+	    lastY = respawn.get().getY() + 3; // plus 3 to stand on the bed
+	    lastZ = respawn.get().getZ();
+	}
+	else
+	{
+	    // fallback: send the player to the overworld spawn
+	    lastX = player.getServer().getWorld(World.OVERWORLD).getWorldInfo().getSpawnX();
+	    lastY = player.getServer().getWorld(World.OVERWORLD).getWorldInfo().getSpawnY() + 2; // plus 2 to stand on the ground I guess
+	    lastZ = player.getServer().getWorld(World.OVERWORLD).getWorldInfo().getSpawnZ();
+	}
+
+	actuallyPerformTeleport(player, player.getServer().getWorld(World.OVERWORLD).getWorldServer(), lastX, lastY, lastZ, lastYaw);
     }
 
     // this function returns boolean and relies on another function to actually destroy the block
