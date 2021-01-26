@@ -1,24 +1,23 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "ingredients": [
-    {
-      "item": "minecraft:chiseled_stone_bricks"
-    },
-    {
-      "item": "minecraft:book"
-    }
-  ],
-  "conditions": [
-    {
-	  "type": "minecraft:item_exists",
-	  "item": "patchouli:patchy_guidebook"
-	},
-    {
-      "type": "forge:mod_loaded",
-      "modid": "patchouli"
-    }
-  ],
-  "result": {
-    "item": "patchouli:patchy_guidebook"
-  }
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"item": "minecraft:chiseled_stone_bricks"
+		},
+		{
+			"item": "minecraft:book"
+		}
+	],
+	"conditions": [
+		{
+			"type": "forge:mod_loaded",
+			"modid": "patchouli"
+		}
+	],
+	"result": {
+		"item": "patchouli:guide_book",
+		"nbt": {
+			"patchouli:book": "dimdungeons:guide_book"
+		}
+	}
 }

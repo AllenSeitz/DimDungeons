@@ -1,0 +1,6 @@
+{
+	"name": "Portals",
+	"description": "How to build a portal to the dungeon dimension.",
+	"icon": "dimdungeons:block_gilded_portal",
+	"sortnum": 30
+}

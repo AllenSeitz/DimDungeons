@@ -1,0 +1,24 @@
+{
+    "name": "Introduction",
+    "icon": "dimdungeons:block_portal_keyhole",
+    "category": "dimdungeons:introduction",	
+	"sortnum": 2,
+    "pages": [
+        {
+            "type": "text",
+            "text": "Dimensional Dungeons adds nearly limitless procedurally generated dungeons to Minecraft! These dungeons are all placed in a single, separate dimension which can be accessed from a portal anywhere on the Overworld. This makes the dungeons themselves renewable and it provides challenging and replayable adventure-like maps."
+        },
+        {
+            "type": "text",
+            "text": "The dungeon dimension limits building and block breaking. Obstacle courses can't be bridged over. Combat can't be trivialized by building fences around mobs. And light and darkness matter when you can't place torches! Also, no stealing the blocks. (Unless you turn off the block protection in the server config.)"
+		},
+        {
+            "type": "text",
+            "text": "Besides challenges in room design the dungeons are also randomly populated with enemies and worthwhile loot! Many rooms with valuable treasure chests require solving a puzzle that will test your knowledge of Minecraft game mechanics."
+		},
+        {
+            "type": "text",
+            "text": "To enter the dungeon dimension you will need a portal frame and at least one activated portal key. This book contains guided chapters on both topics."
+		}
+    ]
+}

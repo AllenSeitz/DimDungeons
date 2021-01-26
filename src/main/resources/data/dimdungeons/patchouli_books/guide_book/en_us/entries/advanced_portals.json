@@ -1,0 +1,35 @@
+{
+	"name": "Advanced Portals",
+	"icon": "dimdungeons:block_portal_crown",
+	"category": "dimdungeons:portals",
+	"sortnum": 3,
+	"advancement": "dimdungeons:dungeons/enter_basic_dungeon",
+	"pages": [
+		{
+			"type": "text",
+			"text": "While exploring dungeons you may find $(item)portal keyhole blocks$(). These contain $(item)advanced portal keys$(). To use such a key you will need to upgrade your portal. The upgraded build requires two $(item)portal crown$() blocks, which can only be found in dungeon chests. You will also need two banners that are either purple or white."
+		},		
+		{
+			"type": "multiblock",
+			"multiblock": {
+				"pattern": [
+					["   ","   "," C "," K "," C ","   ","   "],
+					[" GW","   "," B ","   "," B ","   "," GP"],
+					[" BW","   "," B "," 0 "," B ","   "," BP"],
+					[" B ","   ","   "," B ","   ","   "," B "]
+				],
+				"mapping": {
+					"C": "dimdungeons:block_portal_crown",
+					"K": "dimdungeons:block_portal_keyhole",
+					"G": "dimdungeons:block_gilded_portal",
+					"B": "minecraft:stone_bricks",
+					"W": "minecraft:white_wall_banner[facing=south]",
+					"P": "minecraft:purple_wall_banner[facing=south]"
+				}
+			},
+			"text": "Then upgrade your portal like this."
+		}
+	]
+}
+			
+

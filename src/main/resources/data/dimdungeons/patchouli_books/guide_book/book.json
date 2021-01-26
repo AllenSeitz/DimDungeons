@@ -4,5 +4,7 @@
 	"model": "dimdungeons:item_guidebook",
 	"version": 0,
 	"subtitle": "v1.09 Feb 2021",
+	"show_progress": false,
+	"advancement_namespaces": [ "dimdungeons" ],
 	"creative_tab": "dimdungeons"
 }
