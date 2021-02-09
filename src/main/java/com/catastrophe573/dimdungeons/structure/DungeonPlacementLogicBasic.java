@@ -29,6 +29,7 @@ import net.minecraft.state.properties.StructureMode;
 import net.minecraft.tileentity.BarrelTileEntity;
 import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.DispenserTileEntity;
+import net.minecraft.tileentity.LockableLootTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.ResourceLocation;
@@ -296,11 +297,11 @@ public class DungeonPlacementLogicBasic
 	    TileEntityLocalTeleporter te = (TileEntityLocalTeleporter) world.getTileEntity(pos);
 	    if (te != null)
 	    {
-		ItemPortalKey key = (ItemPortalKey)genData.keyItem.getItem();
+		ItemPortalKey key = (ItemPortalKey) genData.keyItem.getItem();
 		double entranceX = key.getWarpX(genData.keyItem);
 		double entranceZ = key.getWarpZ(genData.keyItem);
 		te.setDestination(entranceX, 55.1D, entranceZ, 0.0f, 180.0f);
-	    }	    
+	    }
 	}
 	else if ("LockItStoneBrick".equals(name))
 	{
@@ -362,12 +363,7 @@ public class DungeonPlacementLogicBasic
 	else if ("SetTrappedLoot".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	    ChestTileEntity te = (ChestTileEntity) world.getTileEntity(pos.down());
-	    if (te != null)
-	    {
-		te.clear();
-		te.setLootTable(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), rand.nextLong());
-	    }
+	    LockableLootTileEntity.setLootTable(world, rand, pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"));
 	}
 	else if ("BarrelLoot1".equals(name))
 	{
@@ -552,13 +548,8 @@ public class DungeonPlacementLogicBasic
 	faceContainerTowardsAir(world, pos.down());
 
 	// set the loot table
-	TileEntity te = world.getTileEntity(pos.down());
-	if (te instanceof ChestTileEntity)
-	{
-	    ((ChestTileEntity) te).clear();
-	    ((ChestTileEntity) te).setLootTable(lootTable, rand.nextLong());
-	}
-	else
+	LockableLootTileEntity.setLootTable(world, rand, pos.down(), lootTable);
+	if (!(world.getTileEntity(pos.down()) instanceof ChestTileEntity))
 	{
 	    DimDungeons.LOGGER.info("DIMDUNGEONS: FAILED TO PLACE CHEST IN DUNGEON. pos = " + pos.getX() + ", " + pos.getZ());
 	}
@@ -569,13 +560,8 @@ public class DungeonPlacementLogicBasic
 	world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
 
 	// set the loot table
-	TileEntity te = world.getTileEntity(pos.down());
-	if (te instanceof BarrelTileEntity)
-	{
-	    ((BarrelTileEntity) te).clear();
-	    ((BarrelTileEntity) te).setLootTable(lootTable, rand.nextLong());
-	}
-	else
+	LockableLootTileEntity.setLootTable(world, rand, pos.down(), lootTable);
+	if (!(world.getTileEntity(pos.down()) instanceof BarrelTileEntity))
 	{
 	    DimDungeons.LOGGER.info("DIMDUNGEONS: FAILED TO PLACE BARREL IN DUNGEON. pos = " + pos.getX() + ", " + pos.getZ());
 	}
