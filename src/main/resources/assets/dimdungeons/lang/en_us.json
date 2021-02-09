@@ -201,6 +201,7 @@
 	// server configs
 	"config.dimdungeons.configVersion": "configVersion",
 	"config.dimdungeons.globalBlockProtection": "globalBlockProtection",
+	"config.dimdungeons.enableDebugCheats": "enableDebugCheats",
 	"config.dimdungeons.breakingWhitelist": "breakingWhitelist",
 	"config.dimdungeons.interactionBlacklist": "interactionBlacklist",
 	

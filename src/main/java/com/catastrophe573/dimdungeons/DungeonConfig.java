@@ -79,6 +79,7 @@ public class DungeonConfig
 	public final ConfigValue<Integer> configVersion;
 
 	public final ForgeConfigSpec.BooleanValue globalBlockProtection;
+	public final ForgeConfigSpec.BooleanValue enableDebugCheats;
 
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> breakingWhitelist;
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> interactionBlacklist;
@@ -174,6 +175,8 @@ public class DungeonConfig
 
 	    globalBlockProtection = builder.comment("If set to FALSE the block protection on the dungeon dimension will be disabled, making the options in the next section useless.").translation("config.dimdungeons.globalBlockProtection")
 		    .define("globalBlockProtection", true);
+	    enableDebugCheats = builder.comment("If set to TRUE some cheats are available.").translation("config.dimdungeons.enableDebugCheats")
+		    .define("enableDebugCheats", false);
 	    builder.pop();
 	    builder.comment("Options for block behavior in the dungeon dimension.").push("blocks");
 	    breakingWhitelist = builder.comment("List of blocks which any player should be allowed to break, defying the block protection. (For example, gravestones or death chests.) Default value is empty.")
@@ -771,6 +774,7 @@ public class DungeonConfig
 	// refresh SERVER
 	configVersion = SERVER.configVersion.get();
 	globalBlockProtection = SERVER.globalBlockProtection.get();
+	enableDebugCheats = SERVER.enableDebugCheats.get();
 	blockBreakWhitelist = SERVER.breakingWhitelist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
 	blockInteractBlacklist = SERVER.interactionBlacklist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
     }
