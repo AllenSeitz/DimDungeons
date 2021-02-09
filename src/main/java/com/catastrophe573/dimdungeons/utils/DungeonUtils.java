@@ -1,6 +1,7 @@
 package com.catastrophe573.dimdungeons.utils;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
+import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicAdvanced;
@@ -68,7 +69,7 @@ public class DungeonUtils
 	    return false;
 	}
 
-	if (genData.keyItem.hasDisplayName())
+	if (genData.keyItem.hasDisplayName() && DungeonConfig.enableDebugCheats)
 	{
 	    String name = genData.keyItem.getDisplayName().getUnformattedComponentText();
 	    if (name.contentEquals("DebugOne"))

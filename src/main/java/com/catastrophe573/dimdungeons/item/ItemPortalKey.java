@@ -1,6 +1,7 @@
 package com.catastrophe573.dimdungeons.item;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
+import com.catastrophe573.dimdungeons.DungeonConfig;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -391,7 +392,7 @@ public class ItemPortalKey extends Item
     {
 	//System.out.println("Triggered special event to initialize key!");
 	worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-	if (pos.getX() == 0 && pos.getZ() == 0)
+	if (pos.getX() == 0 && pos.getZ() == 0 && DungeonConfig.enableDebugCheats)
 	{
 	    activateKeyLevel2(itemstack); // for debugging only, End Portal Frames should never appear at (0,0) in the Overworld and this is not intended
 	}
