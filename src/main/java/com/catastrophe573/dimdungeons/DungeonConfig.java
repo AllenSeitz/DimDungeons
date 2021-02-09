@@ -788,8 +788,8 @@ public class DungeonConfig
 	return block;
     }
 
-    public static boolean patchouliInstalled()
+    public static boolean isModInstalled(String namespace)
     {
-	return ModList.get().isLoaded("patchouli");
-    }
+	return ModList.get().isLoaded(namespace);
+    }    
 }

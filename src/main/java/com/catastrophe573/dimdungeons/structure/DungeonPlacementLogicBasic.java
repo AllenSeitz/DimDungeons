@@ -3,6 +3,7 @@ package com.catastrophe573.dimdungeons.structure;
 import java.util.Random;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
+import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import com.catastrophe573.dimdungeons.block.TileEntityLocalTeleporter;
@@ -356,6 +357,15 @@ public class DungeonPlacementLogicBasic
 	    }
 	    else
 	    {
+		// actually within that 70% of nothing, if Artifacts is installed, then have a 10% chance of a mimic!
+		if ( DungeonConfig.isModInstalled("artifacts") )
+		{
+		    if ( lucky < 40 )
+		    {
+			spawnMimicFromArtifactsMod(pos, "mimic", world);			
+		    }
+		}
+		
 		world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block 
 		world.setBlockState(pos.down(), Blocks.AIR.getDefaultState(), 2); // and erase the chest below it
 	    }
@@ -646,5 +656,25 @@ public class DungeonPlacementLogicBasic
 	    }
 	    world.setBlockState(pos, bs, 2);
 	}
+    }
+    
+    private static void spawnMimicFromArtifactsMod(BlockPos pos, String casualName, IWorld world)    
+    {
+	MobEntity mob = null;
+	
+	if ( !DungeonConfig.isModInstalled("artifacts") )
+	{
+	    return; // fail safe
+	}
+	
+	mob = (MobEntity)EntityType.byKey("artifacts:mimic").get().create((World) world);
+	mob.setPosition(pos.getX(), pos.getY(), pos.getZ());
+	
+	mob.setCanPickUpLoot(false);
+	mob.moveToBlockPosAndAngles(pos, 0.0F, 0.0F);
+	mob.enablePersistence();
+
+	mob.onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
+	world.addEntity(mob);	
     }
 }
