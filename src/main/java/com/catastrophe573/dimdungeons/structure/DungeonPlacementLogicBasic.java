@@ -373,7 +373,7 @@ public class DungeonPlacementLogicBasic
 	else if ("SetTrappedLoot".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	    LockableLootTileEntity.setLootTable(world, rand, pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"));
+	    LockableLootTileEntity.setLootTable(world, rand, pos.down(), new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"));
 	}
 	else if ("BarrelLoot1".equals(name))
 	{
