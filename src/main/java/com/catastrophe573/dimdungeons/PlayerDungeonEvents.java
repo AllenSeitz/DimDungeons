@@ -6,8 +6,12 @@ import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 import com.google.common.collect.Lists;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.monster.EndermanEntity;
+import net.minecraft.entity.monster.ShulkerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.world.BlockEvent;
@@ -142,5 +146,29 @@ public class PlayerDungeonEvents
 	}
 
 	//DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() + " just interacted with: " + targetBlock.getBlock().getTranslatedName().getString());
+    }
+
+    @SubscribeEvent
+    public void teleportStart(EnderTeleportEvent event)
+    {
+	// restrict player teleports
+	if (event.getEntityLiving() instanceof ServerPlayerEntity)
+	{
+	    // I only care about restricting teleports in the Dungeon CHALLENGE Dimension
+//	    if (DungeonUtils.isDimensionDungeon(event.getEntityLiving().getEntityWorld()))
+//	    {
+//		event.setCanceled(true);
+//	    }
+	}
+	
+	// restrict enderman/shulker teleports
+	if (event.getEntityLiving() instanceof EndermanEntity || event.getEntityLiving() instanceof ShulkerEntity)
+	{
+	    // I only care about restricting teleports within my dimensions
+	    if (DungeonUtils.isDimensionDungeon(event.getEntityLiving().getEntityWorld()))
+	    {
+		event.setCanceled(true);
+	    }
+	}
     }
 }
