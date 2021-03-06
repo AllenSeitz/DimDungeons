@@ -168,6 +168,10 @@ public class DungeonConfig
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_crimson_roots");
 	    hardcodedDefaultInteractionBlacklist.add("minecraft:potted_warped_roots");
 
+	    // by default nothing should be breakable. but gravestone/death chest-type mods need this special exception
+	    List<String> hardcodedDefaultBreakingWhitelist = Lists.newArrayList();
+	    hardcodedDefaultBreakingWhitelist.add("gravestone:gravestone");
+
 	    // list of server options and comments
 	    builder.comment("Options for general mod behavior.").push("general");
 
@@ -175,12 +179,11 @@ public class DungeonConfig
 
 	    globalBlockProtection = builder.comment("If set to FALSE the block protection on the dungeon dimension will be disabled, making the options in the next section useless.").translation("config.dimdungeons.globalBlockProtection")
 		    .define("globalBlockProtection", true);
-	    enableDebugCheats = builder.comment("If set to TRUE some cheats are available.").translation("config.dimdungeons.enableDebugCheats")
-		    .define("enableDebugCheats", false);
+	    enableDebugCheats = builder.comment("If set to TRUE some cheats are available.").translation("config.dimdungeons.enableDebugCheats").define("enableDebugCheats", false);
 	    builder.pop();
 	    builder.comment("Options for block behavior in the dungeon dimension.").push("blocks");
 	    breakingWhitelist = builder.comment("List of blocks which any player should be allowed to break, defying the block protection. (For example, gravestones or death chests.) Default value is empty.")
-		    .translation("config.dimdungeons.breakingWhitelist").defineList("breakingWhitelist", Lists.newArrayList(), o -> o instanceof String);
+		    .translation("config.dimdungeons.breakingWhitelist").defineList("breakingWhitelist", hardcodedDefaultBreakingWhitelist, o -> o instanceof String);
 	    interactionBlacklist = builder.comment("List of blocks that players will be unable to interact with. It is strongly recommended to preserve the defaults.").translation("config.dimdungeons.interactionBlacklist")
 		    .defineList("interactionBlacklist", hardcodedDefaultInteractionBlacklist, o -> o instanceof String);
 	    builder.pop();
@@ -795,5 +798,5 @@ public class DungeonConfig
     public static boolean isModInstalled(String namespace)
     {
 	return ModList.get().isLoaded(namespace);
-    }    
+    }
 }
