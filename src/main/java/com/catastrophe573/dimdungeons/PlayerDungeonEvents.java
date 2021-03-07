@@ -9,9 +9,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.monster.ShulkerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.world.BlockEvent;
@@ -171,4 +174,27 @@ public class PlayerDungeonEvents
 	    }
 	}
     }
+    
+    @SubscribeEvent
+    public void useItem(LivingEntityUseItemEvent.Start event)
+    {
+	ItemStack stack = event.getItem();
+	
+	// do not run this function on non-players
+	if ( !(event.getEntityLiving() instanceof ServerPlayerEntity) )
+	{
+	    return;
+	}
+	
+	// cancel chorus fruits in any of my dimensions
+	if (DungeonUtils.isDimensionDungeon(event.getEntityLiving().getEntityWorld()))
+	{
+	    if ( stack.getItem() == Items.CHORUS_FRUIT )
+	    {
+		event.setDuration(-1); // stop the chorus fruit from being used
+		event.setCanceled(true);
+		DimDungeons.LOGGER.info("CANCELLING CHORUS FRUIT at START!");
+	    }
+	}
+    }   
 }
