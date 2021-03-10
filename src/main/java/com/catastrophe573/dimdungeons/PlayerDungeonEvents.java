@@ -193,7 +193,7 @@ public class PlayerDungeonEvents
 	    {
 		event.setDuration(-1); // stop the chorus fruit from being used
 		event.setCanceled(true);
-		DimDungeons.LOGGER.info("CANCELLING CHORUS FRUIT at START!");
+		//DimDungeons.LOGGER.info("CANCELLING CHORUS FRUIT at START!");
 	    }
 	}
     }   
