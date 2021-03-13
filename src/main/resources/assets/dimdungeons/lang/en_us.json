@@ -11,6 +11,7 @@
     "block.dimdungeons.block_portal_crown": "Portal Crown Block",
 
     "item.dimdungeons.item_portal_key": "Blank Portal Key",
+    "item.dimdungeons.item_secret_bell": "Bell of Secrets",
     "item.dimdungeons.item_guidebook": "Dimensional Dungeons Guidebook",
 
 // these trophy strings are not used, 1.14 forced them to move into the loot tables
@@ -122,18 +123,19 @@
     "book.dimdungeons.author": "Catastrophe573",
 
     "book.dimdungeons.fun_message_1": "Consider bringing a few ender pearls with you. They can save you in trap rooms.",
-    "book.dimdungeons.fun_message_2": "Many chests contain more dungeon keys in their loot table. So you can keep dungeoneering!",
+    "book.dimdungeons.fun_message_2": "Some chests contain more dungeon keys. So you can keep dungeoneering!",
     "book.dimdungeons.fun_message_3": "If you find another portal then you are very lucky! Be sure to take the rare key that is inside the keyhole.",
     "book.dimdungeons.fun_message_4": "These dungeons are an excellent source of enchanted books.",
     "book.dimdungeons.fun_message_5": "Using a blank map inside a dungeon will reveal the map of that dungeon!",
     "book.dimdungeons.fun_message_6": "Some rooms have treasure chests that only appear if you are lucky. These chests can draw from any loot table!",
     "book.dimdungeons.fun_message_7": "I care about your feedback and ideas! You can send me comments however you like.",
-    "book.dimdungeons.fun_message_8": "Some rooms are safe places to hide, heal, or take free treasure. No catch.",
+    "book.dimdungeons.fun_message_8": "All of these rooms use unmodded, survival mechanics. There are no command blocks or modded blocks.",
 
-    "book.dimdungeons.helpful_message_1": "If you see a few red particles coming up through the carpet then try running a lap around the room.",
+    //"book.dimdungeons.helpful_message_1": "If you see a few red particles coming up through the carpet then try running a lap around the room.",
+    "book.dimdungeons.helpful_message_1": "There's usually a way to get anywhere you can see. If you're stuck, look for something unusual that you can interact with.",    
     "book.dimdungeons.helpful_message_2": "If a sample of lava seems impossible to fall into by accident then you might want to jump in on purpose!",
     "book.dimdungeons.helpful_message_3": "An empty chest might be a trap. But if you feel safe then consider making a donation!",
-    "book.dimdungeons.helpful_message_4": "Be suspicious of the witch's cauldron. It is the key to opening a hidden door.",
+    "book.dimdungeons.helpful_message_4": "Be suspicious of the witch's cauldron. And question, who is the jailer in this place?",
     "book.dimdungeons.helpful_message_5": "A cubic zirconia is as good as a real diamond; but it is a fake prize. Try replacing it with something better.",
     "book.dimdungeons.helpful_message_6": "In the igloo room try enchanting your boots with an enchantment that fits the theme.",
     "book.dimdungeons.helpful_message_7": "The fishy floor in the corner of skulls is beautiful. But after you look down, look up!",
