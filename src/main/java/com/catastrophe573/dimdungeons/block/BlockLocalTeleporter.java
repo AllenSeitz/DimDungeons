@@ -107,8 +107,9 @@ public class BlockLocalTeleporter extends BreakableBlock
     protected Entity actuallyPerformTeleport(ServerPlayerEntity player, ServerWorld dim, double x, double y, double z, float destYaw, float destPitch)
     {
 	CustomTeleporter tele = new CustomTeleporter(dim);
-	player.changeDimension(dim, tele);
-	player.teleport(dim, x, y, z, destYaw, destPitch);
-	return player;	
+	tele.setDestPos(x, y, z, destYaw, destPitch);
+	player.changeDimension(dim, tele); // changing within the same dimension, but still teleport safely anyways
+	//player.teleport(dim, x, y, z, destYaw, destPitch);
+	return player;
     }    
 }
