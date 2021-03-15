@@ -113,17 +113,10 @@ public class BlockGoldPortal extends BreakableBlock
 	    return;
 	}
 
-	// manually check/use portal
-	if (entityIn.func_242280_ah()) // unmapped name of isEntityPortalCooldownActive()
-	{
-	    return;
-	}
-
 	if (!entityIn.isPassenger() && !entityIn.isBeingRidden() && entityIn.isNonBoss())
 	{
 	    //DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
 
-	    //TileEntityPortalKeyhole te = findKeyholeForThisPortal(state, worldIn, pos);
 	    TileEntity tile = worldIn.getTileEntity(pos);
 
 	    if (tile != null && tile instanceof TileEntityGoldPortal)
@@ -134,6 +127,25 @@ public class BlockGoldPortal extends BreakableBlock
 		float warpX = destination.getX();
 		float warpY = destination.getY();
 		float warpZ = destination.getZ();
+		int cooldown = te.getCooldown();
+		
+		// implement the cooldown on the portal block itself
+		int currentTick = worldIn.getServer().getTickCounter();
+		if ( !te.needsUpdateThisTick(currentTick) )
+		{
+		    return;
+		}
+		if ( cooldown > 0 )
+		{		    
+		    //DimDungeons.LOGGER.info("PORTAL BLOCK COOLDOWN: " + cooldown);
+		    te.setCooldown(cooldown-1, worldIn, pos, currentTick);
+		    return;
+		}
+		else
+		{
+		    //DimDungeons.LOGGER.info("RESETTING COOLDOWN ON PORTAL");
+		    te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);		    
+		}
 
 		if (DungeonUtils.isDimensionOverworld(worldIn))
 		{
@@ -173,9 +185,6 @@ public class BlockGoldPortal extends BreakableBlock
 
     protected Entity actuallyPerformTeleport(ServerPlayerEntity player, ServerWorld dim, double x, double y, double z, double yaw)
     {
-	// manually set portal cooldown
-	player.func_242279_ag(); // unmapped version of startEntityPortalCooldown()
-
 	float destPitch = player.getPitchYaw().x;
 	float destYaw = player.getPitchYaw().y;
 
