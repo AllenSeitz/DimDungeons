@@ -196,8 +196,9 @@ public class BlockGoldPortal extends BreakableBlock
 	}
 
 	CustomTeleporter tele = new CustomTeleporter(dim);
+	tele.setDestPos(x, y, z, destYaw, destPitch);
 	player.changeDimension(dim, tele);
-	player.teleport(dim, x, y, z, destYaw, destPitch);
+	//player.teleport(dim, x, y, z, destYaw, destPitch);
 	return player;
     }
 

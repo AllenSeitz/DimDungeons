@@ -13,10 +13,21 @@ public class CustomTeleporter implements net.minecraftforge.common.util.ITelepor
     protected final ServerWorld world;
     protected final Random random;
 
+    protected Vector3d destPos;
+    protected float destYaw;
+    protected float destPitch;
+
     public CustomTeleporter(ServerWorld worldIn)
     {
 	this.world = worldIn;
 	this.random = new Random(worldIn.getSeed());
+    }
+
+    public void setDestPos(double x, double y, double z, float yaw, float pitch)
+    {
+	destPos = new Vector3d(x, y, z);
+	destYaw = yaw;
+	destPitch = pitch;
     }
 
     @Override
@@ -24,12 +35,11 @@ public class CustomTeleporter implements net.minecraftforge.common.util.ITelepor
     {
 	return repositionEntity.apply(true);
     }
-    
+
     @Override
     public PortalInfo getPortalInfo(Entity entity, ServerWorld destWorld, Function<ServerWorld, PortalInfo> defaultPortalInfo)
     {
-	// TODO: make the entity always face north after entering the dimension
-        return new PortalInfo(entity.getPositionVec(), Vector3d.ZERO, entity.rotationYaw, entity.rotationPitch);
+	return new PortalInfo(destPos, Vector3d.ZERO, destYaw, destPitch);
     }
 
     // no idea what this was ever used for in previous versions
