@@ -105,6 +105,14 @@ public class PlayerDungeonEvents
 	    return;
 	}
 
+	// assume this is frost walker and allow it?
+	String whatBlock = event.getPlacedBlock().getBlock().getRegistryName().getPath();
+	String whyBlock = event.getBlockSnapshot().getReplacedBlock().getBlock().getRegistryName().getPath();
+	if ("water".equals(whatBlock) && "water".equals(whyBlock) )
+	{
+	    return; // not sure why the block isn't frosted_ice though?
+	}
+	
 	event.setCanceled(true);
     }
 
@@ -158,12 +166,12 @@ public class PlayerDungeonEvents
 	if (event.getEntityLiving() instanceof ServerPlayerEntity)
 	{
 	    // I only care about restricting teleports in the Dungeon CHALLENGE Dimension
-//	    if (DungeonUtils.isDimensionDungeon(event.getEntityLiving().getEntityWorld()))
-//	    {
-//		event.setCanceled(true);
-//	    }
+	    //	    if (DungeonUtils.isDimensionDungeon(event.getEntityLiving().getEntityWorld()))
+	    //	    {
+	    //		event.setCanceled(true);
+	    //	    }
 	}
-	
+
 	// restrict enderman/shulker teleports
 	if (event.getEntityLiving() instanceof EndermanEntity || event.getEntityLiving() instanceof ShulkerEntity)
 	{
@@ -174,27 +182,27 @@ public class PlayerDungeonEvents
 	    }
 	}
     }
-    
+
     @SubscribeEvent
     public void useItem(LivingEntityUseItemEvent.Start event)
     {
 	ItemStack stack = event.getItem();
-	
+
 	// do not run this function on non-players
-	if ( !(event.getEntityLiving() instanceof ServerPlayerEntity) )
+	if (!(event.getEntityLiving() instanceof ServerPlayerEntity))
 	{
 	    return;
 	}
-	
+
 	// cancel chorus fruits in any of my dimensions
 	if (DungeonUtils.isDimensionDungeon(event.getEntityLiving().getEntityWorld()))
 	{
-	    if ( stack.getItem() == Items.CHORUS_FRUIT )
+	    if (stack.getItem() == Items.CHORUS_FRUIT)
 	    {
 		event.setDuration(-1); // stop the chorus fruit from being used
 		event.setCanceled(true);
 		//DimDungeons.LOGGER.info("CANCELLING CHORUS FRUIT at START!");
 	    }
 	}
-    }   
+    }
 }
