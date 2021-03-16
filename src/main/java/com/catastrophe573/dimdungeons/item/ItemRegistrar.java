@@ -41,7 +41,7 @@ public class ItemRegistrar
 
 	// register basic items
 	event.getRegistry().register(new ItemPortalKey());
-	//event.getRegistry().register(new ItemSecretBell(new Item.Properties().group(CREATIVE_TAB).maxStackSize(1)));
+	event.getRegistry().register(new ItemSecretBell(new Item.Properties().group(CREATIVE_TAB).maxStackSize(1)));
 
 	// this item is now unused because I've switched to Patchouli
 	//event.getRegistry().register(new ItemGuidebook());

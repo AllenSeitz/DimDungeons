@@ -3,11 +3,13 @@ package com.catastrophe573.dimdungeons.item;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
+import com.catastrophe573.dimdungeons.DungeonConfig;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -27,7 +29,6 @@ import net.minecraft.world.World;
 public class ItemSecretBell extends Item //extends TieredItem implements IVanishable
 {
     public static final String REG_NAME = "item_secret_bell";
-    public static final int COOLDOWN_LENGTH = 100;
 
     // weapon properties (someday)
     //private final float attackDamage;
@@ -36,7 +37,6 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 
     // nbt properties
     public static final String NBT_UPGRADE = "upgrade";
-    public static final String NBT_COOLDOWN = "cooldown";
     public static final String NBT_SECRET_X = "secret_x";
     public static final String NBT_SECRET_Y = "secret_y";
     public static final String NBT_SECRET_Z = "secret_z";
@@ -76,18 +76,6 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 	    }
 	}
 	return 1;
-    }
-
-    public int getCooldownTimer(ItemStack stack)
-    {
-	if (stack.hasTag())
-	{
-	    if (stack.getTag().contains(NBT_COOLDOWN))
-	    {
-		return stack.getTag().getInt(NBT_COOLDOWN);
-	    }
-	}
-	return 0; // off cooldown, ready to use
     }
 
     public int getSecretX(ItemStack stack)
@@ -130,34 +118,16 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     {
 	CompoundNBT data = new CompoundNBT();
 	data.putInt(NBT_UPGRADE, level);
-	data.putInt(NBT_COOLDOWN, getCooldownTimer(stack));
 	data.putInt(NBT_SECRET_X, getSecretX(stack));
 	data.putInt(NBT_SECRET_Y, getSecretY(stack));
 	data.putInt(NBT_SECRET_Z, getSecretZ(stack));
 	stack.setTag(data);
-    }
-
-    public void setCooldownTimer(ItemStack stack, int value)
-    {
-	CompoundNBT data = new CompoundNBT();
-	data.putInt(NBT_UPGRADE, getUpgradeLevel(stack));
-	data.putInt(NBT_COOLDOWN, value);
-	data.putInt(NBT_SECRET_X, getSecretX(stack));
-	data.putInt(NBT_SECRET_Y, getSecretY(stack));
-	data.putInt(NBT_SECRET_Z, getSecretZ(stack));
-	stack.setTag(data);
-    }
-
-    public void decrementCooldownTimer(ItemStack stack)
-    {
-	setCooldownTimer(stack, Math.max(0, getCooldownTimer(stack) - 1));
     }
 
     public void setSecretLocation(ItemStack stack, int x, int y, int z)
     {
 	CompoundNBT data = new CompoundNBT();
 	data.putInt(NBT_UPGRADE, getUpgradeLevel(stack));
-	data.putInt(NBT_COOLDOWN, getCooldownTimer(stack));
 	data.putInt(NBT_SECRET_X, x);
 	data.putInt(NBT_SECRET_Y, y);
 	data.putInt(NBT_SECRET_Z, z);
@@ -169,10 +139,10 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     {
 	ItemStack itemstack = playerIn.getHeldItem(handIn);
 
-	if (getCooldownTimer(itemstack) <= 0 && handIn == Hand.MAIN_HAND)
+	if (handIn == Hand.MAIN_HAND)
 	{
-	    setCooldownTimer(itemstack, COOLDOWN_LENGTH);
-
+	    playerIn.getCooldownTracker().setCooldown(this, DungeonConfig.portalCooldownTicks);
+	    
 	    BlockPos secret = findSecretChestNearby(playerIn.getPosition(), worldIn);
 	    setSecretLocation(itemstack, secret.getX(), secret.getY(), secret.getZ());
 	    return new ActionResult<>(ActionResultType.SUCCESS, itemstack);
@@ -185,69 +155,67 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 
     public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
     {
-	int time = getCooldownTimer(stack);
+	if ( !(entityIn instanceof ServerPlayerEntity) || !isSelected )
+	{
+	    return;
+	}
+	ServerPlayerEntity playerIn = (ServerPlayerEntity)entityIn;	
+	
+	// convert from percentage back to raw ticks
+	int time = (int)(playerIn.getCooldownTracker().getCooldown(this, 0) * DungeonConfig.portalCooldownTicks);
 	if (time == 0)
 	{
 	    return;
 	}
-	decrementCooldownTimer(stack);
 
-	if (time == COOLDOWN_LENGTH)
+	if (time == DungeonConfig.portalCooldownTicks)
 	{
-	    playSoundAtPosition(worldIn, entityIn.getPosition(), 13, false);
+	    playSoundAtPosition(worldIn, entityIn.getPosition(), 13);
 	}
-	if (time == COOLDOWN_LENGTH - 5)
+	if (time == DungeonConfig.portalCooldownTicks - 4)
 	{
-	    playSoundAtPosition(worldIn, entityIn.getPosition(), 12, false);
+	    playSoundAtPosition(worldIn, entityIn.getPosition(), 12);
 	}
-	if (time == COOLDOWN_LENGTH - 10)
+	if (time == DungeonConfig.portalCooldownTicks - 8)
 	{
-	    playSoundAtPosition(worldIn, entityIn.getPosition(), 9, false);
+	    playSoundAtPosition(worldIn, entityIn.getPosition(), 9);
 	}
-	if (time == COOLDOWN_LENGTH - 15)
+	if (time == DungeonConfig.portalCooldownTicks - 12)
 	{
-	    playSoundAtPosition(worldIn, entityIn.getPosition(), 3, false);
+	    playSoundAtPosition(worldIn, entityIn.getPosition(), 3);
 	}
 
+	// assume that worlds won't go beyond -10000, even in the upcoming 1.17
 	if (getSecretY(stack) > -10000)
 	{
 	    BlockPos secretPos = new BlockPos(getSecretX(stack), getSecretY(stack), getSecretZ(stack));
-	    if (time == COOLDOWN_LENGTH - 20)
+	    if (time == DungeonConfig.portalCooldownTicks - 16)
 	    {
-		playSoundAtPosition(worldIn, secretPos, 2, false);
+		playSoundAtPosition(worldIn, secretPos, 2);
 	    }
-	    if (time == COOLDOWN_LENGTH - 25)
+	    if (time == DungeonConfig.portalCooldownTicks - 20)
 	    {
-		playSoundAtPosition(worldIn, secretPos, 10, false);
+		playSoundAtPosition(worldIn, secretPos, 10);
 	    }
-	    if (time == COOLDOWN_LENGTH - 30)
+	    if (time == DungeonConfig.portalCooldownTicks - 24)
 	    {
-		playSoundAtPosition(worldIn, secretPos, 14, false);
+		playSoundAtPosition(worldIn, secretPos, 14);
 	    }
-	    if (time == COOLDOWN_LENGTH - 35)
+	    if (time == DungeonConfig.portalCooldownTicks - 28)
 	    {
-		playSoundAtPosition(worldIn, secretPos, 18, false);
+		playSoundAtPosition(worldIn, secretPos, 18);
 	    }
-	}
-
-	// if the player puts the bell away then stop all ringing
-	if (!isSelected)
-	{
-	    setCooldownTimer(stack, 0);
 	}
     }
 
     // copied from NoteBlocks kind of
-    public void playSoundAtPosition(World worldIn, BlockPos pos, int note, boolean secretParticles)
+    public void playSoundAtPosition(World worldIn, BlockPos pos, int note)
     {
 	float pitch = (float) Math.pow(2.0D, (double) (note - 12) / 12.0D);
 	worldIn.playSound((PlayerEntity) null, pos, NoteBlockInstrument.BELL.getSound(), SoundCategory.RECORDS, 3.0F, pitch);
-
-	worldIn.addParticle(ParticleTypes.NOTE, (double) pos.getX() + 0.5D, (double) pos.getY() + 1.8D, (double) pos.getZ() + 0.5D, 0.0D, 2.0D, 0.0D);
-	worldIn.addParticle(ParticleTypes.NOTE, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, 1.0D, 0.0D, 0.0D);
-	worldIn.addParticle(ParticleTypes.NOTE, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, 1.0D, 0.0D, 0.0D);
-	worldIn.addParticle(ParticleTypes.NOTE, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, 0.0D, 0.0D, 1.0D);
-	worldIn.addParticle(ParticleTypes.NOTE, (double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, 0.0D, 0.0D, 1.0D);
+	
+	worldIn.addParticle(ParticleTypes.NOTE, (double)pos.getX() + 0.5D, (double) pos.getY() + 1.6D, (double) pos.getZ() + 0.5D, (double) note/24.0D, 0.0D, 0.0D);
+	//worldIn.addParticle(ParticleTypes.NOTE, (double)pos.getX() + 0.5D, (double) pos.getY() + 1.2D, (double) pos.getZ() + 0.5D, (double)i / 24.0D, 0.0D, 0.0D);
     }
 
     /**
@@ -308,10 +276,9 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 
     private BlockPos findSecretChestNearby(BlockPos start, World worldIn)
     {
-	// TODO: this math is wrong, but the item isn't being released until 1.1 so for 1.093 it can stay broken
-	int startX = start.getX() > 0 ? start.getX() - (start.getX() % 16) : start.getX() + (start.getX() % 16);
+	int startX = Math.floorDiv(start.getX(), 16) * 16;
+	int startZ = Math.floorDiv(start.getZ(), 16) * 16;
 	int startY = start.getY() - 8;
-	int startZ = start.getZ() > 0 ? start.getZ() - (start.getZ() % 16) : start.getZ() + (start.getZ() % 16);
 
 	// search the player's current chunk, 8 blocks up and 8 blocks down, for any inventory
 	// if that inventory has a loot table then it counts as an "unopened chest" and it triggers the secret chime
@@ -344,6 +311,6 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 	    }
 	}
 
-	return new BlockPos(-1, -9999, -1);
+	return new BlockPos(-1, -10000, -1);
     }
 }
