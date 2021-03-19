@@ -14,6 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -34,6 +35,7 @@ import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.dimension.DungeonChunkGenerator;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
+import com.catastrophe573.dimdungeons.utils.CommandDimDungeons;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("dimdungeons")
@@ -64,6 +66,7 @@ public class DimDungeons
 	// Register ourselves for server, registry and other game events we are interested in
 	//MinecraftForge.EVENT_BUS.register(this);
 	MinecraftForge.EVENT_BUS.register(eventHandler);
+	MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
 
 	ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, DungeonConfig.SERVER_SPEC);
 	ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, DungeonConfig.CLIENT_SPEC);
@@ -121,8 +124,13 @@ public class DimDungeons
 	}
     }
 
+    private void registerCommands(RegisterCommandsEvent evt)
+    {
+	CommandDimDungeons.register(evt.getDispatcher());
+    }
+
     // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD event bus
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = DimDungeons.MOD_ID)
     public static class RegistryEvents
     {
 	@SubscribeEvent

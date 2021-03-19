@@ -11,6 +11,8 @@
     "block.dimdungeons.block_portal_crown": "Portal Crown Block",
 
     "item.dimdungeons.item_portal_key": "Blank Portal Key",
+    "item.dimdungeons.item_portal_key_basic": "Basic Portal Key",
+    "item.dimdungeons.item_portal_key_advanced": "Advanced Portal Key",
     "item.dimdungeons.item_secret_bell": "Bell of Secrets",
     "item.dimdungeons.item_guidebook": "Dimensional Dungeons Guidebook",
 
