@@ -15,8 +15,9 @@ public class ItemRegistrar
     @ObjectHolder("dimdungeons:" + ItemPortalKey.REG_NAME)
     public static Item item_portal_key;
 
-    @ObjectHolder("dimdungeons:" + ItemGuidebook.REG_NAME)
-    public static Item item_guidebook;
+    // this item is now unused because I've switched to Patchouli
+    //@ObjectHolder("dimdungeons:" + ItemGuidebook.REG_NAME)
+    //public static Item item_guidebook;
     
     @ObjectHolder("dimdungeons:" + ItemSecretBell.REG_NAME)
     public static Item item_secret_bell;

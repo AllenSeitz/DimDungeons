@@ -35,6 +35,7 @@ import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.dimension.DungeonChunkGenerator;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
+import com.catastrophe573.dimdungeons.item.ItemSecretBell;
 import com.catastrophe573.dimdungeons.utils.CommandDimDungeons;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -91,6 +92,10 @@ public class DimDungeons
 	ItemModelsProperties.registerProperty(ItemRegistrar.item_portal_key, new ResourceLocation(DimDungeons.MOD_ID, "keytype"), (stack, world, entity) ->
 	{
 	    return ItemPortalKey.getKeyLevelAsFloat(stack);
+	});
+	ItemModelsProperties.registerProperty(ItemRegistrar.item_secret_bell, new ResourceLocation(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity) ->
+	{
+	    return ItemSecretBell.getUpgradeLevelAsFloat(stack);
 	});
     }
 

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
+import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -139,6 +140,12 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     {
 	ItemStack itemstack = playerIn.getHeldItem(handIn);
 
+	// Only the level 2 bell may be used in any dimension. The level 1 bell works exclusively in the dungeon dimension.
+	if (getUpgradeLevel(itemstack) < 2 && !DungeonUtils.isDimensionDungeon((World) playerIn.getEntityWorld()))
+	{
+	    return new ActionResult<>(ActionResultType.FAIL, itemstack);
+	}	
+	
 	if (handIn == Hand.MAIN_HAND)
 	{
 	    playerIn.getCooldownTracker().setCooldown(this, DungeonConfig.portalCooldownTicks);
@@ -172,15 +179,15 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 	{
 	    playSoundAtPosition(worldIn, entityIn.getPosition(), 13);
 	}
-	if (time == DungeonConfig.portalCooldownTicks - 4)
+	if (time == DungeonConfig.portalCooldownTicks - 3)
 	{
 	    playSoundAtPosition(worldIn, entityIn.getPosition(), 12);
 	}
-	if (time == DungeonConfig.portalCooldownTicks - 8)
+	if (time == DungeonConfig.portalCooldownTicks - 6)
 	{
 	    playSoundAtPosition(worldIn, entityIn.getPosition(), 9);
 	}
-	if (time == DungeonConfig.portalCooldownTicks - 12)
+	if (time == DungeonConfig.portalCooldownTicks - 9)
 	{
 	    playSoundAtPosition(worldIn, entityIn.getPosition(), 3);
 	}
@@ -189,19 +196,19 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 	if (getSecretY(stack) > -10000)
 	{
 	    BlockPos secretPos = new BlockPos(getSecretX(stack), getSecretY(stack), getSecretZ(stack));
-	    if (time == DungeonConfig.portalCooldownTicks - 16)
+	    if (time == DungeonConfig.portalCooldownTicks - 12)
 	    {
 		playSoundAtPosition(worldIn, secretPos, 2);
 	    }
-	    if (time == DungeonConfig.portalCooldownTicks - 20)
+	    if (time == DungeonConfig.portalCooldownTicks - 15)
 	    {
 		playSoundAtPosition(worldIn, secretPos, 10);
 	    }
-	    if (time == DungeonConfig.portalCooldownTicks - 24)
+	    if (time == DungeonConfig.portalCooldownTicks - 18)
 	    {
 		playSoundAtPosition(worldIn, secretPos, 14);
 	    }
-	    if (time == DungeonConfig.portalCooldownTicks - 28)
+	    if (time == DungeonConfig.portalCooldownTicks - 21)
 	    {
 		playSoundAtPosition(worldIn, secretPos, 18);
 	    }
