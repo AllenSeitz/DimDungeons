@@ -332,20 +332,11 @@ public class DungeonPlacementLogicBasic
 	}
 	else if ("ChestLoot1".equals(name))
 	{
-	    // 80% loot_1, 20% loot_2
-	    int lucky = rand.nextInt(100);
-	    if (lucky < 80)
-	    {
-		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), world, rand);
-	    }
-	    else
-	    {
-		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
-	    }
+	    fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_basic_easy"), world, rand);
 	}
 	else if ("ChestLoot2".equals(name))
 	{
-	    fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
+	    fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_basic_hard"), world, rand);
 	}
 	else if ("ChestLootLucky".equals(name))
 	{
@@ -358,14 +349,14 @@ public class DungeonPlacementLogicBasic
 	    else
 	    {
 		// actually within that 70% of nothing, if Artifacts is installed, then have a 10% chance of a mimic!
-		if ( DungeonConfig.isModInstalled("artifacts") )
+		if (DungeonConfig.isModInstalled("artifacts"))
 		{
-		    if ( lucky < 40 )
+		    if (lucky < 40)
 		    {
-			spawnMimicFromArtifactsMod(pos, "mimic", world);			
+			spawnMimicFromArtifactsMod(pos, "mimic", world);
 		    }
 		}
-		
+
 		world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block 
 		world.setBlockState(pos.down(), Blocks.AIR.getDefaultState(), 2); // and erase the chest below it
 	    }
@@ -373,20 +364,11 @@ public class DungeonPlacementLogicBasic
 	else if ("SetTrappedLoot".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	    LockableLootTileEntity.setLootTable(world, rand, pos.down(), new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"));
+	    LockableLootTileEntity.setLootTable(world, rand, pos.down(), new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_basic_easy"));
 	}
 	else if ("BarrelLoot1".equals(name))
 	{
-	    // 80% loot_1, 20% loot_2
-	    int lucky = rand.nextInt(100);
-	    if (lucky < 80)
-	    {
-		fillBarrelBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), world, rand);
-	    }
-	    else
-	    {
-		fillBarrelBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_2"), world, rand);
-	    }
+	    fillBarrelBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_basic_easy"), world, rand);
 	}
 	else if ("PlaceL2Key".equals(name))
 	{
@@ -657,24 +639,24 @@ public class DungeonPlacementLogicBasic
 	    world.setBlockState(pos, bs, 2);
 	}
     }
-    
-    private static void spawnMimicFromArtifactsMod(BlockPos pos, String casualName, IWorld world)    
+
+    private static void spawnMimicFromArtifactsMod(BlockPos pos, String casualName, IWorld world)
     {
 	MobEntity mob = null;
-	
-	if ( !DungeonConfig.isModInstalled("artifacts") )
+
+	if (!DungeonConfig.isModInstalled("artifacts"))
 	{
 	    return; // fail safe
 	}
-	
-	mob = (MobEntity)EntityType.byKey("artifacts:mimic").get().create((World) world);
+
+	mob = (MobEntity) EntityType.byKey("artifacts:mimic").get().create((World) world);
 	mob.setPosition(pos.getX(), pos.getY(), pos.getZ());
-	
+
 	mob.setCanPickUpLoot(false);
 	mob.moveToBlockPosAndAngles(pos, 0.0F, 0.0F);
 	mob.enablePersistence();
 
 	mob.onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
-	world.addEntity(mob);	
+	world.addEntity(mob);
     }
 }

@@ -321,20 +321,11 @@ public class DungeonPlacementLogicAdvanced
 	}
 	else if ("ChestLoot1".equals(name))
 	{
-	    // 80% loot_1, 20% loot_2
-	    int lucky = rand.nextInt(100);
-	    if (lucky < 80)
-	    {
-		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_3"), world, rand);
-	    }
-	    else
-	    {
-		fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_4"), world, rand);
-	    }
+	    fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_advanced_easy"), world, rand);
 	}
 	else if ("ChestLoot2".equals(name))
 	{
-	    fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_4"), world, rand);
+	    fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_advanced_hard"), world, rand);
 	}
 	else if ("ChestLootLucky".equals(name))
 	{
@@ -362,20 +353,11 @@ public class DungeonPlacementLogicAdvanced
 	else if ("SetTrappedLoot".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	    LockableLootTileEntity.setLootTable(world, rand, pos.down(), new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_3"));
+	    LockableLootTileEntity.setLootTable(world, rand, pos.down(), new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_advanced_easy"));
 	}
 	else if ("BarrelLoot1".equals(name))
 	{
-	    // 80% loot_1, 20% loot_2
-	    int lucky = rand.nextInt(100);
-	    if (lucky < 80)
-	    {
-		fillBarrelBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_3"), world, rand);
-	    }
-	    else
-	    {
-		fillBarrelBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_4"), world, rand);
-	    }
+	    fillBarrelBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_advanced_easy"), world, rand);
 	}
 	else if ("PlaceL2Key".equals(name))
 	{

@@ -190,6 +190,30 @@
         {
 		  "type": "item",
 		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_lure",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:lure\",lvl:3}]}"
+			}
+		  ]
+		},
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
+		  "entryName": "dimdungeons:ebook_luck",
+		  "weight": 2,
+		  "functions": [
+		    {
+			  "function": "set_nbt",
+			  "tag": "{StoredEnchantments:[{id:\"minecraft:luck_of_the_sea\",lvl:3}]}"
+			}
+		  ]
+		},		
+        {
+		  "type": "item",
+		  "name": "minecraft:enchanted_book",
 		  "entryName": "dimdungeons:ebook_riptide",
 		  "weight": 2,
 		  "functions": [
