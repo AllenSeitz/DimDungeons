@@ -67,50 +67,54 @@ public class DungeonDimension extends Dimension
     // no block breaking in this dimension!
     public boolean canMineBlock(PlayerEntity player, BlockPos pos)
     {
-	Block block = getWorld().getBlockState(pos).getBlock();
+        Block block = getWorld().getBlockState(pos).getBlock();
 
-	// okay, except some interactable blocks need to return true so that they can be interacted with
-	if (block.isIn(BlockTags.WOODEN_DOORS) || block.isIn(BlockTags.WOODEN_TRAPDOORS))
-	{
-	    return true;
-	}
-	if (block == Blocks.LEVER || block.isIn(BlockTags.BUTTONS) || block == Blocks.CAULDRON)
-	{
-	    return true;
-	}
-	if (block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST || block == Blocks.BARREL)
-	{
-	    return true;
-	}
-	if (block == BlockRegistrar.block_portal_keyhole)
-	{
-	    return true;
-	}
-	if (block.getRegistryName().toString().contains("gravestone")) // GraveStone Mod by henkelmax, also catches "gravestone_lite"
-	{
-	    return true;
-	}
-	if (block.getRegistryName().toString().contains("gravestone_lite")) // a second version of the above mod by the same author
-	{
-	    return true;
-	}
-	if (block.getRegistryName().toString().contains("tombstone")) // Corail Tombstone, allow players to interact with and break it
-	{
-	    return true;
-	}
-	if (block instanceof ShulkerBoxBlock){
-	    return true;
-    }
-	
-	/* TODO: someday make this a config option
-	if (player.hasPermissionLevel(2))
-	{
-	    return true;
-	}
-	//*/
+        // okay, except some interactable blocks need to return true so that they can be interacted with
+        if (block.isIn(BlockTags.WOODEN_DOORS) || block.isIn(BlockTags.WOODEN_TRAPDOORS))
+        {
+            return true;
+        }
+        if (block == Blocks.LEVER || block.isIn(BlockTags.BUTTONS) || block == Blocks.CAULDRON)
+        {
+            return true;
+        }
+        if (block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST || block == Blocks.BARREL)
+        {
+            return true;
+        }
+        if (block == BlockRegistrar.block_portal_keyhole)
+        {
+            return true;
+        }
+        if (block.getRegistryName().toString().contains("gravestone")) // GraveStone Mod by henkelmax, also catches "gravestone_lite"
+        {
+            return true;
+        }
+        if (block.getRegistryName().toString().contains("gravestone_lite")) // a second version of the above mod by the same author
+        {
+            return true;
+        }
+        if (block.getRegistryName().toString().contains("tombstone")) // Corail Tombstone, allow players to interact with and break it
+        {
+            return true;
+        }
+        if (block.getRegistryName().toString().contains("dank")) // Dank Storage, allow players to interact with and break it
+        {
+            return true;
+        }
+        if (block instanceof ShulkerBoxBlock){
+            return true;
+        }
 
-	//return getWorld().canMineBlockBody(player, pos);
-	return false;
+        /* TODO: someday make this a config option
+        if (player.hasPermissionLevel(2))
+        {
+            return true;
+        }
+        //*/
+
+        //return getWorld().canMineBlockBody(player, pos);
+        return false;
     }
 
     @Nullable

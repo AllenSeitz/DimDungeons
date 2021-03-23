@@ -6,13 +6,9 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
-import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.command.CustomTeleporter;
 import com.catastrophe573.dimdungeons.dimension.DungeonDimensionType;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
-//import com.google.common.collect.Lists;
-//import com.mojang.datafixers.util.Pair;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -22,23 +18,19 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-//import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-//import net.minecraft.nbt.CompoundNBT;
-//import net.minecraft.nbt.ListNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.BannerPattern;
-//import net.minecraft.tileentity.BannerTileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
-//import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 
 public class BlockGoldPortal extends BreakableBlock
@@ -151,7 +143,7 @@ public class BlockGoldPortal extends BreakableBlock
 			     * DimDungeons.LOGGER.info("DIMDUNGEONS: UNABLE TO SAVE PLAYER CAPABILITY"); }
 			     */
 
-			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonDimensionType.getDimensionType(), warpX, 55.1D, warpZ, 0);
+			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, entityIn.getServer().getWorld(DungeonDimensionType.getDimensionType()).getWorldServer(), warpX, 55.1D, warpZ, 0);
 			}
 		    }
 		    // three vanilla blocks will also open portals to the 3 vanilla dimensions?
@@ -184,19 +176,36 @@ public class BlockGoldPortal extends BreakableBlock
 	}
     }
 
-    protected void actuallyPerformTeleport(ServerPlayerEntity player, DimensionType dim, double x, double y, double z, double yaw)
+    protected Entity actuallyPerformTeleport(ServerPlayerEntity player, ServerWorld dim, double x, double y, double z, double yaw)
     {
-	player.timeUntilPortal = 200; // 300 ticks, same as vanilla nether portal (hijacking this also affects nether portals, which is intentional) 
+	player.timeUntilPortal = 200; // 300 ticks, same as vanilla nether portal (hijacking this also affects nether portals, which is intentional)
+
+		float destPitch = player.getPitchYaw().x;
+		float destYaw = player.getPitchYaw().y;
+
+		// if the player just entered a dungeon then force them to face north
+		if (player.dimension == DungeonDimensionType.getDimensionType())
+		{
+			destPitch = 0;
+			destYaw = 180;
+		}
+
+		CustomTeleporter tele = new CustomTeleporter(dim);
+		tele.setDestPos(x, y, z, destYaw, destPitch);
+		player.changeDimension(player.dimension, tele);
+		//player.teleport(dim, x, y, z, destYaw, destPitch);
+		return player;
 
 	// if the player just entered a dungeon then force them to face north 
-	if (dim == DungeonDimensionType.getDimensionType())
-	{
-	    CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, 0.0f, 180.0f);
-	}
-	else
-	{
-	    CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, player.getPitchYaw().x, (float) yaw);
-	}
+	//if (dim == DungeonDimensionType.getDimensionType())
+	//{
+	//	player.changeDimension(dim, tele);
+	//    CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, 0.0f, 180.0f);
+	//}
+	//else
+	//{
+	//    CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, player.getPitchYaw().x, (float) yaw);
+	//}
     }
 
     protected void sendPlayerBackHome(ServerPlayerEntity player)
@@ -234,7 +243,7 @@ public class BlockGoldPortal extends BreakableBlock
 	    lastYaw = player.getPitchYaw().y;
 	}
 
-	actuallyPerformTeleport(player, DimensionType.OVERWORLD, lastX, lastY, lastZ, lastYaw);
+	actuallyPerformTeleport(player, player.getServer().getWorld(DimensionType.OVERWORLD).getWorldServer(), lastX, lastY, lastZ, lastYaw);
     }
 
     // this function returns boolean and relies on another function to actually destroy the block
@@ -565,11 +574,11 @@ public class BlockGoldPortal extends BreakableBlock
 //	return 0;
 //    }
 
-    /**
-     * Called periodically client side on blocks near the player to show effects (like furnace fire particles). Note that
-     * this method is unrelated to {@link randomTick} and {@link #needsRandomTick}, and will always be called regardless of
-     * whether the block can receive random update ticks
-     */
+    ///**
+    // * Called periodically client side on blocks near the player to show effects (like furnace fire particles). Note that
+    // * this method is unrelated to {@link randomTick} and {@link #needsRandomTick}, and will always be called regardless of
+    // * whether the block can receive random update ticks
+    // */
     @OnlyIn(Dist.CLIENT)
     public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
