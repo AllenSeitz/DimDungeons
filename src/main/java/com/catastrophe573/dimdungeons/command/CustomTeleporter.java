@@ -2,6 +2,7 @@ package com.catastrophe573.dimdungeons.command;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 
+import net.minecraft.client.renderer.Vector3d;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.play.server.SPlayEntityEffectPacket;
 import net.minecraft.network.play.server.SPlaySoundEventPacket;
@@ -19,9 +20,27 @@ import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper.UnableToAccessFieldException;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper.UnableToFindFieldException;
+import org.apache.logging.log4j.core.jmx.Server;
 
-public class CustomTeleporter
+public class CustomTeleporter implements net.minecraftforge.common.util.ITeleporter
 {
+	protected final ServerWorld world;
+
+	protected Vector3d destPos;
+	protected float destYaw;
+	protected float destPitch;
+
+	public CustomTeleporter(ServerWorld worldIn)
+	{
+		this.world = worldIn;
+	}
+
+	public void setDestPos(double x, double y, double z, float yaw, float pitch)
+	{
+		destPos = new Vector3d(x, y, z);
+		destYaw = yaw;
+		destPitch = pitch;
+	}
     // basically, I want ServerPlayerEntity.changeDimension() but without the hardcoded special cases for placing obsidian blocks
     // in fact this code was copied from ServerPlayerEntity.changeDimension()
     // there were three places where I could have used reflection to achieve a perfect result, but I decided not to
