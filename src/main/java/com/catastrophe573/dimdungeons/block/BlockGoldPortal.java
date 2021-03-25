@@ -197,14 +197,14 @@ public class BlockGoldPortal extends BreakableBlock
 		//return player;
 
 	// if the player just entered a dungeon then force them to face north
-	if (dim == DungeonDimensionType.getDimensionType())
-	{
-	    CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, 0.0f, 180.0f);
-	}
-	else
-	{
-	    CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, player.getPitchYaw().x, (float) yaw);
-	}
+		if (dim == DungeonDimensionType.getDimensionType())
+		{
+			CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, 0.0f, 180.0f);
+		}
+		else
+		{
+			CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, player.getPitchYaw().x, (float) yaw);
+		}
     }
 
     protected void sendPlayerBackHome(ServerPlayerEntity player)
@@ -242,7 +242,7 @@ public class BlockGoldPortal extends BreakableBlock
 	    lastYaw = player.getPitchYaw().y;
 	}
 
-	actuallyPerformTeleport(player, DungeonDimensionType.getDimensionType(), lastX, lastY, lastZ, lastYaw);
+	actuallyPerformTeleport(player, DimensionType.OVERWORLD, lastX, lastY, lastZ, lastYaw);
     }
 
     // this function returns boolean and relies on another function to actually destroy the block
