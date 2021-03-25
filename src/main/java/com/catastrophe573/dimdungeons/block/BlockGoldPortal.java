@@ -143,7 +143,7 @@ public class BlockGoldPortal extends BreakableBlock
 			     * DimDungeons.LOGGER.info("DIMDUNGEONS: UNABLE TO SAVE PLAYER CAPABILITY"); }
 			     */
 
-			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, entityIn.getServer().getWorld(DungeonDimensionType.getDimensionType()).getWorldServer(), warpX, 55.1D, warpZ, 0);
+			    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonDimensionType.getDimensionType(), warpX, 55.1D, warpZ, 0);
 			}
 		    }
 		    // three vanilla blocks will also open portals to the 3 vanilla dimensions?
@@ -176,36 +176,35 @@ public class BlockGoldPortal extends BreakableBlock
 	}
     }
 
-    protected Entity actuallyPerformTeleport(ServerPlayerEntity player, ServerWorld dim, double x, double y, double z, double yaw)
+    protected void actuallyPerformTeleport(ServerPlayerEntity player, DimensionType dim, double x, double y, double z, double yaw)
     {
 	player.timeUntilPortal = 200; // 300 ticks, same as vanilla nether portal (hijacking this also affects nether portals, which is intentional)
 
-		float destPitch = player.getPitchYaw().x;
-		float destYaw = player.getPitchYaw().y;
+		//float destPitch = player.getPitchYaw().x;
+		//float destYaw = player.getPitchYaw().y;
 
 		// if the player just entered a dungeon then force them to face north
-		if (player.dimension == DungeonDimensionType.getDimensionType())
-		{
-			destPitch = 0;
-			destYaw = 180;
-		}
+		//if (player.dimension == DungeonDimensionType.getDimensionType())
+		//{
+		//	destPitch = 0;
+		//	destYaw = 180;
+		//}
 
-		CustomTeleporter tele = new CustomTeleporter(dim);
-		tele.setDestPos(x, y, z, destYaw, destPitch);
-		player.changeDimension(player.dimension, tele);
+		//CustomTeleporter tele = new CustomTeleporter(dim);
+		//tele.setDestPos(x, y, z, destYaw, destPitch);
+		//player.changeDimension(player.dimension, tele);
 		//player.teleport(dim, x, y, z, destYaw, destPitch);
-		return player;
+		//return player;
 
-	// if the player just entered a dungeon then force them to face north 
-	//if (dim == DungeonDimensionType.getDimensionType())
-	//{
-	//	player.changeDimension(dim, tele);
-	//    CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, 0.0f, 180.0f);
-	//}
-	//else
-	//{
-	//    CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, player.getPitchYaw().x, (float) yaw);
-	//}
+	// if the player just entered a dungeon then force them to face north
+	if (dim == DungeonDimensionType.getDimensionType())
+	{
+	    CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, 0.0f, 180.0f);
+	}
+	else
+	{
+	    CustomTeleporter.teleportEntityToDimension(player, dim, false, x, y, z, player.getPitchYaw().x, (float) yaw);
+	}
     }
 
     protected void sendPlayerBackHome(ServerPlayerEntity player)
@@ -243,7 +242,7 @@ public class BlockGoldPortal extends BreakableBlock
 	    lastYaw = player.getPitchYaw().y;
 	}
 
-	actuallyPerformTeleport(player, player.getServer().getWorld(DimensionType.OVERWORLD).getWorldServer(), lastX, lastY, lastZ, lastYaw);
+	actuallyPerformTeleport(player, DungeonDimensionType.getDimensionType(), lastX, lastY, lastZ, lastYaw);
     }
 
     // this function returns boolean and relies on another function to actually destroy the block

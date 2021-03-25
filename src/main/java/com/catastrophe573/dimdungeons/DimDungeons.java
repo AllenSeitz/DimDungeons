@@ -41,6 +41,8 @@ public class DimDungeons
     public static final String MOD_ID = "dimdungeons"; // this must match mods.toml
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
 
+    public static final PlayerDungeonEvents eventHandler = new PlayerDungeonEvents();
+
     public DimDungeons()
     {
 	// register event listeners that don't use the event bus
@@ -58,6 +60,7 @@ public class DimDungeons
     // some preinit code	
     private void setup(final FMLCommonSetupEvent event)
     {
+        MinecraftForge.EVENT_BUS.register(eventHandler);
 	//MinecraftForge.EVENT_BUS.register(new PlayerDungeonDataEvents());
 
 	//CapabilityManager.INSTANCE.register(IPlayerDungeonData.class, new PlayerDungeonDataStorage(), DefaultPlayerDungeonData::new);
