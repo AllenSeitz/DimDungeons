@@ -2,4 +2,3 @@
 * Added Quark trapped chest compatibility for recipe
 * Prevented eating Chorus Fruit in dungeons
 * Prevent Endermen and Shulker teleports
-* Fixed inter-dimension teleports

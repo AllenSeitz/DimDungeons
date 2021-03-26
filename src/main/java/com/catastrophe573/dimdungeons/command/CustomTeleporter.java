@@ -22,9 +22,9 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper.UnableToAccessF
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper.UnableToFindFieldException;
 import org.apache.logging.log4j.core.jmx.Server;
 
-public class CustomTeleporter implements net.minecraftforge.common.util.ITeleporter
+public class CustomTeleporter //implements net.minecraftforge.common.util.ITeleporter
 {
-	protected final ServerWorld world;
+	/*protected final ServerWorld world;
 
 	protected Vector3d destPos;
 	protected float destYaw;
@@ -40,7 +40,7 @@ public class CustomTeleporter implements net.minecraftforge.common.util.ITelepor
 		destPos = new Vector3d(x, y, z);
 		destYaw = yaw;
 		destPitch = pitch;
-	}
+	}*/
     // basically, I want ServerPlayerEntity.changeDimension() but without the hardcoded special cases for placing obsidian blocks
     // in fact this code was copied from ServerPlayerEntity.changeDimension()
     // there were three places where I could have used reflection to achieve a perfect result, but I decided not to
