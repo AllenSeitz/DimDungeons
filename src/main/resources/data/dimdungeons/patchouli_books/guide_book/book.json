@@ -1,9 +1,9 @@
 {
 	"name": "Dimensional Dungeons",
-	"landing_text": "Welcome to challenging and rewarding Dimensional Dungeons.",
+	"landing_text": "Discover challenging and rewarding Dimensional Dungeons.",
 	"model": "dimdungeons:item_guidebook",
 	"version": 0,
-	"subtitle": "v1.09 Feb 2021",
+	"subtitle": "v1.10 Mar 2021",
 	"show_progress": false,
 	"advancement_namespaces": [ "dimdungeons" ],
 	"creative_tab": "dimdungeons"

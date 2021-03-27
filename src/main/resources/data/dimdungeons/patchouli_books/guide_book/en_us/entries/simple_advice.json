@@ -14,7 +14,11 @@
 		},
         {
             "type": "text",
-            "text": "$(li)These dungeons exist in extra-dimensional pocket space! So it's possible that loot from $(o)other dimensions$() has ended up here as well.$(li)I care about your feedback, suggestions, and bug reports! You can contact the mod author through curseforge, github, or Discord."
+            "text": "$(li)These dungeons exist in extra-dimensional pocket space! So it's possible that loot from $(o)other dimensions$() has ended up here as well.$(li)I care about your feedback, suggestions, and bug reports! You can contact the mod author through curseforge, github, or Discord.$(li)Some dungeon rooms assume default game rules, such as doFireTick=true."
+		},
+        {
+            "type": "text",
+            "text": "$(li)Save your keys! At least until you're sure you've found everything in a dungeon.$(li)Potions of Luck can be used to upgrade the quality of loot in 'easy' chests.$(li)Thank You For Playing"
 		}
     ]
 }
