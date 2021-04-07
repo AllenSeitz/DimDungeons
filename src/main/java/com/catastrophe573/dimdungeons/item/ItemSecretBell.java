@@ -1,5 +1,7 @@
 package com.catastrophe573.dimdungeons.item;
 
+import java.lang.reflect.Field;
+
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
@@ -301,11 +303,18 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 			boolean hasLootTable = false;
 			try
 			{
-			    hasLootTable = FieldUtils.readField(te, "lootTable", true) != null;
+			    //hasLootTable = FieldUtils.readField(te, "lootTable", true) != null;
+			    hasLootTable = FieldUtils.readField(te, "field_184284_m", true) != null;			    
 			}
 			catch (IllegalAccessException e)
 			{
 			    // not a problem
+			    DimDungeons.LOGGER.info("Bell of Secrets FAILED - Illegal Access");
+			}
+			catch (IllegalArgumentException e)
+			{
+			    // not a problem
+			    DimDungeons.LOGGER.info("Bell of Secrets FAILED - Illegal Argument");
 			}
 
 			if (hasLootTable)
