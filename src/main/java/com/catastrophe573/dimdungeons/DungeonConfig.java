@@ -397,17 +397,20 @@ public class DungeonConfig
 	    List<List<String>> tempBasicCorners = Lists.newArrayList();
 	    temp.add("dimdungeons:corner_1");
 	    temp.add("dimdungeons:corner_3");
+	    tempBasicCorners.add(Lists.newArrayList(temp));
+	    temp.clear();
 	    temp.add("dimdungeons:firepath_2");
 	    tempBasicCorners.add(Lists.newArrayList(temp));
 	    temp.clear();
 	    temp.add("dimdungeons:corner_4");
+	    tempBasicCorners.add(Lists.newArrayList(temp));
+	    temp.clear();
 	    temp.add("dimdungeons:corner_5");
 	    temp.add("dimdungeons:redsand_1");
 	    tempBasicCorners.add(Lists.newArrayList(temp));
 	    temp.clear();
 	    temp.add("dimdungeons:corner_6");
 	    temp.add("dimdungeons:corner_7");
-	    temp.add("dimdungeons:corner_8");
 	    tempBasicCorners.add(Lists.newArrayList(temp));
 	    temp.clear();
 	    temp.add("dimdungeons:longcorner_1");
@@ -419,10 +422,13 @@ public class DungeonConfig
 	    tempBasicCorners.add(Lists.newArrayList(temp));
 	    temp.clear();
 	    temp.add("dimdungeons:icetrap_1");
+	    tempBasicCorners.add(Lists.newArrayList(temp));
+	    temp.clear();
 	    temp.add("dimdungeons:redstrap_3");
 	    tempBasicCorners.add(Lists.newArrayList(temp));
 	    temp.clear();
 	    temp.add("dimdungeons:skullcorner_1");
+	    temp.add("dimdungeons:corner_8");
 	    tempBasicCorners.add(Lists.newArrayList(temp));
 	    temp.clear();
 
@@ -566,7 +572,7 @@ public class DungeonConfig
 	    tempAdvancedFourways.add(Lists.newArrayList(temp));
 	    temp.clear();
 	    temp.add("dimdungeons:redstrap_1");
-	    temp.add("dimdungeons:redore_2");
+	    temp.add("dimdungeons:redore_1");
 	    temp.add("dimdungeons:redore_3");
 	    tempAdvancedFourways.add(Lists.newArrayList(temp));
 	    temp.clear();
@@ -688,21 +694,29 @@ public class DungeonConfig
 	    //
 	    List<List<String>> tempAdvancedCorners = Lists.newArrayList();
 	    temp.add("dimdungeons:corner_1");
-	    temp.add("dimdungeons:corner_3");
-	    temp.add("dimdungeons:firepath_3");
 	    tempAdvancedCorners.add(Lists.newArrayList(temp));
 	    temp.clear();
 	    temp.add("dimdungeons:corner_4");
+	    tempAdvancedCorners.add(Lists.newArrayList(temp));
+	    temp.clear();
+	    temp.add("dimdungeons:firepath_3");
+	    tempAdvancedCorners.add(Lists.newArrayList(temp));
+	    temp.clear();
 	    temp.add("dimdungeons:corner_5");
+	    tempAdvancedCorners.add(Lists.newArrayList(temp));
+	    temp.clear();
 	    temp.add("dimdungeons:redsand_2");
 	    tempAdvancedCorners.add(Lists.newArrayList(temp));
 	    temp.clear();
 	    temp.add("dimdungeons:corner_6");
+	    tempAdvancedCorners.add(Lists.newArrayList(temp));
+	    temp.clear();
 	    temp.add("dimdungeons:corner_7");
-	    temp.add("dimdungeons:corner_8");
 	    tempAdvancedCorners.add(Lists.newArrayList(temp));
 	    temp.clear();
 	    temp.add("dimdungeons:longcorner_1");
+	    tempAdvancedCorners.add(Lists.newArrayList(temp));
+	    temp.clear();
 	    temp.add("dimdungeons:longcorner_3");
 	    tempAdvancedCorners.add(Lists.newArrayList(temp));
 	    temp.clear();
@@ -715,6 +729,7 @@ public class DungeonConfig
 	    tempAdvancedCorners.add(Lists.newArrayList(temp));
 	    temp.clear();
 	    temp.add("dimdungeons:skullcorner_2");
+	    temp.add("dimdungeons:corner_8");
 	    tempAdvancedCorners.add(Lists.newArrayList(temp));
 	    temp.clear();
 
