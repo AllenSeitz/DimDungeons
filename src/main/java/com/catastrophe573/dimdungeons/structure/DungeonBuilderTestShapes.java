@@ -1,6 +1,12 @@
 package com.catastrophe573.dimdungeons.structure;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.catastrophe573.dimdungeons.DungeonConfig;
+import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonType;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.RoomType;
+import com.google.common.collect.Lists;
 
 import net.minecraft.util.Rotation;
 
@@ -86,7 +92,7 @@ public class DungeonBuilderTestShapes
 	}
 	dbl.placeRoomShape(5, 5, "yinyang_1", RoomType.HALLWAY, Rotation.NONE);
 	dbl.placeRoomShape(6, 5, "yinyang_2", RoomType.HALLWAY, Rotation.NONE);
-	
+
 	dbl.placeRoomShape(4, 7, "entrance_9", RoomType.ENTRANCE, Rotation.NONE);
     }
 
@@ -127,7 +133,7 @@ public class DungeonBuilderTestShapes
 	dbl.placeRoomShape(4, 5, "mazenotfound_1", RoomType.CORNER, Rotation.NONE);
 	dbl.placeRoomShape(5, 5, "mazenotfound_2", RoomType.THREEWAY, Rotation.NONE);
 	dbl.placeRoomShape(6, 5, "mazenotfound_3", RoomType.HALLWAY, Rotation.NONE);
-	
+
 	dbl.placeRoomShape(4, 7, "entrance_9", RoomType.ENTRANCE, Rotation.NONE);
     }
 
@@ -162,7 +168,71 @@ public class DungeonBuilderTestShapes
 	dbl.placeRoomShape(3, 4, "spawner_4", RoomType.END, Rotation.NONE);
 	dbl.placeRoomShape(4, 4, "spawner_5", RoomType.END, Rotation.NONE);
 	dbl.placeRoomShape(5, 4, "spawner_6", RoomType.END, Rotation.NONE);
-	
+
 	dbl.placeRoomShape(4, 7, "entrance_9", RoomType.ENTRANCE, Rotation.NONE);
+    }
+
+    public static void MakeTestDungeonDynamic(DungeonBuilderLogic dbl, DungeonType tier, RoomType type)
+    {
+	ArrayList<String> allrooms = Lists.newArrayList();
+	List<? extends List<String>> theListWeCareAbout = DungeonConfig.basicEntrances;
+
+	// first create a 'pointer' to the list of rooms that I need to debug
+	if (tier == DungeonType.BASIC && type == RoomType.FOURWAY)
+	{
+	    theListWeCareAbout = DungeonConfig.basicFourways;
+	}
+	if (tier == DungeonType.BASIC && type == RoomType.THREEWAY)
+	{
+	    theListWeCareAbout = DungeonConfig.basicThreeways;
+	}
+	if (tier == DungeonType.BASIC && type == RoomType.HALLWAY)
+	{
+	    theListWeCareAbout = DungeonConfig.basicHallways;
+	}
+	if (tier == DungeonType.BASIC && type == RoomType.CORNER)
+	{
+	    theListWeCareAbout = DungeonConfig.basicCorners;
+	}
+	if (tier == DungeonType.BASIC && type == RoomType.END)
+	{
+	    theListWeCareAbout = DungeonConfig.basicEnds;
+	}
+	if (tier == DungeonType.ADVANCED && type == RoomType.FOURWAY)
+	{
+	    theListWeCareAbout = DungeonConfig.advancedFourways;
+	}
+	if (tier == DungeonType.ADVANCED && type == RoomType.THREEWAY)
+	{
+	    theListWeCareAbout = DungeonConfig.advancedThreeways;
+	}
+	if (tier == DungeonType.ADVANCED && type == RoomType.HALLWAY)
+	{
+	    theListWeCareAbout = DungeonConfig.advancedHallways;
+	}
+	if (tier == DungeonType.ADVANCED && type == RoomType.CORNER)
+	{
+	    theListWeCareAbout = DungeonConfig.advancedCorners;
+	}
+	if (tier == DungeonType.ADVANCED && type == RoomType.END)
+	{
+	    theListWeCareAbout = DungeonConfig.advancedEnds;
+	}
+
+	// next assemble a list of every room in every set of rooms for the type of room that we care about
+	for (int i = 0; i < theListWeCareAbout.size(); i++)
+	{
+	    for (int j = 0; j < theListWeCareAbout.get(i).size(); j++)
+	    {
+		String temp = theListWeCareAbout.get(i).get(j);
+		allrooms.add(temp.replace("dimdungeons:", ""));
+	    }
+	}
+
+	// now place all the rooms in the layout
+	for (int i = 0; i < allrooms.size(); i++)
+	{
+	    dbl.placeRoomShape(i / 8, i % 8, allrooms.get(i), type, Rotation.NONE);
+	}
     }
 }

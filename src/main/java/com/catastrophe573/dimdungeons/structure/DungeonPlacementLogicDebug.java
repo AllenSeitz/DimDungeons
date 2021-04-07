@@ -9,6 +9,7 @@ import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonRoom;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonType;
+import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.RoomType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
@@ -78,6 +79,36 @@ public class DungeonPlacementLogicDebug
 	    break;
 	case 4:
 	    DungeonBuilderTestShapes.MakeTestDungeonFour(dbl);
+	    break;
+	case 5:
+	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.BASIC, RoomType.FOURWAY);
+	    break;
+	case 6:
+	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.BASIC, RoomType.THREEWAY);
+	    break;
+	case 7:
+	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.BASIC, RoomType.HALLWAY);
+	    break;
+	case 8:
+	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.BASIC, RoomType.CORNER);
+	    break;
+	case 9:
+	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.BASIC, RoomType.END);
+	    break;
+	case 10:
+	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.FOURWAY);
+	    break;
+	case 11:
+	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.THREEWAY);
+	    break;
+	case 12:
+	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.HALLWAY);
+	    break;
+	case 13:
+	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.CORNER);
+	    break;
+	case 14:
+	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.END);
 	    break;
 	}
 

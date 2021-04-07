@@ -92,6 +92,56 @@ public class DungeonUtils
 		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 4, genData);
 		return true;
 	    }
+	    if (name.contentEquals("bas-4"))
+	    {
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 5, genData);
+		return true;
+	    }
+	    if (name.contentEquals("bas-3"))
+	    {
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 6, genData);
+		return true;
+	    }
+	    if (name.contentEquals("bas-h"))
+	    {
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 7, genData);
+		return true;
+	    }
+	    if (name.contentEquals("bas-c"))
+	    {
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 8, genData);
+		return true;
+	    }
+	    if (name.contentEquals("bas-1"))
+	    {
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 9, genData);
+		return true;
+	    }
+	    if (name.contentEquals("adv-4"))
+	    {
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 10, genData);
+		return true;
+	    }
+	    if (name.contentEquals("adv-3"))
+	    {
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 11, genData);
+		return true;
+	    }
+	    if (name.contentEquals("adv-h"))
+	    {
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 12, genData);
+		return true;
+	    }
+	    if (name.contentEquals("adv-c"))
+	    {
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 13, genData);
+		return true;
+	    }
+	    if (name.contentEquals("adv-1"))
+	    {
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 14, genData);
+		return true;
+	    }
 	}
 
 	// actually place the dungeon
@@ -130,12 +180,12 @@ public class DungeonUtils
     {
 	World ddim = DungeonUtils.getDungeonWorld(worldIn.getServer());
 	int zoffset = entranceZ < 0 ? +1 : +2;
-	
+
 	for (int x = 0; x <= 1; x++)
 	{
 	    for (int y = 55; y <= 57; y++)
 	    {
-		BlockPos pos = new BlockPos(entranceX-x, y, entranceZ+zoffset);
+		BlockPos pos = new BlockPos(entranceX - x, y, entranceZ + zoffset);
 
 		TileEntityGoldPortal te = (TileEntityGoldPortal) ddim.getTileEntity(pos);
 		if (te != null)
@@ -145,7 +195,7 @@ public class DungeonUtils
 		}
 		else
 		{
-		    DimDungeons.LOGGER.error("DIMDUNGEONS ERROR: why is there no exit portal here? (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")" );
+		    DimDungeons.LOGGER.error("DIMDUNGEONS ERROR: why is there no exit portal here? (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")");
 		    //DimDungeons.LOGGER.error("DIMDUNGEONS ERROR: found " + ddim.getBlockState(pos).getBlock().getRegistryName().getPath() );		    
 		}
 	    }
