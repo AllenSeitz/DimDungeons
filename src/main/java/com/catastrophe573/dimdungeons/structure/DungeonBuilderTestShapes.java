@@ -229,10 +229,22 @@ public class DungeonBuilderTestShapes
 	    }
 	}
 
+	// first place an entrance, because I got sick of not having one
+	dbl.placeRoomShape(4, 7, "entrance_1", RoomType.ENTRANCE, Rotation.NONE);
+	
 	// now place all the rooms in the layout
 	for (int i = 0; i < allrooms.size(); i++)
-	{
-	    dbl.placeRoomShape(i / 8, i % 8, allrooms.get(i), type, Rotation.NONE);
-	}
+	{	    
+	    // hack to skip over the entrance room, and move this room elsewhere
+	    if ( (i / 8 == 4) && (i % 8 == 7) )
+	    {
+		int beyondEnd = allrooms.size() + 1;
+		dbl.placeRoomShape(beyondEnd / 8, beyondEnd % 8, allrooms.get(i), type, Rotation.NONE);
+	    }
+	    else
+	    {
+		dbl.placeRoomShape(i / 8, i % 8, allrooms.get(i), type, Rotation.NONE);
+	    }
+	}	
     }
 }
