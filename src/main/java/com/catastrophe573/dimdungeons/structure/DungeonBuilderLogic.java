@@ -17,7 +17,7 @@ public class DungeonBuilderLogic
     // an enumeration of the six room types, used internally for randomization and classification
     enum RoomType
     {
-	ENTRANCE, END, CORNER, HALLWAY, THREEWAY, FOURWAY, NONE
+	ENTRANCE, END, CORNER, HALLWAY, THREEWAY, FOURWAY, LARGE, LARGE_DUMMY, NONE
     };
 
     // an enumeration of dungeon types
@@ -47,30 +47,30 @@ public class DungeonBuilderLogic
 
 	public boolean hasDoorNorth()
 	{
-	    return type == RoomType.FOURWAY || (type == RoomType.ENTRANCE && rotation != Rotation.CLOCKWISE_180) || (type == RoomType.THREEWAY && rotation != Rotation.NONE) || (type == RoomType.CORNER && rotation == Rotation.NONE)
-		    || (type == RoomType.CORNER && rotation == Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.HALLWAY && rotation == Rotation.NONE) || (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_180)
-		    || (type == RoomType.END && rotation == Rotation.CLOCKWISE_180);
+	    return type == RoomType.FOURWAY || type == RoomType.LARGE || type == RoomType.LARGE_DUMMY || (type == RoomType.ENTRANCE && rotation != Rotation.CLOCKWISE_180) || (type == RoomType.THREEWAY && rotation != Rotation.NONE)
+		    || (type == RoomType.CORNER && rotation == Rotation.NONE) || (type == RoomType.CORNER && rotation == Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.HALLWAY && rotation == Rotation.NONE)
+		    || (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_180) || (type == RoomType.END && rotation == Rotation.CLOCKWISE_180);
 	}
 
 	public boolean hasDoorSouth()
 	{
-	    return type == RoomType.FOURWAY || (type == RoomType.ENTRANCE && rotation != Rotation.NONE) || (type == RoomType.THREEWAY && rotation != Rotation.CLOCKWISE_180) || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_90)
-		    || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_180) || (type == RoomType.HALLWAY && rotation == Rotation.NONE) || (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_180)
-		    || (type == RoomType.END && rotation == Rotation.NONE);
+	    return type == RoomType.FOURWAY || type == RoomType.LARGE || type == RoomType.LARGE_DUMMY || (type == RoomType.ENTRANCE && rotation != Rotation.NONE) || (type == RoomType.THREEWAY && rotation != Rotation.CLOCKWISE_180)
+		    || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_90) || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_180) || (type == RoomType.HALLWAY && rotation == Rotation.NONE)
+		    || (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_180) || (type == RoomType.END && rotation == Rotation.NONE);
 	}
 
 	public boolean hasDoorWest()
 	{
-	    return type == RoomType.FOURWAY || (type == RoomType.ENTRANCE && rotation != Rotation.CLOCKWISE_90) || (type == RoomType.THREEWAY && rotation != Rotation.COUNTERCLOCKWISE_90)
+	    return type == RoomType.FOURWAY || type == RoomType.LARGE || type == RoomType.LARGE_DUMMY || (type == RoomType.ENTRANCE && rotation != Rotation.CLOCKWISE_90) || (type == RoomType.THREEWAY && rotation != Rotation.COUNTERCLOCKWISE_90)
 		    || (type == RoomType.CORNER && rotation == Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_180) || (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_90)
 		    || (type == RoomType.HALLWAY && rotation == Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.END && rotation == Rotation.CLOCKWISE_90);
 	}
 
 	public boolean hasDoorEast()
 	{
-	    return type == RoomType.FOURWAY || (type == RoomType.ENTRANCE && rotation != Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.THREEWAY && rotation != Rotation.CLOCKWISE_90) || (type == RoomType.CORNER && rotation == Rotation.NONE)
-		    || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_90) || (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_90) || (type == RoomType.HALLWAY && rotation == Rotation.COUNTERCLOCKWISE_90)
-		    || (type == RoomType.END && rotation == Rotation.COUNTERCLOCKWISE_90);
+	    return type == RoomType.FOURWAY || type == RoomType.LARGE || type == RoomType.LARGE_DUMMY || (type == RoomType.ENTRANCE && rotation != Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.THREEWAY && rotation != Rotation.CLOCKWISE_90)
+		    || (type == RoomType.CORNER && rotation == Rotation.NONE) || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_90) || (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_90)
+		    || (type == RoomType.HALLWAY && rotation == Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.END && rotation == Rotation.COUNTERCLOCKWISE_90);
 	}
     };
 
@@ -86,6 +86,7 @@ public class DungeonBuilderLogic
     ArrayList<String> hallway = Lists.newArrayList();
     ArrayList<String> corner = Lists.newArrayList();
     ArrayList<String> end = Lists.newArrayList();
+    ArrayList<String> large = Lists.newArrayList();
 
     // after shuffling the list of structures these are used to ensure no duplicates
     protected int entranceIndex = 0;
@@ -94,6 +95,7 @@ public class DungeonBuilderLogic
     protected int hallwayIndex = 0;
     protected int threewayIndex = 0;
     protected int fourwayIndex = 0;
+    protected int largeIndex = 0;
 
     // this is initialized during the constructor with values from the ChunkGenerator, to ensure the dungeons use the world seed
     // or at least that was the intent in 1.14 anyways, but as of 1.16 dungeons are no longer built insid
@@ -142,6 +144,13 @@ public class DungeonBuilderLogic
 		int index = rand.nextInt(poolSize);
 		end.add(DungeonConfig.basicEnds.get(i).get(index));
 	    }
+	    // basic dungeons don't have large rooms but don't leave the array empty, for safety
+	    for (int i = 0; i < DungeonConfig.advancedLarge.size(); i++)
+	    {
+		int poolSize = DungeonConfig.advancedLarge.get(i).size();
+		int index = rand.nextInt(poolSize);
+		large.add(DungeonConfig.advancedLarge.get(i).get(index));
+	    }
 	}
 	else if (type == DungeonType.ADVANCED)
 	{
@@ -182,6 +191,12 @@ public class DungeonBuilderLogic
 		int index = rand.nextInt(poolSize);
 		end.add(DungeonConfig.advancedEnds.get(i).get(index));
 	    }
+	    for (int i = 0; i < DungeonConfig.advancedLarge.size(); i++)
+	    {
+		int poolSize = DungeonConfig.advancedLarge.get(i).size();
+		int index = rand.nextInt(poolSize);
+		large.add(DungeonConfig.advancedLarge.get(i).get(index));
+	    }
 	}
 
 	shuffleStringArray(entrance);
@@ -190,6 +205,7 @@ public class DungeonBuilderLogic
 	shuffleStringArray(hallway);
 	shuffleStringArray(corner);
 	shuffleStringArray(end);
+	shuffleStringArray(large);
 
 	for (int i = 0; i < 8; i++)
 	{
@@ -204,7 +220,7 @@ public class DungeonBuilderLogic
     }
 
     // when this function is done you may read the dungeon layout from the public variable finalLayout
-    public void calculateDungeonShape(int maxNumRooms)
+    public void calculateDungeonShape(int maxNumRooms, boolean useLarge)
     {
 	//System.out.println("START CALC DUNGEON SHAPE");
 
@@ -218,9 +234,51 @@ public class DungeonBuilderLogic
 	openings.add(new ImmutablePair<Integer, Integer>(3, 7));
 	openings.add(new ImmutablePair<Integer, Integer>(5, 7));
 	openings.add(new ImmutablePair<Integer, Integer>(4, 6));
-	shuffleArray(openings);
 
+	// step 3: if large rooms are enabled, place one somewhere, and put all those many doorways coming off it
+	if (useLarge)
+	{
+	    int largeX = rand.nextInt(7); // put the large room in any column, convention uses the top left corner, so use 0-6
+	    int largeZ = rand.nextInt(3) + 3; // start the large room on the 3rd, 4th, or 5th row
+
+	    placeRoomShape(largeX, largeZ, large.get(largeIndex), RoomType.LARGE, Rotation.NONE);
+	    numRoomsPlaced += 4;
+	    
+	    // for each of the 4 rooms in this large room, add openings for doorways as long as they don't lead out of bounds
+	    for ( int xx = 0; xx < 2; xx++ )
+	    {
+		for ( int zz = 0; zz < 2; zz++ )
+		{
+		    // calculate the coordinates of this quarter of the large room
+		    int roomX = largeX + xx;
+		    int roomZ = largeZ + zz;
+		    
+		    if (hasOpenDoor(roomX - 1, roomZ, Direction.EAST) && !finalLayout[roomX - 1][roomZ].hasRoom())
+		    {
+			openings.add(new ImmutablePair<Integer, Integer>(roomX - 1, roomZ));
+			//DimDungeons.LOGGER.info("Adding large opening " + (roomX-1) + ", " + roomZ);
+		    }
+		    if (hasOpenDoor(roomX + 1, roomZ, Direction.WEST) && !finalLayout[roomX + 1][roomZ].hasRoom())
+		    {
+			openings.add(new ImmutablePair<Integer, Integer>(roomX + 1, roomZ));
+			//DimDungeons.LOGGER.info("Adding large opening " + (roomX+1) + ", " + roomZ);
+		    }
+		    if (hasOpenDoor(roomX, roomZ - 1, Direction.SOUTH) && !finalLayout[roomX][roomZ - 1].hasRoom())
+		    {
+			openings.add(new ImmutablePair<Integer, Integer>(roomX, roomZ - 1));
+			//DimDungeons.LOGGER.info("Adding large opening " + roomX + ", " + (roomZ-1));
+		    }
+		    if (hasOpenDoor(roomX, roomZ + 1, Direction.NORTH) && !finalLayout[roomX][roomZ + 1].hasRoom())
+		    {
+			openings.add(new ImmutablePair<Integer, Integer>(roomX, roomZ + 1));
+			//DimDungeons.LOGGER.info("Adding large opening " + roomX + ", " + (roomZ+1));
+		    }		    
+		}
+	    }
+	}	
+	
 	// remaining rooms: for each opening, place a room that fits, and update openings, until no openings are left
+	shuffleArray(openings);
 	while (openings.size() > 0)
 	{
 	    ImmutablePair<Integer, Integer> roomPos = openings.remove(0);
@@ -787,6 +845,22 @@ public class DungeonBuilderLogic
 	finalLayout[x][z].rotation = rot;
 	//System.out.println("Put a " + type.toString() + " at (" + x + ", " + z + ") with rotation " + rot.toString() + ".");
 	//DimDungeons.LOGGER.info("Put a " + room + " at (" + x + ", " + z + ") with rotation " + rot.toString() + ".");
+
+	// special case for large rooms, place three dummy rooms nearby, with the "real" large room being the top left corner
+	if (type == RoomType.LARGE)
+	{
+	    finalLayout[x + 1][z].structure = "large_dummy";
+	    finalLayout[x + 1][z].type = RoomType.LARGE_DUMMY;
+	    finalLayout[x + 1][z].rotation = rot;
+
+	    finalLayout[x][z + 1].structure = "large_dummy";
+	    finalLayout[x][z + 1].type = RoomType.LARGE_DUMMY;
+	    finalLayout[x][z + 1].rotation = rot;
+
+	    finalLayout[x + 1][z + 1].structure = "large_dummy";
+	    finalLayout[x + 1][z + 1].type = RoomType.LARGE_DUMMY;
+	    finalLayout[x + 1][z + 1].rotation = rot;
+	}
     }
 
     private void shuffleStringArray(ArrayList<String> array)

@@ -72,7 +72,7 @@ public class DungeonPlacementLogicBasic
 
 	// this is the data structure for an entire dungeon
 	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.BASIC);
-	dbl.calculateDungeonShape(25);
+	dbl.calculateDungeonShape(25, false);
 
 	// place all 64 rooms (many will be blank), for example the entrance room is at [4][7] in this array
 	for (int i = 0; i < 8; i++)
@@ -229,28 +229,9 @@ public class DungeonPlacementLogicBasic
 
 	// this is the date structure for an entire dungeon
 	DungeonBuilderLogic dbl = new DungeonBuilderLogic(random, entranceX, entranceZ, DungeonType.BASIC);
-
-	//	// trigger some debug code for test layouts
-	//	if (world getWorldInfo(). getWorldName().equalsIgnoreCase("DimDungeonsDebugOne"))
-	//	{
-	//	    DungeonBuilderTestShapes.MakeTestDungeonEnds(dbl);
-	//	}
-	//	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugTwo"))
-	//	{
-	//	    DungeonBuilderTestShapes.MakeTestDungeonTwos(dbl);
-	//	}
-	//	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugThree"))
-	//	{
-	//	    DungeonBuilderTestShapes.MakeTestDungeonThreesAndFours(dbl);
-	//	}
-	//	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugFour"))
-	//	{
-	//	    DungeonBuilderTestShapes.MakeTestDungeonContentFour(dbl);
-	//	}
-	//	else
 	{
 	    // generate the entire dungeon, a normal dungeon
-	    dbl.calculateDungeonShape(25);
+	    dbl.calculateDungeonShape(25, false);
 	}
 
 	// pick the room we want, for example the entrance room is at [4][7] in this array

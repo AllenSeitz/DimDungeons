@@ -11,6 +11,7 @@ import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonRoom;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonType;
+import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.RoomType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
@@ -74,7 +75,7 @@ public class DungeonPlacementLogicAdvanced
 
 	// this is the data structure for an entire dungeon
 	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.ADVANCED);
-	dbl.calculateDungeonShape(42);
+	dbl.calculateDungeonShape(46, true);
 
 	// place all 64 rooms (many will be blank), for example the entrance room is at [4][7] in this array
 	for (int i = 0; i < 8; i++)
@@ -92,7 +93,20 @@ public class DungeonPlacementLogicAdvanced
 		    // I'm not sure what the +4 is for, but it is needed
 		    ChunkPos cpos = new ChunkPos(((int) x / 16) + i + 4, ((int) z / 16) + j + 4);
 
-		    if (!putRoomHere(cpos, world, nextRoom, genData))
+		    if (nextRoom.type == RoomType.LARGE)
+		    {
+			if (!putLargeRoomHere(cpos, world, nextRoom, genData))
+			{
+			    DimDungeons.LOGGER.error("DIMDUNGEONS ERROR UNABLE TO PLACE ***LARGE*** STRUCTURE: " + nextRoom.structure);
+			}
+			closeDoorsOnLargeRoom(cpos, world, nextRoom, genData, i, j, dbl);
+		    }
+		    else if ( nextRoom.type == RoomType.LARGE_DUMMY )
+		    {
+			// this isn't trivial because dummy rooms still have to close doorways that lead out of bounds
+			closeDoorsOnLargeRoom(cpos, world, nextRoom, genData, i, j, dbl);
+		    }
+		    else if (!putRoomHere(cpos, world, nextRoom, genData))
 		    {
 			DimDungeons.LOGGER.error("DIMDUNGEONS ERROR UNABLE TO PLACE STRUCTURE: " + nextRoom.structure);
 		    }
@@ -129,6 +143,96 @@ public class DungeonPlacementLogicAdvanced
 	return plotX == 8 && plotZ == -5;
     }
 
+    // used by the place() function to actually place rooms
+    public static boolean putLargeRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room, DungeonGenData genData)
+    {
+	MinecraftServer minecraftserver = ((World) world).getServer();
+	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureTemplateManager();	
+	
+	Template template = templatemanager.getTemplate(new ResourceLocation(room.structure));
+	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunk(cpos);
+	placementsettings.setRotation(Rotation.NONE);
+	placementsettings.setBoundingBox(new MutableBoundingBox(cpos.x*16, 0, cpos.z*16, (cpos.x*16) + 32 - 1, 255, (cpos.z*16) + 32 - 1));
+	BlockPos position = new BlockPos(cpos.getXStart(), 50, cpos.getZStart());
+	BlockPos sizeRange = new BlockPos(32, 13, 32);
+
+	if (template == null)
+	{
+	    DimDungeons.LOGGER.info("DIMDUNGEONS FATAL ERROR: LARGE structure does not exist (" + room.structure + ")");
+	    return false;
+	}
+
+	// I assume this function is addBlocksToWorld()	
+	DimDungeons.LOGGER.info("Placing a large room: " + room.structure);
+	boolean success = template.func_237146_a_((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
+
+	// handle data blocks - this code block is copied from TemplateStructurePiece
+	//Map<BlockPos, String> map = template.getDataBlocks(position, placementsettings); // 1.12 / 1.13 version
+	//List<Template.BlockInfo> dblocks = template.func_215386_a(position, placementsettings, Blocks.STRUCTURE_BLOCK, true); // my old 1.14.2 method
+	for (Template.BlockInfo template$blockinfo : template.func_215381_a(position, placementsettings, Blocks.STRUCTURE_BLOCK))
+	{
+	    if (template$blockinfo.nbt != null)
+	    {
+		StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt.getString("mode"));
+		if (structuremode == StructureMode.DATA)
+		{
+		    handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox(), genData);
+		}
+	    }
+	}
+
+	return success;
+    }    
+    
+    public static void closeDoorsOnLargeRoom(ChunkPos cpos, IWorld world, DungeonRoom room, DungeonGenData genDat, int indexX, int indexZ, DungeonBuilderLogic dbl)
+    {
+	BlockState fillBlock = Blocks.STONE_BRICKS.getDefaultState();
+	BlockState airBlock = Blocks.AIR.getDefaultState();
+	
+	// does west lead into a void?
+	if ( indexX == 0 || !dbl.finalLayout[indexX-1][indexZ].hasRoom() )
+	{
+	    // place 12 stone bricks
+	    BlockPos startPos = new BlockPos(cpos.getXStart(), 55, cpos.getZStart());
+	    world.setBlockState(startPos.south(7).east(0).up(0), fillBlock, 2);
+	    world.setBlockState(startPos.south(7).east(1).up(0), fillBlock, 2);
+	    world.setBlockState(startPos.south(8).east(0).up(0), fillBlock, 2);
+	    world.setBlockState(startPos.south(8).east(1).up(0), fillBlock, 2);
+	    world.setBlockState(startPos.south(7).east(0).up(1), fillBlock, 2);
+	    world.setBlockState(startPos.south(7).east(1).up(1), fillBlock, 2);
+	    world.setBlockState(startPos.south(8).east(0).up(1), fillBlock, 2);
+	    world.setBlockState(startPos.south(8).east(1).up(1), fillBlock, 2);
+	    world.setBlockState(startPos.south(7).east(0).up(2), fillBlock, 2);
+	    world.setBlockState(startPos.south(7).east(1).up(2), fillBlock, 2);
+	    world.setBlockState(startPos.south(8).east(0).up(2), fillBlock, 2);
+	    world.setBlockState(startPos.south(8).east(1).up(2), fillBlock, 2);
+	    // and erase 2 red concrete from the roof
+	    world.setBlockState(startPos.south(7).east(0).up(7), airBlock, 2);
+	    world.setBlockState(startPos.south(8).east(0).up(7), airBlock, 2);	    
+	}
+	// does east lead into a void?
+	if ( indexX == 7 || !dbl.finalLayout[indexX+1][indexZ].hasRoom() )
+	{
+	    // place 12 stone bricks
+	    BlockPos startPos = new BlockPos(cpos.getXStart(), 55, cpos.getZStart());
+	    world.setBlockState(startPos.south(7).east(14).up(0), fillBlock, 2);
+	    world.setBlockState(startPos.south(7).east(15).up(0), fillBlock, 2);
+	    world.setBlockState(startPos.south(8).east(14).up(0), fillBlock, 2);
+	    world.setBlockState(startPos.south(8).east(15).up(0), fillBlock, 2);
+	    world.setBlockState(startPos.south(7).east(14).up(1), fillBlock, 2);
+	    world.setBlockState(startPos.south(7).east(15).up(1), fillBlock, 2);
+	    world.setBlockState(startPos.south(8).east(14).up(1), fillBlock, 2);
+	    world.setBlockState(startPos.south(8).east(15).up(1), fillBlock, 2);
+	    world.setBlockState(startPos.south(7).east(14).up(2), fillBlock, 2);
+	    world.setBlockState(startPos.south(7).east(15).up(2), fillBlock, 2);
+	    world.setBlockState(startPos.south(8).east(14).up(2), fillBlock, 2);
+	    world.setBlockState(startPos.south(8).east(15).up(2), fillBlock, 2);
+	    // and erase 2 red concrete from the roof
+	    world.setBlockState(startPos.south(7).east(15).up(7), airBlock, 2);
+	    world.setBlockState(startPos.south(8).east(15).up(7), airBlock, 2);	    
+	}
+    }    
+    
     // used by the place() function to actually place rooms
     public static boolean putRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room, DungeonGenData genData)
     {
@@ -222,24 +326,9 @@ public class DungeonPlacementLogicAdvanced
 
 	// this is the date structure for an entire dungeon
 	DungeonBuilderLogic dbl = new DungeonBuilderLogic(random, entranceX, entranceZ, DungeonType.ADVANCED);
-
-	//	// trigger some debug code for test layouts
-	//	if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugOne"))
-	//	{
-	//	    DungeonBuilderTestShapes.MakeTestDungeonEnds(dbl);
-	//	}
-	//	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugTwo"))
-	//	{
-	//	    DungeonBuilderTestShapes.MakeTestDungeonTwos(dbl);
-	//	}
-	//	else if (world.getWorldInfo().getWorldName().equalsIgnoreCase("DimDungeonsDebugThree"))
-	//	{
-	//	    DungeonBuilderTestShapes.MakeTestDungeonThreesAndFours(dbl);
-	//	}
-	//	else
 	{
 	    // generate the entire dungeon, an advanced dungeon
-	    dbl.calculateDungeonShape(52);
+	    dbl.calculateDungeonShape(46, true);
 	}
 
 	// pick the room we want, for example the entrance room is at [4][7] in this array
@@ -338,14 +427,14 @@ public class DungeonPlacementLogicAdvanced
 	    else
 	    {
 		// actually within that 70% of nothing, if Artifacts is installed, then have a 10% chance of a mimic!
-		if ( DungeonConfig.isModInstalled("artifacts") )
+		if (DungeonConfig.isModInstalled("artifacts"))
 		{
-		    if ( lucky < 40 )
+		    if (lucky < 40)
 		    {
-			spawnMimicFromArtifactsMod(pos, "mimic", world);			
+			spawnMimicFromArtifactsMod(pos, "mimic", world);
 		    }
 		}
-		
+
 		world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block 
 		world.setBlockState(pos.down(), Blocks.AIR.getDefaultState(), 2); // and erase the chest below it
 	    }
@@ -646,24 +735,24 @@ public class DungeonPlacementLogicAdvanced
 	    world.setBlockState(pos, bs, 2);
 	}
     }
-    
-    private static void spawnMimicFromArtifactsMod(BlockPos pos, String casualName, IWorld world)    
+
+    private static void spawnMimicFromArtifactsMod(BlockPos pos, String casualName, IWorld world)
     {
 	MobEntity mob = null;
-	
-	if ( !DungeonConfig.isModInstalled("artifacts") )
+
+	if (!DungeonConfig.isModInstalled("artifacts"))
 	{
 	    return; // fail safe
 	}
-	
-	mob = (MobEntity)EntityType.byKey("artifacts:mimic").get().create((World) world);
+
+	mob = (MobEntity) EntityType.byKey("artifacts:mimic").get().create((World) world);
 	mob.setPosition(pos.getX(), pos.getY(), pos.getZ());
-	
+
 	mob.setCanPickUpLoot(false);
 	mob.moveToBlockPosAndAngles(pos, 0.0F, 0.0F);
 	mob.enablePersistence();
 
 	mob.onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
-	world.addEntity(mob);	
-    }    
+	world.addEntity(mob);
+    }
 }

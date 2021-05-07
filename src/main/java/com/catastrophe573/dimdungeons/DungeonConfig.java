@@ -76,6 +76,7 @@ public class DungeonConfig
     public static List<? extends List<String>> advancedHallways;
     public static List<? extends List<String>> advancedCorners;
     public static List<? extends List<String>> advancedEnds;
+    public static List<? extends List<String>> advancedLarge;
 
     public static class ServerConfig
     {
@@ -845,6 +846,22 @@ public class DungeonConfig
 	return tempAdvancedEnds;
     }
 
+    public static List<? extends List<String>> defaultAdvancedLarge()
+    {
+	List<String> temp = Lists.newArrayList();
+	List<List<String>> tempAdvancedLarge = Lists.newArrayList();
+	temp.add("dimdungeons:large_maze");
+	temp.add("dimdungeons:large_bricks");
+	temp.add("dimdungeons:large_ballroom");
+	temp.add("dimdungeons:large_garage");
+	temp.add("dimdungeons:large_jetcoaster");
+	temp.add("dimdungeons:large_slime");
+	tempAdvancedLarge.add(Lists.newArrayList(temp));
+	temp.clear();
+
+	return tempAdvancedLarge;
+    }    
+    
     // any config that has to deal with datapacks
     public static class CommonConfig
     {
@@ -863,6 +880,7 @@ public class DungeonConfig
 	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedHallways;
 	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedCorners;
 	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedEnds;
+	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedLarge;
 
 	CommonConfig(ForgeConfigSpec.Builder builder)
 	{
@@ -884,6 +902,7 @@ public class DungeonConfig
 	    advancedHallways = builder.translation("config.dimdungeons.advancedHallways").define("advancedHallways", defaultAdvancedHallways());
 	    advancedCorners = builder.translation("config.dimdungeons.advancedCorners").define("advancedCorners", defaultAdvancedCorners());
 	    advancedEnds = builder.translation("config.dimdungeons.advancedEnds").define("advancedEnds", defaultAdvancedEnds());
+	    advancedLarge = builder.translation("config.dimdungeons.advancedLarge").define("advancedLarge", defaultAdvancedLarge());
 	    builder.pop();
 	}
     }
@@ -925,6 +944,7 @@ public class DungeonConfig
 	    COMMON.advancedHallways.set(defaultAdvancedHallways());
 	    COMMON.advancedCorners.set(defaultAdvancedCorners());
 	    COMMON.advancedEnds.set(defaultAdvancedEnds());
+	    COMMON.advancedLarge.set(defaultAdvancedLarge());
 	}
 	
 	// this is also where COMMON config is refreshed
@@ -941,6 +961,7 @@ public class DungeonConfig
 	advancedHallways = COMMON.advancedHallways.get();
 	advancedCorners = COMMON.advancedCorners.get();
 	advancedEnds = COMMON.advancedEnds.get();	
+	advancedLarge = COMMON.advancedLarge.get();	
     }
 
     // a helper function for translating ResourceLOcation strings (such as minecraft:chest) into blocks
