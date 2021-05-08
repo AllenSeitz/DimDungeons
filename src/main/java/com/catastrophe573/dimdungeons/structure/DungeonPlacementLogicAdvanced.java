@@ -101,7 +101,7 @@ public class DungeonPlacementLogicAdvanced
 			}
 			closeDoorsOnLargeRoom(cpos, world, nextRoom, genData, i, j, dbl);
 		    }
-		    else if ( nextRoom.type == RoomType.LARGE_DUMMY )
+		    else if (nextRoom.type == RoomType.LARGE_DUMMY)
 		    {
 			// this isn't trivial because dummy rooms still have to close doorways that lead out of bounds
 			closeDoorsOnLargeRoom(cpos, world, nextRoom, genData, i, j, dbl);
@@ -147,12 +147,12 @@ public class DungeonPlacementLogicAdvanced
     public static boolean putLargeRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room, DungeonGenData genData)
     {
 	MinecraftServer minecraftserver = ((World) world).getServer();
-	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureTemplateManager();	
-	
+	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureTemplateManager();
+
 	Template template = templatemanager.getTemplate(new ResourceLocation(room.structure));
 	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunk(cpos);
 	placementsettings.setRotation(Rotation.NONE);
-	placementsettings.setBoundingBox(new MutableBoundingBox(cpos.x*16, 0, cpos.z*16, (cpos.x*16) + 32 - 1, 255, (cpos.z*16) + 32 - 1));
+	placementsettings.setBoundingBox(new MutableBoundingBox(cpos.x * 16, 0, cpos.z * 16, (cpos.x * 16) + 32 - 1, 255, (cpos.z * 16) + 32 - 1));
 	BlockPos position = new BlockPos(cpos.getXStart(), 50, cpos.getZStart());
 	BlockPos sizeRange = new BlockPos(32, 13, 32);
 
@@ -182,18 +182,19 @@ public class DungeonPlacementLogicAdvanced
 	}
 
 	return success;
-    }    
-    
+    }
+
     public static void closeDoorsOnLargeRoom(ChunkPos cpos, IWorld world, DungeonRoom room, DungeonGenData genDat, int indexX, int indexZ, DungeonBuilderLogic dbl)
     {
 	BlockState fillBlock = Blocks.STONE_BRICKS.getDefaultState();
 	BlockState airBlock = Blocks.AIR.getDefaultState();
-	
+	BlockState redBlock = Blocks.RED_CONCRETE.getDefaultState();
+	BlockPos startPos = new BlockPos(cpos.getXStart(), 55, cpos.getZStart());
+
 	// does west lead into a void?
-	if ( indexX == 0 || !dbl.finalLayout[indexX-1][indexZ].hasRoom() )
+	if (indexX == 0 || !dbl.finalLayout[indexX - 1][indexZ].hasRoom())
 	{
 	    // place 12 stone bricks
-	    BlockPos startPos = new BlockPos(cpos.getXStart(), 55, cpos.getZStart());
 	    world.setBlockState(startPos.south(7).east(0).up(0), fillBlock, 2);
 	    world.setBlockState(startPos.south(7).east(1).up(0), fillBlock, 2);
 	    world.setBlockState(startPos.south(8).east(0).up(0), fillBlock, 2);
@@ -208,13 +209,29 @@ public class DungeonPlacementLogicAdvanced
 	    world.setBlockState(startPos.south(8).east(1).up(2), fillBlock, 2);
 	    // and erase 2 red concrete from the roof
 	    world.setBlockState(startPos.south(7).east(0).up(7), airBlock, 2);
-	    world.setBlockState(startPos.south(8).east(0).up(7), airBlock, 2);	    
+	    world.setBlockState(startPos.south(8).east(0).up(7), airBlock, 2);
 	}
+	else
+	{
+	    // extend the doorway on the minimap
+	    world.setBlockState(startPos.south(7).east(1).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(8).east(1).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(7).east(2).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(8).east(2).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(7).east(3).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(8).east(3).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(7).east(4).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(8).east(4).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(7).east(5).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(8).east(5).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(7).east(6).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(8).east(6).up(7), redBlock, 2);
+	}
+
 	// does east lead into a void?
-	if ( indexX == 7 || !dbl.finalLayout[indexX+1][indexZ].hasRoom() )
+	if (indexX == 7 || !dbl.finalLayout[indexX + 1][indexZ].hasRoom())
 	{
 	    // place 12 stone bricks
-	    BlockPos startPos = new BlockPos(cpos.getXStart(), 55, cpos.getZStart());
 	    world.setBlockState(startPos.south(7).east(14).up(0), fillBlock, 2);
 	    world.setBlockState(startPos.south(7).east(15).up(0), fillBlock, 2);
 	    world.setBlockState(startPos.south(8).east(14).up(0), fillBlock, 2);
@@ -229,10 +246,70 @@ public class DungeonPlacementLogicAdvanced
 	    world.setBlockState(startPos.south(8).east(15).up(2), fillBlock, 2);
 	    // and erase 2 red concrete from the roof
 	    world.setBlockState(startPos.south(7).east(15).up(7), airBlock, 2);
-	    world.setBlockState(startPos.south(8).east(15).up(7), airBlock, 2);	    
+	    world.setBlockState(startPos.south(8).east(15).up(7), airBlock, 2);
 	}
-    }    
-    
+	else
+	{
+	    // extend the doorway on the minimap
+	    world.setBlockState(startPos.south(7).east(14).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(8).east(14).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(7).east(13).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(8).east(13).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(7).east(12).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(8).east(12).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(7).east(11).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(8).east(11).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(7).east(10).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(8).east(10).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(7).east(9).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(8).east(9).up(7), redBlock, 2);
+	}
+
+	// does north lead into a void?
+	if (indexZ == 0 || !dbl.finalLayout[indexX][indexZ - 1].hasRoom())
+	{
+	    // can't happen yet
+	}
+	else
+	{
+	    // extend the doorway on the minimap
+	    world.setBlockState(startPos.south(1).east(7).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(1).east(8).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(2).east(7).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(2).east(8).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(3).east(7).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(3).east(8).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(4).east(7).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(4).east(8).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(5).east(7).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(5).east(8).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(6).east(7).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(6).east(8).up(7), redBlock, 2);
+	}
+
+	// does south lead into a void?
+	if (indexZ == 7 || !dbl.finalLayout[indexX][indexZ + 1].hasRoom())
+	{
+	    // can't happen yet
+	}
+	else
+	{
+	    // extend the doorway on the minimap
+	    world.setBlockState(startPos.south(12).east(7).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(12).east(8).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(13).east(7).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(13).east(8).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(14).east(7).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(14).east(8).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(11).east(7).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(11).east(8).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(10).east(7).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(10).east(8).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(9).east(7).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(9).east(8).up(7), redBlock, 2);
+	}
+    }
+
     // used by the place() function to actually place rooms
     public static boolean putRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room, DungeonGenData genData)
     {
