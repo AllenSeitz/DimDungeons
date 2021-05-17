@@ -68,10 +68,10 @@ public class DungeonPlacementLogicAdvanced
 	long entranceChunkZ = (z / 16) + 11;
 	if (!isEntranceChunk(entranceChunkX, entranceChunkZ))
 	{
-	    DimDungeons.LOGGER.error("DIMDUNGEONS FATAL ERROR: advanced dungeon does not start at " + x + ", " + z);
+	    DimDungeons.logMessageError("DIMDUNGEONS FATAL ERROR: advanced dungeon does not start at " + x + ", " + z);
 	    return false;
 	}
-	DimDungeons.LOGGER.debug("DIMDUNGEONS START ADVANCED STRUCTURE at " + x + ", " + z);
+	DimDungeons.logMessageInfo("DIMDUNGEONS START ADVANCED STRUCTURE at " + x + ", " + z);
 
 	// this is the data structure for an entire dungeon
 	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.ADVANCED);
@@ -97,7 +97,7 @@ public class DungeonPlacementLogicAdvanced
 		    {
 			if (!putLargeRoomHere(cpos, world, nextRoom, genData))
 			{
-			    DimDungeons.LOGGER.error("DIMDUNGEONS ERROR UNABLE TO PLACE ***LARGE*** STRUCTURE: " + nextRoom.structure);
+			    DimDungeons.logMessageError("DIMDUNGEONS ERROR UNABLE TO PLACE ***LARGE*** STRUCTURE: " + nextRoom.structure);
 			}
 			closeDoorsOnLargeRoom(cpos, world, nextRoom, genData, i, j, dbl);
 		    }
@@ -108,7 +108,7 @@ public class DungeonPlacementLogicAdvanced
 		    }
 		    else if (!putRoomHere(cpos, world, nextRoom, genData))
 		    {
-			DimDungeons.LOGGER.error("DIMDUNGEONS ERROR UNABLE TO PLACE STRUCTURE: " + nextRoom.structure);
+			DimDungeons.logMessageError("DIMDUNGEONS ERROR UNABLE TO PLACE STRUCTURE: " + nextRoom.structure);
 		    }
 		}
 	    }
@@ -158,12 +158,12 @@ public class DungeonPlacementLogicAdvanced
 
 	if (template == null)
 	{
-	    DimDungeons.LOGGER.info("DIMDUNGEONS FATAL ERROR: LARGE structure does not exist (" + room.structure + ")");
+	    DimDungeons.logMessageError("DIMDUNGEONS FATAL ERROR: LARGE structure does not exist (" + room.structure + ")");
 	    return false;
 	}
 
 	// I assume this function is addBlocksToWorld()	
-	DimDungeons.LOGGER.info("Placing a large room: " + room.structure);
+	DimDungeons.logMessageInfo("Placing a large room: " + room.structure);
 	boolean success = template.func_237146_a_((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
 
 	// handle data blocks - this code block is copied from TemplateStructurePiece
@@ -333,7 +333,7 @@ public class DungeonPlacementLogicAdvanced
 
 	if (template == null)
 	{
-	    DimDungeons.LOGGER.info("DIMDUNGEONS FATAL ERROR: Structure does not exist (" + room.structure + ")");
+	    DimDungeons.logMessageError("DIMDUNGEONS FATAL ERROR: Structure does not exist (" + room.structure + ")");
 	    return false;
 	}
 
@@ -363,7 +363,7 @@ public class DungeonPlacementLogicAdvanced
 	}
 
 	// I assume this function is addBlocksToWorld()	
-	DimDungeons.LOGGER.info("Placing a room: " + room.structure);
+	DimDungeons.logMessageInfo("Placing a room: " + room.structure);
 	boolean success = template.func_237146_a_((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
 
 	// handle data blocks - this code block is copied from TemplateStructurePiece
@@ -404,7 +404,7 @@ public class DungeonPlacementLogicAdvanced
 	// assert that my math is not bad
 	if (!isEntranceChunk(entranceX, entranceZ))
 	{
-	    DimDungeons.LOGGER.info("DIMDUNGEONS MAJOR ERROR: attempting to generate a dungeon at a chunk which isn't an entrance chunk! (" + entranceX + ", " + entranceZ + ")");
+	    DimDungeons.logMessageError("DIMDUNGEONS MAJOR ERROR: attempting to generate a dungeon at a chunk which isn't an entrance chunk! (" + entranceX + ", " + entranceZ + ")");
 	    return null;
 	}
 
@@ -489,7 +489,7 @@ public class DungeonPlacementLogicAdvanced
 	    }
 	    else
 	    {
-		DimDungeons.LOGGER.info("DIMDUNGEONS TILE ENTITY ERROR: unable to place a fortune teller block.");
+		DimDungeons.logMessageError("DIMDUNGEONS TILE ENTITY ERROR: unable to place a fortune teller block.");
 	    }
 	}
 	else if ("ChestLoot1".equals(name))
@@ -612,7 +612,7 @@ public class DungeonPlacementLogicAdvanced
 	}
 	else
 	{
-	    DimDungeons.LOGGER.info("UNHANDLED DATA BLOCK WITH name = " + name);
+	    DimDungeons.logMessageWarn("UNHANDLED DATA BLOCK WITH name = " + name);
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
 	}
     }
@@ -745,7 +745,7 @@ public class DungeonPlacementLogicAdvanced
 	LockableLootTileEntity.setLootTable(world, rand, pos.down(), lootTable);
 	if (!(world.getTileEntity(pos.down()) instanceof ChestTileEntity))
 	{
-	    DimDungeons.LOGGER.info("DIMDUNGEONS: FAILED TO PLACE CHEST IN DUNGEON. pos = " + pos.getX() + ", " + pos.getZ());
+	    DimDungeons.logMessageWarn("DIMDUNGEONS: FAILED TO PLACE CHEST IN DUNGEON. pos = " + pos.getX() + ", " + pos.getZ());
 	}
     }
 
@@ -758,7 +758,7 @@ public class DungeonPlacementLogicAdvanced
 	LockableLootTileEntity.setLootTable(world, rand, pos.down(), lootTable);
 	if (!(world.getTileEntity(pos.down()) instanceof BarrelTileEntity))
 	{
-	    DimDungeons.LOGGER.info("DIMDUNGEONS: FAILED TO PLACE BARREL IN DUNGEON. pos = " + pos.getX() + ", " + pos.getZ());
+	    DimDungeons.logMessageWarn("DIMDUNGEONS: FAILED TO PLACE BARREL IN DUNGEON. pos = " + pos.getX() + ", " + pos.getZ());
 	}
     }
 

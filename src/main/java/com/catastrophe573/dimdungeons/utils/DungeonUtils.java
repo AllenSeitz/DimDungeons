@@ -157,7 +157,7 @@ public class DungeonUtils
 	}
 	else
 	{
-	    DimDungeons.LOGGER.error("DIMDUNGEONS FATAL ERROR: trying to build a dungeon at coordinates where no dungeon is supposed to start?");
+	    DimDungeons.logMessageError("DIMDUNGEONS FATAL ERROR: trying to build a dungeon at coordinates where no dungeon is supposed to start?");
 	}
 
 	return false;
@@ -191,12 +191,11 @@ public class DungeonUtils
 		if (te != null)
 		{
 		    te.setDestination(genData.returnPoint.getX() + 0.5D, genData.returnPoint.getY() + 0.1D, genData.returnPoint.getZ() + 0.5D);
-		    //DimDungeons.LOGGER.error("DIMDUNGEONS INFO: Reprogrammed exit door at (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")");
+		    //DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")");
 		}
 		else
 		{
-		    DimDungeons.LOGGER.error("DIMDUNGEONS ERROR: why is there no exit portal here? (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")");
-		    //DimDungeons.LOGGER.error("DIMDUNGEONS ERROR: found " + ddim.getBlockState(pos).getBlock().getRegistryName().getPath() );		    
+		    DimDungeons.logMessageWarn("DIMDUNGEONS ERROR: why is there no exit portal here? (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")");
 		}
 	    }
 	}

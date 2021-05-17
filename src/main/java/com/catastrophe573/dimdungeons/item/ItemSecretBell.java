@@ -1,7 +1,5 @@
 package com.catastrophe573.dimdungeons.item;
 
-import java.lang.reflect.Field;
-
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
@@ -146,12 +144,12 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 	if (getUpgradeLevel(itemstack) < 2 && !DungeonUtils.isDimensionDungeon((World) playerIn.getEntityWorld()))
 	{
 	    return new ActionResult<>(ActionResultType.FAIL, itemstack);
-	}	
-	
+	}
+
 	if (handIn == Hand.MAIN_HAND)
 	{
 	    playerIn.getCooldownTracker().setCooldown(this, DungeonConfig.portalCooldownTicks);
-	    
+
 	    BlockPos secret = findSecretChestNearby(playerIn.getPosition(), worldIn);
 	    setSecretLocation(itemstack, secret.getX(), secret.getY(), secret.getZ());
 	    return new ActionResult<>(ActionResultType.SUCCESS, itemstack);
@@ -164,14 +162,14 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 
     public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
     {
-	if ( !(entityIn instanceof ServerPlayerEntity) || !isSelected )
+	if (!(entityIn instanceof ServerPlayerEntity) || !isSelected)
 	{
 	    return;
 	}
-	ServerPlayerEntity playerIn = (ServerPlayerEntity)entityIn;	
-	
+	ServerPlayerEntity playerIn = (ServerPlayerEntity) entityIn;
+
 	// convert from percentage back to raw ticks
-	int time = (int)(playerIn.getCooldownTracker().getCooldown(this, 0) * DungeonConfig.portalCooldownTicks);
+	int time = (int) (playerIn.getCooldownTracker().getCooldown(this, 0) * DungeonConfig.portalCooldownTicks);
 	if (time == 0)
 	{
 	    return;
@@ -222,8 +220,8 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     {
 	float pitch = (float) Math.pow(2.0D, (double) (note - 12) / 12.0D);
 	worldIn.playSound((PlayerEntity) null, pos, NoteBlockInstrument.BELL.getSound(), SoundCategory.RECORDS, 3.0F, pitch);
-	
-	worldIn.addParticle(ParticleTypes.NOTE, (double)pos.getX() + 0.5D, (double) pos.getY() + 1.6D, (double) pos.getZ() + 0.5D, (double) note/24.0D, 0.0D, 0.0D);
+
+	worldIn.addParticle(ParticleTypes.NOTE, (double) pos.getX() + 0.5D, (double) pos.getY() + 1.6D, (double) pos.getZ() + 0.5D, (double) note / 24.0D, 0.0D, 0.0D);
 	//worldIn.addParticle(ParticleTypes.NOTE, (double)pos.getX() + 0.5D, (double) pos.getY() + 1.2D, (double) pos.getZ() + 0.5D, (double)i / 24.0D, 0.0D, 0.0D);
     }
 
@@ -304,22 +302,22 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 			try
 			{
 			    //hasLootTable = FieldUtils.readField(te, "lootTable", true) != null;
-			    hasLootTable = FieldUtils.readField(te, "field_184284_m", true) != null;			    
+			    hasLootTable = FieldUtils.readField(te, "field_184284_m", true) != null;
 			}
 			catch (IllegalAccessException e)
 			{
 			    // not a problem
-			    DimDungeons.LOGGER.info("Bell of Secrets FAILED - Illegal Access");
+			    DimDungeons.logMessageError("Bell of Secrets FAILED - Illegal Access");
 			}
 			catch (IllegalArgumentException e)
 			{
 			    // not a problem
-			    DimDungeons.LOGGER.info("Bell of Secrets FAILED - Illegal Argument");
+			    DimDungeons.logMessageError("Bell of Secrets FAILED - Illegal Argument");
 			}
 
 			if (hasLootTable)
 			{
-			    DimDungeons.LOGGER.info("FOUND A SECRET " + x + ", " + y + ", " + z);
+			    //DimDungeons.logMessageInfo("FOUND A SECRET " + x + ", " + y + ", " + z);
 			    return new BlockPos(x, y, z);
 			}
 		    }

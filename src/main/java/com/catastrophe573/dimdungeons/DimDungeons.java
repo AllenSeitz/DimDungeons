@@ -43,7 +43,7 @@ import com.catastrophe573.dimdungeons.utils.CommandDimDungeons;
 public class DimDungeons
 {
     // Directly reference a log4j logger.
-    public static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // constants used by other classes
     public static final String MOD_ID = "dimdungeons"; // this must match mods.toml
@@ -176,5 +176,26 @@ public class DimDungeons
 	//    System.out.println("DIMDUNGEONS TEST: REGISTERING CHUNK GENERATOR!");
 	//    Registry.register(Registry.CHUNK_GENERATOR_CODEC, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.myCodec);
 	//}
+    }
+
+    public static void logMessageInfo(String message)
+    {
+	if (DungeonConfig.logLevel.equalsIgnoreCase("all") || DungeonConfig.logLevel.equalsIgnoreCase("info"))
+	{
+	    DimDungeons.LOGGER.info(message);
+	}
+    }
+
+    public static void logMessageWarn(String message)
+    {
+	if (DungeonConfig.logLevel.equalsIgnoreCase("all") || DungeonConfig.logLevel.equalsIgnoreCase("info") || DungeonConfig.logLevel.equalsIgnoreCase("warn"))
+	{
+	    DimDungeons.LOGGER.warn(message);
+	}
+    }
+
+    public static void logMessageError(String message)
+    {
+	DimDungeons.LOGGER.error(message);
     }
 }

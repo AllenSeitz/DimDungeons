@@ -56,6 +56,7 @@ public class DungeonConfig
     public static boolean globalBlockProtection = true;
     public static boolean enableDebugCheats = false;
     public static int portalCooldownTicks = 80;
+    public static String logLevel = "error";
     public static Set<Block> blockBreakWhitelist = Sets.newHashSet();
     public static Set<Block> blockInteractBlacklist = Sets.newHashSet();
 
@@ -85,6 +86,7 @@ public class DungeonConfig
 	public final ForgeConfigSpec.BooleanValue globalBlockProtection;
 	public final ForgeConfigSpec.BooleanValue enableDebugCheats;
 	public final ConfigValue<Integer> portalCooldownTicks;
+	public final ConfigValue<String> logLevel;
 
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> breakingWhitelist;
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> interactionBlacklist;
@@ -186,6 +188,7 @@ public class DungeonConfig
 		    .define("globalBlockProtection", true);
 	    enableDebugCheats = builder.comment("If set to TRUE some cheats are available.").translation("config.dimdungeons.enableDebugCheats").define("enableDebugCheats", false);
 	    portalCooldownTicks = builder.comment("How many ticks the portal blocks cooldown for.").translation("config.dimdungeons.portalCooldownTicks").define("portalCooldownTicks", 80);
+	    logLevel = builder.comment("Can be used to limit log spam. Can be set to 'all', 'warn', or 'error'.").translation("config.dimdungeons.logLevel").define("logLevel", "error");
 	    builder.pop();
 	    builder.comment("Options for block behavior in the dungeon dimension.").push("blocks");
 	    breakingWhitelist = builder.comment("List of blocks which any player should be allowed to break, defying the block protection. (For example, gravestones or death chests.) Default value is empty.")
@@ -925,13 +928,14 @@ public class DungeonConfig
 	globalBlockProtection = SERVER.globalBlockProtection.get();
 	enableDebugCheats = SERVER.enableDebugCheats.get();
 	portalCooldownTicks = SERVER.portalCooldownTicks.get();
+	logLevel = SERVER.logLevel.get();
 	blockBreakWhitelist = SERVER.breakingWhitelist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
 	blockInteractBlacklist = SERVER.interactionBlacklist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
 
 	// if I want to reset your config because a new version invalidates your old settings (sorry)
 	if (configVersion < DEFAULT_CONFIG_VERSION)
 	{
-	    DimDungeons.LOGGER.warn("DIMDUNGEONS: RESET CONFIG BECAUSE VERSION IS OUT OF DATE: " + configVersion + " < " + DEFAULT_CONFIG_VERSION);
+	    DimDungeons.logMessageWarn("DIMDUNGEONS: RESET CONFIG BECAUSE VERSION IS OUT OF DATE: " + configVersion + " < " + DEFAULT_CONFIG_VERSION);
 	    SERVER.configVersion.set(DEFAULT_CONFIG_VERSION);
 	    configVersion = DEFAULT_CONFIG_VERSION;
 
@@ -975,7 +979,7 @@ public class DungeonConfig
 	Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(location));
 	if (block == null)
 	{
-	    DimDungeons.LOGGER.warn("dimdungeons: blacklist/whitelist could not find block " + location);
+	    DimDungeons.logMessageWarn("dimdungeons: blacklist/whitelist could not find block " + location);
 	    return Blocks.VOID_AIR; // a block that will do nothing in either the whitelist or blacklist
 	}
 
