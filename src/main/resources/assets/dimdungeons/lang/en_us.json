@@ -211,7 +211,10 @@
 	// server configs
 	"config.dimdungeons.configVersion": "configVersion",
 	"config.dimdungeons.globalBlockProtection": "globalBlockProtection",
+	"config.dimdungeons.hardcoreMode": "hardcoreMode",
 	"config.dimdungeons.enableDebugCheats": "enableDebugCheats",
+	"config.dimdungeons.portalCooldownTicks": "portalCooldownTicks",
+	"config.dimdungeons.logLevel": "logLevel",
 	"config.dimdungeons.breakingWhitelist": "breakingWhitelist",
 	"config.dimdungeons.interactionBlacklist": "interactionBlacklist",
 	

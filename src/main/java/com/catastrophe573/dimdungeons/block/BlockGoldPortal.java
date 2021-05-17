@@ -197,8 +197,20 @@ public class BlockGoldPortal extends BreakableBlock
 
 		if (DungeonUtils.isDimensionOverworld(worldIn))
 		{
+		    // implement hardcore mode
+		    if (DungeonConfig.hardcoreMode)
+		    {
+			TileEntityPortalKeyhole keyhole = findKeyholeForThisPortal(state, worldIn, pos);
+			if (keyhole != null)
+			{
+			    keyhole.removeContents();
+			    BlockState emptyState = worldIn.getBlockState(keyhole.getPos());
+			    worldIn.setBlockState(keyhole.getPos(), emptyState.with(BlockPortalKeyhole.FILLED, false).with(BlockPortalKeyhole.LIT, false));
+			}
+		    }
+
 		    // intentionally don't add 0.5f to the X, so the player is centered between the two blocks of the doorway
-		    System.out.println("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");
+		    DimDungeons.logMessageInfo("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");
 		    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonUtils.getDungeonWorld(worldIn.getServer()), warpX, 55.1D, warpZ + 0.5f, 0);
 		}
 		else if (worldIn.getDimensionKey() == DungeonUtils.getDungeonWorld(worldIn.getServer()).getDimensionKey())

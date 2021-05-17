@@ -54,6 +54,7 @@ public class DungeonConfig
     // server options
     public static int configVersion = DEFAULT_CONFIG_VERSION;
     public static boolean globalBlockProtection = true;
+    public static boolean hardcoreMode = false;
     public static boolean enableDebugCheats = false;
     public static int portalCooldownTicks = 80;
     public static String logLevel = "error";
@@ -84,6 +85,7 @@ public class DungeonConfig
 	public final ConfigValue<Integer> configVersion;
 
 	public final ForgeConfigSpec.BooleanValue globalBlockProtection;
+	public final ForgeConfigSpec.BooleanValue hardcoreMode;
 	public final ForgeConfigSpec.BooleanValue enableDebugCheats;
 	public final ConfigValue<Integer> portalCooldownTicks;
 	public final ConfigValue<String> logLevel;
@@ -186,6 +188,8 @@ public class DungeonConfig
 
 	    globalBlockProtection = builder.comment("If set to FALSE the block protection on the dungeon dimension will be disabled, making the options in the next section useless.").translation("config.dimdungeons.globalBlockProtection")
 		    .define("globalBlockProtection", true);
+	    hardcoreMode = builder.comment("If set to TRUE then dungeon keys are consumed whenever a player enters a dungeon portal.").translation("config.dimdungeons.hardcoreMode")
+		    .define("hardcoreMode", false);
 	    enableDebugCheats = builder.comment("If set to TRUE some cheats are available.").translation("config.dimdungeons.enableDebugCheats").define("enableDebugCheats", false);
 	    portalCooldownTicks = builder.comment("How many ticks the portal blocks cooldown for.").translation("config.dimdungeons.portalCooldownTicks").define("portalCooldownTicks", 80);
 	    logLevel = builder.comment("Can be used to limit log spam. Can be set to 'all', 'warn', or 'error'.").translation("config.dimdungeons.logLevel").define("logLevel", "error");
@@ -926,6 +930,7 @@ public class DungeonConfig
 	// refresh SERVER
 	configVersion = SERVER.configVersion.get();
 	globalBlockProtection = SERVER.globalBlockProtection.get();
+	hardcoreMode = SERVER.hardcoreMode.get();	
 	enableDebugCheats = SERVER.enableDebugCheats.get();
 	portalCooldownTicks = SERVER.portalCooldownTicks.get();
 	logLevel = SERVER.logLevel.get();
