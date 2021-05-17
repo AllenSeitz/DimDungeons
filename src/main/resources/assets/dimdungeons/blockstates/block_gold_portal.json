@@ -1,5 +1,12 @@
 {
-    "variants": {
-        "": { "model": "dimdungeons:block/block_gold_portal_model" }
-    }
+  "variants": {
+    "axis=x": {
+      "model": "dimdungeons:block/block_gold_portal_model_ns"
+    },
+    "axis=z": {
+      "model": "dimdungeons:block/block_gold_portal_model_ew"
+    }	
+  }
 }
+
+

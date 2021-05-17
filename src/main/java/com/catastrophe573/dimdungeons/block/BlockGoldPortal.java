@@ -29,11 +29,17 @@ import net.minecraft.item.ItemStack;
 //import net.minecraft.nbt.CompoundNBT;
 //import net.minecraft.nbt.ListNBT;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.state.EnumProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.BannerPattern;
 //import net.minecraft.tileentity.BannerTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -46,10 +52,52 @@ public class BlockGoldPortal extends BreakableBlock
 {
     public static String REG_NAME = "block_gold_portal";
 
+    public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
+    protected static final VoxelShape X_AABB = Block.makeCuboidShape(0.0D, 0.0D, 6.0D, 16.0D, 16.0D, 10.0D);
+    protected static final VoxelShape Z_AABB = Block.makeCuboidShape(6.0D, 0.0D, 0.0D, 10.0D, 16.0D, 16.0D);
+
     public BlockGoldPortal()
     {
 	super(Block.Properties.create(Material.PORTAL).hardnessAndResistance(50).sound(SoundType.GLASS).doesNotBlockMovement().setLightLevel((p) -> 15));
 	setRegistryName(DimDungeons.MOD_ID, REG_NAME);
+	this.setDefaultState(this.stateContainer.getBaseState().with(AXIS, Direction.Axis.X));
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
+    {
+	switch ((Direction.Axis) state.get(AXIS))
+	{
+	case Z:
+	    return Z_AABB;
+	default:
+	    return X_AABB;
+	}
+    }
+
+    public BlockState rotate(BlockState state, Rotation rot)
+    {
+	switch (rot)
+	{
+	case COUNTERCLOCKWISE_90:
+	case CLOCKWISE_90:
+	    switch ((Direction.Axis) state.get(AXIS))
+	    {
+	    case Z:
+		return state.with(AXIS, Direction.Axis.X);
+	    case X:
+		return state.with(AXIS, Direction.Axis.Z);
+	    default:
+		return state;
+	    }
+	default:
+	    return state;
+	}
+    }
+
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
+    {
+	builder.add(AXIS);
     }
 
     // Called by ItemBlocks after a block is set in the world, to allow post-place logic
@@ -128,23 +176,23 @@ public class BlockGoldPortal extends BreakableBlock
 		float warpY = destination.getY();
 		float warpZ = destination.getZ();
 		int cooldown = te.getCooldown();
-		
+
 		// implement the cooldown on the portal block itself
 		int currentTick = worldIn.getServer().getTickCounter();
-		if ( !te.needsUpdateThisTick(currentTick) )
+		if (!te.needsUpdateThisTick(currentTick))
 		{
 		    return;
 		}
-		if ( cooldown > 0 )
-		{		    
+		if (cooldown > 0)
+		{
 		    //DimDungeons.LOGGER.info("PORTAL BLOCK COOLDOWN: " + cooldown);
-		    te.setCooldown(cooldown-1, worldIn, pos, currentTick);
+		    te.setCooldown(cooldown - 1, worldIn, pos, currentTick);
 		    return;
 		}
 		else
 		{
 		    //DimDungeons.LOGGER.info("RESETTING COOLDOWN ON PORTAL");
-		    te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);		    
+		    te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
 		}
 
 		if (DungeonUtils.isDimensionOverworld(worldIn))

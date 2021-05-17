@@ -214,18 +214,22 @@ public class DungeonPlacementLogicAdvanced
 	else
 	{
 	    // extend the doorway on the minimap
-	    world.setBlockState(startPos.south(7).east(1).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(8).east(1).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(7).east(2).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(8).east(2).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(7).east(3).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(8).east(3).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(7).east(4).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(8).east(4).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(7).east(5).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(8).east(5).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(7).east(6).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(8).east(6).up(7), redBlock, 2);
+	    if (!(dbl.finalLayout[indexX - 1][indexZ].type == RoomType.LARGE) && !(dbl.finalLayout[indexX - 1][indexZ].type == RoomType.LARGE_DUMMY))
+	    {
+		world.setBlockState(startPos.south(7).east(1).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(8).east(1).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(7).east(2).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(8).east(2).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(7).east(3).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(8).east(3).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(7).east(4).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(8).east(4).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(7).east(5).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(8).east(5).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(7).east(6).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(8).east(6).up(7), redBlock, 2);
+
+	    }
 	}
 
 	// does east lead into a void?
@@ -251,18 +255,21 @@ public class DungeonPlacementLogicAdvanced
 	else
 	{
 	    // extend the doorway on the minimap
-	    world.setBlockState(startPos.south(7).east(14).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(8).east(14).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(7).east(13).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(8).east(13).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(7).east(12).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(8).east(12).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(7).east(11).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(8).east(11).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(7).east(10).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(8).east(10).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(7).east(9).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(8).east(9).up(7), redBlock, 2);
+	    if (!(dbl.finalLayout[indexX + 1][indexZ].type == RoomType.LARGE) && !(dbl.finalLayout[indexX + 1][indexZ].type == RoomType.LARGE_DUMMY))
+	    {
+		world.setBlockState(startPos.south(7).east(14).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(8).east(14).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(7).east(13).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(8).east(13).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(7).east(12).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(8).east(12).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(7).east(11).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(8).east(11).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(7).east(10).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(8).east(10).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(7).east(9).up(7), redBlock, 2);
+		world.setBlockState(startPos.south(8).east(9).up(7), redBlock, 2);
+	    }
 	}
 
 	// does north lead into a void?

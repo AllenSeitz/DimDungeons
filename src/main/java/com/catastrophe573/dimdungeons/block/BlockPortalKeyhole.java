@@ -170,8 +170,11 @@ public class BlockPortalKeyhole extends Block
 		    // should portal blocks be spawned?
 		    if (isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
 		    {
-			addGoldenPortalBlock(worldIn, pos.down(), playerItem);
-			addGoldenPortalBlock(worldIn, pos.down(2), playerItem);
+			Direction keyholeFacing = state.get(FACING);
+			Direction.Axis axis = (keyholeFacing == Direction.NORTH || keyholeFacing == Direction.SOUTH) ? Direction.Axis.X : Direction.Axis.Z;
+			
+			addGoldenPortalBlock(worldIn, pos.down(), playerItem, axis);
+			addGoldenPortalBlock(worldIn, pos.down(2), playerItem, axis);
 		    }
 
 		    // this function prints no message on success
@@ -208,9 +211,9 @@ public class BlockPortalKeyhole extends Block
 	return ActionResultType.PASS;
     }
 
-    protected void addGoldenPortalBlock(World worldIn, BlockPos pos, ItemStack keyStack)
+    protected void addGoldenPortalBlock(World worldIn, BlockPos pos, ItemStack keyStack, Direction.Axis axis)
     {
-	worldIn.setBlockState(pos, BlockRegistrar.block_gold_portal.getDefaultState());
+	worldIn.setBlockState(pos, BlockRegistrar.block_gold_portal.getDefaultState().with(BlockGoldPortal.AXIS, axis));
 	TileEntityGoldPortal te = (TileEntityGoldPortal) worldIn.getTileEntity(pos);
 	if (te != null && te instanceof TileEntityGoldPortal)
 	{
