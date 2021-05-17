@@ -302,12 +302,12 @@ public class DungeonPlacementLogicAdvanced
 	else
 	{
 	    // extend the doorway on the minimap
-	    world.setBlockState(startPos.south(12).east(7).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(12).east(8).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(13).east(7).up(7), redBlock, 2);
-	    world.setBlockState(startPos.south(13).east(8).up(7), redBlock, 2);
 	    world.setBlockState(startPos.south(14).east(7).up(7), redBlock, 2);
 	    world.setBlockState(startPos.south(14).east(8).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(13).east(7).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(13).east(8).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(12).east(7).up(7), redBlock, 2);
+	    world.setBlockState(startPos.south(12).east(8).up(7), redBlock, 2);
 	    world.setBlockState(startPos.south(11).east(7).up(7), redBlock, 2);
 	    world.setBlockState(startPos.south(11).east(8).up(7), redBlock, 2);
 	    world.setBlockState(startPos.south(10).east(7).up(7), redBlock, 2);
