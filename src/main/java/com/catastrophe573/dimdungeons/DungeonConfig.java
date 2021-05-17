@@ -309,9 +309,9 @@ public class DungeonConfig
 	tempBasicThreeways.add(Lists.newArrayList(temp));
 	temp.clear();
 	temp.add("dimdungeons:advice_2");
-	tempBasicThreeways.add(Lists.newArrayList(temp));
-	temp.clear();
+	temp.add("dimdungeons:advice_2");
 	temp.add("dimdungeons:slotmachine_1");
+	temp.add("dimdungeons:mazenotfound_2");
 	tempBasicThreeways.add(Lists.newArrayList(temp));
 	temp.clear();
 	temp.add("dimdungeons:firepath_5");
@@ -363,6 +363,7 @@ public class DungeonConfig
 	temp.clear();
 	temp.add("dimdungeons:redstrap_2");
 	temp.add("dimdungeons:crushhall_1");
+	temp.add("dimdungeons:mazenotfound_3");
 	tempBasicHallways.add(Lists.newArrayList(temp));
 	temp.clear();
 	temp.add("dimdungeons:yinyang_1");
@@ -417,6 +418,8 @@ public class DungeonConfig
 	tempBasicCorners.add(Lists.newArrayList(temp));
 	temp.clear();
 	temp.add("dimdungeons:redstrap_3");
+	temp.add("dimdungeons:redstrap_3");
+	temp.add("dimdungeons:mazenotfound_1");
 	tempBasicCorners.add(Lists.newArrayList(temp));
 	temp.clear();
 	temp.add("dimdungeons:skullcorner_1");
@@ -856,6 +859,8 @@ public class DungeonConfig
 	temp.add("dimdungeons:large_garage");
 	temp.add("dimdungeons:large_jetcoaster");
 	temp.add("dimdungeons:large_slime");
+	temp.add("dimdungeons:large_archery");
+	temp.add("dimdungeons:large_hallways");
 	tempAdvancedLarge.add(Lists.newArrayList(temp));
 	temp.clear();
 
