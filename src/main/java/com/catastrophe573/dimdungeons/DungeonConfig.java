@@ -57,6 +57,9 @@ public class DungeonConfig
     public static boolean hardcoreMode = false;
     public static boolean enableDebugCheats = false;
     public static int portalCooldownTicks = 80;
+    public static int keyEnscriberDowngradeChanceFull = 100;
+    public static int keyEnscriberDowngradeChanceUsed = 100;
+    public static int keyEnscriberDowngradeChanceDamaged = 100;
     public static String logLevel = "error";
     public static Set<Block> blockBreakWhitelist = Sets.newHashSet();
     public static Set<Block> blockInteractBlacklist = Sets.newHashSet();
@@ -88,8 +91,10 @@ public class DungeonConfig
 	public final ForgeConfigSpec.BooleanValue hardcoreMode;
 	public final ForgeConfigSpec.BooleanValue enableDebugCheats;
 	public final ConfigValue<Integer> portalCooldownTicks;
+	public final ConfigValue<Integer> keyEnscriberDowngradeChanceFull;
+	public final ConfigValue<Integer> keyEnscriberDowngradeChanceUsed;
+	public final ConfigValue<Integer> keyEnscriberDowngradeChanceDamaged;
 	public final ConfigValue<String> logLevel;
-
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> breakingWhitelist;
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> interactionBlacklist;
 
@@ -188,10 +193,15 @@ public class DungeonConfig
 
 	    globalBlockProtection = builder.comment("If set to FALSE the block protection on the dungeon dimension will be disabled, making the options in the next section useless.").translation("config.dimdungeons.globalBlockProtection")
 		    .define("globalBlockProtection", true);
-	    hardcoreMode = builder.comment("If set to TRUE then dungeon keys are consumed whenever a player enters a dungeon portal.").translation("config.dimdungeons.hardcoreMode")
-		    .define("hardcoreMode", false);
+	    hardcoreMode = builder.comment("If set to TRUE then dungeon keys are consumed whenever a player enters a dungeon portal.").translation("config.dimdungeons.hardcoreMode").define("hardcoreMode", false);
 	    enableDebugCheats = builder.comment("If set to TRUE some cheats are available.").translation("config.dimdungeons.enableDebugCheats").define("enableDebugCheats", false);
 	    portalCooldownTicks = builder.comment("How many ticks the portal blocks cooldown for.").translation("config.dimdungeons.portalCooldownTicks").define("portalCooldownTicks", 80);
+	    keyEnscriberDowngradeChanceFull = builder.comment("The odds of a Key Enscriber taking damage upon use, like an anvil, turning into a Used Key Enscriber. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceFull")
+		    .define("keyEnscriberDowngradeChanceFull", 100);
+	    keyEnscriberDowngradeChanceUsed = builder.comment("The odds of a Used Key Enscriber taking damage upon use, like an anvil, turning into a Damaged Key Enscriber. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceUsed")
+		    .define("keyEnscriberDowngradeChanceUsed", 100);
+	    keyEnscriberDowngradeChanceDamaged = builder.comment("The odds of a Damaged Key Enscriber being destroyed upon use, like a damaged anvil. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceDamaged")
+		    .define("keyEnscriberDowngradeChanceDamaged", 100);
 	    logLevel = builder.comment("Can be used to limit log spam. Can be set to 'all', 'warn', or 'error'.").translation("config.dimdungeons.logLevel").define("logLevel", "error");
 	    builder.pop();
 	    builder.comment("Options for block behavior in the dungeon dimension.").push("blocks");
@@ -872,8 +882,8 @@ public class DungeonConfig
 	temp.clear();
 
 	return tempAdvancedLarge;
-    }    
-    
+    }
+
     // any config that has to deal with datapacks
     public static class CommonConfig
     {
@@ -930,9 +940,12 @@ public class DungeonConfig
 	// refresh SERVER
 	configVersion = SERVER.configVersion.get();
 	globalBlockProtection = SERVER.globalBlockProtection.get();
-	hardcoreMode = SERVER.hardcoreMode.get();	
+	hardcoreMode = SERVER.hardcoreMode.get();
 	enableDebugCheats = SERVER.enableDebugCheats.get();
 	portalCooldownTicks = SERVER.portalCooldownTicks.get();
+	keyEnscriberDowngradeChanceFull = SERVER.keyEnscriberDowngradeChanceFull.get();
+	keyEnscriberDowngradeChanceUsed = SERVER.keyEnscriberDowngradeChanceUsed.get();
+	keyEnscriberDowngradeChanceDamaged = SERVER.keyEnscriberDowngradeChanceDamaged.get();
 	logLevel = SERVER.logLevel.get();
 	blockBreakWhitelist = SERVER.breakingWhitelist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
 	blockInteractBlacklist = SERVER.interactionBlacklist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
@@ -960,7 +973,7 @@ public class DungeonConfig
 	    COMMON.advancedEnds.set(defaultAdvancedEnds());
 	    COMMON.advancedLarge.set(defaultAdvancedLarge());
 	}
-	
+
 	// this is also where COMMON config is refreshed
 	basicEntrances = COMMON.basicEntrances.get();
 	basicFourways = COMMON.basicFourways.get();
@@ -974,8 +987,8 @@ public class DungeonConfig
 	advancedThreeways = COMMON.advancedThreeways.get();
 	advancedHallways = COMMON.advancedHallways.get();
 	advancedCorners = COMMON.advancedCorners.get();
-	advancedEnds = COMMON.advancedEnds.get();	
-	advancedLarge = COMMON.advancedLarge.get();	
+	advancedEnds = COMMON.advancedEnds.get();
+	advancedLarge = COMMON.advancedLarge.get();
     }
 
     // a helper function for translating ResourceLOcation strings (such as minecraft:chest) into blocks

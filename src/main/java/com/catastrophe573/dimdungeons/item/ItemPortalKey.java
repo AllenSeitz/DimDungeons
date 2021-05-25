@@ -2,6 +2,7 @@ package com.catastrophe573.dimdungeons.item;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
+import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -378,6 +379,71 @@ public class ItemPortalKey extends Item
 		    performActivationRitual(itemstack, worldIn, pos);
 		}
 	    }
+	    else if (isBlockKeyCharger(worldIn.getBlockState(pos)))
+	    {
+		// did they hit precisely the black area in the middle?
+		if (hitX > 0.3f && hitX < 0.7f && hitZ > 0.3f && hitZ < 0.8f)
+		{
+		    if (isActivated(itemstack))
+		    {
+			//System.out.println("Key already activated!");
+			worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_METAL_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+		    }
+		    else
+		    {
+			performActivationRitual(itemstack, worldIn, pos);
+
+			// handle possible damage to the key activation station, similar to an anvil
+			// running this block of code on the client can cause a flicker
+			if (!worldIn.isRemote)
+			{
+			    String blockid = worldIn.getBlockState(pos).getBlock().getRegistryName().getPath();
+			    int roll = worldIn.getRandom().nextInt(100);
+			    if (blockid.equals(BlockRegistrar.REG_NAME_CHARGER_FULL))
+			    {
+				if (roll < DungeonConfig.keyEnscriberDowngradeChanceFull)
+				{
+				    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_ANVIL_BREAK, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				    worldIn.setBlockState(pos, BlockRegistrar.block_key_charger_used.getDefaultState());
+				}
+				else
+				{
+				    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				}
+			    }
+			    else if (blockid.equals(BlockRegistrar.REG_NAME_CHARGER_USED))
+			    {
+				if (roll < DungeonConfig.keyEnscriberDowngradeChanceUsed)
+				{
+				    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_ANVIL_BREAK, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				    worldIn.setBlockState(pos, BlockRegistrar.block_key_charger_damaged.getDefaultState());
+				}
+				else
+				{
+				    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				}
+			    }
+			    else if (blockid.equals(BlockRegistrar.REG_NAME_CHARGER_DAMAGED))
+			    {
+				if (roll < DungeonConfig.keyEnscriberDowngradeChanceDamaged)
+				{
+				    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_ANVIL_DESTROY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				    worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+				}
+				else
+				{
+				    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				}
+			    }
+			}
+		    }
+		}
+		else
+		{
+		    //System.out.println("Just missed the center area...");
+		    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BLOCK_GLASS_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+		}
+	    }
 	    else
 	    {
 		// hit the side of the block
@@ -386,6 +452,16 @@ public class ItemPortalKey extends Item
 	}
 
 	return ActionResultType.PASS;
+    }
+
+    public boolean isBlockKeyCharger(BlockState state)
+    {
+	if (state.getBlock() == BlockRegistrar.block_key_charger || state.getBlock() == BlockRegistrar.block_key_charger_used || state.getBlock() == BlockRegistrar.block_key_charger_damaged)
+	{
+	    return true;
+	}
+
+	return false;
     }
 
     private void performActivationRitual(ItemStack itemstack, World worldIn, BlockPos pos)
