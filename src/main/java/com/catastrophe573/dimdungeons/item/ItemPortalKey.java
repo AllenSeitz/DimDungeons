@@ -129,6 +129,27 @@ public class ItemPortalKey extends Item
 	stack.setTag(data);
     }
 
+    // used by the /gendungeon cheat and nothing else
+    public void forceCoordinates(ItemStack stack, int destX, int destZ)
+    {
+	CompoundNBT data = new CompoundNBT();
+	data.putBoolean(NBT_KEY_ACTIVATED, true);
+	data.putBoolean(NBT_BUILT, false);
+
+	// where is this key going?
+	destX = destX < 0 || destX > RANDOM_COORDINATE_RANGE ? 0 : destX;
+	destZ = destZ < RANDOM_COORDINATE_RANGE*-1 || destZ > RANDOM_COORDINATE_RANGE ? 0 : destZ;
+	data.putInt(NBT_KEY_DESTINATION_X, destX);
+	data.putInt(NBT_KEY_DESTINATION_Z, destZ);
+
+	// give it a funny random name like "Key to the [LARGE] [PLACE]"
+	data.putInt(NBT_NAME_TYPE, 3);
+	data.putInt(NBT_NAME_PART_1, destX%20); // place
+	data.putInt(NBT_NAME_PART_2, destZ%12); // largeness
+
+	stack.setTag(data);
+    }
+    
     public boolean isActivated(ItemStack stack)
     {
 	if (stack.hasTag())

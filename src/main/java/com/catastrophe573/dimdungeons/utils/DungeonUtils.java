@@ -28,7 +28,7 @@ public class DungeonUtils
     {
 	if (worldIn == null)
 	{
-	    System.out.println("FATAL ERROR: This 1.16 port is still broken.");
+	    DimDungeons.logMessageError("FATAL ERROR: This 1.16 port is still broken.");
 	    return false;
 	}
 	return worldIn.getDimensionKey().getLocation().getPath() == DimDungeons.dungeon_basic_regname;
@@ -51,7 +51,7 @@ public class DungeonUtils
 
 	if (!(genData.keyItem.getItem() instanceof ItemPortalKey))
 	{
-	    System.out.println("FATAL ERROR: Using a non-key item to build a dungeon? What happened?");
+	    DimDungeons.logMessageError("FATAL ERROR: Using a non-key item to build a dungeon? What happened?");
 	    return false;
 	}
 
@@ -65,7 +65,7 @@ public class DungeonUtils
 
 	if (dungeonAlreadyExistsHere(dungeonWorld, entranceX, entranceZ))
 	{
-	    System.out.println("DIMDUNGEONS: Cancelling dungeon contruction. A dungeon already exists here.");
+	    DimDungeons.logMessageWarn("DIMDUNGEONS: Cancelling dungeon contruction. A dungeon already exists here.");
 	    return false;
 	}
 
@@ -172,7 +172,6 @@ public class DungeonUtils
 	    return false;
 	}
 
-	//System.out.println("Canceling dungeon construction. A dungeon already exists here: " + temp.getBlock().getRegistryName());
 	return true;
     }
 
