@@ -12,9 +12,6 @@
 		"frame": "challenge"
 	},
 	"parent": "dimdungeons:dungeons/enter_basic_dungeon",
-	"rewards": {
-		"experience": 90
-	},
 	"criteria": {
 		"1up": {
 			"trigger": "minecraft:inventory_changed",

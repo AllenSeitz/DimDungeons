@@ -1,0 +1,18 @@
+{
+	"name": "Key Enscribing Station",
+	"icon": "dimdungeons:block_key_charger",
+	"category": "dimdungeons:artifacts",
+	"sortnum": 20,
+	"advancement": "dimdungeons:dungeons/find_key_charger",
+	"pages": [
+		{
+			"type": "spotlight",
+			"item": "dimdungeons:block_key_charger",
+			"text": "You've found a portable $(bold)Key Enscribing Station!$() This block will allow you to activate blank portal keys the same as an End Portal Frame would. However, it may have a limited number of uses and can break."
+		},
+		{
+			"type": "text",
+			"text": "The Key Enscribing Station has 3 states of damage just like an anvil. The odds of each use causing one level of damage is configurable, but by default the odds are 100%. Therefore a Key Enscribing Station can be used 3 times before it breaks."
+		}
+	]
+}
