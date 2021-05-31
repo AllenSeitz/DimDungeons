@@ -255,7 +255,7 @@
         },	
         {
           "type": "item",
-          "name": "minecraft:globe_banner_pattern",
+          "name": "dimdungeons:block_key_charger",
           "weight": 5,
           "functions": [
             {
