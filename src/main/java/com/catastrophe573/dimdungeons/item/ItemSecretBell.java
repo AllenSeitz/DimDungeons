@@ -3,7 +3,6 @@ package com.catastrophe573.dimdungeons.item;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
-import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.block.BlockState;

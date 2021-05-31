@@ -17,6 +17,7 @@
     "item.dimdungeons.item_portal_key_basic": "Basic Portal Key",
     "item.dimdungeons.item_portal_key_advanced": "Advanced Portal Key",
     "item.dimdungeons.item_secret_bell": "Bell of Secrets",
+    "item.dimdungeons.item_homeward_pearl": "Homeward Pearl",
     "item.dimdungeons.item_guidebook": "Dimensional Dungeons Guidebook",
 
 // these trophy strings are not used, 1.14 forced them to move into the loot tables
