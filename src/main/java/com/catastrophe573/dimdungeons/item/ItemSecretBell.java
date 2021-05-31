@@ -41,6 +41,8 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     public static final String NBT_SECRET_X = "secret_x";
     public static final String NBT_SECRET_Y = "secret_y";
     public static final String NBT_SECRET_Z = "secret_z";
+    
+    public static final int BELL_COOLDOWN_TICKS = 80;
 
     public ItemSecretBell(/* IItemTier tier, */ Item.Properties builderIn)
     {
@@ -148,7 +150,7 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 
 	if (handIn == Hand.MAIN_HAND)
 	{
-	    playerIn.getCooldownTracker().setCooldown(this, DungeonConfig.portalCooldownTicks);
+	    playerIn.getCooldownTracker().setCooldown(this, BELL_COOLDOWN_TICKS);
 
 	    BlockPos secret = findSecretChestNearby(playerIn.getPosition(), worldIn);
 	    setSecretLocation(itemstack, secret.getX(), secret.getY(), secret.getZ());
@@ -169,25 +171,25 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 	ServerPlayerEntity playerIn = (ServerPlayerEntity) entityIn;
 
 	// convert from percentage back to raw ticks
-	int time = (int) (playerIn.getCooldownTracker().getCooldown(this, 0) * DungeonConfig.portalCooldownTicks);
+	int time = (int) (playerIn.getCooldownTracker().getCooldown(this, 0) * BELL_COOLDOWN_TICKS);
 	if (time == 0)
 	{
 	    return;
 	}
 
-	if (time == DungeonConfig.portalCooldownTicks)
+	if (time ==BELL_COOLDOWN_TICKS)
 	{
 	    playSoundAtPosition(worldIn, entityIn.getPosition(), 13);
 	}
-	if (time == DungeonConfig.portalCooldownTicks - 3)
+	if (time == BELL_COOLDOWN_TICKS - 3)
 	{
 	    playSoundAtPosition(worldIn, entityIn.getPosition(), 12);
 	}
-	if (time == DungeonConfig.portalCooldownTicks - 6)
+	if (time == BELL_COOLDOWN_TICKS - 6)
 	{
 	    playSoundAtPosition(worldIn, entityIn.getPosition(), 9);
 	}
-	if (time == DungeonConfig.portalCooldownTicks - 9)
+	if (time == BELL_COOLDOWN_TICKS - 9)
 	{
 	    playSoundAtPosition(worldIn, entityIn.getPosition(), 3);
 	}
@@ -196,19 +198,19 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 	if (getSecretY(stack) > -10000)
 	{
 	    BlockPos secretPos = new BlockPos(getSecretX(stack), getSecretY(stack), getSecretZ(stack));
-	    if (time == DungeonConfig.portalCooldownTicks - 12)
+	    if (time == BELL_COOLDOWN_TICKS - 12)
 	    {
 		playSoundAtPosition(worldIn, secretPos, 2);
 	    }
-	    if (time == DungeonConfig.portalCooldownTicks - 15)
+	    if (time == BELL_COOLDOWN_TICKS - 15)
 	    {
 		playSoundAtPosition(worldIn, secretPos, 10);
 	    }
-	    if (time == DungeonConfig.portalCooldownTicks - 18)
+	    if (time == BELL_COOLDOWN_TICKS - 18)
 	    {
 		playSoundAtPosition(worldIn, secretPos, 14);
 	    }
-	    if (time == DungeonConfig.portalCooldownTicks - 21)
+	    if (time == BELL_COOLDOWN_TICKS - 21)
 	    {
 		playSoundAtPosition(worldIn, secretPos, 18);
 	    }
