@@ -83,6 +83,11 @@ public class DungeonConfig
     public static List<? extends List<String>> advancedEnds;
     public static List<? extends List<String>> advancedLarge;
 
+    public static List<? extends String> basicEnemySet1;
+    public static List<? extends String> basicEnemySet2;
+    public static List<? extends String> advancedEnemySet1;
+    public static List<? extends String> advancedEnemySet2;
+
     public static class ServerConfig
     {
 	public final ConfigValue<Integer> configVersion;
@@ -884,6 +889,50 @@ public class DungeonConfig
 	return tempAdvancedLarge;
     }
 
+    public static List<? extends String> defaultBasicEnemySet1()
+    {
+	List<String> temp = Lists.newArrayList();
+	temp.add("minecraft:zombie");
+	temp.add("minecraft:husk");
+	temp.add("minecraft:drowned");
+	temp.add("minecraft:spider");
+
+	return temp;
+    }
+
+    public static List<? extends String> defaultBasicEnemySet2()
+    {
+	List<String> temp = Lists.newArrayList();
+	temp.add("minecraft:wither_skeleton");
+	temp.add("minecraft:stray");
+	temp.add("minecraft:skeleton");
+	temp.add("minecraft:pillager");
+
+	return temp;
+    }
+
+    public static List<? extends String> defaultAdvancedEnemySet1()
+    {
+	List<String> temp = Lists.newArrayList();
+	temp.add("minecraft:pillager");
+	temp.add("minecraft:skeleton");
+	temp.add("minecraft:stray");
+	temp.add("minecraft:blaze");
+
+	return temp;
+    }
+
+    public static List<? extends String> defaultAdvancedEnemySet2()
+    {
+	List<String> temp = Lists.newArrayList();
+	temp.add("minecraft:wither_skeleton");
+	temp.add("minecraft:hoglin");
+	temp.add("minecraft:vindicator");
+	temp.add("minecraft:witch");
+
+	return temp;
+    }
+
     // any config that has to deal with datapacks
     public static class CommonConfig
     {
@@ -903,6 +952,12 @@ public class DungeonConfig
 	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedCorners;
 	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedEnds;
 	public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedLarge;
+
+	// enemy sets
+	public final ForgeConfigSpec.ConfigValue<List<? extends String>> basicEnemySet1;
+	public final ForgeConfigSpec.ConfigValue<List<? extends String>> basicEnemySet2;
+	public final ForgeConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet1;
+	public final ForgeConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet2;
 
 	CommonConfig(ForgeConfigSpec.Builder builder)
 	{
@@ -926,6 +981,13 @@ public class DungeonConfig
 	    advancedEnds = builder.translation("config.dimdungeons.advancedEnds").define("advancedEnds", defaultAdvancedEnds());
 	    advancedLarge = builder.translation("config.dimdungeons.advancedLarge").define("advancedLarge", defaultAdvancedLarge());
 	    builder.pop();
+
+	    // enemy sets
+	    builder.comment("Enemy Sets for Dungeons").push("enemySets");
+	    basicEnemySet1 = builder.translation("config.dimdungeons.basicEnemySet1").define("basicEnemySet1", defaultBasicEnemySet1());
+	    basicEnemySet2 = builder.translation("config.dimdungeons.basicEnemySet2").define("basicEnemySet2", defaultBasicEnemySet2());
+	    advancedEnemySet1 = builder.translation("config.dimdungeons.advancedEnemySet1").define("advancedEnemySet1", defaultAdvancedEnemySet1());
+	    advancedEnemySet2 = builder.translation("config.dimdungeons.advancedEnemySet2").define("advancedEnemySet2", defaultAdvancedEnemySet2());
 	}
     }
 
@@ -989,6 +1051,11 @@ public class DungeonConfig
 	advancedCorners = COMMON.advancedCorners.get();
 	advancedEnds = COMMON.advancedEnds.get();
 	advancedLarge = COMMON.advancedLarge.get();
+
+	basicEnemySet1 = COMMON.basicEnemySet1.get();
+	basicEnemySet2 = COMMON.basicEnemySet2.get();
+	advancedEnemySet1 = COMMON.advancedEnemySet1.get();
+	advancedEnemySet2 = COMMON.advancedEnemySet2.get();
     }
 
     // a helper function for translating ResourceLOcation strings (such as minecraft:chest) into blocks

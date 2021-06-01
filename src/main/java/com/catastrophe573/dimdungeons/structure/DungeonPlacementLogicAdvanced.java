@@ -17,11 +17,13 @@ import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
@@ -550,65 +552,36 @@ public class DungeonPlacementLogicAdvanced
 	else if ("SummonWitch".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	    spawnEnemyHere(pos, "witch", world);
+	    spawnEnemyHere(pos, "minecraft:witch", world);
 	}
 	else if ("SummonWaterEnemy".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	    spawnEnemyHere(pos, "guardian", world);
+	    spawnEnemyHere(pos, "minecraft:guardian", world);
 	}
 	else if ("SummonEnderman".equals(name))
 	{
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	    spawnEnemyHere(pos, "enderman", world);
+	    spawnEnemyHere(pos, "minecraft:enderman", world);
 	}
 	else if ("SummonEnemy1".equals(name))
 	{
 	    // 50% chance of a weak enemy OR BLAZE
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	    int chance = rand.nextInt(100);
-	    if (chance < 16)
-	    {
-		spawnEnemyHere(pos, "zombie", world);
-	    }
-	    else if (chance < 32)
-	    {
-		spawnEnemyHere(pos, "husk", world);
-	    }
-	    else if (chance < 48)
-	    {
-		spawnEnemyHere(pos, "drowned", world);
-	    }
-	    else if (chance < 74)
-	    {
-		spawnEnemyHere(pos, "blaze", world);
-	    }
-	    else
-	    {
-		spawnEnemyHere(pos, "spider", world);
-	    }
+
+	    int poolSize = DungeonConfig.advancedEnemySet1.size();
+	    String mobid = DungeonConfig.advancedEnemySet1.get(rand.nextInt(poolSize));
+
+	    spawnEnemyHere(pos, mobid, world);
 	}
 	else if ("SummonEnemy2".equals(name))
 	{
-	    // 80% chance of a strong enemy
 	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	    int chance = rand.nextInt(100);
-	    if (chance < 20)
-	    {
-		spawnEnemyHere(pos, "wither_skeleton", world);
-	    }
-	    else if (chance < 40)
-	    {
-		spawnEnemyHere(pos, "stray", world);
-	    }
-	    else if (chance < 60)
-	    {
-		spawnEnemyHere(pos, "skeleton", world);
-	    }
-	    else if (chance < 80)
-	    {
-		spawnEnemyHere(pos, "pillager", world);
-	    }
+
+	    int poolSize = DungeonConfig.advancedEnemySet2.size();
+	    String mobid = DungeonConfig.advancedEnemySet2.get(rand.nextInt(poolSize));
+
+	    spawnEnemyHere(pos, mobid, world);
 	}
 	else
 	{
@@ -617,123 +590,36 @@ public class DungeonPlacementLogicAdvanced
 	}
     }
 
-    private static void spawnEnemyHere(BlockPos pos, String casualName, IWorld world)
+    private static void spawnEnemyHere(BlockPos pos, String resourceLocation, IWorld world)
     {
-	MobEntity mob = null;
+	EntityType<?> entitytype = EntityType.byKey(resourceLocation).orElse(EntityType.CHICKEN);
 
-	if ("witch".contentEquals(casualName))
-	{
-	    mob = EntityType.WITCH.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
-	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
-	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(40.0f);
-	    mob.setHealth(40.0f);
-	}
-	else if ("enderman".contentEquals(casualName))
-	{
-	    mob = EntityType.ENDERMAN.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 2, pos.getZ());
-	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.4f);
-	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(50.0f);
-	    mob.setHealth(50.0f);
-	}
-	else if ("guardian".contentEquals(casualName))
-	{
-	    mob = EntityType.GUARDIAN.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
-	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.4f);
-	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(40.0f);
-	    mob.setHealth(40.0f);
-	}
-	else if ("zombie".contentEquals(casualName))
-	{
-	    mob = EntityType.ZOMBIE.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
-	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
-	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
-	    mob.setHealth(32.0f);
-	}
-	else if ("husk".contentEquals(casualName))
-	{
-	    mob = EntityType.HUSK.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
-	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
-	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
-	    mob.setHealth(32.0f);
-	}
-	else if ("drowned".contentEquals(casualName))
-	{
-	    mob = EntityType.DROWNED.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
-	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
-	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
-	    mob.setHealth(32.0f);
-	}
-	else if ("skeleton".contentEquals(casualName))
-	{
-	    mob = EntityType.SKELETON.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
-	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.4f);
-	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
-	    mob.setHealth(40.0f);
-	}
-	else if ("wither_skeleton".contentEquals(casualName))
-	{
-	    mob = EntityType.WITHER_SKELETON.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
-	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
-	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
-	    mob.setHealth(30.0f);
-	}
-	else if ("stray".contentEquals(casualName))
-	{
-	    mob = EntityType.STRAY.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
-	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.45f);
-	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
-	    mob.setHealth(40.0f);
-	}
-	else if ("spider".contentEquals(casualName))
-	{
-	    mob = EntityType.SPIDER.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
-	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.4f);
-	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(36.0f);
-	    mob.setHealth(36.0f);
-	}
-	else if ("pillager".contentEquals(casualName))
-	{
-	    mob = EntityType.PILLAGER.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
-	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
-	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(36.0f);
-	    mob.setHealth(36.0f);
-	}
-	else if ("blaze".contentEquals(casualName))
-	{
-	    mob = EntityType.BLAZE.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
-	    mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
-	    mob.getAttribute(Attributes.MAX_HEALTH).setBaseValue(30.0f);
-	    mob.setHealth(30.0f);
-	}
-	else
-	{
-	    System.out.println("DungeonChunkGenerator: Attempting to spawn unrecognized enemy: " + casualName);
-	    return;
-	}
+	Entity mob = entitytype.spawn((ServerWorld) world, null, null, pos, SpawnReason.STRUCTURE, true, true);
 
-	mob.setCanPickUpLoot(false);
-	//mob.setCustomName(new StringTextComponent(I18n.format("enemy.dimdungeons." + casualName)));
-	mob.setCustomName(new TranslationTextComponent("enemy.dimdungeons." + casualName + "2"));
-	mob.setHomePosAndDistance(pos, 8);
+	TranslationTextComponent fancyName = new TranslationTextComponent("enemy.dimdungeons." + resourceLocation + "2");
+	mob.setCustomName(fancyName);
 	mob.moveToBlockPosAndAngles(pos, 0.0F, 0.0F);
-	mob.enablePersistence();
-	mob.addPotionEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 9999999, 1, false, false));
-	mob.addPotionEffect(new EffectInstance(Effects.JUMP_BOOST, 9999999, 3, false, false));
 
-	mob.onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
-	world.addEntity(mob);
+	if (mob instanceof MobEntity)
+	{
+	    ((MobEntity) mob).setCanPickUpLoot(false);
+	    ((MobEntity) mob).setHomePosAndDistance(pos, 8);
+	    ((MobEntity) mob).enablePersistence();
+
+	    // ADVANCED MODE! HARDER MOBS!
+	    float healthScaling = 2.0f;
+	    ModifiableAttributeInstance tempHealth = ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH);
+	    ((MobEntity) mob).getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
+	    ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH).setBaseValue(tempHealth.getBaseValue() * healthScaling);
+	    ((MobEntity) mob).setHealth((float) ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH).getBaseValue());
+
+	    ((MobEntity) mob).addPotionEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 9999999, 1, false, false));
+	    ((MobEntity) mob).addPotionEffect(new EffectInstance(Effects.JUMP_BOOST, 9999999, 3, false, false));
+	    ((MobEntity) mob).addPotionEffect(new EffectInstance(Effects.WATER_BREATHING, 9999999, 1, false, false));
+
+	    // not needed with the new spawn() above
+	    //((MobEntity)mob).onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
+	}
     }
 
     private static void fillChestBelow(BlockPos pos, ResourceLocation lootTable, IWorld world, Random rand)
