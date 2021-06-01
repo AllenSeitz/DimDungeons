@@ -606,13 +606,14 @@ public class DungeonPlacementLogicAdvanced
 	    ((MobEntity) mob).setHomePosAndDistance(pos, 8);
 	    ((MobEntity) mob).enablePersistence();
 
-	    // ADVANCED MODE! HARDER MOBS!
-	    float healthScaling = 2.0f;
+	    // health scaling
+	    float healthScaling = DungeonConfig.advancedEnemyHealthScaling;
 	    ModifiableAttributeInstance tempHealth = ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH);
-	    ((MobEntity) mob).getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f);
 	    ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH).setBaseValue(tempHealth.getBaseValue() * healthScaling);
 	    ((MobEntity) mob).setHealth((float) ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH).getBaseValue());
 
+	    // ADVANCED MODE! EVEN HARDER MOBS!
+	    ((MobEntity) mob).getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f); // baby zombie speed
 	    ((MobEntity) mob).addPotionEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 9999999, 1, false, false));
 	    ((MobEntity) mob).addPotionEffect(new EffectInstance(Effects.JUMP_BOOST, 9999999, 3, false, false));
 	    ((MobEntity) mob).addPotionEffect(new EffectInstance(Effects.WATER_BREATHING, 9999999, 1, false, false));

@@ -21,6 +21,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
@@ -422,6 +424,12 @@ public class DungeonPlacementLogicBasic
 	    ((MobEntity) mob).setHomePosAndDistance(pos, 8);
 	    ((MobEntity) mob).enablePersistence();
 
+	    // health scaling
+	    float healthScaling = DungeonConfig.basicEnemyHealthScaling;
+	    ModifiableAttributeInstance tempHealth = ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH);
+	    ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH).setBaseValue(tempHealth.getBaseValue() * healthScaling);
+	    ((MobEntity) mob).setHealth((float) ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH).getBaseValue());
+	    
 	    // not needed with the new spawn() above
 	    //((MobEntity)mob).onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
 	}

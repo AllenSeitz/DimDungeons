@@ -248,6 +248,8 @@
 	"config.dimdungeons.basicEnemySet2": "basicEnemySet2",
 	"config.dimdungeons.advancedEnemySet1": "advancedEnemySet1",
 	"config.dimdungeons.advancedEnemySet2": "advancedEnemySet2",
+	"config.dimdungeons.basicEnemyHealthScaling": "basicEnemyHealthScaling",
+	"config.dimdungeons.advancedEnemyHealthScaling": "advancedEnemyHealthScaling",
 
 	// commands
 	"commands.gendungeon.success": "Built the dungeon of %s.",

@@ -87,6 +87,8 @@ public class DungeonConfig
     public static List<? extends String> basicEnemySet2;
     public static List<? extends String> advancedEnemySet1;
     public static List<? extends String> advancedEnemySet2;
+    public static float basicEnemyHealthScaling = 1.0f;
+    public static float advancedEnemyHealthScaling = 1.0f;
 
     public static class ServerConfig
     {
@@ -958,6 +960,8 @@ public class DungeonConfig
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> basicEnemySet2;
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet1;
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet2;
+	public final ConfigValue<Float> basicEnemyHealthScaling;
+	public final ConfigValue<Float> advancedEnemyHealthScaling;
 
 	CommonConfig(ForgeConfigSpec.Builder builder)
 	{
@@ -988,6 +992,8 @@ public class DungeonConfig
 	    basicEnemySet2 = builder.translation("config.dimdungeons.basicEnemySet2").define("basicEnemySet2", defaultBasicEnemySet2());
 	    advancedEnemySet1 = builder.translation("config.dimdungeons.advancedEnemySet1").define("advancedEnemySet1", defaultAdvancedEnemySet1());
 	    advancedEnemySet2 = builder.translation("config.dimdungeons.advancedEnemySet2").define("advancedEnemySet2", defaultAdvancedEnemySet2());
+	    basicEnemyHealthScaling = builder.translation("config.dimdungeons.basicEnemyHealthScaling").define("basicEnemyHealthScaling", 1.0f);
+	    advancedEnemyHealthScaling = builder.translation("config.dimdungeons.advancedEnemyHealthScaling").define("advancedEnemyHealthScaling", 2.0f);
 	}
     }
 
@@ -1056,6 +1062,8 @@ public class DungeonConfig
 	basicEnemySet2 = COMMON.basicEnemySet2.get();
 	advancedEnemySet1 = COMMON.advancedEnemySet1.get();
 	advancedEnemySet2 = COMMON.advancedEnemySet2.get();
+	basicEnemyHealthScaling = COMMON.basicEnemyHealthScaling.get();
+	advancedEnemyHealthScaling = COMMON.advancedEnemyHealthScaling.get();
     }
 
     // a helper function for translating ResourceLOcation strings (such as minecraft:chest) into blocks
