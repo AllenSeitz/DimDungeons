@@ -28,7 +28,7 @@ import net.minecraft.world.biome.provider.SingleBiomeProvider;
 
 public final class DungeonChunkGenerator extends ChunkGenerator
 {
-    public static final Codec<DungeonChunkGenerator> myCodec = FlatGenerationSettings.field_236932_a_.fieldOf("settings").xmap(DungeonChunkGenerator::new, DungeonChunkGenerator::getSettings).codec();
+    public static final Codec<DungeonChunkGenerator> myCodec = FlatGenerationSettings.CODEC.fieldOf("settings").xmap(DungeonChunkGenerator::new, DungeonChunkGenerator::getSettings).codec();
     private final FlatGenerationSettings settings;
     private long worldSeed = 0;
 
