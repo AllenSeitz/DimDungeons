@@ -11,6 +11,7 @@ public class DungeonGenData
     
     //The calculated point to teleport the player to when exiting the dungeon.
     public BlockPos returnPoint;
+    public String returnDimension;
 
     DungeonGenData()
     {
@@ -27,9 +28,10 @@ public class DungeonGenData
 	return this;
     }
 
-    public DungeonGenData setReturnPoint(BlockPos returnPoint)
+    public DungeonGenData setReturnPoint(BlockPos returnPoint, String returnDimension)
     {
 	this.returnPoint = returnPoint;
+	this.returnDimension = returnDimension;
 	return this;
     }
 }

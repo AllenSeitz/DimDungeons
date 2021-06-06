@@ -7,7 +7,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ObjectHolder;
 
@@ -21,6 +24,7 @@ public class TileEntityGoldPortal extends TileEntity
     private double destX = 0, destY = -10000, destZ = 0;
     private int cooldown = DungeonConfig.portalCooldownTicks;
     private int lastUpdate = 0;
+    private String destDimension = "minecraft:overworld";
 
     public TileEntityGoldPortal()
     {
@@ -46,6 +50,16 @@ public class TileEntityGoldPortal extends TileEntity
 	{
 	    this.cooldown = compound.getInt("cooldown");
 	}
+	
+	// default value for portals that players created before I allowed portals to other dimensions 
+	if (compound.contains("destDimension"))
+	{
+	    this.destDimension = compound.getString("destDimension");	    
+	}
+	else
+	{
+	    this.destDimension = "minecraft:overworld";
+	}
     }
 
     @Override
@@ -55,14 +69,16 @@ public class TileEntityGoldPortal extends TileEntity
 	compound.putDouble("destY", this.destY);
 	compound.putDouble("destZ", this.destZ);
 	compound.putInt("cooldown", this.cooldown);
+	compound.putString("destDimension", this.destDimension);
 	return super.write(compound);
     }
 
-    public void setDestination(double posX, double posY, double posZ)
+    public void setDestination(double posX, double posY, double posZ, String destDim)
     {
 	this.destX = posX;
 	this.destY = posY;
 	this.destZ = posZ;
+	this.destDimension = destDim;
     }
 
     public BlockPos getDestination()
@@ -75,6 +91,11 @@ public class TileEntityGoldPortal extends TileEntity
 	return cooldown;
     }
 
+    public RegistryKey<World> getDestinationDimension()
+    {
+	return RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(destDimension));
+    }
+    
     public boolean needsUpdateThisTick(int tick)
     {
 	return tick > lastUpdate;

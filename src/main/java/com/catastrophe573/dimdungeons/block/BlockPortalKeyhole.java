@@ -144,7 +144,7 @@ public class BlockPortalKeyhole extends Block
 		    // should we build the dungeon on the other side?
 		    if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isRemote)
 		    {
-			DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setReturnPoint(getReturnPoint(state, pos));
+			DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setReturnPoint(getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.getDimensionKey()));
 			ItemPortalKey key = (ItemPortalKey) playerItem.getItem();
 
 			if (shouldBuildDungeon(playerItem))
@@ -222,7 +222,7 @@ public class BlockPortalKeyhole extends Block
 	    ItemPortalKey key = (ItemPortalKey) keyStack.getItem();
 	    if (key != null)
 	    {
-		te.setDestination(key.getWarpX(keyStack), 55.1D, key.getWarpZ(keyStack));
+		te.setDestination(key.getWarpX(keyStack), 55.1D, key.getWarpZ(keyStack), DungeonUtils.serializeDimensionKey(worldIn.getDimensionKey()));
 	    }
 	}
     }

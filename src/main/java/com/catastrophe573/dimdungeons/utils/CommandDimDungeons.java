@@ -143,11 +143,11 @@ public class CommandDimDungeons
 	DungeonGenData fakeData = new DungeonGenData();
 	if (cmd.getSource() != null)
 	{
-	    fakeData.setReturnPoint(new BlockPos(cmd.getSource().getPos().x, cmd.getSource().getPos().y + 2, cmd.getSource().getPos().z));
+	    fakeData.setReturnPoint(new BlockPos(cmd.getSource().getPos().x, cmd.getSource().getPos().y + 2, cmd.getSource().getPos().z), "minecraft:overworld");
 	}
 	else
 	{
-	    fakeData.setReturnPoint(new BlockPos(0, 100, 0));
+	    fakeData.setReturnPoint(new BlockPos(0, 100, 0), "minecraft:overworld");
 	}
 
 	// generate a fake key and use that to run the normal generation function

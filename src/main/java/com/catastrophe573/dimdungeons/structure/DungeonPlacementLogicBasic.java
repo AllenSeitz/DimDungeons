@@ -273,7 +273,7 @@ public class DungeonPlacementLogicBasic
 	    TileEntityGoldPortal te = (TileEntityGoldPortal) world.getTileEntity(pos);
 	    if (te != null)
 	    {
-		te.setDestination(genData.returnPoint.getX() + 0.5D, genData.returnPoint.getY() + 0.1D, genData.returnPoint.getZ() + 0.5D);
+		te.setDestination(genData.returnPoint.getX() + 0.5D, genData.returnPoint.getY() + 0.1D, genData.returnPoint.getZ() + 0.5D, genData.returnDimension);
 	    }
 	}
 	else if ("BackToEntrance".equals(name))

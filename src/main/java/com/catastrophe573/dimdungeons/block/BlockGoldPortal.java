@@ -197,7 +197,7 @@ public class BlockGoldPortal extends BreakableBlock
 		    te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
 		}
 
-		if (DungeonUtils.isDimensionOverworld(worldIn))
+		if (!DungeonUtils.isDimensionDungeon(worldIn))
 		{
 		    // implement hardcore mode
 		    if (DungeonConfig.hardcoreMode)
@@ -215,7 +215,7 @@ public class BlockGoldPortal extends BreakableBlock
 		    DimDungeons.logMessageInfo("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");
 		    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonUtils.getDungeonWorld(worldIn.getServer()), warpX, 55.1D, warpZ + 0.5f, 0);
 		}
-		else if (worldIn.getDimensionKey() == DungeonUtils.getDungeonWorld(worldIn.getServer()).getDimensionKey())
+		else
 		{
 		    // first check for an unassigned gold portal block
 		    if (destination.getX() == 0 && destination.getZ() == 0)
@@ -226,7 +226,7 @@ public class BlockGoldPortal extends BreakableBlock
 		    {
 			//System.out.println("Player is returning from a dungeon at (" + warpX + " " + warpY + " " + warpZ + ").");
 			ServerPlayerEntity player = (ServerPlayerEntity) entityIn;
-			actuallyPerformTeleport(player, player.getServer().getWorld(World.OVERWORLD), warpX + 0.5f, warpY + 0.5f, warpZ + 0.5f, 0);
+			actuallyPerformTeleport(player, player.getServer().getWorld(te.getDestinationDimension()), warpX + 0.5f, warpY + 0.5f, warpZ + 0.5f, 0);
 		    }
 		}
 	    }

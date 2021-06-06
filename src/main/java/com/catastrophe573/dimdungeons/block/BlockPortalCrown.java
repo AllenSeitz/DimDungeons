@@ -2,7 +2,6 @@ package com.catastrophe573.dimdungeons.block;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.WallBlock;
 import net.minecraft.block.material.Material;

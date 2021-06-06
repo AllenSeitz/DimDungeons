@@ -10,6 +10,7 @@ import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicDebug;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -189,7 +190,7 @@ public class DungeonUtils
 		TileEntityGoldPortal te = (TileEntityGoldPortal) ddim.getTileEntity(pos);
 		if (te != null)
 		{
-		    te.setDestination(genData.returnPoint.getX() + 0.5D, genData.returnPoint.getY() + 0.1D, genData.returnPoint.getZ() + 0.5D);
+		    te.setDestination(genData.returnPoint.getX() + 0.5D, genData.returnPoint.getY() + 0.1D, genData.returnPoint.getZ() + 0.5D, genData.returnDimension);
 		    //DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")");
 		}
 		else
@@ -198,5 +199,11 @@ public class DungeonUtils
 		}
 	    }
 	}
+    }
+    
+    // takes World.OVERWORLD and returns "minecraft:overworld"
+    public static String serializeDimensionKey(RegistryKey<World> dimension)
+    {
+	return dimension.getLocation().getNamespace() + ":" + dimension.getLocation().getPath();
     }
 }
