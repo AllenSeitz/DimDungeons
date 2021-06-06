@@ -303,7 +303,7 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 			try
 			{
 			    //hasLootTable = FieldUtils.readField(te, "lootTable", true) != null;
-			    hasLootTable = FieldUtils.readField(te, "field_184284_m", true) != null;
+			    hasLootTable = FieldUtils.readField(te, "lootTable", true) != null;
 			}
 			catch (IllegalAccessException e)
 			{

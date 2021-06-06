@@ -20,13 +20,15 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
+import net.minecraft.block.AbstractBlock;
+
 public class BlockLocalTeleporter extends BreakableBlock
 {
     public static String REG_NAME = "block_local_teleporter";
 
     public BlockLocalTeleporter()
     {
-	super(Block.Properties.create(Material.PORTAL).hardnessAndResistance(50).sound(SoundType.GLASS).doesNotBlockMovement().setLightLevel((p) -> 15));
+	super(AbstractBlock.Properties.create(Material.PORTAL).hardnessAndResistance(50).sound(SoundType.GLASS).doesNotBlockMovement().setLightLevel((p) -> 15));
 	setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
@@ -72,7 +74,7 @@ public class BlockLocalTeleporter extends BreakableBlock
 	    return;
 	}
 
-	if (entityIn.isNonBoss())
+	if (entityIn.canChangeDimension())
 	{
 	    TileEntity tile = worldIn.getTileEntity(pos);
 

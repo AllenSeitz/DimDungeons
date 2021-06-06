@@ -28,14 +28,14 @@ import net.minecraft.world.biome.provider.SingleBiomeProvider;
 
 public final class DungeonChunkGenerator extends ChunkGenerator
 {
-    public static final Codec<DungeonChunkGenerator> myCodec = FlatGenerationSettings.field_236932_a_.fieldOf("settings").xmap(DungeonChunkGenerator::new, DungeonChunkGenerator::func_236073_g_).codec();
-    private final FlatGenerationSettings field_236070_e_;
+    public static final Codec<DungeonChunkGenerator> myCodec = FlatGenerationSettings.field_236932_a_.fieldOf("settings").xmap(DungeonChunkGenerator::new, DungeonChunkGenerator::getSettings).codec();
+    private final FlatGenerationSettings settings;
     private long worldSeed = 0;
 
-    public DungeonChunkGenerator(FlatGenerationSettings p_i231902_1_)
+    public DungeonChunkGenerator(FlatGenerationSettings settings)
     {
-	super(new SingleBiomeProvider(p_i231902_1_.getBiome()), new SingleBiomeProvider(p_i231902_1_.getBiome()), p_i231902_1_.func_236943_d_(), 0L);	
-	this.field_236070_e_ = p_i231902_1_;
+	super(new SingleBiomeProvider(settings.getBiome()), new SingleBiomeProvider(settings.getBiome()), settings.func_236943_d_(), 0L);	
+	this.settings = settings;
     }
 
     protected Codec<? extends ChunkGenerator> func_230347_a_()
@@ -50,9 +50,9 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	return this;
     }
 
-    public FlatGenerationSettings func_236073_g_()
+    public FlatGenerationSettings getSettings()
     {
-	return this.field_236070_e_;
+	return this.settings;
     }
 
     @SuppressWarnings("deprecation")
@@ -71,7 +71,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
     public void func_230351_a_(WorldGenRegion p_230351_1_, StructureManager p_230351_2_)
     {
 	// in vanilla this function basically does this:
-	//biome.func_242427_a(p_230351_2_, this, p_230351_1_, i1, sharedseedrandom, blockpos);
+	//biome.generateFeatures(p_230351_2_, this, p_230351_1_, i1, sharedseedrandom, blockpos);
     }
 
     @Override
@@ -82,7 +82,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 
     public int getGroundHeight()
     {
-	BlockState[] ablockstate = this.field_236070_e_.getStates();
+	BlockState[] ablockstate = this.settings.getStates();
 
 	for (int i = 0; i < ablockstate.length; ++i)
 	{
@@ -98,7 +98,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 
     public void func_230352_b_(IWorld p_230352_1_, StructureManager p_230352_2_, IChunk p_230352_3_)
     {
-	BlockState[] ablockstate = this.field_236070_e_.getStates();
+	BlockState[] ablockstate = this.settings.getStates();
 	BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
 	Heightmap heightmap = p_230352_3_.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
 	Heightmap heightmap1 = p_230352_3_.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
@@ -124,7 +124,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 
     public int getHeight(int x, int z, Heightmap.Type heightmapType)
     {
-	BlockState[] ablockstate = this.field_236070_e_.getStates();
+	BlockState[] ablockstate = this.settings.getStates();
 
 	for (int i = ablockstate.length - 1; i >= 0; --i)
 	{
@@ -140,12 +140,12 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 
     public IBlockReader func_230348_a_(int p_230348_1_, int p_230348_2_)
     {
-	return new Blockreader(Arrays.stream(this.field_236070_e_.getStates()).map((p_236072_0_) ->
+	return new Blockreader(Arrays.stream(this.settings.getStates()).map((state) ->
 	{
-	    return p_236072_0_ == null ? Blocks.AIR.getDefaultState() : p_236072_0_;
-	}).toArray((p_236071_0_) ->
+	    return state == null ? Blocks.AIR.getDefaultState() : state;
+	}).toArray((size) ->
 	{
-	    return new BlockState[p_236071_0_];
+	    return new BlockState[size];
 	}));
     }
 

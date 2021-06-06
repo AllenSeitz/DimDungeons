@@ -49,7 +49,7 @@ public class ItemGuidebook extends Item
 	    ((TranslationTextComponent) text2b).mergeStyle(TextFormatting.AQUA);
 	    ((TranslationTextComponent) text2c).mergeStyle(TextFormatting.WHITE);
 	    ((TranslationTextComponent) text2d).mergeStyle(TextFormatting.WHITE);
-	    playerIn.sendMessage(((TranslationTextComponent) text2a).append(text2b).append(text2c).append(text2d), Util.DUMMY_UUID);
+	    playerIn.sendMessage(((TranslationTextComponent) text2a).appendSibling(text2b).appendSibling(text2c).appendSibling(text2d), Util.DUMMY_UUID);
 	}
 	else
 	{

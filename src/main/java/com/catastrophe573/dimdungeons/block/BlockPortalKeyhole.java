@@ -48,6 +48,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 
+import net.minecraft.block.AbstractBlock;
+
 public class BlockPortalKeyhole extends Block
 {
     public static final DirectionProperty FACING = HorizontalBlock.HORIZONTAL_FACING;
@@ -58,7 +60,7 @@ public class BlockPortalKeyhole extends Block
 
     public BlockPortalKeyhole()
     {
-	super(Block.Properties.create(Material.PORTAL).hardnessAndResistance(2).sound(SoundType.METAL));
+	super(AbstractBlock.Properties.create(Material.PORTAL).hardnessAndResistance(2).sound(SoundType.METAL));
 	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
 	this.setDefaultState(getMyCustomDefaultState());
     }

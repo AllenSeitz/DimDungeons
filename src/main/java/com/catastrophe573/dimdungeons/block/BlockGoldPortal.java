@@ -48,6 +48,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 //import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
+import net.minecraft.block.AbstractBlock;
+
 public class BlockGoldPortal extends BreakableBlock
 {
     public static String REG_NAME = "block_gold_portal";
@@ -58,7 +60,7 @@ public class BlockGoldPortal extends BreakableBlock
 
     public BlockGoldPortal()
     {
-	super(Block.Properties.create(Material.PORTAL).hardnessAndResistance(50).sound(SoundType.GLASS).doesNotBlockMovement().setLightLevel((p) -> 15));
+	super(AbstractBlock.Properties.create(Material.PORTAL).hardnessAndResistance(50).sound(SoundType.GLASS).doesNotBlockMovement().setLightLevel((p) -> 15));
 	setRegistryName(DimDungeons.MOD_ID, REG_NAME);
 	this.setDefaultState(this.stateContainer.getBaseState().with(AXIS, Direction.Axis.X));
     }
@@ -161,7 +163,7 @@ public class BlockGoldPortal extends BreakableBlock
 	    return;
 	}
 
-	if (!entityIn.isPassenger() && !entityIn.isBeingRidden() && entityIn.isNonBoss())
+	if (!entityIn.isPassenger() && !entityIn.isBeingRidden() && entityIn.canChangeDimension())
 	{
 	    //DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
 
