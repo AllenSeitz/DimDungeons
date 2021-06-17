@@ -32,10 +32,12 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tileentity.BannerPattern;
 //import net.minecraft.tileentity.BannerTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
@@ -47,7 +49,6 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 //import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-
 import net.minecraft.block.AbstractBlock;
 
 public class BlockGoldPortal extends BreakableBlock
@@ -368,7 +369,7 @@ public class BlockGoldPortal extends BreakableBlock
 
     static public boolean isValidPortalFrameBlock(Block b)
     {
-	return b == Blocks.STONE_BRICKS || b == Blocks.CRACKED_STONE_BRICKS || b == Blocks.MOSSY_STONE_BRICKS || b == Blocks.CHISELED_STONE_BRICKS;
+	return b.isIn(BlockTags.getCollection().getTagByID(new ResourceLocation(DimDungeons.MOD_ID, "dimdungeons_portal_frame_blocks")));
     }
 
     // just get the block states and keep it simple
