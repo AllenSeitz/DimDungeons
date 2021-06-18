@@ -21,7 +21,7 @@ public class DungeonUtils
     // World.OVERWORLD is the Overworld. This block has different behavior in the Overworld than in the Dungeon Dimension
     public static boolean isDimensionOverworld(World worldIn)
     {
-	return worldIn.getDimensionKey() == World.OVERWORLD;
+	return worldIn.dimension() == World.OVERWORLD;
     }
 
     // this is the best idea I have for unmapped 1.16.1
@@ -32,20 +32,20 @@ public class DungeonUtils
 	    DimDungeons.logMessageError("FATAL ERROR: This 1.16 port is still broken.");
 	    return false;
 	}
-	return worldIn.getDimensionKey().getLocation().getPath() == DimDungeons.dungeon_basic_regname;
+	return worldIn.dimension().location().getPath() == DimDungeons.dungeon_basic_regname;
     }
 
     // this is used by the dungeon building logic
     public static ServerWorld getDungeonWorld(MinecraftServer server)
     {
-	return server.getWorld(DimDungeons.DUNGEON_DIMENSION);
+	return server.getLevel(DimDungeons.DUNGEON_DIMENSION);
     }
 
     // now returns true if a dungeon was built
     public static boolean buildDungeon(World worldIn, DungeonGenData genData)
     {
 	// only build dungeons on the server
-	if (worldIn.isRemote)
+	if (worldIn.isClientSide)
 	{
 	    return false;
 	}
@@ -70,9 +70,9 @@ public class DungeonUtils
 	    return false;
 	}
 
-	if (genData.keyItem.hasDisplayName() && DungeonConfig.enableDebugCheats)
+	if (genData.keyItem.hasCustomHoverName() && DungeonConfig.enableDebugCheats)
 	{
-	    String name = genData.keyItem.getDisplayName().getUnformattedComponentText();
+	    String name = genData.keyItem.getHoverName().getContents();
 	    if (name.contentEquals("DebugOne"))
 	    {
 		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 1, genData);
@@ -187,7 +187,7 @@ public class DungeonUtils
 	    {
 		BlockPos pos = new BlockPos(entranceX - x, y, entranceZ + zoffset);
 
-		TileEntityGoldPortal te = (TileEntityGoldPortal) ddim.getTileEntity(pos);
+		TileEntityGoldPortal te = (TileEntityGoldPortal) ddim.getBlockEntity(pos);
 		if (te != null)
 		{
 		    te.setDestination(genData.returnPoint.getX() + 0.5D, genData.returnPoint.getY() + 0.1D, genData.returnPoint.getZ() + 0.5D, genData.returnDimension);
@@ -204,6 +204,6 @@ public class DungeonUtils
     // takes World.OVERWORLD and returns "minecraft:overworld"
     public static String serializeDimensionKey(RegistryKey<World> dimension)
     {
-	return dimension.getLocation().getNamespace() + ":" + dimension.getLocation().getPath();
+	return dimension.location().getNamespace() + ":" + dimension.location().getPath();
     }
 }

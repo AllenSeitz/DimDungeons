@@ -17,6 +17,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.FlatChunkGenerator;
 import net.minecraft.world.gen.FlatGenerationSettings;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.Heightmap;
@@ -28,39 +29,39 @@ import net.minecraft.world.biome.provider.SingleBiomeProvider;
 
 public final class DungeonChunkGenerator extends ChunkGenerator
 {
-    public static final Codec<DungeonChunkGenerator> myCodec = FlatGenerationSettings.CODEC.fieldOf("settings").xmap(DungeonChunkGenerator::new, DungeonChunkGenerator::getSettings).codec();
-    private final FlatGenerationSettings settings;
+    public static final Codec<FlatChunkGenerator> myCodec = FlatGenerationSettings.CODEC.fieldOf("settings").xmap(FlatChunkGenerator::new, FlatChunkGenerator::settings).codec();
+    private final FlatGenerationSettings settings;        
     private long worldSeed = 0;
 
     public DungeonChunkGenerator(FlatGenerationSettings settings)
     {
-	super(new SingleBiomeProvider(settings.getBiome()), new SingleBiomeProvider(settings.getBiome()), settings.func_236943_d_(), 0L);	
+	super(new SingleBiomeProvider(settings.getBiome()), new SingleBiomeProvider(settings.getBiome()), settings.structureSettings(), 0L);	
 	this.settings = settings;
     }
 
-    protected Codec<? extends ChunkGenerator> func_230347_a_()
+    protected Codec<? extends ChunkGenerator> codec()
     {
 	return myCodec;
     }
 
     @OnlyIn(Dist.CLIENT)
-    public ChunkGenerator func_230349_a_(long p_230349_1_)
+    public ChunkGenerator withSeed(long p_230349_1_)
     {
 	worldSeed = p_230349_1_;
 	return this;
     }
 
-    public FlatGenerationSettings getSettings()
+    public FlatGenerationSettings settings()
     {
 	return this.settings;
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public void generateSurface(WorldGenRegion p_225551_1_, IChunk p_225551_2_)
+    public void buildSurfaceAndBedrock(WorldGenRegion p_225551_1_, IChunk p_225551_2_)
     {
 	// generate my sandstone base and void chunks, which usually don't matter at all but might as well
-	ServerWorld world = p_225551_1_.getWorld();
+	ServerWorld world = p_225551_1_.getLevel();
 	makeBase(world, p_225551_2_);
 
 	// and intentionally do nothing with structures
@@ -68,7 +69,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 
     // is this decorate()?
     @Override
-    public void func_230351_a_(WorldGenRegion p_230351_1_, StructureManager p_230351_2_)
+    public void applyBiomeDecoration(WorldGenRegion p_230351_1_, StructureManager p_230351_2_)
     {
 	// in vanilla this function basically does this:
 	//biome.generateFeatures(p_230351_2_, this, p_230351_1_, i1, sharedseedrandom, blockpos);
@@ -76,18 +77,18 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 
     @Override
     // I think this is Carve()
-    public void func_230350_a_(long p_230350_1_, BiomeManager p_230350_3_, IChunk p_230350_4_, GenerationStage.Carving p_230350_5_)
+    public void applyCarvers(long p_230350_1_, BiomeManager p_230350_3_, IChunk p_230350_4_, GenerationStage.Carving p_230350_5_)
     {
     }
 
-    public int getGroundHeight()
+    public int getSpawnHeight()
     {
-	BlockState[] ablockstate = this.settings.getStates();
+	BlockState[] ablockstate = this.settings.getLayers();
 
 	for (int i = 0; i < ablockstate.length; ++i)
 	{
-	    BlockState blockstate = ablockstate[i] == null ? Blocks.AIR.getDefaultState() : ablockstate[i];
-	    if (!Heightmap.Type.MOTION_BLOCKING.getHeightLimitPredicate().test(blockstate))
+	    BlockState blockstate = ablockstate[i] == null ? Blocks.AIR.defaultBlockState() : ablockstate[i];
+	    if (!Heightmap.Type.MOTION_BLOCKING.isOpaque().test(blockstate))
 	    {
 		return i - 1;
 	    }
@@ -96,12 +97,12 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	return ablockstate.length;
     }
 
-    public void func_230352_b_(IWorld p_230352_1_, StructureManager p_230352_2_, IChunk p_230352_3_)
+    public void fillFromNoise(IWorld p_230352_1_, StructureManager p_230352_2_, IChunk p_230352_3_)
     {
-	BlockState[] ablockstate = this.settings.getStates();
+	BlockState[] ablockstate = this.settings.getLayers();
 	BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
-	Heightmap heightmap = p_230352_3_.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
-	Heightmap heightmap1 = p_230352_3_.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
+	Heightmap heightmap = p_230352_3_.getOrCreateHeightmapUnprimed(Heightmap.Type.OCEAN_FLOOR_WG);
+	Heightmap heightmap1 = p_230352_3_.getOrCreateHeightmapUnprimed(Heightmap.Type.WORLD_SURFACE_WG);
 
 	for (int i = 0; i < ablockstate.length; ++i)
 	{
@@ -112,7 +113,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 		{
 		    for (int k = 0; k < 16; ++k)
 		    {
-			p_230352_3_.setBlockState(blockpos$mutable.setPos(j, i, k), blockstate, false);
+			p_230352_3_.setBlockState(blockpos$mutable.set(j, i, k), blockstate, false);
 			heightmap.update(j, i, k, blockstate);
 			heightmap1.update(j, i, k, blockstate);
 		    }
@@ -122,14 +123,14 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 
     }
 
-    public int getHeight(int x, int z, Heightmap.Type heightmapType)
+    public int getBaseHeight(int x, int z, Heightmap.Type heightmapType)
     {
-	BlockState[] ablockstate = this.settings.getStates();
+	BlockState[] ablockstate = this.settings.getLayers();
 
 	for (int i = ablockstate.length - 1; i >= 0; --i)
 	{
 	    BlockState blockstate = ablockstate[i];
-	    if (blockstate != null && heightmapType.getHeightLimitPredicate().test(blockstate))
+	    if (blockstate != null && heightmapType.isOpaque().test(blockstate))
 	    {
 		return i + 1;
 	    }
@@ -138,11 +139,11 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	return 0;
     }
 
-    public IBlockReader func_230348_a_(int p_230348_1_, int p_230348_2_)
+    public IBlockReader getBaseColumn(int p_230348_1_, int p_230348_2_)
     {
-	return new Blockreader(Arrays.stream(this.settings.getStates()).map((state) ->
+	return new Blockreader(Arrays.stream(this.settings.getLayers()).map((state) ->
 	{
-	    return state == null ? Blocks.AIR.getDefaultState() : state;
+	    return state == null ? Blocks.AIR.defaultBlockState() : state;
 	}).toArray((size) ->
 	{
 	    return new BlockState[size];
@@ -170,18 +171,18 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 		    {
 			if (py < 2)
 			{
-			    chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BEDROCK.getDefaultState(), false);
+			    chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BEDROCK.defaultBlockState(), false);
 			}
 			else if (py < 50)
 			{
 			    // for debugging mostly but it also kind of looks good when you're in creative mode
 			    if (DungeonPlacementLogicBasic.isEntranceChunk(x, z) || DungeonPlacementLogicAdvanced.isEntranceChunk(x, z))
 			    {
-				chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.GRANITE.getDefaultState(), false);
+				chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.GRANITE.defaultBlockState(), false);
 			    }
 			    else
 			    {
-				chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.SANDSTONE.getDefaultState(), false);
+				chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.SANDSTONE.defaultBlockState(), false);
 			    }
 			}
 		    }
@@ -199,7 +200,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 		    {
 			for (int pz = 0; pz < 16; pz++)
 			{
-			    chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BARRIER.getDefaultState(), false);
+			    chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BARRIER.defaultBlockState(), false);
 			}
 		    }
 		}

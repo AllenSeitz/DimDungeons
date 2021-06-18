@@ -133,31 +133,31 @@ public class DungeonPlacementLogicBasic
     {
 	ChunkPos cpos = new ChunkPos((int) x, (int) z);
 	MinecraftServer minecraftserver = ((World) world).getServer();
-	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureTemplateManager();
+	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
-	Template template = templatemanager.getTemplate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "basic_template"));
-	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunk(cpos);
+	Template template = templatemanager.get(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "basic_template"));
+	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunkPos(cpos);
 	placementsettings.setBoundingBox(placementsettings.getBoundingBox());
 	placementsettings.setRotation(Rotation.NONE);
-	BlockPos position = new BlockPos(cpos.getXStart(), 50, cpos.getZStart());
+	BlockPos position = new BlockPos(cpos.getMinBlockX(), 50, cpos.getMinBlockZ());
 	BlockPos sizeRange = new BlockPos(16, 13, 16);
 
 	// I assume this function is addBlocksToWorld()	
-	template.func_237146_a_((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
+	template.placeInWorld((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
     }
 
     // used by the place() function to actually place rooms
     public static boolean putRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room, DungeonGenData genData)
     {
 	MinecraftServer minecraftserver = ((World) world).getServer();
-	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureTemplateManager();
+	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
-	Template template = templatemanager.getTemplate(new ResourceLocation(room.structure));
-	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunk(cpos);
+	Template template = templatemanager.get(new ResourceLocation(room.structure));
+	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunkPos(cpos);
 	placementsettings.setBoundingBox(placementsettings.getBoundingBox());
 
 	placementsettings.setRotation(room.rotation);
-	BlockPos position = new BlockPos(cpos.getXStart(), 50, cpos.getZStart());
+	BlockPos position = new BlockPos(cpos.getMinBlockX(), 50, cpos.getMinBlockZ());
 	BlockPos sizeRange = new BlockPos(16, 13, 16);
 
 	if (template == null)
@@ -171,19 +171,19 @@ public class DungeonPlacementLogicBasic
 	{
 	    // west: rotate CCW and push +Z
 	    placementsettings.setRotation(Rotation.COUNTERCLOCKWISE_90);
-	    position = position.add(0, 0, template.getSize().getZ() - 1);
+	    position = position.offset(0, 0, template.getSize().getZ() - 1);
 	}
 	else if (room.rotation == Rotation.CLOCKWISE_90)
 	{
 	    // east rotate CW and push +X
 	    placementsettings.setRotation(Rotation.CLOCKWISE_90);
-	    position = position.add(template.getSize().getX() - 1, 0, 0);
+	    position = position.offset(template.getSize().getX() - 1, 0, 0);
 	}
 	else if (room.rotation == Rotation.CLOCKWISE_180)
 	{
 	    // south: rotate 180 and push both +X and +Z
 	    placementsettings.setRotation(Rotation.CLOCKWISE_180);
-	    position = position.add(template.getSize().getX() - 1, 0, template.getSize().getZ() - 1);
+	    position = position.offset(template.getSize().getX() - 1, 0, template.getSize().getZ() - 1);
 	}
 	else //if (nextRoom.rotation == Rotation.NONE)
 	{
@@ -193,12 +193,12 @@ public class DungeonPlacementLogicBasic
 
 	// formerly: call Template.addBlocksToWorld()
 	DimDungeons.logMessageInfo("Placing a room: " + room.structure);
-	boolean success = template.func_237146_a_((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
+	boolean success = template.placeInWorld((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
 
 	// handle data blocks - this code block is copied from TemplateStructurePiece
 	//Map<BlockPos, String> map = template.getDataBlocks(position, placementsettings); // 1.12 / 1.13 version
-	//List<Template.BlockInfo> dblocks = template.func_215386_a(position, placementsettings, Blocks.STRUCTURE_BLOCK, true); // my old 1.14.2 method
-	for (Template.BlockInfo template$blockinfo : template.func_215381_a(position, placementsettings, Blocks.STRUCTURE_BLOCK))
+	//List<Template.BlockInfo> dblocks = template.filterBlocks(position, placementsettings, Blocks.STRUCTURE_BLOCK, true); // my old 1.14.2 method
+	for (Template.BlockInfo template$blockinfo : template.filterBlocks(position, placementsettings, Blocks.STRUCTURE_BLOCK))
 	{
 	    if (template$blockinfo.nbt != null)
 	    {
@@ -269,8 +269,8 @@ public class DungeonPlacementLogicBasic
 
 	if ("ReturnPortal".equals(name))
 	{
-	    world.setBlockState(pos, BlockRegistrar.block_gold_portal.getDefaultState(), 2); // erase this data block
-	    TileEntityGoldPortal te = (TileEntityGoldPortal) world.getTileEntity(pos);
+	    world.setBlock(pos, BlockRegistrar.block_gold_portal.defaultBlockState(), 2); // erase this data block
+	    TileEntityGoldPortal te = (TileEntityGoldPortal) world.getBlockEntity(pos);
 	    if (te != null)
 	    {
 		te.setDestination(genData.returnPoint.getX() + 0.5D, genData.returnPoint.getY() + 0.1D, genData.returnPoint.getZ() + 0.5D, genData.returnDimension);
@@ -278,8 +278,8 @@ public class DungeonPlacementLogicBasic
 	}
 	else if ("BackToEntrance".equals(name))
 	{
-	    world.setBlockState(pos, BlockRegistrar.block_local_teleporter.getDefaultState(), 2); // erase this data block
-	    TileEntityLocalTeleporter te = (TileEntityLocalTeleporter) world.getTileEntity(pos);
+	    world.setBlock(pos, BlockRegistrar.block_local_teleporter.defaultBlockState(), 2); // erase this data block
+	    TileEntityLocalTeleporter te = (TileEntityLocalTeleporter) world.getBlockEntity(pos);
 	    if (te != null)
 	    {
 		ItemPortalKey key = (ItemPortalKey) genData.keyItem.getItem();
@@ -290,7 +290,7 @@ public class DungeonPlacementLogicBasic
 	}
 	else if ("LockItStoneBrick".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), 2); // erase this data block 
+	    world.setBlock(pos, Blocks.STONE_BRICKS.defaultBlockState(), 2); // erase this data block 
 	}
 	else if ("LockIt".equals(name))
 	{
@@ -298,16 +298,16 @@ public class DungeonPlacementLogicBasic
 	}
 	else if ("FortuneTeller".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), 2); // erase this data block 
-	    faceContainerTowardsAir(world, pos.down());
+	    world.setBlock(pos, Blocks.STONE_BRICKS.defaultBlockState(), 2); // erase this data block 
+	    faceContainerTowardsAir(world, pos.below());
 
 	    // put a message inside the dispenser
-	    TileEntity te = world.getTileEntity(pos.down());
+	    TileEntity te = world.getBlockEntity(pos.below());
 	    if (te instanceof DispenserTileEntity)
 	    {
-		((DispenserTileEntity) te).clear();
+		((DispenserTileEntity) te).clearContent();
 		ItemStack message = generateLuckyMessage(rand);
-		((DispenserTileEntity) te).addItemStack(message);
+		((DispenserTileEntity) te).addItem(message);
 	    }
 	    else
 	    {
@@ -341,14 +341,14 @@ public class DungeonPlacementLogicBasic
 		    }
 		}
 
-		world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block 
-		world.setBlockState(pos.down(), Blocks.AIR.getDefaultState(), 2); // and erase the chest below it
+		world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block 
+		world.setBlock(pos.below(), Blocks.AIR.defaultBlockState(), 2); // and erase the chest below it
 	    }
 	}
 	else if ("SetTrappedLoot".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	    LockableLootTileEntity.setLootTable(world, rand, pos.down(), new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_basic_easy"));
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+	    LockableLootTileEntity.setLootTable(world, rand, pos.below(), new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_basic_easy"));
 	}
 	else if ("BarrelLoot1".equals(name))
 	{
@@ -356,8 +356,8 @@ public class DungeonPlacementLogicBasic
 	}
 	else if ("PlaceL2Key".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	    TileEntityPortalKeyhole te = (TileEntityPortalKeyhole) world.getTileEntity(pos.down());
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+	    TileEntityPortalKeyhole te = (TileEntityPortalKeyhole) world.getBlockEntity(pos.below());
 	    if (te != null)
 	    {
 		ItemStack key = te.getObjectInserted();
@@ -370,22 +370,22 @@ public class DungeonPlacementLogicBasic
 	}
 	else if ("SummonWitch".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 	    spawnEnemyHere(pos, "minecraft:witch", world);
 	}
 	else if ("SummonWaterEnemy".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 	    spawnEnemyHere(pos, "minecraft:guardian", world);
 	}
 	else if ("SummonEnderman".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 	    spawnEnemyHere(pos, "minecraft:enderman", world);
 	}
 	else if ("SummonEnemy1".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 
 	    int poolSize = DungeonConfig.basicEnemySet1.size();
 	    String mobid = DungeonConfig.basicEnemySet1.get(rand.nextInt(poolSize));
@@ -394,7 +394,7 @@ public class DungeonPlacementLogicBasic
 	}
 	else if ("SummonEnemy2".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 
 	    int poolSize = DungeonConfig.basicEnemySet2.size();
 	    String mobid = DungeonConfig.basicEnemySet2.get(rand.nextInt(poolSize));
@@ -404,25 +404,25 @@ public class DungeonPlacementLogicBasic
 	else
 	{
 	    DimDungeons.logMessageWarn("UNHANDLED DATA BLOCK WITH name = " + name);
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 	}
     }
 
     private static void spawnEnemyHere(BlockPos pos, String resourceLocation, IWorld world)
     {
-	EntityType<?> entitytype = EntityType.byKey(resourceLocation).orElse(EntityType.CHICKEN);
+	EntityType<?> entitytype = EntityType.byString(resourceLocation).orElse(EntityType.CHICKEN);
 
 	Entity mob = entitytype.spawn((ServerWorld) world, null, null, pos, SpawnReason.STRUCTURE, true, true);
 
 	TranslationTextComponent fancyName = new TranslationTextComponent("enemy.dimdungeons." + resourceLocation);
 	mob.setCustomName(fancyName);
-	mob.moveToBlockPosAndAngles(pos, 0.0F, 0.0F);
+	mob.moveTo(pos, 0.0F, 0.0F);
 
 	if (mob instanceof MobEntity)
 	{
 	    ((MobEntity) mob).setCanPickUpLoot(false);
-	    ((MobEntity) mob).setHomePosAndDistance(pos, 8);
-	    ((MobEntity) mob).enablePersistence();
+	    ((MobEntity) mob).restrictTo(pos, 8);
+	    ((MobEntity) mob).setPersistenceRequired();
 
 	    // health scaling
 	    float healthScaling = DungeonConfig.basicEnemyHealthScaling;
@@ -437,12 +437,12 @@ public class DungeonPlacementLogicBasic
 
     private static void fillChestBelow(BlockPos pos, ResourceLocation lootTable, IWorld world, Random rand)
     {
-	world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	faceContainerTowardsAir(world, pos.down());
+	world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+	faceContainerTowardsAir(world, pos.below());
 
 	// set the loot table
-	LockableLootTileEntity.setLootTable(world, rand, pos.down(), lootTable);
-	if (!(world.getTileEntity(pos.down()) instanceof ChestTileEntity))
+	LockableLootTileEntity.setLootTable(world, rand, pos.below(), lootTable);
+	if (!(world.getBlockEntity(pos.below()) instanceof ChestTileEntity))
 	{
 	    DimDungeons.logMessageWarn("DIMDUNGEONS: FAILED TO PLACE CHEST IN DUNGEON. pos = " + pos.getX() + ", " + pos.getZ());
 	}
@@ -450,11 +450,11 @@ public class DungeonPlacementLogicBasic
 
     private static void fillBarrelBelow(BlockPos pos, ResourceLocation lootTable, IWorld world, Random rand)
     {
-	world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 
 	// set the loot table
-	LockableLootTileEntity.setLootTable(world, rand, pos.down(), lootTable);
-	if (!(world.getTileEntity(pos.down()) instanceof BarrelTileEntity))
+	LockableLootTileEntity.setLootTable(world, rand, pos.below(), lootTable);
+	if (!(world.getBlockEntity(pos.below()) instanceof BarrelTileEntity))
 	{
 	    DimDungeons.logMessageWarn("DIMDUNGEONS: FAILED TO PLACE BARREL IN DUNGEON. pos = " + pos.getX() + ", " + pos.getZ());
 	}
@@ -537,7 +537,7 @@ public class DungeonPlacementLogicBasic
 	    {
 		//bs.with(DispenserBlock.FACING, Direction.EAST);
 	    }
-	    world.setBlockState(pos, bs, 2);
+	    world.setBlock(pos, bs, 2);
 	}
     }
 
@@ -550,14 +550,14 @@ public class DungeonPlacementLogicBasic
 	    return; // fail safe
 	}
 
-	mob = (MobEntity) EntityType.byKey("artifacts:mimic").get().create((World) world);
-	mob.setPosition(pos.getX(), pos.getY(), pos.getZ());
+	mob = (MobEntity) EntityType.byString("artifacts:mimic").get().create((World) world);
+	mob.setPos(pos.getX(), pos.getY(), pos.getZ());
 
 	mob.setCanPickUpLoot(false);
-	mob.moveToBlockPosAndAngles(pos, 0.0F, 0.0F);
-	mob.enablePersistence();
+	mob.moveTo(pos, 0.0F, 0.0F);
+	mob.setPersistenceRequired();
 
-	mob.onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
-	world.addEntity(mob);
+	mob.finalizeSpawn((IServerWorld) world, world.getCurrentDifficultyAt(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
+	world.addFreshEntity(mob);
     }
 }

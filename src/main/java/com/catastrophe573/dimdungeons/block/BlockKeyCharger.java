@@ -14,11 +14,11 @@ import net.minecraft.block.AbstractBlock;
 
 public class BlockKeyCharger extends Block
 {
-    protected static final VoxelShape BASE_SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 13.0D, 16.0D);
+    protected static final VoxelShape BASE_SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 13.0D, 16.0D);
 
     public BlockKeyCharger()
     {
-	super(AbstractBlock.Properties.create(Material.GLASS).hardnessAndResistance(10).sound(SoundType.METAL));
+	super(AbstractBlock.Properties.of(Material.GLASS).strength(10).sound(SoundType.METAL));
     }
 
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
@@ -27,7 +27,7 @@ public class BlockKeyCharger extends Block
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState iBlockState)
+    public BlockRenderType getRenderShape(BlockState iBlockState)
     {
 	return BlockRenderType.MODEL;
     }

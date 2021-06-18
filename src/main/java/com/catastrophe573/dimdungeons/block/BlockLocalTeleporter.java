@@ -28,13 +28,13 @@ public class BlockLocalTeleporter extends BreakableBlock
 
     public BlockLocalTeleporter()
     {
-	super(AbstractBlock.Properties.create(Material.PORTAL).hardnessAndResistance(50).sound(SoundType.GLASS).doesNotBlockMovement().setLightLevel((p) -> 15));
+	super(AbstractBlock.Properties.of(Material.PORTAL).strength(50).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
 	setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
     // Called by ItemBlocks after a block is set in the world, to allow post-place logic
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
+    public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
     {
     }
 
@@ -46,24 +46,24 @@ public class BlockLocalTeleporter extends BreakableBlock
     // called by getItemsToDropCount() to determine what BlockItem or Item to drop
     // in this case, do not allow the player to obtain this block as an item
     @Override
-    public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state)
+    public ItemStack getCloneItemStack(IBlockReader worldIn, BlockPos pos, BlockState state)
     {
 	return ItemStack.EMPTY;
     }
 
     @Deprecated
     @Override
-    public boolean isTransparent(BlockState state)
+    public boolean useShapeForLightOcclusion(BlockState state)
     {
 	return true;
     }
 
     // called When an entity collides with the Block
     @Override
-    public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn)
+    public void entityInside(BlockState state, World worldIn, BlockPos pos, Entity entityIn)
     {
 	// do not process this block on the client
-	if (worldIn.isRemote)
+	if (worldIn.isClientSide)
 	{
 	    return;
 	}
@@ -74,13 +74,13 @@ public class BlockLocalTeleporter extends BreakableBlock
 	    return;
 	}
 
-	if (entityIn.canChangeDimension())
+	if (entityIn.canChangeDimensions())
 	{
-	    TileEntity tile = worldIn.getTileEntity(pos);
+	    TileEntity tile = worldIn.getBlockEntity(pos);
 
 	    if (tile != null && tile instanceof TileEntityLocalTeleporter)
 	    {
-		TileEntityLocalTeleporter te = (TileEntityLocalTeleporter) worldIn.getTileEntity(pos);
+		TileEntityLocalTeleporter te = (TileEntityLocalTeleporter) worldIn.getBlockEntity(pos);
 
 		BlockPos destination = te.getDestination();
 		float warpX = destination.getX();
@@ -89,7 +89,7 @@ public class BlockLocalTeleporter extends BreakableBlock
 		float newPitch = (float)te.getPitch();
 		float newYaw = (float)te.getYaw();
 		
-		actuallyPerformTeleport((ServerPlayerEntity) entityIn, worldIn.getServer().getWorld(entityIn.getEntityWorld().getDimensionKey()), warpX, warpY, warpZ, newYaw, newPitch);
+		actuallyPerformTeleport((ServerPlayerEntity) entityIn, worldIn.getServer().getLevel(entityIn.getCommandSenderWorld().dimension()), warpX, warpY, warpZ, newYaw, newPitch);
 	    }
 	}
     }

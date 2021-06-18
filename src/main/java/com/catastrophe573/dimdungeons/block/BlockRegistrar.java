@@ -40,12 +40,12 @@ public class BlockRegistrar
     // this is called by the ItemRegistrar
     public static void registerAllItemBlocks(RegistryEvent.Register<Item> event)
     {
-	event.getRegistry().register(new BlockItem(block_gilded_portal, new Item.Properties().group(ItemRegistrar.CREATIVE_TAB)).setRegistryName(block_gilded_portal.getRegistryName()));
+	event.getRegistry().register(new BlockItem(block_gilded_portal, new Item.Properties().tab(ItemRegistrar.CREATIVE_TAB)).setRegistryName(block_gilded_portal.getRegistryName()));
 	event.getRegistry().register(new BlockItem(block_gold_portal, new Item.Properties()).setRegistryName(block_gold_portal.getRegistryName()));
 	event.getRegistry().register(new BlockItem(block_local_teleporter, new Item.Properties()).setRegistryName(block_local_teleporter.getRegistryName()));
-	event.getRegistry().register(new BlockItem(block_portal_keyhole, new Item.Properties().group(ItemRegistrar.CREATIVE_TAB)).setRegistryName(block_portal_keyhole.getRegistryName()));
-	event.getRegistry().register(new BlockItem(block_portal_crown, new Item.Properties().group(ItemRegistrar.CREATIVE_TAB)).setRegistryName(block_portal_crown.getRegistryName()));
-	event.getRegistry().register(new BlockItem(block_key_charger, new Item.Properties().group(ItemRegistrar.CREATIVE_TAB)).setRegistryName(block_key_charger.getRegistryName()));
+	event.getRegistry().register(new BlockItem(block_portal_keyhole, new Item.Properties().tab(ItemRegistrar.CREATIVE_TAB)).setRegistryName(block_portal_keyhole.getRegistryName()));
+	event.getRegistry().register(new BlockItem(block_portal_crown, new Item.Properties().tab(ItemRegistrar.CREATIVE_TAB)).setRegistryName(block_portal_crown.getRegistryName()));
+	event.getRegistry().register(new BlockItem(block_key_charger, new Item.Properties().tab(ItemRegistrar.CREATIVE_TAB)).setRegistryName(block_key_charger.getRegistryName()));
 	event.getRegistry().register(new BlockItem(block_key_charger_used, new Item.Properties()).setRegistryName(block_key_charger_used.getRegistryName()));
 	event.getRegistry().register(new BlockItem(block_key_charger_damaged, new Item.Properties()).setRegistryName(block_key_charger_damaged.getRegistryName()));
     }

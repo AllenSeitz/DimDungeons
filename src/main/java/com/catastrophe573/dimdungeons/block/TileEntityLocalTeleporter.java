@@ -35,9 +35,9 @@ public class TileEntityLocalTeleporter extends TileEntity
     }
 
     @Override
-    public void read(BlockState stateIn, CompoundNBT compound)
+    public void load(BlockState stateIn, CompoundNBT compound)
     {
-	super.read(stateIn, compound);
+	super.load(stateIn, compound);
 	if (compound.contains("destX") && compound.contains("destY") && compound.contains("destZ") && compound.contains("destPitch") && compound.contains("destYaw"))
 	{
 	    this.destX = compound.getDouble("destX");
@@ -49,14 +49,14 @@ public class TileEntityLocalTeleporter extends TileEntity
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound)
+    public CompoundNBT save(CompoundNBT compound)
     {
 	compound.putDouble("destX", this.destX);
 	compound.putDouble("destY", this.destY);
 	compound.putDouble("destZ", this.destZ);
 	compound.putDouble("destPitch", this.destPitch);
 	compound.putDouble("destYaw", this.destYaw);
-	return super.write(compound);
+	return super.save(compound);
     }
 
     public void setDestination(double posX, double posY, double posZ, double pitch, double yaw)

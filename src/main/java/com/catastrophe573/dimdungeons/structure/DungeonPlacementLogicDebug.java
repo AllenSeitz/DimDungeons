@@ -168,31 +168,31 @@ public class DungeonPlacementLogicDebug
     {
 	ChunkPos cpos = new ChunkPos((int) x, (int) z);
 	MinecraftServer minecraftserver = ((World) world).getServer();
-	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureTemplateManager();
+	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
-	Template template = templatemanager.getTemplate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "basic_template"));
-	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunk(cpos);
+	Template template = templatemanager.get(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "basic_template"));
+	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunkPos(cpos);
 	placementsettings.setBoundingBox(placementsettings.getBoundingBox());
 	placementsettings.setRotation(Rotation.NONE);
-	BlockPos position = new BlockPos(cpos.getXStart(), 50, cpos.getZStart());
+	BlockPos position = new BlockPos(cpos.getMinBlockX(), 50, cpos.getMinBlockZ());
 	BlockPos sizeRange = new BlockPos(16, 13, 16);
 
 	// I assume this function is addBlocksToWorld()	
-	template.func_237146_a_((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
+	template.placeInWorld((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
     }
 
     // used by the place() function to actually place rooms
     public static boolean putRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room, DungeonGenData genData)
     {
 	MinecraftServer minecraftserver = ((World) world).getServer();
-	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureTemplateManager();
+	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
-	Template template = templatemanager.getTemplate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + room.structure));
-	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunk(cpos);
+	Template template = templatemanager.get(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + room.structure));
+	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunkPos(cpos);
 	placementsettings.setBoundingBox(placementsettings.getBoundingBox());
 
 	placementsettings.setRotation(room.rotation);
-	BlockPos position = new BlockPos(cpos.getXStart(), 50, cpos.getZStart());
+	BlockPos position = new BlockPos(cpos.getMinBlockX(), 50, cpos.getMinBlockZ());
 	BlockPos sizeRange = new BlockPos(16, 13, 16);
 
 	if (template == null)
@@ -206,19 +206,19 @@ public class DungeonPlacementLogicDebug
 	{
 	    // west: rotate CCW and push +Z
 	    placementsettings.setRotation(Rotation.COUNTERCLOCKWISE_90);
-	    position = position.add(0, 0, template.getSize().getZ() - 1);
+	    position = position.offset(0, 0, template.getSize().getZ() - 1);
 	}
 	else if (room.rotation == Rotation.CLOCKWISE_90)
 	{
 	    // east rotate CW and push +X
 	    placementsettings.setRotation(Rotation.CLOCKWISE_90);
-	    position = position.add(template.getSize().getX() - 1, 0, 0);
+	    position = position.offset(template.getSize().getX() - 1, 0, 0);
 	}
 	else if (room.rotation == Rotation.CLOCKWISE_180)
 	{
 	    // south: rotate 180 and push both +X and +Z
 	    placementsettings.setRotation(Rotation.CLOCKWISE_180);
-	    position = position.add(template.getSize().getX() - 1, 0, template.getSize().getZ() - 1);
+	    position = position.offset(template.getSize().getX() - 1, 0, template.getSize().getZ() - 1);
 	}
 	else //if (nextRoom.rotation == Rotation.NONE)
 	{
@@ -228,12 +228,12 @@ public class DungeonPlacementLogicDebug
 
 	// formerly: call Template.addBlocksToWorld()
 	DimDungeons.logMessageInfo("Placing a room: " + room.structure);
-	boolean success = template.func_237146_a_((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
+	boolean success = template.placeInWorld((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
 
 	// handle data blocks - this code block is copied from TemplateStructurePiece
 	//Map<BlockPos, String> map = template.getDataBlocks(position, placementsettings); // 1.12 / 1.13 version
-	//List<Template.BlockInfo> dblocks = template.func_215386_a(position, placementsettings, Blocks.STRUCTURE_BLOCK, true); // my old 1.14.2 method
-	for (Template.BlockInfo template$blockinfo : template.func_215381_a(position, placementsettings, Blocks.STRUCTURE_BLOCK))
+	//List<Template.BlockInfo> dblocks = template.filterBlocks(position, placementsettings, Blocks.STRUCTURE_BLOCK, true); // my old 1.14.2 method
+	for (Template.BlockInfo template$blockinfo : template.filterBlocks(position, placementsettings, Blocks.STRUCTURE_BLOCK))
 	{
 	    if (template$blockinfo.nbt != null)
 	    {
@@ -268,12 +268,12 @@ public class DungeonPlacementLogicDebug
 
 	if ("ReturnPortal".equals(name))
 	{
-	    world.setBlockState(pos, BlockRegistrar.block_gold_portal.getDefaultState(), 2); // erase this data block 
+	    world.setBlock(pos, BlockRegistrar.block_gold_portal.defaultBlockState(), 2); // erase this data block 
 	}
 	else if ("BackToEntrance".equals(name))
 	{
-	    world.setBlockState(pos, BlockRegistrar.block_local_teleporter.getDefaultState(), 2); // erase this data block
-	    TileEntityLocalTeleporter te = (TileEntityLocalTeleporter) world.getTileEntity(pos);
+	    world.setBlock(pos, BlockRegistrar.block_local_teleporter.defaultBlockState(), 2); // erase this data block
+	    TileEntityLocalTeleporter te = (TileEntityLocalTeleporter) world.getBlockEntity(pos);
 	    if (te != null)
 	    {
 		ItemPortalKey key = (ItemPortalKey) genData.keyItem.getItem();
@@ -284,7 +284,7 @@ public class DungeonPlacementLogicDebug
 	}
 	else if ("LockItStoneBrick".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), 2); // erase this data block 
+	    world.setBlock(pos, Blocks.STONE_BRICKS.defaultBlockState(), 2); // erase this data block 
 	}
 	else if ("LockIt".equals(name))
 	{
@@ -292,16 +292,16 @@ public class DungeonPlacementLogicDebug
 	}
 	else if ("FortuneTeller".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.STONE_BRICKS.getDefaultState(), 2); // erase this data block 
-	    faceContainerTowardsAir(world, pos.down());
+	    world.setBlock(pos, Blocks.STONE_BRICKS.defaultBlockState(), 2); // erase this data block 
+	    faceContainerTowardsAir(world, pos.below());
 
 	    // put a message inside the dispenser
-	    TileEntity te = world.getTileEntity(pos.down());
+	    TileEntity te = world.getBlockEntity(pos.below());
 	    if (te instanceof DispenserTileEntity)
 	    {
-		((DispenserTileEntity) te).clear();
+		((DispenserTileEntity) te).clearContent();
 		ItemStack message = generateLuckyMessage(rand);
-		((DispenserTileEntity) te).addItemStack(message);
+		((DispenserTileEntity) te).addItem(message);
 	    }
 	    else
 	    {
@@ -335,17 +335,17 @@ public class DungeonPlacementLogicDebug
 	    }
 	    else
 	    {
-		world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block 
-		world.setBlockState(pos.down(), Blocks.AIR.getDefaultState(), 2); // and erase the chest below it
+		world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block 
+		world.setBlock(pos.below(), Blocks.AIR.defaultBlockState(), 2); // and erase the chest below it
 	    }
 	}
 	else if ("SetTrappedLoot".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	    ChestTileEntity te = (ChestTileEntity) world.getTileEntity(pos.down());
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+	    ChestTileEntity te = (ChestTileEntity) world.getBlockEntity(pos.below());
 	    if (te != null)
 	    {
-		te.clear();
+		te.clearContent();
 		te.setLootTable(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_1"), rand.nextLong());
 	    }
 	}
@@ -364,8 +364,8 @@ public class DungeonPlacementLogicDebug
 	}
 	else if ("PlaceL2Key".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	    TileEntityPortalKeyhole te = (TileEntityPortalKeyhole) world.getTileEntity(pos.down());
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+	    TileEntityPortalKeyhole te = (TileEntityPortalKeyhole) world.getBlockEntity(pos.below());
 	    if (te != null)
 	    {
 		ItemStack key = te.getObjectInserted();
@@ -378,12 +378,12 @@ public class DungeonPlacementLogicDebug
 	}
 	else if ("SummonWitch".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 	    spawnEnemyHere(pos, "witch", world);
 	}
 	else if ("SummonWaterEnemy".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 	    int chance = rand.nextInt(100);
 	    if (chance < 80)
 	    {
@@ -396,13 +396,13 @@ public class DungeonPlacementLogicDebug
 	}
 	else if ("SummonEnderman".equals(name))
 	{
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 	    spawnEnemyHere(pos, "enderman", world);
 	}
 	else if ("SummonEnemy1".equals(name))
 	{
 	    // 50% chance of a weak enemy
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 	    int chance = rand.nextInt(100);
 	    if (chance < 16)
 	    {
@@ -424,7 +424,7 @@ public class DungeonPlacementLogicDebug
 	else if ("SummonEnemy2".equals(name))
 	{
 	    // 80% chance of a strong enemy
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 	    int chance = rand.nextInt(100);
 	    if (chance < 20)
 	    {
@@ -446,7 +446,7 @@ public class DungeonPlacementLogicDebug
 	else
 	{
 	    DimDungeons.logMessageWarn("UNHANDLED DATA BLOCK WITH name = " + name);
-	    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 	}
     }
 
@@ -457,57 +457,57 @@ public class DungeonPlacementLogicDebug
 	if ("witch".contentEquals(casualName))
 	{
 	    mob = EntityType.WITCH.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.setPos(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("enderman".contentEquals(casualName))
 	{
 	    mob = EntityType.ENDERMAN.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 2, pos.getZ());
+	    mob.setPos(pos.getX(), pos.getY() + 2, pos.getZ());
 	}
 	else if ("guardian".contentEquals(casualName))
 	{
 	    mob = EntityType.GUARDIAN.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.setPos(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("zombie".contentEquals(casualName))
 	{
 	    mob = EntityType.ZOMBIE.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.setPos(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("husk".contentEquals(casualName))
 	{
 	    mob = EntityType.HUSK.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.setPos(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("drowned".contentEquals(casualName))
 	{
 	    mob = EntityType.DROWNED.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.setPos(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("skeleton".contentEquals(casualName))
 	{
 	    mob = EntityType.SKELETON.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.setPos(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("wither_skeleton".contentEquals(casualName))
 	{
 	    mob = EntityType.WITHER_SKELETON.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.setPos(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("stray".contentEquals(casualName))
 	{
 	    mob = EntityType.STRAY.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.setPos(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("spider".contentEquals(casualName))
 	{
 	    mob = EntityType.SPIDER.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.setPos(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else if ("pillager".contentEquals(casualName))
 	{
 	    mob = EntityType.PILLAGER.create((World) world);
-	    mob.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
+	    mob.setPos(pos.getX(), pos.getY() + 1, pos.getZ());
 	}
 	else
 	{
@@ -518,24 +518,24 @@ public class DungeonPlacementLogicDebug
 	mob.setCanPickUpLoot(false);
 	//mob.setCustomName(new StringTextComponent(I18n.format("enemy.dimdungeons." + casualName)));
 	mob.setCustomName(new TranslationTextComponent("enemy.dimdungeons." + casualName));
-	mob.setHomePosAndDistance(pos, 8);
-	mob.moveToBlockPosAndAngles(pos, 0.0F, 0.0F);
-	mob.enablePersistence();
+	mob.restrictTo(pos, 8);
+	mob.moveTo(pos, 0.0F, 0.0F);
+	mob.setPersistenceRequired();
 
-	mob.onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
-	world.addEntity(mob);
+	mob.finalizeSpawn((IServerWorld) world, world.getCurrentDifficultyAt(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
+	world.addFreshEntity(mob);
     }
 
     private static void fillChestBelow(BlockPos pos, ResourceLocation lootTable, IWorld world, Random rand)
     {
-	world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
-	faceContainerTowardsAir(world, pos.down());
+	world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+	faceContainerTowardsAir(world, pos.below());
 
 	// set the loot table
-	TileEntity te = world.getTileEntity(pos.down());
+	TileEntity te = world.getBlockEntity(pos.below());
 	if (te instanceof ChestTileEntity)
 	{
-	    ((ChestTileEntity) te).clear();
+	    ((ChestTileEntity) te).clearContent();
 	    ((ChestTileEntity) te).setLootTable(lootTable, rand.nextLong());
 	}
 	else
@@ -546,13 +546,13 @@ public class DungeonPlacementLogicDebug
 
     private static void fillBarrelBelow(BlockPos pos, ResourceLocation lootTable, IWorld world, Random rand)
     {
-	world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2); // erase this data block
+	world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 
 	// set the loot table
-	TileEntity te = world.getTileEntity(pos.down());
+	TileEntity te = world.getBlockEntity(pos.below());
 	if (te instanceof BarrelTileEntity)
 	{
-	    ((BarrelTileEntity) te).clear();
+	    ((BarrelTileEntity) te).clearContent();
 	    ((BarrelTileEntity) te).setLootTable(lootTable, rand.nextLong());
 	}
 	else
@@ -638,7 +638,7 @@ public class DungeonPlacementLogicDebug
 	    {
 		//bs.with(DispenserBlock.FACING, Direction.EAST);
 	    }
-	    world.setBlockState(pos, bs, 2);
+	    world.setBlock(pos, bs, 2);
 	}
     }
 }

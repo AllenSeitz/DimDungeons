@@ -56,20 +56,20 @@ public class BlockGoldPortal extends BreakableBlock
     public static String REG_NAME = "block_gold_portal";
 
     public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
-    protected static final VoxelShape X_AABB = Block.makeCuboidShape(0.0D, 0.0D, 6.0D, 16.0D, 16.0D, 10.0D);
-    protected static final VoxelShape Z_AABB = Block.makeCuboidShape(6.0D, 0.0D, 0.0D, 10.0D, 16.0D, 16.0D);
+    protected static final VoxelShape X_AABB = Block.box(0.0D, 0.0D, 6.0D, 16.0D, 16.0D, 10.0D);
+    protected static final VoxelShape Z_AABB = Block.box(6.0D, 0.0D, 0.0D, 10.0D, 16.0D, 16.0D);
 
     public BlockGoldPortal()
     {
-	super(AbstractBlock.Properties.create(Material.PORTAL).hardnessAndResistance(50).sound(SoundType.GLASS).doesNotBlockMovement().setLightLevel((p) -> 15));
+	super(AbstractBlock.Properties.of(Material.PORTAL).strength(50).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
 	setRegistryName(DimDungeons.MOD_ID, REG_NAME);
-	this.setDefaultState(this.stateContainer.getBaseState().with(AXIS, Direction.Axis.X));
+	this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X));
     }
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
     {
-	switch ((Direction.Axis) state.get(AXIS))
+	switch ((Direction.Axis) state.getValue(AXIS))
 	{
 	case Z:
 	    return Z_AABB;
@@ -84,12 +84,12 @@ public class BlockGoldPortal extends BreakableBlock
 	{
 	case COUNTERCLOCKWISE_90:
 	case CLOCKWISE_90:
-	    switch ((Direction.Axis) state.get(AXIS))
+	    switch ((Direction.Axis) state.getValue(AXIS))
 	    {
 	    case Z:
-		return state.with(AXIS, Direction.Axis.X);
+		return state.setValue(AXIS, Direction.Axis.X);
 	    case X:
-		return state.with(AXIS, Direction.Axis.Z);
+		return state.setValue(AXIS, Direction.Axis.Z);
 	    default:
 		return state;
 	    }
@@ -98,14 +98,14 @@ public class BlockGoldPortal extends BreakableBlock
 	}
     }
 
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder)
     {
 	builder.add(AXIS);
     }
 
     // Called by ItemBlocks after a block is set in the world, to allow post-place logic
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
+    public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
     {
 	if (!checkPortalIntegrity(state, worldIn, pos))
 	{
@@ -124,36 +124,36 @@ public class BlockGoldPortal extends BreakableBlock
 
     // this function seems to be the true 1.14 replacement for updateNeighbors(), and it cares about block sides now
     @Override
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos)
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos)
     {
 	if (checkPortalIntegrity(stateIn, worldIn, currentPos))
 	{
 	    return stateIn;
 	}
-	return Blocks.AIR.getDefaultState(); // destroy this block
+	return Blocks.AIR.defaultBlockState(); // destroy this block
     }
 
     // called by getItemsToDropCount() to determine what BlockItem or Item to drop
     // in this case, do not allow the player to obtain this block as an item
     @Override
-    public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state)
+    public ItemStack getCloneItemStack(IBlockReader worldIn, BlockPos pos, BlockState state)
     {
 	return ItemStack.EMPTY;
     }
 
     @Deprecated
     @Override
-    public boolean isTransparent(BlockState state)
+    public boolean useShapeForLightOcclusion(BlockState state)
     {
 	return true;
     }
 
     // called When an entity collides with the Block
     @Override
-    public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn)
+    public void entityInside(BlockState state, World worldIn, BlockPos pos, Entity entityIn)
     {
 	// do not process this block on the client
-	if (worldIn.isRemote)
+	if (worldIn.isClientSide)
 	{
 	    return;
 	}
@@ -164,15 +164,15 @@ public class BlockGoldPortal extends BreakableBlock
 	    return;
 	}
 
-	if (!entityIn.isPassenger() && !entityIn.isBeingRidden() && entityIn.canChangeDimension())
+	if (!entityIn.isPassenger() && !entityIn.isVehicle() && entityIn.canChangeDimensions())
 	{
 	    //DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
 
-	    TileEntity tile = worldIn.getTileEntity(pos);
+	    TileEntity tile = worldIn.getBlockEntity(pos);
 
 	    if (tile != null && tile instanceof TileEntityGoldPortal)
 	    {
-		TileEntityGoldPortal te = (TileEntityGoldPortal) worldIn.getTileEntity(pos);
+		TileEntityGoldPortal te = (TileEntityGoldPortal) worldIn.getBlockEntity(pos);
 
 		BlockPos destination = te.getDestination();
 		float warpX = destination.getX();
@@ -181,7 +181,7 @@ public class BlockGoldPortal extends BreakableBlock
 		int cooldown = te.getCooldown();
 
 		// implement the cooldown on the portal block itself
-		int currentTick = worldIn.getServer().getTickCounter();
+		int currentTick = worldIn.getServer().getTickCount();
 		if (!te.needsUpdateThisTick(currentTick))
 		{
 		    return;
@@ -207,8 +207,8 @@ public class BlockGoldPortal extends BreakableBlock
 			if (keyhole != null)
 			{
 			    keyhole.removeContents();
-			    BlockState emptyState = worldIn.getBlockState(keyhole.getPos());
-			    worldIn.setBlockState(keyhole.getPos(), emptyState.with(BlockPortalKeyhole.FILLED, false).with(BlockPortalKeyhole.LIT, false));
+			    BlockState emptyState = worldIn.getBlockState(keyhole.getBlockPos());
+			    worldIn.setBlockAndUpdate(keyhole.getBlockPos(), emptyState.setValue(BlockPortalKeyhole.FILLED, false).setValue(BlockPortalKeyhole.LIT, false));
 			}
 		    }
 
@@ -227,7 +227,7 @@ public class BlockGoldPortal extends BreakableBlock
 		    {
 			//System.out.println("Player is returning from a dungeon at (" + warpX + " " + warpY + " " + warpZ + ").");
 			ServerPlayerEntity player = (ServerPlayerEntity) entityIn;
-			actuallyPerformTeleport(player, player.getServer().getWorld(te.getDestinationDimension()), warpX + 0.5f, warpY + 0.5f, warpZ + 0.5f, 0);
+			actuallyPerformTeleport(player, player.getServer().getLevel(te.getDestinationDimension()), warpX + 0.5f, warpY + 0.5f, warpZ + 0.5f, 0);
 		    }
 		}
 	    }
@@ -248,8 +248,8 @@ public class BlockGoldPortal extends BreakableBlock
 
     protected Entity actuallyPerformTeleport(ServerPlayerEntity player, ServerWorld dim, double x, double y, double z, double yaw)
     {
-	float destPitch = player.getPitchYaw().x;
-	float destYaw = player.getPitchYaw().y;
+	float destPitch = player.getRotationVector().x;
+	float destYaw = player.getRotationVector().y;
 
 	// if the player just entered a dungeon then force them to face north
 	if (DungeonUtils.isDimensionDungeon(dim))
@@ -271,10 +271,10 @@ public class BlockGoldPortal extends BreakableBlock
 	float lastX = 0;
 	float lastY = 0;
 	float lastZ = 0;
-	float lastYaw = player.getPitchYaw().y;
+	float lastYaw = player.getRotationVector().y;
 
 	// send the player to their bed
-	Optional<BlockPos> respawn = player.getBedPosition();
+	Optional<BlockPos> respawn = player.getSleepingPos();
 	if (respawn.isPresent())
 	{
 	    lastX = respawn.get().getX();
@@ -284,12 +284,12 @@ public class BlockGoldPortal extends BreakableBlock
 	else
 	{
 	    // fallback: send the player to the overworld spawn
-	    lastX = player.getServer().getWorld(World.OVERWORLD).getWorldInfo().getSpawnX();
-	    lastY = player.getServer().getWorld(World.OVERWORLD).getWorldInfo().getSpawnY() + 2; // plus 2 to stand on the ground I guess
-	    lastZ = player.getServer().getWorld(World.OVERWORLD).getWorldInfo().getSpawnZ();
+	    lastX = player.getServer().getLevel(World.OVERWORLD).getLevelData().getXSpawn();
+	    lastY = player.getServer().getLevel(World.OVERWORLD).getLevelData().getYSpawn() + 2; // plus 2 to stand on the ground I guess
+	    lastZ = player.getServer().getLevel(World.OVERWORLD).getLevelData().getZSpawn();
 	}
 
-	actuallyPerformTeleport(player, player.getServer().getWorld(World.OVERWORLD).getWorldServer(), lastX, lastY, lastZ, lastYaw);
+	actuallyPerformTeleport(player, player.getServer().getLevel(World.OVERWORLD).getWorldServer(), lastX, lastY, lastZ, lastYaw);
     }
 
     // this function returns boolean and relies on another function to actually destroy the block
@@ -315,8 +315,8 @@ public class BlockGoldPortal extends BreakableBlock
 	}
 
 	// step 3: look for the other structure blocks on either the X or Z axis, depending on how the keyhole is facing
-	BlockState keyholeBlock = worldIn.getBlockState(te.getPos());
-	boolean frameLevel1 = checkPortalFrameLevel1(worldIn, te.getPos());
+	BlockState keyholeBlock = worldIn.getBlockState(te.getBlockPos());
+	boolean frameLevel1 = checkPortalFrameLevel1(worldIn, te.getBlockPos());
 	if (!frameLevel1)
 	{
 	    return false;
@@ -330,13 +330,13 @@ public class BlockGoldPortal extends BreakableBlock
 	    if (keyLevel >= 2)
 	    {
 		boolean frameLevel2 = false;
-		if (keyholeBlock.get(BlockPortalKeyhole.FACING) == Direction.WEST || keyholeBlock.get(BlockPortalKeyhole.FACING) == Direction.EAST)
+		if (keyholeBlock.getValue(BlockPortalKeyhole.FACING) == Direction.WEST || keyholeBlock.getValue(BlockPortalKeyhole.FACING) == Direction.EAST)
 		{
-		    frameLevel2 = checkPortalFrameLevel2NorthSouth(worldIn, te.getPos());
+		    frameLevel2 = checkPortalFrameLevel2NorthSouth(worldIn, te.getBlockPos());
 		}
 		else
 		{
-		    frameLevel2 = checkPortalFrameLevel2WestEast(worldIn, te.getPos());
+		    frameLevel2 = checkPortalFrameLevel2WestEast(worldIn, te.getBlockPos());
 		}
 		if (!frameLevel2)
 		{
@@ -351,7 +351,7 @@ public class BlockGoldPortal extends BreakableBlock
     // return the tile entity if it can be found, or NULL otherwise (in which case this portal block will soon vanish)
     private TileEntityPortalKeyhole findKeyholeForThisPortal(BlockState state, IWorld worldIn, BlockPos pos)
     {
-	BlockPos p = pos.up();
+	BlockPos p = pos.above();
 
 	// look 1-2 blocks up for a BlockPortalKeyhole
 	for (int i = 0; i < 2; i++)
@@ -359,9 +359,9 @@ public class BlockGoldPortal extends BreakableBlock
 	    BlockState keyhole = worldIn.getBlockState(p);
 	    if (keyhole.getBlock() == BlockRegistrar.block_portal_keyhole)
 	    {
-		return (TileEntityPortalKeyhole) worldIn.getTileEntity(p);
+		return (TileEntityPortalKeyhole) worldIn.getBlockEntity(p);
 	    }
-	    p = p.up();
+	    p = p.above();
 	}
 
 	return null;
@@ -369,7 +369,7 @@ public class BlockGoldPortal extends BreakableBlock
 
     static public boolean isValidPortalFrameBlock(Block b)
     {
-	return b.isIn(BlockTags.getCollection().getTagByID(new ResourceLocation(DimDungeons.MOD_ID, "dimdungeons_portal_frame_blocks")));
+	return b.is(BlockTags.getAllTags().getTagOrEmpty(new ResourceLocation(DimDungeons.MOD_ID, "dimdungeons_portal_frame_blocks")));
     }
 
     // just get the block states and keep it simple
@@ -378,7 +378,7 @@ public class BlockGoldPortal extends BreakableBlock
 	BlockState keyholeState = worldIn.getBlockState(keyhole);
 	ArrayList<BlockState> blocks;
 
-	if (keyholeState.get(BlockPortalKeyhole.FACING) == Direction.WEST || keyholeState.get(BlockPortalKeyhole.FACING) == Direction.EAST)
+	if (keyholeState.getValue(BlockPortalKeyhole.FACING) == Direction.WEST || keyholeState.getValue(BlockPortalKeyhole.FACING) == Direction.EAST)
 	{
 	    blocks = getPortalFrameMaterialsNorthSouth(worldIn, keyhole);
 	}
@@ -409,31 +409,31 @@ public class BlockGoldPortal extends BreakableBlock
 	ArrayList<BlockState> retval = new ArrayList<BlockState>();
 
 	// the first 5 elements are for the main portal frame
-	retval.add(worldIn.getBlockState(keyhole.west().down()));
-	retval.add(worldIn.getBlockState(keyhole.west().down(2)));
-	retval.add(worldIn.getBlockState(keyhole.east().down()));
-	retval.add(worldIn.getBlockState(keyhole.east().down(2)));
-	retval.add(worldIn.getBlockState(keyhole.down(3)));
+	retval.add(worldIn.getBlockState(keyhole.west().below()));
+	retval.add(worldIn.getBlockState(keyhole.west().below(2)));
+	retval.add(worldIn.getBlockState(keyhole.east().below()));
+	retval.add(worldIn.getBlockState(keyhole.east().below(2)));
+	retval.add(worldIn.getBlockState(keyhole.below(3)));
 
 	// the next 4 elements are for the bricks in the left and right spires
-	retval.add(worldIn.getBlockState(keyhole.west(3).down(2)));
-	retval.add(worldIn.getBlockState(keyhole.west(3).down(3)));
-	retval.add(worldIn.getBlockState(keyhole.east(3).down(2)));
-	retval.add(worldIn.getBlockState(keyhole.east(3).down(3)));
+	retval.add(worldIn.getBlockState(keyhole.west(3).below(2)));
+	retval.add(worldIn.getBlockState(keyhole.west(3).below(3)));
+	retval.add(worldIn.getBlockState(keyhole.east(3).below(2)));
+	retval.add(worldIn.getBlockState(keyhole.east(3).below(3)));
 
 	// the next 2 elements are for the gilded portal blocks on top of each spire
-	retval.add(worldIn.getBlockState(keyhole.west(3).down(1)));
-	retval.add(worldIn.getBlockState(keyhole.east(3).down(1)));
+	retval.add(worldIn.getBlockState(keyhole.west(3).below(1)));
+	retval.add(worldIn.getBlockState(keyhole.east(3).below(1)));
 
 	// the next 2 elements are for the crowns, if there are any
 	retval.add(worldIn.getBlockState(keyhole.west(1)));
 	retval.add(worldIn.getBlockState(keyhole.east(1)));
 
 	// the next 4 elements are for the banners, if there are any (side doesn't matter, any two can pass)
-	retval.add(worldIn.getBlockState(keyhole.west(3).down(1).north(1)));
-	retval.add(worldIn.getBlockState(keyhole.west(3).down(1).south(1)));
-	retval.add(worldIn.getBlockState(keyhole.east(3).down(1).north(1)));
-	retval.add(worldIn.getBlockState(keyhole.east(3).down(1).south(1)));
+	retval.add(worldIn.getBlockState(keyhole.west(3).below(1).north(1)));
+	retval.add(worldIn.getBlockState(keyhole.west(3).below(1).south(1)));
+	retval.add(worldIn.getBlockState(keyhole.east(3).below(1).north(1)));
+	retval.add(worldIn.getBlockState(keyhole.east(3).below(1).south(1)));
 
 	return retval;
     }
@@ -444,31 +444,31 @@ public class BlockGoldPortal extends BreakableBlock
 	ArrayList<BlockState> retval = new ArrayList<BlockState>();
 
 	// the first 5 elements are for the main portal frame
-	retval.add(worldIn.getBlockState(keyhole.north().down()));
-	retval.add(worldIn.getBlockState(keyhole.north().down(2)));
-	retval.add(worldIn.getBlockState(keyhole.south().down()));
-	retval.add(worldIn.getBlockState(keyhole.south().down(2)));
-	retval.add(worldIn.getBlockState(keyhole.down(3)));
+	retval.add(worldIn.getBlockState(keyhole.north().below()));
+	retval.add(worldIn.getBlockState(keyhole.north().below(2)));
+	retval.add(worldIn.getBlockState(keyhole.south().below()));
+	retval.add(worldIn.getBlockState(keyhole.south().below(2)));
+	retval.add(worldIn.getBlockState(keyhole.below(3)));
 
 	// the next 4 elements are for the bricks in the left and right spires
-	retval.add(worldIn.getBlockState(keyhole.north(3).down(2)));
-	retval.add(worldIn.getBlockState(keyhole.north(3).down(3)));
-	retval.add(worldIn.getBlockState(keyhole.south(3).down(2)));
-	retval.add(worldIn.getBlockState(keyhole.south(3).down(3)));
+	retval.add(worldIn.getBlockState(keyhole.north(3).below(2)));
+	retval.add(worldIn.getBlockState(keyhole.north(3).below(3)));
+	retval.add(worldIn.getBlockState(keyhole.south(3).below(2)));
+	retval.add(worldIn.getBlockState(keyhole.south(3).below(3)));
 
 	// the next 2 elements are for the gilded portal blocks on top of each spire
-	retval.add(worldIn.getBlockState(keyhole.north(3).down(1)));
-	retval.add(worldIn.getBlockState(keyhole.south(3).down(1)));
+	retval.add(worldIn.getBlockState(keyhole.north(3).below(1)));
+	retval.add(worldIn.getBlockState(keyhole.south(3).below(1)));
 
 	// the next 2 elements are for the crowns, if there are any
 	retval.add(worldIn.getBlockState(keyhole.north(1)));
 	retval.add(worldIn.getBlockState(keyhole.south(1)));
 
 	// the next 4 elements are for the banners, if there are any (side doesn't matter, any two can pass)
-	retval.add(worldIn.getBlockState(keyhole.north(3).down(1).east(1)));
-	retval.add(worldIn.getBlockState(keyhole.north(3).down(1).west(1)));
-	retval.add(worldIn.getBlockState(keyhole.south(3).down(1).east(1)));
-	retval.add(worldIn.getBlockState(keyhole.south(3).down(1).west(1)));
+	retval.add(worldIn.getBlockState(keyhole.north(3).below(1).east(1)));
+	retval.add(worldIn.getBlockState(keyhole.north(3).below(1).west(1)));
+	retval.add(worldIn.getBlockState(keyhole.south(3).below(1).east(1)));
+	retval.add(worldIn.getBlockState(keyhole.south(3).below(1).west(1)));
 
 	return retval;
     }
@@ -482,16 +482,16 @@ public class BlockGoldPortal extends BreakableBlock
 	}
 
 	// left spire - check for banner
-	int front = getBannerLevel(worldIn, keyhole.west(3).down(1).north(1));
-	int back = getBannerLevel(worldIn, keyhole.west(3).down(1).south(1));
+	int front = getBannerLevel(worldIn, keyhole.west(3).below(1).north(1));
+	int back = getBannerLevel(worldIn, keyhole.west(3).below(1).south(1));
 	if (front < 2 && back < 2)
 	{
 	    return false;
 	}
 
 	// right spire - check for banner
-	front = getBannerLevel(worldIn, keyhole.east(3).down(1).north(1));
-	back = getBannerLevel(worldIn, keyhole.east(3).down(1).south(1));
+	front = getBannerLevel(worldIn, keyhole.east(3).below(1).north(1));
+	back = getBannerLevel(worldIn, keyhole.east(3).below(1).south(1));
 	if (front < 2 && back < 2)
 	{
 	    return false;
@@ -510,16 +510,16 @@ public class BlockGoldPortal extends BreakableBlock
 	}
 
 	// left spire - check for banner
-	int front = getBannerLevel(worldIn, keyhole.north(3).down(1).west(1));
-	int back = getBannerLevel(worldIn, keyhole.north(3).down(1).east(1));
+	int front = getBannerLevel(worldIn, keyhole.north(3).below(1).west(1));
+	int back = getBannerLevel(worldIn, keyhole.north(3).below(1).east(1));
 	if (front < 2 && back < 2)
 	{
 	    return false;
 	}
 
 	// right spire - check for banner
-	front = getBannerLevel(worldIn, keyhole.south(3).down(1).west(1));
-	back = getBannerLevel(worldIn, keyhole.south(3).down(1).east(1));
+	front = getBannerLevel(worldIn, keyhole.south(3).below(1).west(1));
+	back = getBannerLevel(worldIn, keyhole.south(3).below(1).east(1));
 	if (front < 2 && back < 2)
 	{
 	    return false;

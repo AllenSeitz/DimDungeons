@@ -16,12 +16,12 @@ public class BlockGildedPortal extends Block
     
     public BlockGildedPortal()
     {
-	super(AbstractBlock.Properties.create(Material.ROCK).hardnessAndResistance(2).sound(SoundType.METAL));
+	super(AbstractBlock.Properties.of(Material.STONE).strength(2).sound(SoundType.METAL));
 	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState iBlockState)
+    public BlockRenderType getRenderShape(BlockState iBlockState)
     {
 	return BlockRenderType.MODEL;
     }

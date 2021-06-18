@@ -52,7 +52,7 @@ import net.minecraft.block.AbstractBlock;
 
 public class BlockPortalKeyhole extends Block
 {
-    public static final DirectionProperty FACING = HorizontalBlock.HORIZONTAL_FACING;
+    public static final DirectionProperty FACING = HorizontalBlock.FACING;
     public static final BooleanProperty FILLED = BooleanProperty.create("filled");
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
 
@@ -60,15 +60,15 @@ public class BlockPortalKeyhole extends Block
 
     public BlockPortalKeyhole()
     {
-	super(AbstractBlock.Properties.create(Material.PORTAL).hardnessAndResistance(2).sound(SoundType.METAL));
+	super(AbstractBlock.Properties.of(Material.PORTAL).strength(2).sound(SoundType.METAL));
 	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
-	this.setDefaultState(getMyCustomDefaultState());
+	this.registerDefaultState(getMyCustomDefaultState());
     }
 
     // used by the constructor and I'm not sure where else anymore?
     public BlockState getMyCustomDefaultState()
     {
-	return this.stateContainer.getBaseState().with(FACING, Direction.NORTH).with(FILLED, false).with(LIT, false);
+	return this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(FILLED, false).setValue(LIT, false);
     }
 
     // based on code from vanilla furnaces, which also play a sound effect and make particles when their TileEntity is being productive
@@ -76,11 +76,11 @@ public class BlockPortalKeyhole extends Block
     @Override
     public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
-	boolean hasPortalBlockBelow = worldIn.getBlockState(pos.down()).getBlock() == BlockRegistrar.block_gold_portal;
+	boolean hasPortalBlockBelow = worldIn.getBlockState(pos.below()).getBlock() == BlockRegistrar.block_gold_portal;
 
-	if (stateIn.get(LIT) && hasPortalBlockBelow)
+	if (stateIn.getValue(LIT) && hasPortalBlockBelow)
 	{
-	    Direction enumfacing = (Direction) stateIn.get(FACING);
+	    Direction enumfacing = (Direction) stateIn.getValue(FACING);
 	    double d0 = (double) pos.getX() + 0.5D;
 	    double d1 = (double) pos.getY() + rand.nextDouble() * 6.0D / 16.0D;
 	    double d2 = (double) pos.getZ() + 0.5D;
@@ -89,7 +89,7 @@ public class BlockPortalKeyhole extends Block
 	    // play sound effects randomly
 	    if (rand.nextDouble() < 0.1D && DungeonConfig.playPortalSounds)
 	    {
-		worldIn.playSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 1.0F, 3.0F, false);
+		worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.PORTAL_AMBIENT, SoundCategory.BLOCKS, 1.0F, 3.0F, false);
 	    }
 
 	    if (DungeonConfig.showParticles)
@@ -123,10 +123,10 @@ public class BlockPortalKeyhole extends Block
 
     // called when the player right clicks this block
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
+    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
-	ItemStack playerItem = player.getHeldItem(handIn);
-	TileEntity tileEntity = worldIn.getTileEntity(pos);
+	ItemStack playerItem = player.getItemInHand(handIn);
+	TileEntity tileEntity = worldIn.getBlockEntity(pos);
 	TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
 
 	// insert or remove an item from this block
@@ -142,9 +142,9 @@ public class BlockPortalKeyhole extends Block
 		    // DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
 
 		    // should we build the dungeon on the other side?
-		    if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isRemote)
+		    if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide)
 		    {
-			DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setReturnPoint(getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.getDimensionKey()));
+			DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setReturnPoint(getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
 			ItemPortalKey key = (ItemPortalKey) playerItem.getItem();
 
 			if (shouldBuildDungeon(playerItem))
@@ -166,17 +166,17 @@ public class BlockPortalKeyhole extends Block
 		    myEntity.setContents(playerItem.copy());
 
 		    // recalculate the boolean block states
-		    BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
-		    worldIn.setBlockState(pos, newBlockState);
+		    BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated());
+		    worldIn.setBlockAndUpdate(pos, newBlockState);
 
 		    // should portal blocks be spawned?
 		    if (isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
 		    {
-			Direction keyholeFacing = state.get(FACING);
+			Direction keyholeFacing = state.getValue(FACING);
 			Direction.Axis axis = (keyholeFacing == Direction.NORTH || keyholeFacing == Direction.SOUTH) ? Direction.Axis.X : Direction.Axis.Z;
 			
-			addGoldenPortalBlock(worldIn, pos.down(), playerItem, axis);
-			addGoldenPortalBlock(worldIn, pos.down(2), playerItem, axis);
+			addGoldenPortalBlock(worldIn, pos.below(), playerItem, axis);
+			addGoldenPortalBlock(worldIn, pos.below(2), playerItem, axis);
 		    }
 
 		    // this function prints no message on success
@@ -193,18 +193,18 @@ public class BlockPortalKeyhole extends Block
 		// DimDungeons.LOGGER.info("Taking thing out of keyhole...");
 		if (playerItem.isEmpty())
 		{
-		    player.setHeldItem(handIn, insideItem); // hand it to the player
+		    player.setItemInHand(handIn, insideItem); // hand it to the player
 		}
-		else if (!player.addItemStackToInventory(insideItem)) // okay put it in their inventory
+		else if (!player.addItem(insideItem)) // okay put it in their inventory
 		{
-		    player.dropItem(insideItem, false); // whatever drop it on the ground
+		    player.drop(insideItem, false); // whatever drop it on the ground
 		}
 
 		myEntity.removeContents();
 
 		// recalculate the boolean block states
-		BlockState newBlockState = state.with(FACING, state.get(FACING)).with(FILLED, myEntity.isFilled()).with(LIT, myEntity.isActivated());
-		worldIn.setBlockState(pos, newBlockState, 3);
+		BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated());
+		worldIn.setBlock(pos, newBlockState, 3);
 
 		return ActionResultType.SUCCESS;
 	    }
@@ -215,33 +215,33 @@ public class BlockPortalKeyhole extends Block
 
     protected void addGoldenPortalBlock(World worldIn, BlockPos pos, ItemStack keyStack, Direction.Axis axis)
     {
-	worldIn.setBlockState(pos, BlockRegistrar.block_gold_portal.getDefaultState().with(BlockGoldPortal.AXIS, axis));
-	TileEntityGoldPortal te = (TileEntityGoldPortal) worldIn.getTileEntity(pos);
+	worldIn.setBlockAndUpdate(pos, BlockRegistrar.block_gold_portal.defaultBlockState().setValue(BlockGoldPortal.AXIS, axis));
+	TileEntityGoldPortal te = (TileEntityGoldPortal) worldIn.getBlockEntity(pos);
 	if (te != null && te instanceof TileEntityGoldPortal)
 	{
 	    ItemPortalKey key = (ItemPortalKey) keyStack.getItem();
 	    if (key != null)
 	    {
-		te.setDestination(key.getWarpX(keyStack), 55.1D, key.getWarpZ(keyStack), DungeonUtils.serializeDimensionKey(worldIn.getDimensionKey()));
+		te.setDestination(key.getWarpX(keyStack), 55.1D, key.getWarpZ(keyStack), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
 	    }
 	}
     }
 
     protected BlockPos getReturnPoint(BlockState state, BlockPos pos)
     {
-	Direction dir = (Direction) state.get(FACING);
+	Direction dir = (Direction) state.getValue(FACING);
 	switch (dir)
 	{
 	case WEST:
-	    return pos.west().down(2);
+	    return pos.west().below(2);
 	case EAST:
-	    return pos.east().down(2);
+	    return pos.east().below(2);
 	case NORTH:
-	    return pos.north().down(2);
+	    return pos.north().below(2);
 	case SOUTH:
-	    return pos.south().down(2);
+	    return pos.south().below(2);
 	default:
-	    return pos.down(2);
+	    return pos.below(2);
 	}
     }
 
@@ -255,8 +255,8 @@ public class BlockPortalKeyhole extends Block
 	}
 
 	// check for air or existing portal blocks below this keyhole
-	Block b1 = worldIn.getBlockState(pos.down()).getBlock();
-	Block b2 = worldIn.getBlockState(pos.down(2)).getBlock();
+	Block b1 = worldIn.getBlockState(pos.below()).getBlock();
+	Block b2 = worldIn.getBlockState(pos.below(2)).getBlock();
 	if (!(b1 == Blocks.AIR || b1 == BlockRegistrar.block_gold_portal))
 	{
 	    return false;
@@ -308,23 +308,23 @@ public class BlockPortalKeyhole extends Block
     public BlockState getStateForPlacement(BlockItemUseContext context)
     {
 	BlockState retval = getMyCustomDefaultState();
-	return retval.with(FACING, context.getPlacementHorizontalFacing().getOpposite());
+	return retval.setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
     // Called by ItemBlocks after a block is set in the world, to allow post-place logic
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
+    public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
     {
-	worldIn.setBlockState(pos, state.with(FACING, placer.getHorizontalFacing().getOpposite()), 2);
+	worldIn.setBlock(pos, state.setValue(FACING, placer.getDirection().getOpposite()), 2);
     }
 
     // Called server side after this block is replaced with another in Chunk, but before the TileEntity is updated
     // this function is now in charge of preserving TileEntities across block updates, too, instead of the former TileEntity->shouldRefresh()
     @SuppressWarnings("deprecation")
     @Override
-    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving)
+    public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving)
     {
-	TileEntity tileentity = worldIn.getTileEntity(pos);
+	TileEntity tileentity = worldIn.getBlockEntity(pos);
 
 	// DO NOT call super.onReplaced() unless this block has no TileEntity, or unless the block was deleted/changed to another block of course
 	if (state.getBlock() != newState.getBlock())
@@ -335,49 +335,49 @@ public class BlockPortalKeyhole extends Block
 		ItemStack item = ((TileEntityPortalKeyhole) tileentity).getObjectInserted();
 		if (!item.isEmpty())
 		{
-		    InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), item);
+		    InventoryHelper.dropItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), item);
 		}
-		worldIn.updateComparatorOutputLevel(pos, this);
+		worldIn.updateNeighbourForOutputSignal(pos, this);
 	    }
 
-	    super.onReplaced(state, worldIn, pos, newState, isMoving);
-	    worldIn.removeTileEntity(pos);
+	    super.onRemove(state, worldIn, pos, newState, isMoving);
+	    worldIn.removeBlockEntity(pos);
 	}
     }
 
     @Override
-    public boolean hasComparatorInputOverride(BlockState state)
+    public boolean hasAnalogOutputSignal(BlockState state)
     {
 	return true;
     }
 
     // returns 2 if a usable key is inside, 1 if the block is filled with any item stack, and 0 otherwise
     @Override
-    public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos)
+    public int getAnalogOutputSignal(BlockState blockState, World worldIn, BlockPos pos)
     {
-	if (blockState.get(LIT))
+	if (blockState.getValue(LIT))
 	{
 	    return 2;
 	}
-	return blockState.get(FILLED) ? 1 : 0;
+	return blockState.getValue(FILLED) ? 1 : 0;
     }
 
     // returns the ItemStack that represents this block - this has nothing to do with the item placed inside
     @Override
-    public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state)
+    public ItemStack getCloneItemStack(IBlockReader worldIn, BlockPos pos, BlockState state)
     {
 	return new ItemStack(this);
     }
 
     // The type of render function called. MODEL for mixed tesr and static model, MODELBLOCK_ANIMATED for TESR-only, LIQUID for vanilla liquids, INVISIBLE to skip all rendering
     @Override
-    public BlockRenderType getRenderType(BlockState state)
+    public BlockRenderType getRenderShape(BlockState state)
     {
 	return BlockRenderType.MODEL;
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder)
     {
 	builder.add(FACING, FILLED, LIT);
     }
@@ -386,14 +386,14 @@ public class BlockPortalKeyhole extends Block
     @Override
     public BlockState rotate(BlockState state, Rotation rot)
     {
-	return state.with(FACING, rot.rotate((Direction) state.get(FACING)));
+	return state.setValue(FACING, rot.rotate((Direction) state.getValue(FACING)));
     }
 
     // Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed blockstate.
     @Override
     public BlockState mirror(BlockState state, Mirror mirrorIn)
     {
-	return state.with(FACING, mirrorIn.mirror(((Direction) state.get(FACING))));
+	return state.setValue(FACING, mirrorIn.mirror(((Direction) state.getValue(FACING))));
     }
 
     public int predictPortalError(World worldIn, PlayerEntity playerIn)
@@ -437,7 +437,7 @@ public class BlockPortalKeyhole extends Block
 
 	// error #3, error #4: the frame is not complete or contains an invalid block
 	ArrayList<BlockState> blocks;
-	if (state.get(BlockPortalKeyhole.FACING) == Direction.WEST || state.get(BlockPortalKeyhole.FACING) == Direction.EAST)
+	if (state.getValue(BlockPortalKeyhole.FACING) == Direction.WEST || state.getValue(BlockPortalKeyhole.FACING) == Direction.EAST)
 	{
 	    blocks = BlockGoldPortal.getPortalFrameMaterialsNorthSouth(worldIn, pos);
 	}
@@ -534,8 +534,8 @@ public class BlockPortalKeyhole extends Block
 	    // this version of the error message expects a block name to be concatenated
 	    text1 = new TranslationTextComponent(new TranslationTextComponent("error.dimdungeons.portal_error_" + problemID).getString() + problemBlock.getBlock().getRegistryName() + ".");
 	}
-	text1.mergeStyle(text1.getStyle().setItalic(true));
-	text1.mergeStyle(text1.getStyle().setColor(Color.fromTextFormatting(TextFormatting.BLUE)));
-	playerIn.sendMessage(text1, Util.DUMMY_UUID);
+	text1.withStyle(text1.getStyle().withItalic(true));
+	text1.withStyle(text1.getStyle().withColor(Color.fromLegacyFormat(TextFormatting.BLUE)));
+	playerIn.sendMessage(text1, Util.NIL_UUID);
     }
 }

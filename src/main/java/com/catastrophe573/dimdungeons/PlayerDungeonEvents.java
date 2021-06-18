@@ -62,7 +62,7 @@ public class PlayerDungeonEvents
 	}
 
 	//DimDungeons.LOGGER.info("EXPLODING BRICKS: " + crackedBricks.size());
-	event.getExplosion().clearAffectedBlockPositions();
+	event.getExplosion().clearToBlow();
 	event.getAffectedBlocks().addAll(crackedBricks);
     }
 
@@ -176,7 +176,7 @@ public class PlayerDungeonEvents
 	if (event.getEntityLiving() instanceof EndermanEntity || event.getEntityLiving() instanceof ShulkerEntity)
 	{
 	    // I only care about restricting teleports within my dimensions
-	    if (DungeonUtils.isDimensionDungeon(event.getEntityLiving().getEntityWorld()))
+	    if (DungeonUtils.isDimensionDungeon(event.getEntityLiving().getCommandSenderWorld()))
 	    {
 		event.setCanceled(true);
 	    }
@@ -195,7 +195,7 @@ public class PlayerDungeonEvents
 	}
 
 	// cancel chorus fruits in any of my dimensions
-	if (DungeonUtils.isDimensionDungeon(event.getEntityLiving().getEntityWorld()))
+	if (DungeonUtils.isDimensionDungeon(event.getEntityLiving().getCommandSenderWorld()))
 	{
 	    if (stack.getItem() == Items.CHORUS_FRUIT)
 	    {

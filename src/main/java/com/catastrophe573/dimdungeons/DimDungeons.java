@@ -50,7 +50,7 @@ public class DimDungeons
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
     public static final String dungeon_basic_regname = "dungeon_dimension";
 
-    public static final RegistryKey<World> DUNGEON_DIMENSION = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(MOD_ID, dungeon_basic_regname));
+    public static final RegistryKey<World> DUNGEON_DIMENSION = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(MOD_ID, dungeon_basic_regname));
 
     public static final PlayerDungeonEvents eventHandler = new PlayerDungeonEvents();
 
@@ -85,15 +85,15 @@ public class DimDungeons
 
     private void doClientStuff(final FMLClientSetupEvent event)
     {
-	RenderTypeLookup.setRenderLayer(BlockRegistrar.block_gold_portal, RenderType.getTranslucent());
-	RenderTypeLookup.setRenderLayer(BlockRegistrar.block_local_teleporter, RenderType.getTranslucent());
+	RenderTypeLookup.setRenderLayer(BlockRegistrar.block_gold_portal, RenderType.translucent());
+	RenderTypeLookup.setRenderLayer(BlockRegistrar.block_local_teleporter, RenderType.translucent());
 
 	// register the custom property for the keys that allows for switching their model
-	ItemModelsProperties.registerProperty(ItemRegistrar.item_portal_key, new ResourceLocation(DimDungeons.MOD_ID, "keytype"), (stack, world, entity) ->
+	ItemModelsProperties.register(ItemRegistrar.item_portal_key, new ResourceLocation(DimDungeons.MOD_ID, "keytype"), (stack, world, entity) ->
 	{
 	    return ItemPortalKey.getKeyLevelAsFloat(stack);
 	});
-	ItemModelsProperties.registerProperty(ItemRegistrar.item_secret_bell, new ResourceLocation(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity) ->
+	ItemModelsProperties.register(ItemRegistrar.item_secret_bell, new ResourceLocation(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity) ->
 	{
 	    return ItemSecretBell.getUpgradeLevelAsFloat(stack);
 	});
@@ -154,9 +154,9 @@ public class DimDungeons
 	@SubscribeEvent
 	public static void registerTE(RegistryEvent.Register<TileEntityType<?>> teRegistryEvent)
 	{
-	    TileEntityType<TileEntityPortalKeyhole> tetPortalKeyhole = TileEntityType.Builder.create(TileEntityPortalKeyhole::new).build(null);
-	    TileEntityType<TileEntityGoldPortal> tetGoldPortal = TileEntityType.Builder.create(TileEntityGoldPortal::new).build(null);
-	    TileEntityType<TileEntityLocalTeleporter> tetLocalTeleporter = TileEntityType.Builder.create(TileEntityLocalTeleporter::new).build(null);
+	    TileEntityType<TileEntityPortalKeyhole> tetPortalKeyhole = TileEntityType.Builder.of(TileEntityPortalKeyhole::new).build(null);
+	    TileEntityType<TileEntityGoldPortal> tetGoldPortal = TileEntityType.Builder.of(TileEntityGoldPortal::new).build(null);
+	    TileEntityType<TileEntityLocalTeleporter> tetLocalTeleporter = TileEntityType.Builder.of(TileEntityLocalTeleporter::new).build(null);
 	    tetPortalKeyhole.setRegistryName(MOD_ID, TileEntityPortalKeyhole.REG_NAME);
 	    tetGoldPortal.setRegistryName(MOD_ID, TileEntityGoldPortal.REG_NAME);
 	    tetLocalTeleporter.setRegistryName(MOD_ID, TileEntityLocalTeleporter.REG_NAME);
@@ -165,7 +165,7 @@ public class DimDungeons
 	    teRegistryEvent.getRegistry().register(tetLocalTeleporter);
 
 	    // register a chunk generator here because I can get away with it
-	    Registry.register(Registry.CHUNK_GENERATOR_CODEC, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.myCodec);
+	    Registry.register(Registry.CHUNK_GENERATOR, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.myCodec);
 
 	}
 

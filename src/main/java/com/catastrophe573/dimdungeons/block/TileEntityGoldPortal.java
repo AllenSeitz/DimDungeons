@@ -37,9 +37,9 @@ public class TileEntityGoldPortal extends TileEntity
     }
 
     @Override
-    public void read(BlockState stateIn, CompoundNBT compound)
+    public void load(BlockState stateIn, CompoundNBT compound)
     {
-	super.read(stateIn, compound);
+	super.load(stateIn, compound);
 	if (compound.contains("destX") && compound.contains("destY") && compound.contains("destZ"))
 	{
 	    this.destX = compound.getDouble("destX");
@@ -63,14 +63,14 @@ public class TileEntityGoldPortal extends TileEntity
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound)
+    public CompoundNBT save(CompoundNBT compound)
     {
 	compound.putDouble("destX", this.destX);
 	compound.putDouble("destY", this.destY);
 	compound.putDouble("destZ", this.destZ);
 	compound.putInt("cooldown", this.cooldown);
 	compound.putString("destDimension", this.destDimension);
-	return super.write(compound);
+	return super.save(compound);
     }
 
     public void setDestination(double posX, double posY, double posZ, String destDim)
@@ -93,7 +93,7 @@ public class TileEntityGoldPortal extends TileEntity
 
     public RegistryKey<World> getDestinationDimension()
     {
-	return RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(destDimension));
+	return RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(destDimension));
     }
     
     public boolean needsUpdateThisTick(int tick)
@@ -114,29 +114,29 @@ public class TileEntityGoldPortal extends TileEntity
 
 	// search each neighboring block for siblings and update them too
 	int numBlocksUpdated = 0;
-	if (worldIn.getTileEntity(pos.west()) instanceof TileEntityGoldPortal)
+	if (worldIn.getBlockEntity(pos.west()) instanceof TileEntityGoldPortal)
 	{
-	    numBlocksUpdated += ((TileEntityGoldPortal) worldIn.getTileEntity(pos.west())).setCooldown(value, worldIn, pos.west(), currentServerTick) ? 1 : 0;
+	    numBlocksUpdated += ((TileEntityGoldPortal) worldIn.getBlockEntity(pos.west())).setCooldown(value, worldIn, pos.west(), currentServerTick) ? 1 : 0;
 	}
-	if (worldIn.getTileEntity(pos.east()) instanceof TileEntityGoldPortal)
+	if (worldIn.getBlockEntity(pos.east()) instanceof TileEntityGoldPortal)
 	{
-	    numBlocksUpdated += ((TileEntityGoldPortal) worldIn.getTileEntity(pos.east())).setCooldown(value, worldIn, pos.east(), currentServerTick) ? 1 : 0;
+	    numBlocksUpdated += ((TileEntityGoldPortal) worldIn.getBlockEntity(pos.east())).setCooldown(value, worldIn, pos.east(), currentServerTick) ? 1 : 0;
 	}
-	if (worldIn.getTileEntity(pos.north()) instanceof TileEntityGoldPortal)
+	if (worldIn.getBlockEntity(pos.north()) instanceof TileEntityGoldPortal)
 	{
-	    numBlocksUpdated += ((TileEntityGoldPortal) worldIn.getTileEntity(pos.north())).setCooldown(value, worldIn, pos.north(), currentServerTick) ? 1 : 0;
+	    numBlocksUpdated += ((TileEntityGoldPortal) worldIn.getBlockEntity(pos.north())).setCooldown(value, worldIn, pos.north(), currentServerTick) ? 1 : 0;
 	}
-	if (worldIn.getTileEntity(pos.south()) instanceof TileEntityGoldPortal)
+	if (worldIn.getBlockEntity(pos.south()) instanceof TileEntityGoldPortal)
 	{
-	    numBlocksUpdated += ((TileEntityGoldPortal) worldIn.getTileEntity(pos.south())).setCooldown(value, worldIn, pos.south(), currentServerTick) ? 1 : 0;
+	    numBlocksUpdated += ((TileEntityGoldPortal) worldIn.getBlockEntity(pos.south())).setCooldown(value, worldIn, pos.south(), currentServerTick) ? 1 : 0;
 	}
-	if (worldIn.getTileEntity(pos.up()) instanceof TileEntityGoldPortal)
+	if (worldIn.getBlockEntity(pos.above()) instanceof TileEntityGoldPortal)
 	{
-	    numBlocksUpdated += ((TileEntityGoldPortal) worldIn.getTileEntity(pos.up())).setCooldown(value, worldIn, pos.up(), currentServerTick) ? 1 : 0;
+	    numBlocksUpdated += ((TileEntityGoldPortal) worldIn.getBlockEntity(pos.above())).setCooldown(value, worldIn, pos.above(), currentServerTick) ? 1 : 0;
 	}
-	if (worldIn.getTileEntity(pos.down()) instanceof TileEntityGoldPortal)
+	if (worldIn.getBlockEntity(pos.below()) instanceof TileEntityGoldPortal)
 	{
-	    numBlocksUpdated += ((TileEntityGoldPortal) worldIn.getTileEntity(pos.down())).setCooldown(value, worldIn, pos.down(), currentServerTick) ? 1 : 0;
+	    numBlocksUpdated += ((TileEntityGoldPortal) worldIn.getBlockEntity(pos.below())).setCooldown(value, worldIn, pos.below(), currentServerTick) ? 1 : 0;
 	}
 
 	return numBlocksUpdated > 0;

@@ -31,7 +31,7 @@ public class CommandDimDungeons
 	// the first half of the /givekey cheat
 	LiteralArgumentBuilder<CommandSource> givekeyArgumentBuilder = Commands.literal("givekey").requires((cmd) ->
 	{
-	    return cmd.hasPermissionLevel(2);
+	    return cmd.hasPermission(2);
 	});
 
 	// make a different cheat for "givekey basic", "givekey advanced", etc
@@ -41,7 +41,7 @@ public class CommandDimDungeons
 	    String type = keytypes[i];
 	    givekeyArgumentBuilder.then(Commands.literal(type).executes((cmd) ->
 	    {
-		return giveKey(cmd, Collections.singleton(cmd.getSource().asPlayer()), type);
+		return giveKey(cmd, Collections.singleton(cmd.getSource().getPlayerOrException()), type);
 	    }).then(Commands.argument("target", EntityArgument.players()).executes((cmd) ->
 	    {
 		return giveKey(cmd, EntityArgument.getPlayers(cmd, "target"), type);
@@ -54,7 +54,7 @@ public class CommandDimDungeons
 	// make the /gendungeon cheat
 	LiteralArgumentBuilder<CommandSource> gendungeonArgumentBuilder = Commands.literal("gendungeon").requires((cmd) ->
 	{
-	    return cmd.hasPermissionLevel(2);
+	    return cmd.hasPermission(2);
 	});
 	gendungeonArgumentBuilder.then(Commands.argument("x", IntegerArgumentType.integer(0, ItemPortalKey.RANDOM_COORDINATE_RANGE))
 		.then(Commands.argument("z", IntegerArgumentType.integer(ItemPortalKey.RANDOM_COORDINATE_RANGE * -1, ItemPortalKey.RANDOM_COORDINATE_RANGE)).executes((cmd) ->
@@ -96,30 +96,30 @@ public class CommandDimDungeons
 	    }
 
 	    // try to give the player the item
-	    boolean flag = serverplayerentity.inventory.addItemStackToInventory(stack);
+	    boolean flag = serverplayerentity.inventory.add(stack);
 
 	    // if that fails then throw it on the ground at the player's feet
 	    if (flag && stack.isEmpty())
 	    {
 		stack.setCount(1);
-		ItemEntity itementity = serverplayerentity.dropItem(stack, false);
+		ItemEntity itementity = serverplayerentity.drop(stack, false);
 		if (itementity != null)
 		{
 		    itementity.makeFakeItem();
 		}
 
-		serverplayerentity.world.playSound((PlayerEntity) null, serverplayerentity.getPosX(), serverplayerentity.getPosY(), serverplayerentity.getPosZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F,
-			((serverplayerentity.getRNG().nextFloat() - serverplayerentity.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
-		serverplayerentity.container.detectAndSendChanges();
+		serverplayerentity.level.playSound((PlayerEntity) null, serverplayerentity.getX(), serverplayerentity.getY(), serverplayerentity.getZ(), SoundEvents.ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F,
+			((serverplayerentity.getRandom().nextFloat() - serverplayerentity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+		serverplayerentity.inventoryMenu.broadcastChanges();
 	    }
 	    else
 	    {
 		// keys don't normally stack, but just in case this block of code gives a stack of keys
-		ItemEntity itementity = serverplayerentity.dropItem(stack, false);
+		ItemEntity itementity = serverplayerentity.drop(stack, false);
 		if (itementity != null)
 		{
-		    itementity.setNoPickupDelay();
-		    itementity.setOwnerId(serverplayerentity.getUniqueID());
+		    itementity.setNoPickUpDelay();
+		    itementity.setOwner(serverplayerentity.getUUID());
 		}
 	    }
 	}
@@ -127,11 +127,11 @@ public class CommandDimDungeons
 	// print either "Gave one [key] to Dev" or "Gave one [key] to X players"
 	if (targets.size() == 1)
 	{
-	    cmd.getSource().sendFeedback(new TranslationTextComponent("commands.give.success.single", 1, keyName, targets.iterator().next().getDisplayName()), true);
+	    cmd.getSource().sendSuccess(new TranslationTextComponent("commands.give.success.single", 1, keyName, targets.iterator().next().getDisplayName()), true);
 	}
 	else
 	{
-	    cmd.getSource().sendFeedback(new TranslationTextComponent("commands.give.success.single", 1, keyName, targets.size()), true);
+	    cmd.getSource().sendSuccess(new TranslationTextComponent("commands.give.success.single", 1, keyName, targets.size()), true);
 	}
 
 	return targets.size();
@@ -143,7 +143,7 @@ public class CommandDimDungeons
 	DungeonGenData fakeData = new DungeonGenData();
 	if (cmd.getSource() != null)
 	{
-	    fakeData.setReturnPoint(new BlockPos(cmd.getSource().getPos().x, cmd.getSource().getPos().y + 2, cmd.getSource().getPos().z), "minecraft:overworld");
+	    fakeData.setReturnPoint(new BlockPos(cmd.getSource().getPosition().x, cmd.getSource().getPosition().y + 2, cmd.getSource().getPosition().z), "minecraft:overworld");
 	}
 	else
 	{
@@ -155,13 +155,13 @@ public class CommandDimDungeons
 	((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).forceCoordinates(fakeKey, destX, destZ);
 	fakeData.setKeyItem(fakeKey);
 
-	if (DungeonUtils.buildDungeon(cmd.getSource().getWorld(), fakeData))
+	if (DungeonUtils.buildDungeon(cmd.getSource().getLevel(), fakeData))
 	{
-	    cmd.getSource().sendFeedback(new TranslationTextComponent("commands.gendungeon.success", fakeKey.getDisplayName()), true);
+	    cmd.getSource().sendSuccess(new TranslationTextComponent("commands.gendungeon.success", fakeKey.getHoverName()), true);
 	    return 1;
 	}
 
-	cmd.getSource().sendFeedback(new TranslationTextComponent("commands.gendungeon.failed"), true);
+	cmd.getSource().sendSuccess(new TranslationTextComponent("commands.gendungeon.failed"), true);
 	return 0;
     }
 }

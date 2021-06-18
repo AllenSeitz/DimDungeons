@@ -25,36 +25,36 @@ public class ItemHomewardPearl extends Item
 
     @Override
     //public ActionResultType onItemUse(ItemUseContext parameters)
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn)
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn)
     {
-	ItemStack itemstack = playerIn.getHeldItem(handIn);
+	ItemStack itemstack = playerIn.getItemInHand(handIn);
 
 	// this item only works in the Dungeon Dimension
-	if (!DungeonUtils.isDimensionDungeon((World) playerIn.getEntityWorld()))
+	if (!DungeonUtils.isDimensionDungeon((World) playerIn.getCommandSenderWorld()))
 	{
 	    return new ActionResult<>(ActionResultType.FAIL, itemstack);
 	}
 
 	// do nothing on the client, let the server do the teleport
-	if (playerIn.getEntityWorld().isRemote)
+	if (playerIn.getCommandSenderWorld().isClientSide)
 	{
 	    return new ActionResult<>(ActionResultType.SUCCESS, itemstack);
 	}
 
 	// this is the dungeon dimension
-	ServerWorld serverWorld = playerIn.getEntityWorld().getServer().getWorld(playerIn.getEntityWorld().getDimensionKey());
+	ServerWorld serverWorld = playerIn.getCommandSenderWorld().getServer().getLevel(playerIn.getCommandSenderWorld().dimension());
 
 	// teleport the player
-	double newx = getHomeX(playerIn.getPosX());
+	double newx = getHomeX(playerIn.getX());
 	double newy = 55.1D;
-	double newz = getHomeZ(playerIn.getPosZ());
+	double newz = getHomeZ(playerIn.getZ());
 	CustomTeleporter tele = new CustomTeleporter(serverWorld);
 	tele.setDestPos(newx, newy, newz, 180.0f, 0.0f);
 	playerIn.changeDimension(serverWorld, tele); // changing within the same dimension, but still teleport safely anyways
 
 	// consume one pearl from the stack
 	itemstack.shrink(1);
-	playerIn.getCooldownTracker().setCooldown(this, 80);
+	playerIn.getCooldowns().addCooldown(this, 80);
 
 	return new ActionResult<>(ActionResultType.SUCCESS, itemstack);
     }

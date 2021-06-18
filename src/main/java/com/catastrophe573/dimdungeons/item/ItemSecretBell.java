@@ -137,21 +137,21 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn)
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn)
     {
-	ItemStack itemstack = playerIn.getHeldItem(handIn);
+	ItemStack itemstack = playerIn.getItemInHand(handIn);
 
 	// Only the level 2 bell may be used in any dimension. The level 1 bell works exclusively in the dungeon dimension.
-	if (getUpgradeLevel(itemstack) < 2 && !DungeonUtils.isDimensionDungeon((World) playerIn.getEntityWorld()))
+	if (getUpgradeLevel(itemstack) < 2 && !DungeonUtils.isDimensionDungeon((World) playerIn.getCommandSenderWorld()))
 	{
 	    return new ActionResult<>(ActionResultType.FAIL, itemstack);
 	}
 
 	if (handIn == Hand.MAIN_HAND)
 	{
-	    playerIn.getCooldownTracker().setCooldown(this, BELL_COOLDOWN_TICKS);
+	    playerIn.getCooldowns().addCooldown(this, BELL_COOLDOWN_TICKS);
 
-	    BlockPos secret = findSecretChestNearby(playerIn.getPosition(), worldIn);
+	    BlockPos secret = findSecretChestNearby(playerIn.blockPosition(), worldIn);
 	    setSecretLocation(itemstack, secret.getX(), secret.getY(), secret.getZ());
 	    return new ActionResult<>(ActionResultType.SUCCESS, itemstack);
 	}
@@ -170,7 +170,7 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 	ServerPlayerEntity playerIn = (ServerPlayerEntity) entityIn;
 
 	// convert from percentage back to raw ticks
-	int time = (int) (playerIn.getCooldownTracker().getCooldown(this, 0) * BELL_COOLDOWN_TICKS);
+	int time = (int) (playerIn.getCooldowns().getCooldownPercent(this, 0) * BELL_COOLDOWN_TICKS);
 	if (time == 0)
 	{
 	    return;
@@ -178,19 +178,19 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 
 	if (time ==BELL_COOLDOWN_TICKS)
 	{
-	    playSoundAtPosition(worldIn, entityIn.getPosition(), 13);
+	    playSoundAtPosition(worldIn, entityIn.blockPosition(), 13);
 	}
 	if (time == BELL_COOLDOWN_TICKS - 3)
 	{
-	    playSoundAtPosition(worldIn, entityIn.getPosition(), 12);
+	    playSoundAtPosition(worldIn, entityIn.blockPosition(), 12);
 	}
 	if (time == BELL_COOLDOWN_TICKS - 6)
 	{
-	    playSoundAtPosition(worldIn, entityIn.getPosition(), 9);
+	    playSoundAtPosition(worldIn, entityIn.blockPosition(), 9);
 	}
 	if (time == BELL_COOLDOWN_TICKS - 9)
 	{
-	    playSoundAtPosition(worldIn, entityIn.getPosition(), 3);
+	    playSoundAtPosition(worldIn, entityIn.blockPosition(), 3);
 	}
 
 	// assume that worlds won't go beyond -10000, even in the upcoming 1.17
@@ -220,7 +220,7 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     public void playSoundAtPosition(World worldIn, BlockPos pos, int note)
     {
 	float pitch = (float) Math.pow(2.0D, (double) (note - 12) / 12.0D);
-	worldIn.playSound((PlayerEntity) null, pos, NoteBlockInstrument.BELL.getSound(), SoundCategory.RECORDS, 3.0F, pitch);
+	worldIn.playSound((PlayerEntity) null, pos, NoteBlockInstrument.BELL.getSoundEvent(), SoundCategory.RECORDS, 3.0F, pitch);
 
 	worldIn.addParticle(ParticleTypes.NOTE, (double) pos.getX() + 0.5D, (double) pos.getY() + 1.6D, (double) pos.getZ() + 0.5D, (double) note / 24.0D, 0.0D, 0.0D);
 	//worldIn.addParticle(ParticleTypes.NOTE, (double)pos.getX() + 0.5D, (double) pos.getY() + 1.2D, (double) pos.getZ() + 0.5D, (double)i / 24.0D, 0.0D, 0.0D);
@@ -243,34 +243,34 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     }
 
     // Current implementations of this method in child classes do not use the entry argument beside ev. They just raise the damage on the stack.
-    public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker)
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker)
     {
-	stack.damageItem(1, attacker, (entity) ->
+	stack.hurtAndBreak(1, attacker, (entity) ->
 	{
-	    entity.sendBreakAnimation(EquipmentSlotType.MAINHAND);
+	    entity.broadcastBreakEvent(EquipmentSlotType.MAINHAND);
 	});
 
 	// play a loud CLANG because it's funny
-	attacker.getEntityWorld().playSound((PlayerEntity) null, target.getPosition(), SoundEvents.BLOCK_BELL_USE, SoundCategory.BLOCKS, 2.0F, 1.0F);
+	attacker.getCommandSenderWorld().playSound((PlayerEntity) null, target.blockPosition(), SoundEvents.BELL_BLOCK, SoundCategory.BLOCKS, 2.0F, 1.0F);
 
 	return true;
     }
 
     // Called when a Block is destroyed using this Item. Return true to trigger the "Use Item" statistic.
     // Players probably shouldn't be breaking things with a bell anyway, but they can.
-    public boolean onBlockDestroyed(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving)
+    public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving)
     {
-	if (state.getBlockHardness(worldIn, pos) != 0.0F)
+	if (state.getDestroySpeed(worldIn, pos) != 0.0F)
 	{
-	    stack.damageItem(2, entityLiving, (entity) ->
+	    stack.hurtAndBreak(2, entityLiving, (entity) ->
 	    {
-		entity.sendBreakAnimation(EquipmentSlotType.MAINHAND);
+		entity.broadcastBreakEvent(EquipmentSlotType.MAINHAND);
 	    });
 	}
 	return true;
     }
 
-    public boolean canHarvestBlock(BlockState blockIn)
+    public boolean isCorrectToolForDrops(BlockState blockIn)
     {
 	return false;
     }
@@ -296,7 +296,7 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 	    {
 		for (int y = startY; y < startY + 16; y++)
 		{
-		    TileEntity te = worldIn.getTileEntity(new BlockPos(x, y, z));
+		    TileEntity te = worldIn.getBlockEntity(new BlockPos(x, y, z));
 		    if (te != null && te instanceof LockableLootTileEntity)
 		    {
 			boolean hasLootTable = false;
