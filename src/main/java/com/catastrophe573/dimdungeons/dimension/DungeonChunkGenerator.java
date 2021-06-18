@@ -178,7 +178,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 			    // for debugging mostly but it also kind of looks good when you're in creative mode
 			    if (DungeonPlacementLogicBasic.isEntranceChunk(x, z) || DungeonPlacementLogicAdvanced.isEntranceChunk(x, z))
 			    {
-				chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.GRANITE.defaultBlockState(), false);
+				chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BLACKSTONE.defaultBlockState(), false);
 			    }
 			    else
 			    {
