@@ -11,10 +11,10 @@ import net.minecraft.block.AbstractBlock;
 public class BlockPortalCrown extends WallBlock
 {
     public static String REG_NAME = "block_portal_crown";
-    
+
     public BlockPortalCrown()
     {
 	super(AbstractBlock.Properties.of(Material.STONE).strength(2).sound(SoundType.METAL));
-	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);    
+	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 }

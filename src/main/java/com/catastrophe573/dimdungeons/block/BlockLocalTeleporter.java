@@ -86,9 +86,9 @@ public class BlockLocalTeleporter extends BreakableBlock
 		float warpX = destination.getX();
 		float warpY = destination.getY();
 		float warpZ = destination.getZ();
-		float newPitch = (float)te.getPitch();
-		float newYaw = (float)te.getYaw();
-		
+		float newPitch = (float) te.getPitch();
+		float newYaw = (float) te.getYaw();
+
 		actuallyPerformTeleport((ServerPlayerEntity) entityIn, worldIn.getServer().getLevel(entityIn.getCommandSenderWorld().dimension()), warpX, warpY, warpZ, newYaw, newPitch);
 	    }
 	}
@@ -113,5 +113,5 @@ public class BlockLocalTeleporter extends BreakableBlock
 	player.changeDimension(dim, tele); // changing within the same dimension, but still teleport safely anyways
 	//player.teleport(dim, x, y, z, destYaw, destPitch);
 	return player;
-    }    
+    }
 }

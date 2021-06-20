@@ -77,7 +77,7 @@ public class TileEntityLocalTeleporter extends TileEntity
     {
 	return destPitch;
     }
-    
+
     public double getYaw()
     {
 	return destYaw;

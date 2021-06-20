@@ -18,10 +18,10 @@ public class ItemRegistrar
     // this item is now unused because I've switched to Patchouli
     //@ObjectHolder("dimdungeons:" + ItemGuidebook.REG_NAME)
     //public static Item item_guidebook;
-    
+
     @ObjectHolder("dimdungeons:" + ItemSecretBell.REG_NAME)
     public static Item item_secret_bell;
-    
+
     public static final ItemGroup CREATIVE_TAB = new ItemGroup(DimDungeons.MOD_ID) {
 	@Override
 	public ItemStack makeIcon()

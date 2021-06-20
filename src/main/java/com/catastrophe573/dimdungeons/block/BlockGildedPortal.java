@@ -13,7 +13,7 @@ import net.minecraft.block.AbstractBlock;
 public class BlockGildedPortal extends Block
 {
     public static String REG_NAME = "block_gilded_portal";
-    
+
     public BlockGildedPortal()
     {
 	super(AbstractBlock.Properties.of(Material.STONE).strength(2).sound(SoundType.METAL));

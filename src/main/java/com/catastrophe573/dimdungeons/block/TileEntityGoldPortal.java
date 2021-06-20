@@ -50,11 +50,11 @@ public class TileEntityGoldPortal extends TileEntity
 	{
 	    this.cooldown = compound.getInt("cooldown");
 	}
-	
+
 	// default value for portals that players created before I allowed portals to other dimensions 
 	if (compound.contains("destDimension"))
 	{
-	    this.destDimension = compound.getString("destDimension");	    
+	    this.destDimension = compound.getString("destDimension");
 	}
 	else
 	{
@@ -95,7 +95,7 @@ public class TileEntityGoldPortal extends TileEntity
     {
 	return RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(destDimension));
     }
-    
+
     public boolean needsUpdateThisTick(int tick)
     {
 	return tick > lastUpdate;

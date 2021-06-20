@@ -40,7 +40,7 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     public static final String NBT_SECRET_X = "secret_x";
     public static final String NBT_SECRET_Y = "secret_y";
     public static final String NBT_SECRET_Z = "secret_z";
-    
+
     public static final int BELL_COOLDOWN_TICKS = 80;
 
     public ItemSecretBell(/* IItemTier tier, */ Item.Properties builderIn)
@@ -176,7 +176,7 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 	    return;
 	}
 
-	if (time ==BELL_COOLDOWN_TICKS)
+	if (time == BELL_COOLDOWN_TICKS)
 	{
 	    playSoundAtPosition(worldIn, entityIn.blockPosition(), 13);
 	}

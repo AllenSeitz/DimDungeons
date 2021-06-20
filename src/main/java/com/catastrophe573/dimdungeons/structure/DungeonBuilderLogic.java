@@ -243,16 +243,16 @@ public class DungeonBuilderLogic
 
 	    placeRoomShape(largeX, largeZ, large.get(largeIndex), RoomType.LARGE, Rotation.NONE);
 	    numRoomsPlaced += 4;
-	    
+
 	    // for each of the 4 rooms in this large room, add openings for doorways as long as they don't lead out of bounds
-	    for ( int xx = 0; xx < 2; xx++ )
+	    for (int xx = 0; xx < 2; xx++)
 	    {
-		for ( int zz = 0; zz < 2; zz++ )
+		for (int zz = 0; zz < 2; zz++)
 		{
 		    // calculate the coordinates of this quarter of the large room
 		    int roomX = largeX + xx;
 		    int roomZ = largeZ + zz;
-		    
+
 		    if (hasOpenDoor(roomX - 1, roomZ, Direction.EAST) && !finalLayout[roomX - 1][roomZ].hasRoom())
 		    {
 			openings.add(new ImmutablePair<Integer, Integer>(roomX - 1, roomZ));
@@ -272,11 +272,11 @@ public class DungeonBuilderLogic
 		    {
 			openings.add(new ImmutablePair<Integer, Integer>(roomX, roomZ + 1));
 			//DimDungeons.LOGGER.info("Adding large opening " + roomX + ", " + (roomZ+1));
-		    }		    
+		    }
 		}
 	    }
-	}	
-	
+	}
+
 	// remaining rooms: for each opening, place a room that fits, and update openings, until no openings are left
 	shuffleArray(openings);
 	while (openings.size() > 0)

@@ -11,19 +11,27 @@ import net.minecraftforge.registries.ObjectHolder;
 
 public class BlockRegistrar
 {
-    @ObjectHolder("dimdungeons:block_gilded_portal") public static Block block_gilded_portal;    
-    @ObjectHolder("dimdungeons:block_gold_portal") public static Block block_gold_portal;    
-    @ObjectHolder("dimdungeons:block_local_teleporter") public static Block block_local_teleporter;    
-    @ObjectHolder("dimdungeons:block_portal_keyhole") public static Block block_portal_keyhole;    
-    @ObjectHolder("dimdungeons:block_portal_crown") public static Block block_portal_crown;    
-    @ObjectHolder("dimdungeons:block_key_charger") public static Block block_key_charger;    
-    @ObjectHolder("dimdungeons:block_key_charger_used") public static Block block_key_charger_used;    
-    @ObjectHolder("dimdungeons:block_key_charger_damaged") public static Block block_key_charger_damaged;    
+    @ObjectHolder("dimdungeons:block_gilded_portal")
+    public static Block block_gilded_portal;
+    @ObjectHolder("dimdungeons:block_gold_portal")
+    public static Block block_gold_portal;
+    @ObjectHolder("dimdungeons:block_local_teleporter")
+    public static Block block_local_teleporter;
+    @ObjectHolder("dimdungeons:block_portal_keyhole")
+    public static Block block_portal_keyhole;
+    @ObjectHolder("dimdungeons:block_portal_crown")
+    public static Block block_portal_crown;
+    @ObjectHolder("dimdungeons:block_key_charger")
+    public static Block block_key_charger;
+    @ObjectHolder("dimdungeons:block_key_charger_used")
+    public static Block block_key_charger_used;
+    @ObjectHolder("dimdungeons:block_key_charger_damaged")
+    public static Block block_key_charger_damaged;
 
     public static String REG_NAME_CHARGER_FULL = "block_key_charger";
     public static String REG_NAME_CHARGER_USED = "block_key_charger_used";
     public static String REG_NAME_CHARGER_DAMAGED = "block_key_charger_damaged";
-    
+
     public static void registerAllBlocks(RegistryEvent.Register<Block> event)
     {
 	event.getRegistry().register(new BlockGildedPortal());

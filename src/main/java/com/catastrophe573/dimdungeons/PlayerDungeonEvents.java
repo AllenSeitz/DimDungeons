@@ -108,11 +108,11 @@ public class PlayerDungeonEvents
 	// assume this is frost walker and allow it?
 	String whatBlock = event.getPlacedBlock().getBlock().getRegistryName().getPath();
 	String whyBlock = event.getBlockSnapshot().getReplacedBlock().getBlock().getRegistryName().getPath();
-	if ("water".equals(whatBlock) && "water".equals(whyBlock) )
+	if ("water".equals(whatBlock) && "water".equals(whyBlock))
 	{
 	    return; // not sure why the block isn't frosted_ice though?
 	}
-	
+
 	event.setCanceled(true);
     }
 

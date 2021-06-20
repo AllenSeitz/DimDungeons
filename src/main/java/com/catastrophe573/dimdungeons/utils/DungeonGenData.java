@@ -8,7 +8,7 @@ public class DungeonGenData
 {
     //The key that was used to open the dungeon.
     public ItemStack keyItem;
-    
+
     //The calculated point to teleport the player to when exiting the dungeon.
     public BlockPos returnPoint;
     public String returnDimension;

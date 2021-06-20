@@ -38,9 +38,9 @@ public class ItemGuidebook extends Item
 	{
 	    // just because
 	    ITextComponent text1 = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.open_guide_message").getString());
-	    
+
 	    playerIn.sendMessage(((TranslationTextComponent) text1).withStyle(TextFormatting.DARK_PURPLE), Util.NIL_UUID);
-	    
+
 	    ITextComponent text2a = new TranslationTextComponent("<");
 	    ITextComponent text2b = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.author").getString());
 	    ITextComponent text2c = new TranslationTextComponent("> ");

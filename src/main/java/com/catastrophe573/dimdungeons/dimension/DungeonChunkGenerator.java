@@ -30,12 +30,12 @@ import net.minecraft.world.biome.provider.SingleBiomeProvider;
 public final class DungeonChunkGenerator extends ChunkGenerator
 {
     public static final Codec<FlatChunkGenerator> myCodec = FlatGenerationSettings.CODEC.fieldOf("settings").xmap(FlatChunkGenerator::new, FlatChunkGenerator::settings).codec();
-    private final FlatGenerationSettings settings;        
+    private final FlatGenerationSettings settings;
     private long worldSeed = 0;
 
     public DungeonChunkGenerator(FlatGenerationSettings settings)
     {
-	super(new SingleBiomeProvider(settings.getBiome()), new SingleBiomeProvider(settings.getBiome()), settings.structureSettings(), 0L);	
+	super(new SingleBiomeProvider(settings.getBiome()), new SingleBiomeProvider(settings.getBiome()), settings.structureSettings(), 0L);
 	this.settings = settings;
     }
 
