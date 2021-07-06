@@ -270,6 +270,8 @@
     "enemy.dimdungeons.minecraft:blaze": "Blaze",
     "enemy.dimdungeons.minecraft:vindicator": "Vindicator",
     "enemy.dimdungeons.minecraft:hoglin": "Hoglin",
+    "enemy.dimdungeons.minecraft:piglin": "Piglin",
+    "enemy.dimdungeons.minecraft:piglin_brute": "Brute",
     
     "enemy.dimdungeons.minecraft:enderman2": "Lunarian",
     "enemy.dimdungeons.minecraft:guardian2": "Hunter",
@@ -283,5 +285,7 @@
     "enemy.dimdungeons.minecraft:spider2": "Arachnid",
     "enemy.dimdungeons.minecraft:pillager2": "Raider",
     "enemy.dimdungeons.minecraft:blaze2": "Elemental",
-    "enemy.dimdungeons.minecraft:hoglin2": "Nether Boar"
+    "enemy.dimdungeons.minecraft:hoglin2": "Nether Boar",
+    "enemy.dimdungeons.minecraft:piglin2": "Piglin Captain",
+    "enemy.dimdungeons.minecraft:piglin_brute2": "Bastion King"    
 }

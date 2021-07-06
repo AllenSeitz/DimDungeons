@@ -65,7 +65,7 @@ public class DungeonPlacementLogicDebug
 	DimDungeons.logMessageInfo("DIMDUNGEONS START DEBUG STRUCTURE at " + x + ", " + z);
 
 	// this is the data structure for an entire dungeon
-	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.BASIC);
+	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.BASIC, genData.dungeonTheme);
 	switch (debugType)
 	{
 	case 1:
@@ -109,6 +109,9 @@ public class DungeonPlacementLogicDebug
 	    break;
 	case 14:
 	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.END);
+	    break;
+	case 15:
+	    DungeonBuilderTestShapes.MakeTestDungeonForTheme(dbl, genData.dungeonTheme);
 	    break;
 	}
 

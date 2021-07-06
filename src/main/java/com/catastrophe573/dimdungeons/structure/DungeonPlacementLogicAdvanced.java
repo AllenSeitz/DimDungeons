@@ -76,8 +76,9 @@ public class DungeonPlacementLogicAdvanced
 	DimDungeons.logMessageInfo("DIMDUNGEONS START ADVANCED STRUCTURE at " + x + ", " + z);
 
 	// this is the data structure for an entire dungeon
-	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.ADVANCED);
-	dbl.calculateDungeonShape(46, true);
+	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.ADVANCED, genData.dungeonTheme);
+	int dungeonSize = DungeonConfig.DEFAULT_ADVANCED_DUNGEON_SIZE;
+	dbl.calculateDungeonShape(dungeonSize, true);
 
 	// place all 64 rooms (many will be blank), for example the entrance room is at [4][7] in this array
 	for (int i = 0; i < 8; i++)
@@ -392,42 +393,6 @@ public class DungeonPlacementLogicAdvanced
 	return success;
     }
 
-    // this function assumes the chunk isDungeonChunk() and may return null if the dungeon doesn't have a room at that position
-    public static DungeonRoom getRoomForChunk(ChunkPos cpos, Random random)
-    {
-	// start by calculating the position of the entrance chunk for this dungeon
-	int entranceX = cpos.x;
-	int entranceZ = cpos.z;
-	int distToEntranceX = 8 - (entranceX % 16);
-	int distToEntranceZ = 5 + (entranceZ % 16);
-	entranceX += distToEntranceX;
-	entranceZ -= distToEntranceZ;
-
-	// assert that my math is not bad
-	if (!isEntranceChunk(entranceX, entranceZ))
-	{
-	    DimDungeons.logMessageError("DIMDUNGEONS MAJOR ERROR: attempting to generate a dungeon at a chunk which isn't an entrance chunk! (" + entranceX + ", " + entranceZ + ")");
-	    return null;
-	}
-
-	// this is the date structure for an entire dungeon
-	DungeonBuilderLogic dbl = new DungeonBuilderLogic(random, entranceX, entranceZ, DungeonType.ADVANCED);
-	{
-	    // generate the entire dungeon, an advanced dungeon
-	    dbl.calculateDungeonShape(46, true);
-	}
-
-	// pick the room we want, for example the entrance room is at [4][7] in this array
-	int i = (cpos.x % 16) - 4;
-	int j = (cpos.z % 16) + 12;
-	DungeonRoom nextRoom = dbl.finalLayout[i][j];
-	if (!nextRoom.hasRoom())
-	{
-	    return null; // no room here after all
-	}
-	return nextRoom;
-    }
-
     // another debugging function
     public void printMap(DungeonBuilderLogic dbl)
     {
@@ -607,7 +572,7 @@ public class DungeonPlacementLogicAdvanced
 	    ((MobEntity) mob).setPersistenceRequired();
 
 	    // health scaling
-	    float healthScaling = DungeonConfig.advancedEnemyHealthScaling;
+	    double healthScaling = DungeonConfig.advancedEnemyHealthScaling;
 	    ModifiableAttributeInstance tempHealth = ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH);
 	    ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH).setBaseValue(tempHealth.getBaseValue() * healthScaling);
 	    ((MobEntity) mob).setHealth((float) ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH).getBaseValue());

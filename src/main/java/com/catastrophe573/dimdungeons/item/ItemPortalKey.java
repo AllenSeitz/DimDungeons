@@ -39,6 +39,7 @@ public class ItemPortalKey extends Item
     public static final String NBT_NAME_TYPE = "name_type";
     public static final String NBT_NAME_PART_1 = "name_part_1";
     public static final String NBT_NAME_PART_2 = "name_part_2";
+    public static final String NBT_THEME = "theme";
 
     public static final int BLOCKS_APART_PER_DUNGEON = 256; // 16 chunks to try to keep "noise" or other interference from neighbors to a minimum (also makes maps work)
     public static final int RANDOM_COORDINATE_RANGE = 8192; // (0-8192 * 256) = 0 to 2,097,152
@@ -78,12 +79,14 @@ public class ItemPortalKey extends Item
 	}
 	return 1;
     }
-
-    public void activateKey(ItemStack stack)
+        
+    // the only way to obtain a key with a theme is to find it already activated that way
+    public void activateKeyLevel1(ItemStack stack, int theme)
     {
 	CompoundNBT data = new CompoundNBT();
 	data.putBoolean(NBT_KEY_ACTIVATED, true);
 	data.putBoolean(NBT_BUILT, false);
+	data.putInt(NBT_THEME, theme);
 
 	// where is this key going?
 	int destX = random.nextInt(RANDOM_COORDINATE_RANGE);
@@ -114,6 +117,7 @@ public class ItemPortalKey extends Item
 	CompoundNBT data = new CompoundNBT();
 	data.putBoolean(NBT_KEY_ACTIVATED, true);
 	data.putBoolean(NBT_BUILT, false);
+	data.putInt(NBT_THEME, 0);
 
 	// where is this key going?
 	int destX = random.nextInt(RANDOM_COORDINATE_RANGE);
@@ -127,14 +131,15 @@ public class ItemPortalKey extends Item
 	data.putInt(NBT_NAME_PART_2, random.nextInt(12)); // largeness
 
 	stack.setTag(data);
-    }
-
+    } 
+    
     // used by the /gendungeon cheat and nothing else
     public void forceCoordinates(ItemStack stack, int destX, int destZ)
     {
 	CompoundNBT data = new CompoundNBT();
 	data.putBoolean(NBT_KEY_ACTIVATED, true);
 	data.putBoolean(NBT_BUILT, false);
+	data.putInt(NBT_THEME, 0);
 
 	// where is this key going?
 	destX = destX < 0 || destX > RANDOM_COORDINATE_RANGE ? 0 : destX;
@@ -306,6 +311,19 @@ public class ItemPortalKey extends Item
 	return -1;
     }
 
+    public int getDungeonTheme(ItemStack stack)
+    {
+	if (stack != null && !stack.isEmpty())
+	{
+	    CompoundNBT itemData = stack.getTag();
+	    if (itemData != null && itemData.contains(NBT_THEME))
+	    {
+		return itemData.getInt(NBT_THEME);
+	    }
+	}
+	return -1;
+    }    
+    
     @Override
     //public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     public ActionResultType useOn(ItemUseContext parameters)
@@ -495,7 +513,7 @@ public class ItemPortalKey extends Item
 	}
 	else
 	{
-	    activateKey(itemstack);
+	    activateKeyLevel1(itemstack, 0);
 	}
 
 	// more particle effects for this special event!

@@ -247,4 +247,77 @@ public class DungeonBuilderTestShapes
 	    }
 	}
     }
+
+    public static void MakeTestDungeonForTheme(DungeonBuilderLogic dbl, int theme)
+    {
+	ArrayList<String> allrooms = Lists.newArrayList();
+
+	// assemble a list of every room in every set of rooms for the theme that we care about
+	for (int i = 0; i < DungeonConfig.themeSettings.get(theme-1).themeEntrances.size(); i++)
+	{
+	    for (int j = 0; j < DungeonConfig.themeSettings.get(theme-1).themeEntrances.get(i).size(); j++)
+	    {
+		String temp = DungeonConfig.themeSettings.get(theme-1).themeEntrances.get(i).get(j);
+		allrooms.add(temp.replace("dimdungeons:", ""));
+	    }
+	}
+	for (int i = 0; i < DungeonConfig.themeSettings.get(theme-1).themeFourways.size(); i++)
+	{
+	    for (int j = 0; j < DungeonConfig.themeSettings.get(theme-1).themeFourways.get(i).size(); j++)
+	    {
+		String temp = DungeonConfig.themeSettings.get(theme-1).themeFourways.get(i).get(j);
+		allrooms.add(temp.replace("dimdungeons:", ""));
+	    }
+	}
+	for (int i = 0; i < DungeonConfig.themeSettings.get(theme-1).themeThreeways.size(); i++)
+	{
+	    for (int j = 0; j < DungeonConfig.themeSettings.get(theme-1).themeThreeways.get(i).size(); j++)
+	    {
+		String temp = DungeonConfig.themeSettings.get(theme-1).themeThreeways.get(i).get(j);
+		allrooms.add(temp.replace("dimdungeons:", ""));
+	    }
+	}
+	for (int i = 0; i < DungeonConfig.themeSettings.get(theme-1).themeHallways.size(); i++)
+	{
+	    for (int j = 0; j < DungeonConfig.themeSettings.get(theme-1).themeHallways.get(i).size(); j++)
+	    {
+		String temp = DungeonConfig.themeSettings.get(theme-1).themeHallways.get(i).get(j);
+		allrooms.add(temp.replace("dimdungeons:", ""));
+	    }
+	}
+	for (int i = 0; i < DungeonConfig.themeSettings.get(theme-1).themeCorners.size(); i++)
+	{
+	    for (int j = 0; j < DungeonConfig.themeSettings.get(theme-1).themeCorners.get(i).size(); j++)
+	    {
+		String temp = DungeonConfig.themeSettings.get(theme-1).themeCorners.get(i).get(j);
+		allrooms.add(temp.replace("dimdungeons:", ""));
+	    }
+	}
+	for (int i = 0; i < DungeonConfig.themeSettings.get(theme-1).themeEnds.size(); i++)
+	{
+	    for (int j = 0; j < DungeonConfig.themeSettings.get(theme-1).themeEnds.get(i).size(); j++)
+	    {
+		String temp = DungeonConfig.themeSettings.get(theme-1).themeEnds.get(i).get(j);
+		allrooms.add(temp.replace("dimdungeons:", ""));
+	    }
+	}
+
+	// first place an entrance, because I got sick of not having one
+	dbl.placeRoomShape(4, 7, allrooms.get(0), RoomType.ENTRANCE, Rotation.NONE);
+
+	// now place all the rooms in the layout
+	for (int i = 1; i < allrooms.size(); i++)
+	{
+	    // hack to skip over the entrance room, and move this room elsewhere
+	    if ((i / 8 == 4) && (i % 8 == 7))
+	    {
+		int beyondEnd = allrooms.size() + 1;
+		dbl.placeRoomShape(beyondEnd / 8, beyondEnd % 8, allrooms.get(i), RoomType.FOURWAY, Rotation.NONE);
+	    }
+	    else
+	    {
+		dbl.placeRoomShape(i / 8, i % 8, allrooms.get(i), RoomType.FOURWAY, Rotation.NONE);
+	    }
+	}
+    }
 }

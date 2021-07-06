@@ -143,6 +143,13 @@ public class DungeonUtils
 		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 14, genData);
 		return true;
 	    }
+	    if (name.contains("theme-"))
+	    {
+		String themeStr = name.replaceFirst("theme-", "");
+		genData.dungeonTheme = Integer.parseUnsignedInt(themeStr);
+		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 15, genData);
+		return true;
+	    }
 	}
 
 	// actually place the dungeon

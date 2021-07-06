@@ -12,6 +12,9 @@ public class DungeonGenData
     //The calculated point to teleport the player to when exiting the dungeon.
     public BlockPos returnPoint;
     public String returnDimension;
+    
+    // this is derived from the key, but stored here for convenience. remember theme < 1 means no theme
+    public int dungeonTheme = -1;
 
     DungeonGenData()
     {
@@ -34,4 +37,10 @@ public class DungeonGenData
 	this.returnDimension = returnDimension;
 	return this;
     }
+    
+    public DungeonGenData setTheme(int themeNum)
+    {
+	dungeonTheme = themeNum;
+	return this;
+    }    
 }

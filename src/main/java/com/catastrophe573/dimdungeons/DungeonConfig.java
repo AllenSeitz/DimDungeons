@@ -12,6 +12,7 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,7 +23,13 @@ public class DungeonConfig
     public static final ServerConfig SERVER;
     public static final ForgeConfigSpec SERVER_SPEC;
 
-    public static final int DEFAULT_CONFIG_VERSION = 3;
+    public static final int DEFAULT_CONFIG_VERSION = 4;
+
+    public static final int DEFAULT_BASIC_DUNGEON_SIZE = 25;
+    public static final int DEFAULT_ADVANCED_DUNGEON_SIZE = 46;
+
+    public static final int DEFAULT_NUMBER_OF_THEMES = 2;
+    public static final int DEFAULT_THEME_DUNGEON_SIZE = 14;
 
     static
     {
@@ -87,8 +94,57 @@ public class DungeonConfig
     public static List<? extends String> basicEnemySet2;
     public static List<? extends String> advancedEnemySet1;
     public static List<? extends String> advancedEnemySet2;
-    public static float basicEnemyHealthScaling = 1.0f;
-    public static float advancedEnemyHealthScaling = 1.0f;
+    public static double basicEnemyHealthScaling = 1.0f;
+    public static double advancedEnemyHealthScaling = 2.0f;
+
+    // theme option structure
+    public static class ThemeStructure
+    {
+	public List<? extends List<String>> themeEntrances;
+	public List<? extends List<String>> themeFourways;
+	public List<? extends List<String>> themeThreeways;
+	public List<? extends List<String>> themeHallways;
+	public List<? extends List<String>> themeCorners;
+	public List<? extends List<String>> themeEnds;
+	public List<? extends String> themeEnemySet1;
+	public List<? extends String> themeEnemySet2;
+	public Double themeEnemyHealthScaling;
+	public Integer themeDungeonSize;
+
+	ThemeStructure()
+	{
+	    themeEntrances = new ArrayList<List<String>>();
+	    themeFourways = new ArrayList<List<String>>();
+	    themeThreeways = new ArrayList<List<String>>();
+	    themeHallways = new ArrayList<List<String>>();
+	    themeCorners = new ArrayList<List<String>>();
+	    themeEnds = new ArrayList<List<String>>();
+	    themeEnemySet1 = new ArrayList<String>();
+	    themeEnemySet2 = new ArrayList<String>();
+	    themeEnemyHealthScaling = 1.0;
+	    themeDungeonSize = DEFAULT_THEME_DUNGEON_SIZE;
+	}
+    }
+
+    // this is used by the CommonConfig class
+    public static class ThemeConfig
+    {
+	public ForgeConfigSpec.ConfigValue<List<? extends List<String>>> themeEntrances;
+	public ForgeConfigSpec.ConfigValue<List<? extends List<String>>> themeFourways;
+	public ForgeConfigSpec.ConfigValue<List<? extends List<String>>> themeThreeways;
+	public ForgeConfigSpec.ConfigValue<List<? extends List<String>>> themeHallways;
+	public ForgeConfigSpec.ConfigValue<List<? extends List<String>>> themeCorners;
+	public ForgeConfigSpec.ConfigValue<List<? extends List<String>>> themeEnds;
+	public ForgeConfigSpec.ConfigValue<List<? extends String>> themeEnemySet1;
+	public ForgeConfigSpec.ConfigValue<List<? extends String>> themeEnemySet2;
+	public ConfigValue<Double> themeEnemyHealthScaling;
+	public ConfigValue<Integer> themeDungeonSize;
+    }
+
+    // actual theme options (these are part of the common config)
+    public static int numberOfThemes = 2;
+    public static boolean useThemeKeys = true;
+    public static List<ThemeStructure> themeSettings;
 
     public static class ServerConfig
     {
@@ -934,6 +990,47 @@ public class DungeonConfig
 
 	return temp;
     }
+    
+    // this takes themeNum as a parameter to make the loop where it is used more readable
+    // I'm trying to hardcode initial values for lists of lists of strings in the most concise and readable way possible
+    public static List<? extends String> defaultThemeEnemySet1(int themeNum)
+    {
+	if ( themeNum == 1 )
+	{
+	    return Lists.newArrayList("minecraft:skeleton", "minecraft:piglin", "minecraft:blaze");	    
+	}
+
+	return defaultAdvancedEnemySet1();
+    }    
+    
+    // this takes themeNum as a parameter to make the loop where it is used more readable
+    // I'm trying to hardcode initial values for lists of lists of strings in the most concise and readable way possible
+    public static List<? extends String> defaultThemeEnemySet2(int themeNum)
+    {
+	if ( themeNum == 1 )
+	{
+	    return Lists.newArrayList("minecraft:wither_skeleton", "minecraft:blaze", "minecraft:wither_skeleton", "minecraft:blaze", "minecraft:hoglin", "minecraft:piglin_brute");	    
+	}
+
+	return defaultAdvancedEnemySet2();
+    }        
+    
+    // this function is silly in purpose, but it is similar to the other hardcoded functions for the tiered dungeons
+    // I just named all the default theme rooms consistently so that this works
+    public static List<? extends List<String>> makeDefaultThemeRoomSet(int themeNum, String roomPart, int numRoomsInSet)
+    {
+	List<List<String>> returnList = Lists.newArrayList();
+	
+	// make the room sets have just one room each
+	for ( int i = 0; i < numRoomsInSet; i++ )
+	{
+	    List<String> temp = Lists.newArrayList();
+	    temp.add("dimdungeons:theme" + themeNum + "_" + roomPart + (i+1));
+	    returnList.add(temp);
+	}
+	
+	return returnList;
+    }    
 
     // any config that has to deal with datapacks
     public static class CommonConfig
@@ -960,8 +1057,13 @@ public class DungeonConfig
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> basicEnemySet2;
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet1;
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet2;
-	public final ConfigValue<Float> basicEnemyHealthScaling;
-	public final ConfigValue<Float> advancedEnemyHealthScaling;
+	public final ConfigValue<Double> basicEnemyHealthScaling;
+	public final ConfigValue<Double> advancedEnemyHealthScaling;
+
+	// actual theme options (these are part of the common config)
+	public final ConfigValue<Integer> numberOfThemes;
+	public final ForgeConfigSpec.BooleanValue useThemeKeys;	
+	public final ArrayList<ThemeConfig> allCommonThemeConfigs;
 
 	CommonConfig(ForgeConfigSpec.Builder builder)
 	{
@@ -992,8 +1094,36 @@ public class DungeonConfig
 	    basicEnemySet2 = builder.translation("config.dimdungeons.basicEnemySet2").define("basicEnemySet2", defaultBasicEnemySet2());
 	    advancedEnemySet1 = builder.translation("config.dimdungeons.advancedEnemySet1").define("advancedEnemySet1", defaultAdvancedEnemySet1());
 	    advancedEnemySet2 = builder.translation("config.dimdungeons.advancedEnemySet2").define("advancedEnemySet2", defaultAdvancedEnemySet2());
-	    basicEnemyHealthScaling = builder.translation("config.dimdungeons.basicEnemyHealthScaling").define("basicEnemyHealthScaling", 1.0f);
-	    advancedEnemyHealthScaling = builder.translation("config.dimdungeons.advancedEnemyHealthScaling").define("advancedEnemyHealthScaling", 2.0f);
+	    basicEnemyHealthScaling = builder.translation("config.dimdungeons.basicEnemyHealthScaling").define("basicEnemyHealthScaling", 1.0);
+	    advancedEnemyHealthScaling = builder.translation("config.dimdungeons.advancedEnemyHealthScaling").define("advancedEnemyHealthScaling", 2.0);
+	    builder.pop();
+
+	    // general theme options
+	    builder.comment("General Theme Options").push("themeOptions");
+	    useThemeKeys = builder.translation("config.dimdungeons.useThemeKeys").define("useThemeKeys", true);
+	    numberOfThemes = builder.translation("config.dimdungeons.numberOfThemes").define("numberOfThemes", DEFAULT_NUMBER_OF_THEMES);
+	    
+	    builder.pop();
+	    // handle each theme with a separate section in a loop
+	    allCommonThemeConfigs = new ArrayList<ThemeConfig>();
+	    for (int i = 1; i < DEFAULT_NUMBER_OF_THEMES + 1; i++)
+	    {
+		ThemeConfig temp = new ThemeConfig();
+		builder.comment("Settings for Theme " + i).push("dungeonTheme" + i);
+		temp.themeEntrances = builder.translation("config.dimdungeons.themeEntrances" + i).define("themeEntrances" + i, makeDefaultThemeRoomSet(i, "entrance", 3));
+		temp.themeFourways = builder.translation("config.dimdungeons.themeFourways" + i).define("themeFourways" + i, makeDefaultThemeRoomSet(i, "fourway", 6));
+		temp.themeThreeways = builder.translation("config.dimdungeons.basicThreeways" + i).define("themeThreeways" + i, makeDefaultThemeRoomSet(i, "threeway", 6));
+		temp.themeHallways = builder.translation("config.dimdungeons.basicHallways" + i).define("themeHallways" + i, makeDefaultThemeRoomSet(i, "hallway", 6));
+		temp.themeCorners = builder.translation("config.dimdungeons.basicCorners" + i).define("themeCorners" + i, makeDefaultThemeRoomSet(i, "corner", 6));
+		temp.themeEnds = builder.translation("config.dimdungeons.basicEnds" + i).define("themeEnds" + i, makeDefaultThemeRoomSet(i, "end", 6));
+		temp.themeEnemySet1 = builder.translation("config.dimdungeons.basicEnemySet1_" + i).define("themeEnemySet1_" + i, defaultThemeEnemySet1(i));
+		temp.themeEnemySet2 = builder.translation("config.dimdungeons.basicEnemySet2_" + i).define("themeEnemySet2_" + i, defaultThemeEnemySet2(i));
+		temp.themeEnemyHealthScaling = builder.translation("config.dimdungeons.themeEnemyHealthScaling" + i).define("themeEnemyHealthScaling" + i, 1.0);
+		temp.themeDungeonSize = builder.translation("config.dimdungeons.themeDungeonSize" + i).define("themeDungeonSize" + i, DEFAULT_THEME_DUNGEON_SIZE);
+		builder.pop();
+
+		allCommonThemeConfigs.add(i - 1, temp);
+	    }
 	}
     }
 
@@ -1040,6 +1170,26 @@ public class DungeonConfig
 	    COMMON.advancedCorners.set(defaultAdvancedCorners());
 	    COMMON.advancedEnds.set(defaultAdvancedEnds());
 	    COMMON.advancedLarge.set(defaultAdvancedLarge());
+
+	    // reset all theme choices too
+	    COMMON.numberOfThemes.set(DEFAULT_NUMBER_OF_THEMES);
+	    COMMON.allCommonThemeConfigs.clear();
+	    for (int i = 0; i < DEFAULT_NUMBER_OF_THEMES; i++)
+	    {
+		ThemeConfig temp = new ThemeConfig();
+		temp.themeEntrances.set(defaultBasicEntrances());
+		temp.themeFourways.set(defaultBasicFourways());
+		temp.themeThreeways.set(defaultBasicThreeways());
+		temp.themeHallways.set(defaultBasicHallways());
+		temp.themeCorners.set(defaultBasicCorners());
+		temp.themeEnds.set(defaultBasicEnds());
+		temp.themeEnemySet1.set(defaultBasicEnemySet1());
+		temp.themeEnemySet2.set(defaultBasicEnemySet2());
+		temp.themeEnemyHealthScaling.set(1.0);
+		temp.themeDungeonSize.set(DEFAULT_THEME_DUNGEON_SIZE);
+
+		COMMON.allCommonThemeConfigs.add(temp);
+	    }
 	}
 
 	// this is also where COMMON config is refreshed
@@ -1064,9 +1214,31 @@ public class DungeonConfig
 	advancedEnemySet2 = COMMON.advancedEnemySet2.get();
 	basicEnemyHealthScaling = COMMON.basicEnemyHealthScaling.get();
 	advancedEnemyHealthScaling = COMMON.advancedEnemyHealthScaling.get();
+
+	// refresh all theme configs
+	numberOfThemes = COMMON.numberOfThemes.get();
+	useThemeKeys = COMMON.useThemeKeys.get();
+	themeSettings = new ArrayList<ThemeStructure>();
+	for (int i = 0; i < DungeonConfig.numberOfThemes; i++)
+	{
+	    ThemeStructure tempStructure = new ThemeStructure();
+	    tempStructure.themeEntrances = COMMON.allCommonThemeConfigs.get(i).themeEntrances.get();
+	    tempStructure.themeFourways = COMMON.allCommonThemeConfigs.get(i).themeFourways.get();
+	    tempStructure.themeThreeways = COMMON.allCommonThemeConfigs.get(i).themeThreeways.get();
+	    tempStructure.themeHallways = COMMON.allCommonThemeConfigs.get(i).themeHallways.get();
+	    tempStructure.themeCorners = COMMON.allCommonThemeConfigs.get(i).themeCorners.get();
+	    tempStructure.themeEnds = COMMON.allCommonThemeConfigs.get(i).themeEnds.get();
+	    tempStructure.themeEnemySet1 = COMMON.allCommonThemeConfigs.get(i).themeEnemySet1.get();
+	    tempStructure.themeEnemySet2 = COMMON.allCommonThemeConfigs.get(i).themeEnemySet2.get();
+	    tempStructure.themeEnemyHealthScaling = COMMON.allCommonThemeConfigs.get(i).themeEnemyHealthScaling.get();
+	    tempStructure.themeDungeonSize = COMMON.allCommonThemeConfigs.get(i).themeDungeonSize.get();
+
+	    DimDungeons.logMessageInfo("DIMDUNGEONS: FINALIZED CONFIG FOR THEME " + (i+1) + "/" + DungeonConfig.numberOfThemes);
+	    themeSettings.add(i, tempStructure);
+	}
     }
 
-    // a helper function for translating ResourceLOcation strings (such as minecraft:chest) into blocks
+    // a helper function for translating ResourceLocation strings (such as minecraft:chest) into blocks
     private static Block parseBlock(String location)
     {
 	Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(location));

@@ -78,6 +78,7 @@ public class DungeonBuilderLogic
     public DungeonRoom finalLayout[][] = new DungeonRoom[8][8];
     public int enemyVariation1 = 0;
     public int enemyVariation2 = 0;
+    public int dungeonSize = 20;
 
     // these contain the candidates from pool selection, from the config file
     ArrayList<String> entrance = Lists.newArrayList();
@@ -101,11 +102,11 @@ public class DungeonBuilderLogic
     // or at least that was the intent in 1.14 anyways, but as of 1.16 dungeons are no longer built insid
     protected Random rand;
 
-    public DungeonBuilderLogic(Random randIn, long chunkX, long chunkZ, DungeonType type)
+    public DungeonBuilderLogic(Random randIn, long chunkX, long chunkZ, DungeonType type, int theme)
     {
 	rand = randIn;
 
-	if (type == DungeonType.BASIC)
+	if (type == DungeonType.BASIC && theme < 1)
 	{
 	    // pick one candidate from each pool
 	    for (int i = 0; i < DungeonConfig.basicEntrances.size(); i++)
@@ -144,7 +145,56 @@ public class DungeonBuilderLogic
 		int index = rand.nextInt(poolSize);
 		end.add(DungeonConfig.basicEnds.get(i).get(index));
 	    }
-	    // basic dungeons don't have large rooms but don't leave the array empty, for safety
+
+	    // basic and theme dungeons don't have large rooms but don't leave the array empty, for safety
+	    for (int i = 0; i < DungeonConfig.advancedLarge.size(); i++)
+	    {
+		int poolSize = DungeonConfig.advancedLarge.get(i).size();
+		int index = rand.nextInt(poolSize);
+		large.add(DungeonConfig.advancedLarge.get(i).get(index));
+	    }
+	}
+	else if (type == DungeonType.BASIC && theme > 0)
+	{
+	    // pick one candidate from each pool
+	    for (int i = 0; i < DungeonConfig.themeSettings.get(theme-1).themeEntrances.size(); i++)
+	    {
+		int poolSize = DungeonConfig.themeSettings.get(theme-1).themeEntrances.get(i).size();
+		int index = rand.nextInt(poolSize);
+		entrance.add(DungeonConfig.themeSettings.get(theme-1).themeEntrances.get(i).get(index));
+	    }
+	    for (int i = 0; i < DungeonConfig.themeSettings.get(theme-1).themeFourways.size(); i++)
+	    {
+		int poolSize = DungeonConfig.themeSettings.get(theme-1).themeFourways.get(i).size();
+		int index = rand.nextInt(poolSize);
+		fourway.add(DungeonConfig.themeSettings.get(theme-1).themeFourways.get(i).get(index));
+	    }
+	    for (int i = 0; i < DungeonConfig.themeSettings.get(theme-1).themeThreeways.size(); i++)
+	    {
+		int poolSize = DungeonConfig.themeSettings.get(theme-1).themeThreeways.get(i).size();
+		int index = rand.nextInt(poolSize);
+		threeway.add(DungeonConfig.themeSettings.get(theme-1).themeThreeways.get(i).get(index));
+	    }
+	    for (int i = 0; i < DungeonConfig.themeSettings.get(theme-1).themeHallways.size(); i++)
+	    {
+		int poolSize = DungeonConfig.themeSettings.get(theme-1).themeHallways.get(i).size();
+		int index = rand.nextInt(poolSize);
+		hallway.add(DungeonConfig.themeSettings.get(theme-1).themeHallways.get(i).get(index));
+	    }
+	    for (int i = 0; i < DungeonConfig.themeSettings.get(theme-1).themeCorners.size(); i++)
+	    {
+		int poolSize = DungeonConfig.themeSettings.get(theme-1).themeCorners.get(i).size();
+		int index = rand.nextInt(poolSize);
+		corner.add(DungeonConfig.themeSettings.get(theme-1).themeCorners.get(i).get(index));
+	    }
+	    for (int i = 0; i < DungeonConfig.themeSettings.get(theme-1).themeEnds.size(); i++)
+	    {
+		int poolSize = DungeonConfig.themeSettings.get(theme-1).themeEnds.get(i).size();
+		int index = rand.nextInt(poolSize);
+		end.add(DungeonConfig.themeSettings.get(theme-1).themeEnds.get(i).get(index));
+	    }
+
+	    // basic and theme dungeons don't have large rooms but don't leave the array empty, for safety
 	    for (int i = 0; i < DungeonConfig.advancedLarge.size(); i++)
 	    {
 		int poolSize = DungeonConfig.advancedLarge.get(i).size();

@@ -74,8 +74,13 @@ public class DungeonPlacementLogicBasic
 	DimDungeons.logMessageInfo("DIMDUNGEONS START BASIC STRUCTURE at " + x + ", " + z);
 
 	// this is the data structure for an entire dungeon
-	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.BASIC);
-	dbl.calculateDungeonShape(25, false);
+	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.BASIC, genData.dungeonTheme);
+	int dungeonSize = DungeonConfig.DEFAULT_BASIC_DUNGEON_SIZE;
+	if (genData.dungeonTheme > 0)
+	{
+	    dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme).themeDungeonSize;
+	}
+	dbl.calculateDungeonShape(dungeonSize, false);
 
 	// place all 64 rooms (many will be blank), for example the entrance room is at [4][7] in this array
 	for (int i = 0; i < 8; i++)
@@ -212,42 +217,6 @@ public class DungeonPlacementLogicBasic
 	return success;
     }
 
-    // this function assumes the chunk isDungeonChunk() and may return null if the dungeon doesn't have a room at that position
-    public static DungeonRoom getRoomForChunk(ChunkPos cpos, Random random)
-    {
-	// start by calculating the position of the entrance chunk for this dungeon
-	int entranceX = cpos.x;
-	int entranceZ = cpos.z;
-	int distToEntranceX = 8 - (entranceX % 16);
-	int distToEntranceZ = 11 - (entranceZ % 16);
-	entranceX += distToEntranceX;
-	entranceZ += distToEntranceZ;
-
-	// assert that my math is not bad
-	if (!isEntranceChunk(entranceX, entranceZ))
-	{
-	    DimDungeons.logMessageError("DIMDUNGEONS MAJOR ERROR: attempting to generate a dungeon at a chunk which isn't an entrance chunk! (" + entranceX + ", " + entranceZ + ")");
-	    return null;
-	}
-
-	// this is the date structure for an entire dungeon
-	DungeonBuilderLogic dbl = new DungeonBuilderLogic(random, entranceX, entranceZ, DungeonType.BASIC);
-	{
-	    // generate the entire dungeon, a normal dungeon
-	    dbl.calculateDungeonShape(25, false);
-	}
-
-	// pick the room we want, for example the entrance room is at [4][7] in this array
-	int i = (cpos.x % 16) - 4;
-	int j = (cpos.z % 16) - 4;
-	DungeonRoom nextRoom = dbl.finalLayout[i][j];
-	if (!nextRoom.hasRoom())
-	{
-	    return null; // no room here after all
-	}
-	return nextRoom;
-    }
-
     // another debugging function
     public void printMap(DungeonBuilderLogic dbl)
     {
@@ -371,17 +340,17 @@ public class DungeonPlacementLogicBasic
 	else if ("SummonWitch".equals(name))
 	{
 	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
-	    spawnEnemyHere(pos, "minecraft:witch", world);
+	    spawnEnemyHere(pos, "minecraft:witch", world, genData.dungeonTheme);
 	}
 	else if ("SummonWaterEnemy".equals(name))
 	{
 	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
-	    spawnEnemyHere(pos, "minecraft:guardian", world);
+	    spawnEnemyHere(pos, "minecraft:guardian", world, genData.dungeonTheme);
 	}
 	else if ("SummonEnderman".equals(name))
 	{
 	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
-	    spawnEnemyHere(pos, "minecraft:enderman", world);
+	    spawnEnemyHere(pos, "minecraft:enderman", world, genData.dungeonTheme);
 	}
 	else if ("SummonEnemy1".equals(name))
 	{
@@ -389,8 +358,13 @@ public class DungeonPlacementLogicBasic
 
 	    int poolSize = DungeonConfig.basicEnemySet1.size();
 	    String mobid = DungeonConfig.basicEnemySet1.get(rand.nextInt(poolSize));
+	    if (genData.dungeonTheme > 0)
+	    {
+		poolSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeEnemySet1.size();
+		mobid = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeEnemySet1.get(rand.nextInt(poolSize));
+	    }
 
-	    spawnEnemyHere(pos, mobid, world);
+	    spawnEnemyHere(pos, mobid, world, genData.dungeonTheme);
 	}
 	else if ("SummonEnemy2".equals(name))
 	{
@@ -398,8 +372,13 @@ public class DungeonPlacementLogicBasic
 
 	    int poolSize = DungeonConfig.basicEnemySet2.size();
 	    String mobid = DungeonConfig.basicEnemySet2.get(rand.nextInt(poolSize));
+	    if (genData.dungeonTheme > 0)
+	    {
+		poolSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeEnemySet2.size();
+		mobid = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeEnemySet2.get(rand.nextInt(poolSize));
+	    }
 
-	    spawnEnemyHere(pos, mobid, world);
+	    spawnEnemyHere(pos, mobid, world, genData.dungeonTheme);
 	}
 	else
 	{
@@ -408,7 +387,7 @@ public class DungeonPlacementLogicBasic
 	}
     }
 
-    private static void spawnEnemyHere(BlockPos pos, String resourceLocation, IWorld world)
+    private static void spawnEnemyHere(BlockPos pos, String resourceLocation, IWorld world, int theme)
     {
 	EntityType<?> entitytype = EntityType.byString(resourceLocation).orElse(EntityType.CHICKEN);
 
@@ -425,11 +404,15 @@ public class DungeonPlacementLogicBasic
 	    ((MobEntity) mob).setPersistenceRequired();
 
 	    // health scaling
-	    float healthScaling = DungeonConfig.basicEnemyHealthScaling;
+	    double healthScaling = DungeonConfig.basicEnemyHealthScaling;
+	    if (theme > 0)
+	    {
+		healthScaling = DungeonConfig.themeSettings.get(theme - 1).themeEnemyHealthScaling;
+	    }
 	    ModifiableAttributeInstance tempHealth = ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH);
 	    ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH).setBaseValue(tempHealth.getBaseValue() * healthScaling);
 	    ((MobEntity) mob).setHealth((float) ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH).getBaseValue());
-	    
+
 	    // not needed with the new spawn() above
 	    //((MobEntity)mob).onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
 	}

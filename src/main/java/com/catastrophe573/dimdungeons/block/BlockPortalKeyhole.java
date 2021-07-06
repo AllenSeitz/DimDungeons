@@ -144,8 +144,8 @@ public class BlockPortalKeyhole extends Block
 		    // should we build the dungeon on the other side?
 		    if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide)
 		    {
-			DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setReturnPoint(getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
 			ItemPortalKey key = (ItemPortalKey) playerItem.getItem();
+			DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setTheme(key.getDungeonTheme(playerItem)).setReturnPoint(getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
 
 			if (shouldBuildDungeon(playerItem))
 			{
