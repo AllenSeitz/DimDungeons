@@ -3,6 +3,7 @@ package com.catastrophe573.dimdungeons.utils;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 import com.mojang.brigadier.CommandDispatcher;
@@ -41,32 +42,38 @@ public class CommandDimDungeons
 	    String type = keytypes[i];
 	    givekeyArgumentBuilder.then(Commands.literal(type).executes((cmd) ->
 	    {
-		return giveKey(cmd, Collections.singleton(cmd.getSource().getPlayerOrException()), type);
+		return giveKey(cmd, Collections.singleton(cmd.getSource().getPlayerOrException()), type, 0);
 	    }).then(Commands.argument("target", EntityArgument.players()).executes((cmd) ->
 	    {
-		return giveKey(cmd, EntityArgument.getPlayers(cmd, "target"), type);
-	    })));
+		return giveKey(cmd, EntityArgument.getPlayers(cmd, "target"), type, 0);
+	    }).then(Commands.argument("theme", IntegerArgumentType.integer(0)).executes((cmd) ->
+	    {
+		return giveKey(cmd, EntityArgument.getPlayers(cmd, "target"), type, IntegerArgumentType.getInteger(cmd, "theme"));
+	    }))));
 	}
 
 	// register the /givekey cheat
 	dispatcher.register(givekeyArgumentBuilder);
 
 	// make the /gendungeon cheat
-	LiteralArgumentBuilder<CommandSource> gendungeonArgumentBuilder = Commands.literal("gendungeon").requires((cmd) ->
+	if (DungeonConfig.enableDebugCheats)
 	{
-	    return cmd.hasPermission(2);
-	});
-	gendungeonArgumentBuilder.then(Commands.argument("x", IntegerArgumentType.integer(0, ItemPortalKey.RANDOM_COORDINATE_RANGE))
-		.then(Commands.argument("z", IntegerArgumentType.integer(ItemPortalKey.RANDOM_COORDINATE_RANGE * -1, ItemPortalKey.RANDOM_COORDINATE_RANGE)).executes((cmd) ->
-		{
-		    return generateDungeon(cmd, IntegerArgumentType.getInteger(cmd, "x"), IntegerArgumentType.getInteger(cmd, "z"));
-		})));
+	    LiteralArgumentBuilder<CommandSource> gendungeonArgumentBuilder = Commands.literal("gendungeon").requires((cmd) ->
+	    {
+		return cmd.hasPermission(2);
+	    });
+	    gendungeonArgumentBuilder.then(Commands.argument("x", IntegerArgumentType.integer(0, ItemPortalKey.RANDOM_COORDINATE_RANGE))
+		    .then(Commands.argument("z", IntegerArgumentType.integer(ItemPortalKey.RANDOM_COORDINATE_RANGE * -1, ItemPortalKey.RANDOM_COORDINATE_RANGE)).executes((cmd) ->
+		    {
+			return generateDungeon(cmd, IntegerArgumentType.getInteger(cmd, "x"), IntegerArgumentType.getInteger(cmd, "z"));
+		    })));
 
-	// register the /gendungeon cheat
-	dispatcher.register(gendungeonArgumentBuilder);
+	    // register the /gendungeon cheat
+	    dispatcher.register(gendungeonArgumentBuilder);
+	}
     }
 
-    private static int giveKey(CommandContext<CommandSource> cmd, Collection<ServerPlayerEntity> targets, String type) throws CommandSyntaxException
+    private static int giveKey(CommandContext<CommandSource> cmd, Collection<ServerPlayerEntity> targets, String type, int theme) throws CommandSyntaxException
     {
 	TextComponent keyName = new TranslationTextComponent("item.dimdungeons.item_portal_key"); // for use with the logging at the end of the function
 
@@ -82,7 +89,7 @@ public class CommandDimDungeons
 	    }
 	    else if ("basic".equals(type))
 	    {
-		((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).activateKey(stack);
+		((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).activateKeyLevel1(stack, theme);
 		keyName = new TranslationTextComponent("item.dimdungeons.item_portal_key_basic");
 	    }
 	    else if ("advanced".equals(type))
