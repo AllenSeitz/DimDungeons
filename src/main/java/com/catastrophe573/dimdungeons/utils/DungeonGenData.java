@@ -1,5 +1,8 @@
 package com.catastrophe573.dimdungeons.utils;
 
+import com.catastrophe573.dimdungeons.DimDungeons;
+import com.catastrophe573.dimdungeons.DungeonConfig;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
@@ -41,6 +44,11 @@ public class DungeonGenData
     public DungeonGenData setTheme(int themeNum)
     {
 	dungeonTheme = themeNum;
+	if ( dungeonTheme > DungeonConfig.themeSettings.size() )
+	{
+	    DimDungeons.logMessageError("DIMDUNGEONS ERROR: attempting to build a dungeon with a theme number greater than the number of themes defined in the config. The theme will be ignored.");
+	    dungeonTheme = 0;
+	}
 	return this;
     }    
 }
