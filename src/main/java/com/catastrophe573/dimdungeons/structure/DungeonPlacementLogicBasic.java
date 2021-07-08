@@ -417,7 +417,7 @@ public class DungeonPlacementLogicBasic
 	    ((MobEntity) mob).setHealth((float) ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH).getBaseValue());
 	    
 	    // randomly put a themed key into a mob's offhand
-	    if ( world.getRandom().nextInt(100) < DungeonConfig.chanceForThemeKeys && DungeonConfig.themeSettings.size() > 0 )
+	    if ( world.getRandom().nextInt(100) < DungeonConfig.chanceForThemeKeys && DungeonConfig.themeSettings.size() > 0 && theme < 1 )
 	    {
 		// if the mob's offhand slot is occupied then just skip it
 		if ( !((MobEntity) mob).hasItemInSlot(EquipmentSlotType.OFFHAND))
