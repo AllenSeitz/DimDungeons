@@ -9,6 +9,7 @@ import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import com.catastrophe573.dimdungeons.block.TileEntityLocalTeleporter;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
+import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonRoom;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
@@ -23,6 +24,7 @@ import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
@@ -35,6 +37,7 @@ import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.DispenserTileEntity;
 import net.minecraft.tileentity.LockableLootTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
@@ -78,7 +81,7 @@ public class DungeonPlacementLogicBasic
 	int dungeonSize = DungeonConfig.DEFAULT_BASIC_DUNGEON_SIZE;
 	if (genData.dungeonTheme > 0)
 	{
-	    dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme).themeDungeonSize;
+	    dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme-1).themeDungeonSize;
 	}
 	dbl.calculateDungeonShape(dungeonSize, false);
 
@@ -412,6 +415,21 @@ public class DungeonPlacementLogicBasic
 	    ModifiableAttributeInstance tempHealth = ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH);
 	    ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH).setBaseValue(tempHealth.getBaseValue() * healthScaling);
 	    ((MobEntity) mob).setHealth((float) ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH).getBaseValue());
+	    
+	    // randomly put a themed key into a mob's offhand
+	    if ( world.getRandom().nextInt(100) < DungeonConfig.chanceForThemeKeys && DungeonConfig.themeSettings.size() > 0 )
+	    {
+		// if the mob's offhand slot is occupied then just skip it
+		if ( !((MobEntity) mob).hasItemInSlot(EquipmentSlotType.OFFHAND))
+		{
+		    int numThemes = DungeonConfig.themeSettings.size();
+		    ItemStack stack = new ItemStack(ItemRegistrar.item_portal_key);
+		    ((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).activateKeyLevel1(stack, world.getRandom().nextInt(numThemes) + 1);
+		    
+		    ((MobEntity) mob).setItemInHand(Hand.OFF_HAND, stack);
+		    ((MobEntity) mob).setDropChance(EquipmentSlotType.OFFHAND, 1.0f);
+		}
+	    }
 
 	    // not needed with the new spawn() above
 	    //((MobEntity)mob).onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);

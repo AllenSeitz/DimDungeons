@@ -28,8 +28,9 @@ public class DungeonConfig
     public static final int DEFAULT_BASIC_DUNGEON_SIZE = 25;
     public static final int DEFAULT_ADVANCED_DUNGEON_SIZE = 46;
 
-    public static final int DEFAULT_NUMBER_OF_THEMES = 2;
+    public static final int DEFAULT_NUMBER_OF_THEMES = 1;
     public static final int DEFAULT_THEME_DUNGEON_SIZE = 14;
+    public static final int DEFAULT_CHANCE_FOR_THEME_KEYS = 4;
 
     static
     {
@@ -143,8 +144,8 @@ public class DungeonConfig
 
     // actual theme options (these are part of the common config)
     public static int numberOfThemes = 2;
-    public static boolean useThemeKeys = true;
     public static List<ThemeStructure> themeSettings;
+    public static int chanceForThemeKeys = DEFAULT_CHANCE_FOR_THEME_KEYS;
 
     public static class ServerConfig
     {
@@ -1062,7 +1063,7 @@ public class DungeonConfig
 
 	// actual theme options (these are part of the common config)
 	public final ConfigValue<Integer> numberOfThemes;
-	public final ForgeConfigSpec.BooleanValue useThemeKeys;	
+	public final ConfigValue<Integer> chanceForThemeKeys;	
 	public final ArrayList<ThemeConfig> allCommonThemeConfigs;
 
 	CommonConfig(ForgeConfigSpec.Builder builder)
@@ -1100,7 +1101,7 @@ public class DungeonConfig
 
 	    // general theme options
 	    builder.comment("General Theme Options").push("themeOptions");
-	    useThemeKeys = builder.translation("config.dimdungeons.useThemeKeys").define("useThemeKeys", true);
+	    chanceForThemeKeys = builder.translation("config.dimdungeons.chanceForThemeKeys").define("chanceForThemeKeys", DEFAULT_CHANCE_FOR_THEME_KEYS);
 	    numberOfThemes = builder.translation("config.dimdungeons.numberOfThemes").define("numberOfThemes", DEFAULT_NUMBER_OF_THEMES);
 	    
 	    builder.pop();
@@ -1217,7 +1218,7 @@ public class DungeonConfig
 
 	// refresh all theme configs
 	numberOfThemes = COMMON.numberOfThemes.get();
-	useThemeKeys = COMMON.useThemeKeys.get();
+	chanceForThemeKeys = COMMON.chanceForThemeKeys.get();
 	themeSettings = new ArrayList<ThemeStructure>();
 	for (int i = 0; i < DungeonConfig.numberOfThemes; i++)
 	{
