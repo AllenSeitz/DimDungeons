@@ -96,6 +96,10 @@ public class ItemPortalKey extends Item
 
 	// give it a funny random name
 	int nameType = random.nextInt(3);
+	if ( theme > 0 )
+	{
+	    nameType = 2;
+	}
 	data.putInt(NBT_NAME_TYPE, nameType);
 	if (nameType == 0 || nameType == 1)
 	{
@@ -201,6 +205,7 @@ public class ItemPortalKey extends Item
 		int nameType = itemData.contains(NBT_NAME_TYPE) ? itemData.getInt(NBT_NAME_TYPE) : 0;
 		int word_index_1 = itemData.contains(NBT_NAME_PART_1) ? itemData.getInt(NBT_NAME_PART_1) : 2;
 		int word_index_2 = itemData.contains(NBT_NAME_PART_2) ? itemData.getInt(NBT_NAME_PART_2) : 1;
+		int theme = itemData.contains(NBT_THEME) ? itemData.getInt(NBT_THEME) : 0;
 		String retval = "";
 
 		if (nameType == 0)
@@ -238,6 +243,10 @@ public class ItemPortalKey extends Item
 		    String start = I18n.get("npart.dimdungeons.struct_5");
 		    String preposition = I18n.get("npart.dimdungeons.struct_6");
 		    String place = I18n.get("npart.dimdungeons.place_" + word_index_1);
+		    if ( theme > 0 )
+		    {
+			place = I18n.get("npart.dimdungeons.theme_" + theme);
+		    }
 		    String noun = I18n.get("npart.dimdungeons.noun_" + word_index_2);
 		    retval = start + " " + place + " " + preposition + " " + noun;
 		}
