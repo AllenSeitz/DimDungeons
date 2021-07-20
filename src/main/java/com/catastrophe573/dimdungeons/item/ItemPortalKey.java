@@ -3,6 +3,7 @@ package com.catastrophe573.dimdungeons.item;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
+import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -16,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
@@ -81,7 +83,7 @@ public class ItemPortalKey extends Item
     }
         
     // the only way to obtain a key with a theme is to find it already activated that way
-    public void activateKeyLevel1(ItemStack stack, int theme)
+    public void activateKeyLevel1(MinecraftServer server, ItemStack stack, int theme)
     {
 	CompoundNBT data = new CompoundNBT();
 	data.putBoolean(NBT_KEY_ACTIVATED, true);
@@ -89,8 +91,9 @@ public class ItemPortalKey extends Item
 	data.putInt(NBT_THEME, theme);
 
 	// where is this key going?
-	int destX = random.nextInt(RANDOM_COORDINATE_RANGE);
-	int destZ = random.nextInt(RANDOM_COORDINATE_RANGE);
+	int generation_limit = DungeonUtils.getLimitOfWorldBorder(server);
+	int destX = random.nextInt(generation_limit);
+	int destZ = random.nextInt(generation_limit);
 	data.putInt(NBT_KEY_DESTINATION_X, destX);
 	data.putInt(NBT_KEY_DESTINATION_Z, destZ);
 
@@ -116,7 +119,7 @@ public class ItemPortalKey extends Item
     }
 
     // the only way to obtain level 2 keys is to find them already activated
-    public void activateKeyLevel2(ItemStack stack)
+    public void activateKeyLevel2(MinecraftServer server, ItemStack stack)
     {
 	CompoundNBT data = new CompoundNBT();
 	data.putBoolean(NBT_KEY_ACTIVATED, true);
@@ -124,8 +127,9 @@ public class ItemPortalKey extends Item
 	data.putInt(NBT_THEME, 0);
 
 	// where is this key going?
-	int destX = random.nextInt(RANDOM_COORDINATE_RANGE);
-	int destZ = random.nextInt(RANDOM_COORDINATE_RANGE);
+	int generation_limit = DungeonUtils.getLimitOfWorldBorder(server);
+	int destX = random.nextInt(generation_limit);
+	int destZ = random.nextInt(generation_limit);
 	data.putInt(NBT_KEY_DESTINATION_X, destX);
 	data.putInt(NBT_KEY_DESTINATION_Z, destZ * -1);
 
@@ -518,11 +522,11 @@ public class ItemPortalKey extends Item
 	worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BEACON_ACTIVATE, SoundCategory.BLOCKS, 1.0F, 1.0F);
 	if (pos.getX() == 0 && pos.getZ() == 0 && DungeonConfig.enableDebugCheats)
 	{
-	    activateKeyLevel2(itemstack); // for debugging only, End Portal Frames should never appear at (0,0) in the Overworld and this is not intended
+	    activateKeyLevel2(worldIn.getServer(), itemstack); // for debugging only, End Portal Frames should never appear at (0,0) in the Overworld and this is not intended
 	}
 	else
 	{
-	    activateKeyLevel1(itemstack, 0);
+	    activateKeyLevel1(worldIn.getServer(), itemstack, 0);
 	}
 
 	// more particle effects for this special event!

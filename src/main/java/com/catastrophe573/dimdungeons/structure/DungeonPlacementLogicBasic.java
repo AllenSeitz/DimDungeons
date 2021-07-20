@@ -155,7 +155,7 @@ public class DungeonPlacementLogicBasic
     }
 
     // used by the place() function to actually place rooms
-    public static boolean putRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room, DungeonGenData genData)
+    public static boolean putRoomHere(ChunkPos cpos, ServerWorld world, DungeonRoom room, DungeonGenData genData)
     {
 	MinecraftServer minecraftserver = ((World) world).getServer();
 	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
@@ -235,10 +235,10 @@ public class DungeonPlacementLogicBasic
     }
 
     // resembles TemplateStructurePiece.handleDataMarker()
-    protected static void handleDataBlock(String name, BlockPos pos, IWorld world, Random rand, MutableBoundingBox bb, DungeonGenData genData)
+    protected static void handleDataBlock(String name, BlockPos pos, ServerWorld world, Random rand, MutableBoundingBox bb, DungeonGenData genData)
     {
 	//DimDungeons.LOGGER.info("DATA BLOCK NAME: " + name);
-
+	
 	if ("ReturnPortal".equals(name))
 	{
 	    world.setBlock(pos, BlockRegistrar.block_gold_portal.defaultBlockState(), 2); // erase this data block
@@ -335,7 +335,7 @@ public class DungeonPlacementLogicBasic
 		ItemStack key = te.getObjectInserted();
 		if (key.getItem() instanceof ItemPortalKey)
 		{
-		    ((ItemPortalKey) key.getItem()).activateKeyLevel2(key);
+		    ((ItemPortalKey) key.getItem()).activateKeyLevel2(world.getServer(), key);
 		    te.setContents(key);
 		}
 	    }
@@ -390,7 +390,7 @@ public class DungeonPlacementLogicBasic
 	}
     }
 
-    private static void spawnEnemyHere(BlockPos pos, String resourceLocation, IWorld world, int theme)
+    private static void spawnEnemyHere(BlockPos pos, String resourceLocation, ServerWorld world, int theme)
     {
 	EntityType<?> entitytype = EntityType.byString(resourceLocation).orElse(EntityType.CHICKEN);
 
@@ -424,7 +424,7 @@ public class DungeonPlacementLogicBasic
 		{
 		    int numThemes = DungeonConfig.themeSettings.size();
 		    ItemStack stack = new ItemStack(ItemRegistrar.item_portal_key);
-		    ((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).activateKeyLevel1(stack, world.getRandom().nextInt(numThemes) + 1);
+		    ((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).activateKeyLevel1(world.getServer(), stack, world.getRandom().nextInt(numThemes) + 1);
 		    
 		    ((MobEntity) mob).setItemInHand(Hand.OFF_HAND, stack);
 		    ((MobEntity) mob).setDropChance(EquipmentSlotType.OFFHAND, 1.0f);

@@ -89,12 +89,12 @@ public class CommandDimDungeons
 	    }
 	    else if ("basic".equals(type))
 	    {
-		((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).activateKeyLevel1(stack, theme);
+		((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).activateKeyLevel1(cmd.getSource().getServer(), stack, theme);
 		keyName = new TranslationTextComponent("item.dimdungeons.item_portal_key_basic");
 	    }
 	    else if ("advanced".equals(type))
 	    {
-		((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).activateKeyLevel2(stack);
+		((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).activateKeyLevel2(cmd.getSource().getServer(), stack);
 		keyName = new TranslationTextComponent("item.dimdungeons.item_portal_key_advanced");
 	    }
 	    else

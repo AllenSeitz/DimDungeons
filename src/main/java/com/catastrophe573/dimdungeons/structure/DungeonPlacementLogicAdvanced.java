@@ -147,7 +147,7 @@ public class DungeonPlacementLogicAdvanced
     }
 
     // used by the place() function to actually place rooms
-    public static boolean putLargeRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room, DungeonGenData genData)
+    public static boolean putLargeRoomHere(ChunkPos cpos, ServerWorld world, DungeonRoom room, DungeonGenData genData)
     {
 	MinecraftServer minecraftserver = ((World) world).getServer();
 	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
@@ -187,7 +187,7 @@ public class DungeonPlacementLogicAdvanced
 	return success;
     }
 
-    public static void closeDoorsOnLargeRoom(ChunkPos cpos, IWorld world, DungeonRoom room, DungeonGenData genDat, int indexX, int indexZ, DungeonBuilderLogic dbl)
+    public static void closeDoorsOnLargeRoom(ChunkPos cpos, ServerWorld world, DungeonRoom room, DungeonGenData genDat, int indexX, int indexZ, DungeonBuilderLogic dbl)
     {
 	BlockState fillBlock = Blocks.STONE_BRICKS.defaultBlockState();
 	BlockState airBlock = Blocks.AIR.defaultBlockState();
@@ -321,7 +321,7 @@ public class DungeonPlacementLogicAdvanced
     }
 
     // used by the place() function to actually place rooms
-    public static boolean putRoomHere(ChunkPos cpos, IWorld world, DungeonRoom room, DungeonGenData genData)
+    public static boolean putRoomHere(ChunkPos cpos, ServerWorld world, DungeonRoom room, DungeonGenData genData)
     {
 	MinecraftServer minecraftserver = ((World) world).getServer();
 	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
@@ -408,7 +408,7 @@ public class DungeonPlacementLogicAdvanced
     }
 
     // resembles TemplateStructurePiece.handleDataMarker()
-    protected static void handleDataBlock(String name, BlockPos pos, IWorld world, Random rand, MutableBoundingBox bb, DungeonGenData genData)
+    protected static void handleDataBlock(String name, BlockPos pos, ServerWorld world, Random rand, MutableBoundingBox bb, DungeonGenData genData)
     {
 	//DimDungeons.LOGGER.info("DATA BLOCK NAME: " + name);
 
@@ -508,7 +508,7 @@ public class DungeonPlacementLogicAdvanced
 		ItemStack key = te.getObjectInserted();
 		if (key.getItem() instanceof ItemPortalKey)
 		{
-		    ((ItemPortalKey) key.getItem()).activateKeyLevel2(key);
+		    ((ItemPortalKey) key.getItem()).activateKeyLevel2(world.getServer(), key);
 		    te.setContents(key);
 		    //te.updateContainingBlockInfo();
 		}
