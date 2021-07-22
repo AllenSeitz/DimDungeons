@@ -81,7 +81,7 @@ public class ItemPortalKey extends Item
 	}
 	return 1;
     }
-        
+
     // the only way to obtain a key with a theme is to find it already activated that way
     public void activateKeyLevel1(MinecraftServer server, ItemStack stack, int theme)
     {
@@ -99,7 +99,7 @@ public class ItemPortalKey extends Item
 
 	// give it a funny random name
 	int nameType = random.nextInt(3);
-	if ( theme > 0 )
+	if (theme > 0)
 	{
 	    nameType = 2;
 	}
@@ -139,8 +139,8 @@ public class ItemPortalKey extends Item
 	data.putInt(NBT_NAME_PART_2, random.nextInt(12)); // largeness
 
 	stack.setTag(data);
-    } 
-    
+    }
+
     // used by the /gendungeon cheat and nothing else
     public void forceCoordinates(ItemStack stack, int destX, int destZ)
     {
@@ -247,7 +247,7 @@ public class ItemPortalKey extends Item
 		    String start = I18n.get("npart.dimdungeons.struct_5");
 		    String preposition = I18n.get("npart.dimdungeons.struct_6");
 		    String place = I18n.get("npart.dimdungeons.place_" + word_index_1);
-		    if ( theme > 0 )
+		    if (theme > 0)
 		    {
 			place = I18n.get("npart.dimdungeons.theme_" + theme);
 		    }
@@ -335,8 +335,8 @@ public class ItemPortalKey extends Item
 	    }
 	}
 	return -1;
-    }    
-    
+    }
+
     @Override
     //public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     public ActionResultType useOn(ItemUseContext parameters)
@@ -520,13 +520,16 @@ public class ItemPortalKey extends Item
     {
 	//System.out.println("Triggered special event to initialize key!");
 	worldIn.playSound((PlayerEntity) null, pos, SoundEvents.BEACON_ACTIVATE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-	if (pos.getX() == 0 && pos.getZ() == 0 && DungeonConfig.enableDebugCheats)
+	if (!worldIn.isClientSide)
 	{
-	    activateKeyLevel2(worldIn.getServer(), itemstack); // for debugging only, End Portal Frames should never appear at (0,0) in the Overworld and this is not intended
-	}
-	else
-	{
-	    activateKeyLevel1(worldIn.getServer(), itemstack, 0);
+	    if (pos.getX() == 0 && pos.getZ() == 0 && DungeonConfig.enableDebugCheats)
+	    {
+		activateKeyLevel2(worldIn.getServer(), itemstack); // for debugging only, End Portal Frames should never appear at (0,0) in the Overworld and this is not intended
+	    }
+	    else
+	    {
+		activateKeyLevel1(worldIn.getServer(), itemstack, 0);
+	    }
 	}
 
 	// more particle effects for this special event!
