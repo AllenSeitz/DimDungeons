@@ -142,11 +142,11 @@
     "book.dimdungeons.fun_message_7": "I care about your feedback and ideas! You can send me comments however you like.",
     "book.dimdungeons.fun_message_8": "All of these rooms use unmodded, survival mechanics. There are no command blocks or modded blocks.",
 
-    //"book.dimdungeons.helpful_message_1": "If you see a few red particles coming up through the carpet then try running a lap around the room.",
-    "book.dimdungeons.helpful_message_1": "There's usually a way to get anywhere you can see. If you're stuck, look for something unusual that you can interact with.",    
+    "book.dimdungeons.helpful_message_1": "If you see a few red particles coming up through the carpet then try running a lap around the room.",
+    //"book.dimdungeons.helpful_message_1": "There's usually a way to get anywhere you can see. If you're stuck, look for something unusual that you can interact with.",    
     "book.dimdungeons.helpful_message_2": "If a sample of lava seems impossible to fall into by accident then you might want to jump in on purpose!",
     "book.dimdungeons.helpful_message_3": "An empty chest might be a trap. But if you feel safe then consider making a donation!",
-    "book.dimdungeons.helpful_message_4": "Be suspicious of the witch's cauldron. And question, who is the jailer in this place?",
+    "book.dimdungeons.helpful_message_4": "Be suspicious of the witch's cauldron. Who is the jailer in this place?",
     "book.dimdungeons.helpful_message_5": "A cubic zirconia is as good as a real diamond; but it is a fake prize. Try replacing it with something better.",
     "book.dimdungeons.helpful_message_6": "In the igloo room try enchanting your boots with an enchantment that fits the theme.",
     "book.dimdungeons.helpful_message_7": "The fishy floor in the corner of skulls is beautiful. But after you look down, look up!",
@@ -162,11 +162,11 @@
     "book.dimdungeons.dangerous_message_8": "The beacon puzzle is difficult and can be made unwinnable if you aren't careful.",
 
     "book.dimdungeons.advanced_message_1": "Enemies in advanced dungeons have extra health and are immune to fire. I couldn't make it too easy!",
-    "book.dimdungeons.advanced_message_2": "Enemies in advanced dungeons move faster and have jump boost. You've probably noticed by now!",
+    "book.dimdungeons.advanced_message_2": "Luck potions can increase the quality of loot in certain chests.",
     "book.dimdungeons.advanced_message_3": "Advanced dungeons are twice as large as other dungeons! It's double the treasure and double the peril!",
-    "book.dimdungeons.advanced_message_4": "The treasure chests in advanced dungeons contain extra loot!",
-    "book.dimdungeons.advanced_message_5": "I decided against adding the Ravager as a random encounter in advanced dungeons. You're welcome.",
-    "book.dimdungeons.advanced_message_6": "Have you been ambushed by a Blaze yet?",
+    "book.dimdungeons.advanced_message_4": "The treasure chests in advanced dungeons contain improved loot!",
+    "book.dimdungeons.advanced_message_5": "The corner room with prismarine and skulls requires a different solution in advanced dungeons. Look up for a hint.",
+    "book.dimdungeons.advanced_message_6": "Have you been ambushed by a Vindicator yet?",
     "book.dimdungeons.advanced_message_7": "You can safely rename dungeon keys and they will still teleport you to the same place.",
     "book.dimdungeons.advanced_message_8": "There is more to come! This isn't the final dungeon.",
 
@@ -194,6 +194,8 @@
     "error.dimdungeons.portal_error_8": "Two Portal Crown Blocks must be placed on top of the portal before advanced keys can be used.",
     "error.dimdungeons.portal_error_9": "White or purple banners must be hung on the spires before advanced keys can be used.",
     "error.dimdungeons.portal_error_10": "The banner pattern on either or both banners is not correct for advanced keys.",
+    "error.dimdungeons.portal_error_11": "The dungeon on the other side was deleted.",
+    "error.dimdungeons.portal_error_12": "This key leads to a dungeon that may have been visited already.",
 
 	// advancements
 	"advancements.dimdungeons.dungeons.root.title": "Dimensional Dungeons",

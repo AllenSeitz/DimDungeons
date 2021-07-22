@@ -183,7 +183,8 @@ public class DungeonUtils
 	return true;
     }
 
-    public static void reprogramExistingExitDoorway(World worldIn, long entranceX, long entranceZ, DungeonGenData genData)
+    // returns false if this function fails because the dungeon on the other side was reset
+    public static boolean reprogramExistingExitDoorway(World worldIn, long entranceX, long entranceZ, DungeonGenData genData)
     {
 	World ddim = DungeonUtils.getDungeonWorld(worldIn.getServer());
 	int zoffset = entranceZ < 0 ? +1 : +2;
@@ -202,10 +203,14 @@ public class DungeonUtils
 		}
 		else
 		{
-		    DimDungeons.logMessageWarn("DIMDUNGEONS ERROR: why is there no exit portal here? (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")");
+		    // this is now expected behavior if a server admin resets the dungeon dimension
+		    DimDungeons.logMessageWarn("DIMDUNGEONS WARNING: why is there no exit portal here? (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")");
+		    return false;
 		}
 	    }
 	}
+	
+	return true;
     }
 
     // takes World.OVERWORLD and returns "minecraft:overworld"

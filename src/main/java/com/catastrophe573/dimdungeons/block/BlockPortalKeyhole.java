@@ -45,8 +45,6 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
 
 import net.minecraft.block.AbstractBlock;
 
@@ -142,6 +140,9 @@ public class BlockPortalKeyhole extends Block
 		    // DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
 
 		    // should we build the dungeon on the other side?
+		    boolean dungeonExistsHere = true;
+		    boolean anotherKeyWasFirst = false;
+
 		    if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide)
 		    {
 			ItemPortalKey key = (ItemPortalKey) playerItem.getItem();
@@ -150,17 +151,17 @@ public class BlockPortalKeyhole extends Block
 			if (shouldBuildDungeon(playerItem))
 			{
 			    //DimDungeons.LOGGER.info("BUILDING A NEW DUNGEON!");
-			    DungeonUtils.buildDungeon(worldIn, genData);
-			    playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
+			    anotherKeyWasFirst = !DungeonUtils.buildDungeon(worldIn, genData);
+			    if (!anotherKeyWasFirst)
+			    {
+				playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
+			    }
 			}
 
 			// regardless of if this is a new or old dungeon, reprogram the exit door
-			if (key != null)
-			{
-			    float entranceX = key.getWarpX(playerItem);
-			    float entranceZ = key.getWarpZ(playerItem);
-			    DungeonUtils.reprogramExistingExitDoorway(worldIn, (long)entranceX, (long)entranceZ, genData);
-			}
+			float entranceX = key.getWarpX(playerItem);
+			float entranceZ = key.getWarpZ(playerItem);
+			dungeonExistsHere = DungeonUtils.reprogramExistingExitDoorway(worldIn, (long) entranceX, (long) entranceZ, genData);
 		    }
 
 		    myEntity.setContents(playerItem.copy());
@@ -170,17 +171,20 @@ public class BlockPortalKeyhole extends Block
 		    worldIn.setBlockAndUpdate(pos, newBlockState);
 
 		    // should portal blocks be spawned?
-		    if (isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
+		    if (!worldIn.isClientSide)
 		    {
-			Direction keyholeFacing = state.getValue(FACING);
-			Direction.Axis axis = (keyholeFacing == Direction.NORTH || keyholeFacing == Direction.SOUTH) ? Direction.Axis.X : Direction.Axis.Z;
-			
-			addGoldenPortalBlock(worldIn, pos.below(), playerItem, axis);
-			addGoldenPortalBlock(worldIn, pos.below(2), playerItem, axis);
-		    }
+			if (isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity) && dungeonExistsHere)
+			{
+			    Direction keyholeFacing = state.getValue(FACING);
+			    Direction.Axis axis = (keyholeFacing == Direction.NORTH || keyholeFacing == Direction.SOUTH) ? Direction.Axis.X : Direction.Axis.Z;
 
-		    // this function prints no message on success
-		    checkForProblemsAndLiterallySpeakToPlayer(worldIn, pos, state, myEntity, player);
+			    addGoldenPortalBlock(worldIn, pos.below(), playerItem, axis);
+			    addGoldenPortalBlock(worldIn, pos.below(2), playerItem, axis);
+			}
+
+			// this function prints no message on success
+			checkForProblemsAndLiterallySpeakToPlayer(worldIn, pos, state, myEntity, player, dungeonExistsHere, anotherKeyWasFirst);
+		    }
 
 		    playerItem.shrink(1);
 
@@ -402,10 +406,11 @@ public class BlockPortalKeyhole extends Block
     }
 
     @SuppressWarnings("deprecation")
-    protected void checkForProblemsAndLiterallySpeakToPlayer(World worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole tileEntity, PlayerEntity player)
+    protected void checkForProblemsAndLiterallySpeakToPlayer(World worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole tileEntity, PlayerEntity player, boolean dungeonExistsHere, boolean anotherKeyWasFirst)
     {
-	// only run this function once, either on the client or on the server. I choose client because this function does nothing logical.
-	if (EffectiveSide.get() != LogicalSide.CLIENT)
+	// only run this function once, either on the client or on the server
+	// this runs on the server now because some errors happen exclusively on the server's side
+	if (worldIn.isClientSide)
 	{
 	    return;
 	}
@@ -485,6 +490,19 @@ public class BlockPortalKeyhole extends Block
 		speakLiterallyToPlayerAboutProblems(worldIn, player, 7, b);
 		return;
 	    }
+	}
+
+	// error #11: the dungeon on the other side of the portal was deleted
+	if (!dungeonExistsHere)
+	{
+	    speakLiterallyToPlayerAboutProblems(worldIn, player, 11, null);
+	    return;
+	}
+
+	// error (warning) #12: this key is a duplicate of another key (this is not a fatal or serious error, it'll happen sometimes)	
+	if (anotherKeyWasFirst)
+	{
+	    speakLiterallyToPlayerAboutProblems(worldIn, player, 12, null);
 	}
 
 	// only continue performing advanced checks for advanced portal keys
