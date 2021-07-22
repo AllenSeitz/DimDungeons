@@ -3,7 +3,6 @@ package com.catastrophe573.dimdungeons.utils;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 import com.mojang.brigadier.CommandDispatcher;
@@ -56,21 +55,18 @@ public class CommandDimDungeons
 	dispatcher.register(givekeyArgumentBuilder);
 
 	// make the /gendungeon cheat
-	if (DungeonConfig.enableDebugCheats)
+	LiteralArgumentBuilder<CommandSource> gendungeonArgumentBuilder = Commands.literal("gendungeon").requires((cmd) ->
 	{
-	    LiteralArgumentBuilder<CommandSource> gendungeonArgumentBuilder = Commands.literal("gendungeon").requires((cmd) ->
-	    {
-		return cmd.hasPermission(2);
-	    });
-	    gendungeonArgumentBuilder.then(Commands.argument("x", IntegerArgumentType.integer(0, ItemPortalKey.RANDOM_COORDINATE_RANGE))
-		    .then(Commands.argument("z", IntegerArgumentType.integer(ItemPortalKey.RANDOM_COORDINATE_RANGE * -1, ItemPortalKey.RANDOM_COORDINATE_RANGE)).executes((cmd) ->
-		    {
-			return generateDungeon(cmd, IntegerArgumentType.getInteger(cmd, "x"), IntegerArgumentType.getInteger(cmd, "z"));
-		    })));
+	    return cmd.hasPermission(2);
+	});
+	gendungeonArgumentBuilder.then(Commands.argument("x", IntegerArgumentType.integer(0, ItemPortalKey.RANDOM_COORDINATE_RANGE))
+		.then(Commands.argument("z", IntegerArgumentType.integer(ItemPortalKey.RANDOM_COORDINATE_RANGE * -1, ItemPortalKey.RANDOM_COORDINATE_RANGE)).executes((cmd) ->
+		{
+		    return generateDungeon(cmd, IntegerArgumentType.getInteger(cmd, "x"), IntegerArgumentType.getInteger(cmd, "z"));
+		})));
 
-	    // register the /gendungeon cheat
-	    dispatcher.register(gendungeonArgumentBuilder);
-	}
+	// register the /gendungeon cheat
+	dispatcher.register(gendungeonArgumentBuilder);
     }
 
     private static int giveKey(CommandContext<CommandSource> cmd, Collection<ServerPlayerEntity> targets, String type, int theme) throws CommandSyntaxException
