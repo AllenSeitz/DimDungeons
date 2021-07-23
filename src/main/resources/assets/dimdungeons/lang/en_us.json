@@ -9,9 +9,9 @@
     "block.dimdungeons.block_local_teleporter": "Local Teleporter",
     "block.dimdungeons.block_portal_keyhole": "Portal Keystone",
     "block.dimdungeons.block_portal_crown": "Portal Crown Block",
-    "block.dimdungeons.block_key_charger": "Key Enscribing Station",
-    "block.dimdungeons.block_key_charger_used": "Used Key Enscribing Station",
-    "block.dimdungeons.block_key_charger_damaged": "Damaged Key Enscribing Station",
+    "block.dimdungeons.block_key_charger": "Key Inscribing Station",
+    "block.dimdungeons.block_key_charger_used": "Used Key Inscribing Station",
+    "block.dimdungeons.block_key_charger_damaged": "Damaged Key Inscribing Station",
 
     "item.dimdungeons.item_portal_key": "Blank Portal Key",
     "item.dimdungeons.item_portal_key_basic": "Basic Portal Key",
@@ -218,8 +218,8 @@
 	"advancements.dimdungeons.dungeons.find_bell_1.description": "You've found a Bell of Secrets.",
 	"advancements.dimdungeons.dungeons.find_bell_2.title": "[REDACTED]",
 	"advancements.dimdungeons.dungeons.find_bell_2.description": "In version 1.1 you can't get this item without cheating.",
-	"advancements.dimdungeons.dungeons.find_key_charger.title": "Key Enscribing Station",
-	"advancements.dimdungeons.dungeons.find_key_charger.description": "You've found a Key Enscribing Station.",
+	"advancements.dimdungeons.dungeons.find_key_charger.title": "Key Inscribing Station",
+	"advancements.dimdungeons.dungeons.find_key_charger.description": "You've found a Key Inscribing Station.",
 
 	// server configs
 	"config.dimdungeons.configVersion": "configVersion",
