@@ -307,8 +307,8 @@ public class DungeonConfig
 	temp.add("dimdungeons:combat_1");
 	temp.add("dimdungeons:combat_2");
 	temp.add("dimdungeons:combat_3");
-	temp.clear();
 	tempBasicFourways.add(Lists.newArrayList(temp));
+	temp.clear();
 	temp.add("dimdungeons:combat_4");
 	temp.add("dimdungeons:combat_5");
 	temp.add("dimdungeons:combat_6");
