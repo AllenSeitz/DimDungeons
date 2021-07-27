@@ -11,7 +11,9 @@ import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicDebug;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
@@ -225,7 +227,8 @@ public class DungeonUtils
 	int block_limit = ItemPortalKey.RANDOM_COORDINATE_RANGE * ItemPortalKey.BLOCKS_APART_PER_DUNGEON;
 		
 	// I know that the world border setting is global and affects all dimensions, but some mods change this
-	ServerWorld world = server.getLevel(DimDungeons.DUNGEON_DIMENSION);
+	RegistryKey<World> configkey = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(DungeonConfig.worldborderToRespect));
+	ServerWorld world = server.getLevel(configkey);
 	double size = world.getWorldBorder().getSize() / 2;
 	if ( size < block_limit )
 	{

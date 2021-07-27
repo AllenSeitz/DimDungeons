@@ -71,6 +71,7 @@ public class DungeonConfig
     public static int keyEnscriberDowngradeChanceUsed = 100;
     public static int keyEnscriberDowngradeChanceDamaged = 100;
     public static String logLevel = "error";
+    public static String worldborderToRespect = "error";
     public static int numberOfThemes = 1;
     public static int chanceForThemeKeys = DEFAULT_CHANCE_FOR_THEME_KEYS;
     public static Set<Block> blockBreakWhitelist = Sets.newHashSet();
@@ -132,6 +133,7 @@ public class DungeonConfig
 	public final ConfigValue<Integer> keyEnscriberDowngradeChanceUsed;
 	public final ConfigValue<Integer> keyEnscriberDowngradeChanceDamaged;
 	public final ConfigValue<String> logLevel;
+	public final ConfigValue<String> worldborderToRespect;
 	public final ConfigValue<Integer> numberOfThemes;
 	public final ConfigValue<Integer> chanceForThemeKeys;
 
@@ -243,8 +245,10 @@ public class DungeonConfig
 	    keyEnscriberDowngradeChanceDamaged = builder.comment("The odds of a Damaged Key Enscriber being destroyed upon use, like a damaged anvil. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceDamaged")
 		    .define("keyEnscriberDowngradeChanceDamaged", 100);
 	    logLevel = builder.comment("Can be used to limit log spam. Can be set to 'all', 'warn', or 'error'.").translation("config.dimdungeons.logLevel").define("logLevel", "error");
+	    worldborderToRespect = builder.comment("Which dimension's worldborder to consider when activating keys. Using dimdungeons:dungeon_dimension may not work for everyone.").translation("config.dimdungeons.worldborderToRespect")
+		    .define("worldborderToRespect", "minecraft:overworld");
 	    numberOfThemes = builder.comment("The number of themes to expect in the common config.").translation("config.dimdungeons.numberOfThemes").define("numberOfThemes", DEFAULT_NUMBER_OF_THEMES);
-	    chanceForThemeKeys = builder.translation("config.dimdungeons.chanceForThemeKeys").define("chanceForThemeKeys", DEFAULT_CHANCE_FOR_THEME_KEYS);
+	    chanceForThemeKeys = builder.comment("The chance for an enemy in a basic dungeon to be carrying a theme key.").translation("config.dimdungeons.chanceForThemeKeys").define("chanceForThemeKeys", DEFAULT_CHANCE_FOR_THEME_KEYS);
 	    builder.pop();
 	    builder.comment("Options for block behavior in the dungeon dimension.").push("blocks");
 	    breakingWhitelist = builder.comment("List of blocks which any player should be allowed to break, defying the block protection. (For example, gravestones or death chests.) Default value is empty.")
@@ -1139,6 +1143,7 @@ public class DungeonConfig
 	keyEnscriberDowngradeChanceUsed = SERVER.keyEnscriberDowngradeChanceUsed.get();
 	keyEnscriberDowngradeChanceDamaged = SERVER.keyEnscriberDowngradeChanceDamaged.get();
 	logLevel = SERVER.logLevel.get();
+	worldborderToRespect = SERVER.worldborderToRespect.get();
 	chanceForThemeKeys = SERVER.chanceForThemeKeys.get();
 	numberOfThemes = SERVER.numberOfThemes.get();
 	blockBreakWhitelist = SERVER.breakingWhitelist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
