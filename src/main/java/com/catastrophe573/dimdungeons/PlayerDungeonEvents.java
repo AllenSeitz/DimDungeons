@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.event.entity.living.EnderTeleportEvent;
+import net.minecraftforge.event.entity.living.EntityTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
@@ -160,10 +160,10 @@ public class PlayerDungeonEvents
     }
 
     @SubscribeEvent
-    public void teleportStart(EnderTeleportEvent event)
+    public void teleportStart(EntityTeleportEvent event)
     {
 	// restrict player teleports
-	if (event.getEntityLiving() instanceof ServerPlayerEntity)
+	if (event.getEntity() instanceof ServerPlayerEntity)
 	{
 	    // I only care about restricting teleports in the Dungeon CHALLENGE Dimension
 	    //	    if (DungeonUtils.isDimensionDungeon(event.getEntityLiving().getEntityWorld()))
@@ -173,10 +173,10 @@ public class PlayerDungeonEvents
 	}
 
 	// restrict enderman/shulker teleports
-	if (event.getEntityLiving() instanceof EndermanEntity || event.getEntityLiving() instanceof ShulkerEntity)
+	if (event.getEntity() instanceof EndermanEntity || event.getEntity() instanceof ShulkerEntity)
 	{
 	    // I only care about restricting teleports within my dimensions
-	    if (DungeonUtils.isDimensionDungeon(event.getEntityLiving().getCommandSenderWorld()))
+	    if (DungeonUtils.isDimensionDungeon(event.getEntity().getCommandSenderWorld()))
 	    {
 		event.setCanceled(true);
 	    }
