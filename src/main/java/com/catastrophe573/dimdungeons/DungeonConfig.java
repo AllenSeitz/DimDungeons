@@ -1,6 +1,5 @@
 package com.catastrophe573.dimdungeons;
 
-import com.catastrophe573.dimdungeons.DungeonConfig.CommonConfig.ThemeConfigStructure;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -1133,7 +1132,7 @@ public class DungeonConfig
 
     public static void refreshServer()
     {
-	// refresh SERVER
+	// refresh the server config
 	configVersion = SERVER.configVersion.get();
 	globalBlockProtection = SERVER.globalBlockProtection.get();
 	hardcoreMode = SERVER.hardcoreMode.get();
@@ -1149,58 +1148,7 @@ public class DungeonConfig
 	blockBreakWhitelist = SERVER.breakingWhitelist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
 	blockInteractBlacklist = SERVER.interactionBlacklist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
 
-	// if I want to reset your config because a new version invalidates your old settings (sorry)
-	if (configVersion < DEFAULT_CONFIG_VERSION)
-	{
-	    DimDungeons.logMessageWarn("DIMDUNGEONS: RESET CONFIG BECAUSE VERSION IS OUT OF DATE: " + configVersion + " < " + DEFAULT_CONFIG_VERSION);
-	    SERVER.configVersion.set(DEFAULT_CONFIG_VERSION);
-	    SERVER.numberOfThemes.set(DEFAULT_NUMBER_OF_THEMES);
-	    configVersion = DEFAULT_CONFIG_VERSION;
-
-	    // reset all room choices
-	    COMMON.basicEntrances.set(defaultBasicEntrances());
-	    COMMON.basicFourways.set(defaultBasicFourways());
-	    COMMON.basicThreeways.set(defaultBasicThreeways());
-	    COMMON.basicHallways.set(defaultBasicHallways());
-	    COMMON.basicCorners.set(defaultBasicCorners());
-	    COMMON.basicEnds.set(defaultBasicEnds());
-
-	    COMMON.advancedEntrances.set(defaultAdvancedEntrances());
-	    COMMON.advancedFourways.set(defaultAdvancedFourways());
-	    COMMON.advancedThreeways.set(defaultAdvancedThreeways());
-	    COMMON.advancedHallways.set(defaultAdvancedHallways());
-	    COMMON.advancedCorners.set(defaultAdvancedCorners());
-	    COMMON.advancedEnds.set(defaultAdvancedEnds());
-	    COMMON.advancedLarge.set(defaultAdvancedLarge());
-
-	    // reset the theme config too
-	    for (int i = 1; i <= MAXIMUM_NUMBER_OF_THEMES; i++)
-	    {
-		int numEntrances = 3;
-		int numOtherRooms = 6;
-		if (i > DEFAULT_NUMBER_OF_THEMES)
-		{
-		    numEntrances = 0;
-		    numOtherRooms = 0;
-		}
-
-		ThemeConfigStructure temp = new ThemeConfigStructure();
-		temp.themeEntrances.set(makeDefaultThemeRoomSet(i, "entrance", numEntrances));
-		temp.themeFourways.set(makeDefaultThemeRoomSet(i, "fourway", numOtherRooms));
-		temp.themeThreeways.set(makeDefaultThemeRoomSet(i, "threeway", numOtherRooms));
-		temp.themeHallways.set(makeDefaultThemeRoomSet(i, "hallway", numOtherRooms));
-		temp.themeCorners.set(makeDefaultThemeRoomSet(i, "corner", numOtherRooms));
-		temp.themeEnds.set(makeDefaultThemeRoomSet(i, "end", numOtherRooms));
-		temp.themeEnemySet1.set(defaultThemeEnemySet1(i));
-		temp.themeEnemySet2.set(defaultThemeEnemySet2(i));
-		temp.themeEnemyHealthScaling.set(1.0);
-		temp.themeDungeonSize.set(DEFAULT_THEME_DUNGEON_SIZE);
-
-		COMMON.allThemeConfigs.set(i - 1, temp);
-	    }
-	}
-
-	// this is also where COMMON config is refreshed
+	// this is also where the common config is refreshed
 	basicEntrances = COMMON.basicEntrances.get();
 	basicFourways = COMMON.basicFourways.get();
 	basicThreeways = COMMON.basicThreeways.get();
