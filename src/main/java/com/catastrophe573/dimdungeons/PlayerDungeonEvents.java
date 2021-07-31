@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.event.entity.living.EntityTeleportEvent;
+import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
@@ -160,7 +160,7 @@ public class PlayerDungeonEvents
     }
 
     @SubscribeEvent
-    public void teleportStart(EntityTeleportEvent event)
+    public void teleportStart(EnderTeleportEvent event)
     {
 	// restrict player teleports
 	if (event.getEntity() instanceof ServerPlayerEntity)
