@@ -23,6 +23,7 @@ public class ItemHomewardPearl extends Item
 	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
+    @SuppressWarnings("resource")
     @Override
     //public ActionResultType onItemUse(ItemUseContext parameters)
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)

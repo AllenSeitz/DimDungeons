@@ -61,12 +61,11 @@ public class DimDungeons
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerCommands);
+	//FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerCommands);
 
 	// Register ourselves for server, registry and other game events we are interested in
 	//MinecraftForge.EVENT_BUS.register(this);
 	MinecraftForge.EVENT_BUS.register(eventHandler);
-	MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
 
 	ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, DungeonConfig.SERVER_SPEC);
 	ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, DungeonConfig.CLIENT_SPEC);

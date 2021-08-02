@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
-import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
