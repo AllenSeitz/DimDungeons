@@ -426,7 +426,7 @@ public class ItemPortalKey extends Item
 		    //System.out.println("Key already activated!");
 		    worldIn.playSound((PlayerEntity) null, pos, SoundEvents.METAL_HIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
-		else if (blockid.equals("end_creator") || blockid.equals("end_creator_activated"))
+		else if (blockid.equals("end_creator") || blockid.equals("end_creator_activated") || blockid.equals("ancient_portal_frame"))
 		{
 		    performActivationRitual(itemstack, worldIn, pos);
 		}
