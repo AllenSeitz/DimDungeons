@@ -2,23 +2,23 @@ package com.catastrophe573.dimdungeons.item;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.Util;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
+import net.minecraftforge.fml.util.thread.EffectiveSide;
 
 // this item is now unused
 public class ItemGuidebook extends Item
@@ -27,29 +27,29 @@ public class ItemGuidebook extends Item
 
     public ItemGuidebook()
     {
-	super(new Item.Properties().tab(ItemGroup.TAB_MISC).stacksTo(1).tab(ItemRegistrar.CREATIVE_TAB));
+	super(new Item.Properties().tab(CreativeModeTab.TAB_MISC).stacksTo(1).tab(ItemRegistrar.CREATIVE_TAB));
 	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn)
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
     {
 	if (EffectiveSide.get() == LogicalSide.CLIENT)
 	{
 	    // just because
-	    ITextComponent text1 = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.open_guide_message").getString());
+	    Component text1 = new TranslatableComponent(new TranslatableComponent("book.dimdungeons.open_guide_message").getString());
 
-	    playerIn.sendMessage(((TranslationTextComponent) text1).withStyle(TextFormatting.DARK_PURPLE), Util.NIL_UUID);
+	    playerIn.sendMessage(((TranslatableComponent) text1).withStyle(ChatFormatting.DARK_PURPLE), Util.NIL_UUID);
 
-	    ITextComponent text2a = new TranslationTextComponent("<");
-	    ITextComponent text2b = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.author").getString());
-	    ITextComponent text2c = new TranslationTextComponent("> ");
-	    ITextComponent text2d = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.thank_you_message").getString());
-	    ((TranslationTextComponent) text2a).withStyle(TextFormatting.WHITE);
-	    ((TranslationTextComponent) text2b).withStyle(TextFormatting.AQUA);
-	    ((TranslationTextComponent) text2c).withStyle(TextFormatting.WHITE);
-	    ((TranslationTextComponent) text2d).withStyle(TextFormatting.WHITE);
-	    playerIn.sendMessage(((TranslationTextComponent) text2a).append(text2b).append(text2c).append(text2d), Util.NIL_UUID);
+	    Component text2a = new TranslatableComponent("<");
+	    Component text2b = new TranslatableComponent(new TranslatableComponent("book.dimdungeons.author").getString());
+	    Component text2c = new TranslatableComponent("> ");
+	    Component text2d = new TranslatableComponent(new TranslatableComponent("book.dimdungeons.thank_you_message").getString());
+	    ((TranslatableComponent) text2a).withStyle(ChatFormatting.WHITE);
+	    ((TranslatableComponent) text2b).withStyle(ChatFormatting.AQUA);
+	    ((TranslatableComponent) text2c).withStyle(ChatFormatting.WHITE);
+	    ((TranslatableComponent) text2d).withStyle(ChatFormatting.WHITE);
+	    playerIn.sendMessage(((TranslatableComponent) text2a).append(text2b).append(text2c).append(text2d), Util.NIL_UUID);
 	}
 	else
 	{
@@ -63,29 +63,29 @@ public class ItemGuidebook extends Item
 	    }
 	}
 
-	return ActionResult.success(ItemStack.EMPTY); // return action result type success
+	return InteractionResultHolder.success(ItemStack.EMPTY); // return action result type success
     }
 
     public ItemStack makeTempGuidebook()
     {
 	ItemStack stack = new ItemStack(Items.WRITTEN_BOOK);
-	stack.setTag(new CompoundNBT());
+	stack.setTag(new CompoundTag());
 
 	// create the complicated NBT tag list for the list of pages in the book
-	ListNBT pages = new ListNBT();
+	ListTag pages = new ListTag();
 	for (int i = 1; i < 10; i++)
 	{
-	    ITextComponent text = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.guidebook_" + i).getString());
-	    String json = ITextComponent.Serializer.toJson(text);
-	    pages.add(i - 1, StringNBT.valueOf(json));
+	    Component text = new TranslatableComponent(new TranslatableComponent("book.dimdungeons.guidebook_" + i).getString());
+	    String json = Component.Serializer.toJson(text);
+	    pages.add(i - 1, StringTag.valueOf(json));
 	}
 
 	// actually set all the bookish NBT on the item
 	stack.getTag().putBoolean("resolved", false);
 	stack.getTag().putInt("generation", 0);
 	stack.getTag().put("pages", pages);
-	stack.getTag().putString("title", new TranslationTextComponent("book.dimdungeons.title_guidebook").getString());
-	stack.getTag().putString("author", new TranslationTextComponent("book.dimdungeons.author").getString());
+	stack.getTag().putString("title", new TranslatableComponent("book.dimdungeons.title_guidebook").getString());
+	stack.getTag().putString("author", new TranslatableComponent("book.dimdungeons.author").getString());
 	return stack;
     }
 

@@ -2,42 +2,33 @@ package com.catastrophe573.dimdungeons.block;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.registries.ObjectHolder;
 
-public class TileEntityLocalTeleporter extends TileEntity
+public class TileEntityLocalTeleporter extends BlockEntity
 {
     public static final String REG_NAME = "tileentity_local_teleporter";
 
     @ObjectHolder(DimDungeons.RESOURCE_PREFIX + REG_NAME)
-    public static TileEntityType<TileEntityLocalTeleporter> TYPE;
+    public static BlockEntityType<TileEntityLocalTeleporter> TYPE;
 
     private double destX, destY, destZ;
     private double destYaw;
     private double destPitch;
 
-    public TileEntityLocalTeleporter()
+    public TileEntityLocalTeleporter(BlockPos pos, BlockState state)
     {
-	super(TYPE);
-	destX = destZ = 0;
-	destY = 55;
-	destPitch = 0;
-	destYaw = 180.0f;
-    }
-
-    public TileEntityLocalTeleporter(TileEntityType<?> tileEntityTypeIn)
-    {
-	super(tileEntityTypeIn);
+	super(TYPE, pos, state);
     }
 
     @Override
-    public void load(BlockState stateIn, CompoundNBT compound)
+    public void load(CompoundTag compound)
     {
-	super.load(stateIn, compound);
+	super.load(compound);
 	if (compound.contains("destX") && compound.contains("destY") && compound.contains("destZ") && compound.contains("destPitch") && compound.contains("destYaw"))
 	{
 	    this.destX = compound.getDouble("destX");
@@ -49,7 +40,7 @@ public class TileEntityLocalTeleporter extends TileEntity
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT compound)
+    public CompoundTag save(CompoundTag compound)
     {
 	compound.putDouble("destX", this.destX);
 	compound.putDouble("destY", this.destY);

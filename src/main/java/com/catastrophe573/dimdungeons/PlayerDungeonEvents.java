@@ -5,15 +5,15 @@ import java.util.List;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 import com.google.common.collect.Lists;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.monster.EndermanEntity;
-import net.minecraft.entity.monster.ShulkerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.event.entity.living.EnderTeleportEvent;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Shulker;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.event.entity.EntityTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
@@ -37,7 +37,7 @@ public class PlayerDungeonEvents
     public void explosionModify(ExplosionEvent.Detonate event)
     {
 	// I only care about explosions in the Dungeon Dimension
-	if (!DungeonUtils.isDimensionDungeon((World) event.getWorld()))
+	if (!DungeonUtils.isDimensionDungeon((Level) event.getWorld()))
 	{
 	    return;
 	}
@@ -75,7 +75,7 @@ public class PlayerDungeonEvents
 	}
 
 	// I only care about blocks breaking in the Dungeon Dimension
-	if (!DungeonUtils.isDimensionDungeon((World) event.getWorld()))
+	if (!DungeonUtils.isDimensionDungeon((Level) event.getWorld()))
 	{
 	    return;
 	}
@@ -100,7 +100,7 @@ public class PlayerDungeonEvents
 	}
 
 	// I only care about placing blocks in the Dungeon Dimension
-	if (!DungeonUtils.isDimensionDungeon((World) event.getWorld()))
+	if (!DungeonUtils.isDimensionDungeon((Level) event.getWorld()))
 	{
 	    return;
 	}
@@ -125,7 +125,7 @@ public class PlayerDungeonEvents
 	}
 
 	// I only care about taking liquids in the Dungeon Dimension
-	if (!DungeonUtils.isDimensionDungeon((World) event.getWorld()))
+	if (!DungeonUtils.isDimensionDungeon((Level) event.getWorld()))
 	{
 	    return;
 	}
@@ -142,7 +142,7 @@ public class PlayerDungeonEvents
 	}
 
 	// I only care about restricting access in the Dungeon Dimension
-	if (!DungeonUtils.isDimensionDungeon((World) event.getWorld()))
+	if (!DungeonUtils.isDimensionDungeon((Level) event.getWorld()))
 	{
 	    return;
 	}
@@ -160,10 +160,10 @@ public class PlayerDungeonEvents
     }
 
     @SubscribeEvent
-    public void teleportStart(EnderTeleportEvent event)
+    public void teleportStart(EntityTeleportEvent event)
     {
 	// restrict player teleports
-	if (event.getEntity() instanceof ServerPlayerEntity)
+	if (event.getEntity() instanceof ServerPlayer)
 	{
 	    // I only care about restricting teleports in the Dungeon CHALLENGE Dimension
 	    //	    if (DungeonUtils.isDimensionDungeon(event.getEntityLiving().getEntityWorld()))
@@ -173,7 +173,7 @@ public class PlayerDungeonEvents
 	}
 
 	// restrict enderman/shulker teleports
-	if (event.getEntity() instanceof EndermanEntity || event.getEntity() instanceof ShulkerEntity)
+	if (event.getEntity() instanceof EnderMan || event.getEntity() instanceof Shulker)
 	{
 	    // I only care about restricting teleports within my dimensions
 	    if (DungeonUtils.isDimensionDungeon(event.getEntity().getCommandSenderWorld()))
@@ -189,7 +189,7 @@ public class PlayerDungeonEvents
 	ItemStack stack = event.getItem();
 
 	// do not run this function on non-players
-	if (!(event.getEntityLiving() instanceof ServerPlayerEntity))
+	if (!(event.getEntityLiving() instanceof ServerPlayer))
 	{
 	    return;
 	}

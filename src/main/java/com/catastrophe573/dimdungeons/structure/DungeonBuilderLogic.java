@@ -8,8 +8,8 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.google.common.collect.Lists;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.Rotation;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.Rotation;
 
 // this class is used by the DungeonChunkGenerator to design dungeons
 public class DungeonBuilderLogic

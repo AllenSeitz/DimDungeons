@@ -5,26 +5,26 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.properties.NoteBlockInstrument;
-import net.minecraft.tileentity.LockableLootTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 public class ItemSecretBell extends Item //extends TieredItem implements IVanishable
 {
@@ -118,7 +118,7 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 
     public void setUpgradeLevel(ItemStack stack, int level)
     {
-	CompoundNBT data = new CompoundNBT();
+	CompoundTag data = new CompoundTag();
 	data.putInt(NBT_UPGRADE, level);
 	data.putInt(NBT_SECRET_X, getSecretX(stack));
 	data.putInt(NBT_SECRET_Y, getSecretY(stack));
@@ -128,7 +128,7 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 
     public void setSecretLocation(ItemStack stack, int x, int y, int z)
     {
-	CompoundNBT data = new CompoundNBT();
+	CompoundTag data = new CompoundTag();
 	data.putInt(NBT_UPGRADE, getUpgradeLevel(stack));
 	data.putInt(NBT_SECRET_X, x);
 	data.putInt(NBT_SECRET_Y, y);
@@ -137,37 +137,37 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn)
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
     {
 	ItemStack itemstack = playerIn.getItemInHand(handIn);
 
 	// Only the level 2 bell may be used in any dimension. The level 1 bell works exclusively in the dungeon dimension.
-	if (getUpgradeLevel(itemstack) < 2 && !DungeonUtils.isDimensionDungeon((World) playerIn.getCommandSenderWorld()))
+	if (getUpgradeLevel(itemstack) < 2 && !DungeonUtils.isDimensionDungeon((Level) playerIn.getCommandSenderWorld()))
 	{
-	    return new ActionResult<>(ActionResultType.FAIL, itemstack);
+	    return new InteractionResultHolder<>(InteractionResult.FAIL, itemstack);
 	}
 
-	if (handIn == Hand.MAIN_HAND)
+	if (handIn == InteractionHand.MAIN_HAND)
 	{
 	    playerIn.getCooldowns().addCooldown(this, BELL_COOLDOWN_TICKS);
 
 	    BlockPos secret = findSecretChestNearby(playerIn.blockPosition(), worldIn);
 	    setSecretLocation(itemstack, secret.getX(), secret.getY(), secret.getZ());
-	    return new ActionResult<>(ActionResultType.SUCCESS, itemstack);
+	    return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemstack);
 	}
 	else
 	{
-	    return new ActionResult<>(ActionResultType.PASS, itemstack);
+	    return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 	}
     }
 
-    public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
+    public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected)
     {
-	if (!(entityIn instanceof ServerPlayerEntity) || !isSelected)
+	if (!(entityIn instanceof ServerPlayer) || !isSelected)
 	{
 	    return;
 	}
-	ServerPlayerEntity playerIn = (ServerPlayerEntity) entityIn;
+	ServerPlayer playerIn = (ServerPlayer) entityIn;
 
 	// convert from percentage back to raw ticks
 	int time = (int) (playerIn.getCooldowns().getCooldownPercent(this, 0) * BELL_COOLDOWN_TICKS);
@@ -217,10 +217,10 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     }
 
     // copied from NoteBlocks kind of
-    public void playSoundAtPosition(World worldIn, BlockPos pos, int note)
+    public void playSoundAtPosition(Level worldIn, BlockPos pos, int note)
     {
 	float pitch = (float) Math.pow(2.0D, (double) (note - 12) / 12.0D);
-	worldIn.playSound((PlayerEntity) null, pos, NoteBlockInstrument.BELL.getSoundEvent(), SoundCategory.RECORDS, 3.0F, pitch);
+	worldIn.playSound((Player) null, pos, NoteBlockInstrument.BELL.getSoundEvent(), SoundSource.RECORDS, 3.0F, pitch);
 
 	worldIn.addParticle(ParticleTypes.NOTE, (double) pos.getX() + 0.5D, (double) pos.getY() + 1.6D, (double) pos.getZ() + 0.5D, (double) note / 24.0D, 0.0D, 0.0D);
 	//worldIn.addParticle(ParticleTypes.NOTE, (double)pos.getX() + 0.5D, (double) pos.getY() + 1.2D, (double) pos.getZ() + 0.5D, (double)i / 24.0D, 0.0D, 0.0D);
@@ -236,7 +236,7 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
      * @return True to cancel the rest of the interaction.
      */
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity)
+    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity)
     {
 	// I might use this function for something someday, like playing a sound effect maybe?
 	return false;
@@ -247,24 +247,24 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     {
 	stack.hurtAndBreak(1, attacker, (entity) ->
 	{
-	    entity.broadcastBreakEvent(EquipmentSlotType.MAINHAND);
+	    entity.broadcastBreakEvent(EquipmentSlot.MAINHAND);
 	});
 
 	// play a loud CLANG because it's funny
-	attacker.getCommandSenderWorld().playSound((PlayerEntity) null, target.blockPosition(), SoundEvents.BELL_BLOCK, SoundCategory.BLOCKS, 2.0F, 1.0F);
+	attacker.getCommandSenderWorld().playSound((Player) null, target.blockPosition(), SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 2.0F, 1.0F);
 
 	return true;
     }
 
     // Called when a Block is destroyed using this Item. Return true to trigger the "Use Item" statistic.
     // Players probably shouldn't be breaking things with a bell anyway, but they can.
-    public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving)
+    public boolean mineBlock(ItemStack stack, Level worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving)
     {
 	if (state.getDestroySpeed(worldIn, pos) != 0.0F)
 	{
 	    stack.hurtAndBreak(2, entityLiving, (entity) ->
 	    {
-		entity.broadcastBreakEvent(EquipmentSlotType.MAINHAND);
+		entity.broadcastBreakEvent(EquipmentSlot.MAINHAND);
 	    });
 	}
 	return true;
@@ -282,7 +282,7 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     //	return equipmentSlot == EquipmentSlotType.MAINHAND ? this.attributeModifiers : super.getAttributeModifiers(equipmentSlot);
     //}
 
-    private BlockPos findSecretChestNearby(BlockPos start, World worldIn)
+    private BlockPos findSecretChestNearby(BlockPos start, Level worldIn)
     {
 	int startX = Math.floorDiv(start.getX(), 16) * 16;
 	int startZ = Math.floorDiv(start.getZ(), 16) * 16;
@@ -296,8 +296,8 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 	    {
 		for (int y = startY; y < startY + 16; y++)
 		{
-		    TileEntity te = worldIn.getBlockEntity(new BlockPos(x, y, z));
-		    if (te != null && te instanceof LockableLootTileEntity)
+		    BlockEntity te = worldIn.getBlockEntity(new BlockPos(x, y, z));
+		    if (te != null && te instanceof RandomizableContainerBlockEntity)
 		    {
 			boolean hasLootTable = false;
 			try

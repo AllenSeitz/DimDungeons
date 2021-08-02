@@ -2,7 +2,6 @@ package com.catastrophe573.dimdungeons.block;
 
 import java.util.ArrayList;
 import java.util.Optional;
-//import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
 
@@ -11,47 +10,40 @@ import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
-//import com.google.common.collect.Lists;
-//import com.mojang.datafixers.util.Pair;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.BreakableBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-//import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-//import net.minecraft.nbt.CompoundNBT;
-//import net.minecraft.nbt.ListNBT;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tileentity.BannerPattern;
-//import net.minecraft.tileentity.BannerTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+//import net.minecraft.world.level.block.HalfTransparentBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.entity.BannerPattern;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-//import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraft.block.AbstractBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
-public class BlockGoldPortal extends BreakableBlock
+public class BlockGoldPortal extends BaseEntityBlock
 {
     public static String REG_NAME = "block_gold_portal";
 
@@ -61,13 +53,13 @@ public class BlockGoldPortal extends BreakableBlock
 
     public BlockGoldPortal()
     {
-	super(AbstractBlock.Properties.of(Material.PORTAL).strength(50).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
+	super(BlockBehaviour.Properties.of(Material.PORTAL).strength(50).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
 	setRegistryName(DimDungeons.MOD_ID, REG_NAME);
 	this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X));
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
     {
 	switch ((Direction.Axis) state.getValue(AXIS))
 	{
@@ -98,14 +90,14 @@ public class BlockGoldPortal extends BreakableBlock
 	}
     }
 
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder)
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
 	builder.add(AXIS);
     }
 
     // Called by ItemBlocks after a block is set in the world, to allow post-place logic
     @Override
-    public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
+    public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
     {
 	if (!checkPortalIntegrity(state, worldIn, pos))
 	{
@@ -114,7 +106,7 @@ public class BlockGoldPortal extends BreakableBlock
     }
 
     @Override
-    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving)
+    public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving)
     {
 	if (!this.checkPortalIntegrity(state, worldIn, pos))
 	{
@@ -124,7 +116,7 @@ public class BlockGoldPortal extends BreakableBlock
 
     // this function seems to be the true 1.14 replacement for updateNeighbors(), and it cares about block sides now
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos)
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos)
     {
 	if (checkPortalIntegrity(stateIn, worldIn, currentPos))
 	{
@@ -136,7 +128,7 @@ public class BlockGoldPortal extends BreakableBlock
     // called by getItemsToDropCount() to determine what BlockItem or Item to drop
     // in this case, do not allow the player to obtain this block as an item
     @Override
-    public ItemStack getCloneItemStack(IBlockReader worldIn, BlockPos pos, BlockState state)
+    public ItemStack getCloneItemStack(BlockGetter worldIn, BlockPos pos, BlockState state)
     {
 	return ItemStack.EMPTY;
     }
@@ -150,7 +142,7 @@ public class BlockGoldPortal extends BreakableBlock
 
     // called When an entity collides with the Block
     @Override
-    public void entityInside(BlockState state, World worldIn, BlockPos pos, Entity entityIn)
+    public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn)
     {
 	// do not process this block on the client
 	if (worldIn.isClientSide)
@@ -159,7 +151,7 @@ public class BlockGoldPortal extends BreakableBlock
 	}
 
 	// only teleport players! items and mobs and who knows what else must stay behind
-	if (!(entityIn instanceof ServerPlayerEntity))
+	if (!(entityIn instanceof ServerPlayer))
 	{
 	    return;
 	}
@@ -168,7 +160,7 @@ public class BlockGoldPortal extends BreakableBlock
 	{
 	    //DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
 
-	    TileEntity tile = worldIn.getBlockEntity(pos);
+	    BlockEntity tile = worldIn.getBlockEntity(pos);
 
 	    if (tile != null && tile instanceof TileEntityGoldPortal)
 	    {
@@ -214,19 +206,19 @@ public class BlockGoldPortal extends BreakableBlock
 
 		    // intentionally don't add 0.5f to the X, so the player is centered between the two blocks of the doorway
 		    DimDungeons.logMessageInfo("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");
-		    actuallyPerformTeleport((ServerPlayerEntity) entityIn, DungeonUtils.getDungeonWorld(worldIn.getServer()), warpX, 55.1D, warpZ + 0.5f, 0);
+		    actuallyPerformTeleport((ServerPlayer) entityIn, DungeonUtils.getDungeonWorld(worldIn.getServer()), warpX, 55.1D, warpZ + 0.5f, 0);
 		}
 		else
 		{
 		    // first check for an unassigned gold portal block
 		    if (destination.getX() == 0 && destination.getZ() == 0)
 		    {
-			sendPlayerBackHome((ServerPlayerEntity) entityIn);
+			sendPlayerBackHome((ServerPlayer) entityIn);
 		    }
 		    else
 		    {
 			//System.out.println("Player is returning from a dungeon at (" + warpX + " " + warpY + " " + warpZ + ").");
-			ServerPlayerEntity player = (ServerPlayerEntity) entityIn;
+			ServerPlayer player = (ServerPlayer) entityIn;
 			actuallyPerformTeleport(player, player.getServer().getLevel(te.getDestinationDimension()), warpX + 0.5f, warpY + 0.5f, warpZ + 0.5f, 0);
 		    }
 		}
@@ -234,19 +226,7 @@ public class BlockGoldPortal extends BreakableBlock
 	}
     }
 
-    @Override
-    public boolean hasTileEntity(BlockState state)
-    {
-	return true;
-    }
-
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world)
-    {
-	return new TileEntityGoldPortal();
-    }
-
-    protected Entity actuallyPerformTeleport(ServerPlayerEntity player, ServerWorld dim, double x, double y, double z, double yaw)
+    protected Entity actuallyPerformTeleport(ServerPlayer player, ServerLevel dim, double x, double y, double z, double yaw)
     {
 	float destPitch = player.getRotationVector().x;
 	float destYaw = player.getRotationVector().y;
@@ -266,7 +246,7 @@ public class BlockGoldPortal extends BreakableBlock
     }
 
     // this is now only used a fail safe in case a BlockGoldPortal somehow ends up 'unassigned' (such as a world being imported from 1.15)
-    protected void sendPlayerBackHome(ServerPlayerEntity player)
+    protected void sendPlayerBackHome(ServerPlayer player)
     {
 	float lastX = 0;
 	float lastY = 0;
@@ -284,22 +264,22 @@ public class BlockGoldPortal extends BreakableBlock
 	else
 	{
 	    // fallback: send the player to the overworld spawn
-	    lastX = player.getServer().getLevel(World.OVERWORLD).getLevelData().getXSpawn();
-	    lastY = player.getServer().getLevel(World.OVERWORLD).getLevelData().getYSpawn() + 2; // plus 2 to stand on the ground I guess
-	    lastZ = player.getServer().getLevel(World.OVERWORLD).getLevelData().getZSpawn();
+	    lastX = player.getServer().getLevel(Level.OVERWORLD).getLevelData().getXSpawn();
+	    lastY = player.getServer().getLevel(Level.OVERWORLD).getLevelData().getYSpawn() + 2; // plus 2 to stand on the ground I guess
+	    lastZ = player.getServer().getLevel(Level.OVERWORLD).getLevelData().getZSpawn();
 	}
 
-	actuallyPerformTeleport(player, player.getServer().getLevel(World.OVERWORLD).getWorldServer(), lastX, lastY, lastZ, lastYaw);
+	actuallyPerformTeleport(player, player.getServer().getLevel(Level.OVERWORLD), lastX, lastY, lastZ, lastYaw);
     }
 
     // this function returns boolean and relies on another function to actually destroy the block
-    public boolean checkPortalIntegrity(BlockState state, IWorld worldIn, BlockPos pos)
+    public boolean checkPortalIntegrity(BlockState state, LevelAccessor worldIn, BlockPos pos)
     {
 	// valid portal shapes are not needed for persistence in the dungeon dimension
-	return DungeonUtils.isDimensionDungeon((World) worldIn) || isPortalShapeIntact(state, worldIn, pos);
+	return DungeonUtils.isDimensionDungeon((Level) worldIn) || isPortalShapeIntact(state, worldIn, pos);
     }
 
-    private boolean isPortalShapeIntact(BlockState state, IWorld worldIn, BlockPos pos)
+    private boolean isPortalShapeIntact(BlockState state, LevelAccessor worldIn, BlockPos pos)
     {
 	// step 1: look for the keyhole block 1 or 2 tiles up
 	TileEntityPortalKeyhole te = findKeyholeForThisPortal(state, worldIn, pos);
@@ -349,7 +329,7 @@ public class BlockGoldPortal extends BreakableBlock
     }
 
     // return the tile entity if it can be found, or NULL otherwise (in which case this portal block will soon vanish)
-    private TileEntityPortalKeyhole findKeyholeForThisPortal(BlockState state, IWorld worldIn, BlockPos pos)
+    private TileEntityPortalKeyhole findKeyholeForThisPortal(BlockState state, LevelAccessor worldIn, BlockPos pos)
     {
 	BlockPos p = pos.above();
 
@@ -369,11 +349,12 @@ public class BlockGoldPortal extends BreakableBlock
 
     static public boolean isValidPortalFrameBlock(Block b)
     {
-	return b.is(BlockTags.getAllTags().getTagOrEmpty(new ResourceLocation(DimDungeons.MOD_ID, "dimdungeons_portal_frame_blocks")));
+	//Tag<Block> tag = BlockTags.getAllTags().getTagOrEmpty(new ResourceLocation(DimDungeons.MOD_ID, "dimdungeons_portal_frame_blocks"));
+	return b.getTags().contains(new ResourceLocation(DimDungeons.MOD_ID, "dimdungeons_portal_frame_blocks"));
     }
 
     // just get the block states and keep it simple
-    private boolean checkPortalFrameLevel1(IWorld worldIn, BlockPos keyhole)
+    private boolean checkPortalFrameLevel1(LevelAccessor worldIn, BlockPos keyhole)
     {
 	BlockState keyholeState = worldIn.getBlockState(keyhole);
 	ArrayList<BlockState> blocks;
@@ -404,7 +385,7 @@ public class BlockGoldPortal extends BreakableBlock
     }
 
     // also used by the keyhole when telling the player what went wrong
-    static public ArrayList<BlockState> getPortalFrameMaterialsWestEast(IWorld worldIn, BlockPos keyhole)
+    static public ArrayList<BlockState> getPortalFrameMaterialsWestEast(LevelAccessor worldIn, BlockPos keyhole)
     {
 	ArrayList<BlockState> retval = new ArrayList<BlockState>();
 
@@ -439,7 +420,7 @@ public class BlockGoldPortal extends BreakableBlock
     }
 
     // also used by the keyhole when telling the player what went wrong
-    static public ArrayList<BlockState> getPortalFrameMaterialsNorthSouth(IWorld worldIn, BlockPos keyhole)
+    static public ArrayList<BlockState> getPortalFrameMaterialsNorthSouth(LevelAccessor worldIn, BlockPos keyhole)
     {
 	ArrayList<BlockState> retval = new ArrayList<BlockState>();
 
@@ -473,7 +454,7 @@ public class BlockGoldPortal extends BreakableBlock
 	return retval;
     }
 
-    private boolean checkPortalFrameLevel2WestEast(IWorld worldIn, BlockPos keyhole)
+    private boolean checkPortalFrameLevel2WestEast(LevelAccessor worldIn, BlockPos keyhole)
     {
 	// main portal body - check for added crowns
 	if (worldIn.getBlockState(keyhole.west(1)).getBlock() != BlockRegistrar.block_portal_crown || worldIn.getBlockState(keyhole.east(1)).getBlock() != BlockRegistrar.block_portal_crown)
@@ -501,7 +482,7 @@ public class BlockGoldPortal extends BreakableBlock
     }
 
     // just get the block states and keep it simple
-    private boolean checkPortalFrameLevel2NorthSouth(IWorld worldIn, BlockPos keyhole)
+    private boolean checkPortalFrameLevel2NorthSouth(LevelAccessor worldIn, BlockPos keyhole)
     {
 	// main portal body - check for added crowns
 	if (worldIn.getBlockState(keyhole.north(1)).getBlock() != BlockRegistrar.block_portal_crown || worldIn.getBlockState(keyhole.south(1)).getBlock() != BlockRegistrar.block_portal_crown)
@@ -529,7 +510,7 @@ public class BlockGoldPortal extends BreakableBlock
     }
 
     // I had to basically remove this check because all methods relating to getBannerPattern() were removed in recent versions of both 1.14 and 1.15
-    static public int getBannerLevel(IWorld worldIn, BlockPos pos)
+    static public int getBannerLevel(LevelAccessor worldIn, BlockPos pos)
     {
 	Block banner = worldIn.getBlockState(pos).getBlock();
 
@@ -548,7 +529,7 @@ public class BlockGoldPortal extends BreakableBlock
      * can receive random update ticks
      */
     @OnlyIn(Dist.CLIENT)
-    public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand)
+    public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, Random rand)
     {
 	if (DungeonConfig.showParticles)
 	{
@@ -573,5 +554,11 @@ public class BlockGoldPortal extends BreakableBlock
 	}
 
 	return null;
+    }
+
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
+    {
+	return new TileEntityGoldPortal(pos, state);
     }
 }

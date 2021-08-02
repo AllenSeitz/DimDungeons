@@ -3,43 +3,39 @@ package com.catastrophe573.dimdungeons.block;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 
-public class TileEntityPortalKeyhole extends TileEntity
+public class TileEntityPortalKeyhole extends BlockEntity
 {
     public static final String REG_NAME = "tileentity_portal_keyhole";
 
     @ObjectHolder(DimDungeons.RESOURCE_PREFIX + REG_NAME)
-    public static TileEntityType<TileEntityPortalKeyhole> TYPE;
+    public static BlockEntityType<TileEntityPortalKeyhole> TYPE;
 
-    public TileEntityPortalKeyhole()
+    public TileEntityPortalKeyhole(BlockPos pos, BlockState state)
     {
-	super(TYPE);
-    }
-
-    public TileEntityPortalKeyhole(TileEntityType<?> tileEntityTypeIn)
-    {
-	super(tileEntityTypeIn);
+	super(TYPE, pos, state);
     }
 
     private ItemStack objectInserted = ItemStack.EMPTY;
     private static final String ITEM_PROPERTY_KEY = "objectInserted";
 
     @Override
-    public void load(BlockState stateIn, CompoundNBT compound)
+    public void load(CompoundTag compound)
     {
-	super.load(stateIn, compound);
+	super.load(compound);
 	readMyNBTData(compound);
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT compound)
+    public CompoundTag save(CompoundTag compound)
     {
 	writeMyNBTData(compound);
 	return super.save(compound);
@@ -47,29 +43,29 @@ public class TileEntityPortalKeyhole extends TileEntity
 
     // synchronize on chunk loading
     @Override
-    public CompoundNBT getUpdateTag()
+    public CompoundTag getUpdateTag()
     {
-	return save(new CompoundNBT());
+	return save(new CompoundTag());
     }
 
     // synchronize on block updates
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket()
+    public ClientboundBlockEntityDataPacket getUpdatePacket()
     {
-	CompoundNBT tag = save(new CompoundNBT());
-	return new SUpdateTileEntityPacket(worldPosition, 1, tag); // Forge recommends putting -1 as the second parameter
+	CompoundTag tag = save(new CompoundTag());
+	return new ClientboundBlockEntityDataPacket(worldPosition, 1, tag); // Forge recommends putting -1 as the second parameter
     }
 
     // business logic for this object
-    public void writeMyNBTData(CompoundNBT compound)
+    public void writeMyNBTData(CompoundTag compound)
     {
 	// always send this, even if it is empty or air
-	CompoundNBT itemNBT = new CompoundNBT();
+	CompoundTag itemNBT = new CompoundTag();
 	compound.put(ITEM_PROPERTY_KEY, objectInserted.save(itemNBT));
     }
 
     // business logic for this object
-    public void readMyNBTData(CompoundNBT compound)
+    public void readMyNBTData(CompoundTag compound)
     {
 	if (compound.contains(ITEM_PROPERTY_KEY))
 	{

@@ -3,16 +3,16 @@ package com.catastrophe573.dimdungeons;
 import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import com.catastrophe573.dimdungeons.block.TileEntityLocalTeleporter;
 
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemModelsProperties;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.world.item.Item;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.RegistryEvent;
@@ -24,7 +24,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import org.apache.logging.log4j.LogManager;
@@ -50,7 +49,7 @@ public class DimDungeons
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
     public static final String dungeon_basic_regname = "dungeon_dimension";
 
-    public static final RegistryKey<World> DUNGEON_DIMENSION = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(MOD_ID, dungeon_basic_regname));
+    public static final ResourceKey<Level> DUNGEON_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(MOD_ID, dungeon_basic_regname));
 
     public static final PlayerDungeonEvents eventHandler = new PlayerDungeonEvents();
 
@@ -62,7 +61,7 @@ public class DimDungeons
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modConfig);
+	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerCommands);
 
 	// Register ourselves for server, registry and other game events we are interested in
 	//MinecraftForge.EVENT_BUS.register(this);
@@ -85,15 +84,14 @@ public class DimDungeons
 
     private void doClientStuff(final FMLClientSetupEvent event)
     {
-	RenderTypeLookup.setRenderLayer(BlockRegistrar.block_gold_portal, RenderType.translucent());
-	RenderTypeLookup.setRenderLayer(BlockRegistrar.block_local_teleporter, RenderType.translucent());
-
+	ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.block_gold_portal, RenderType.translucent());
+	ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.block_local_teleporter, RenderType.translucent());
 	// register the custom property for the keys that allows for switching their model
-	ItemModelsProperties.register(ItemRegistrar.item_portal_key, new ResourceLocation(DimDungeons.MOD_ID, "keytype"), (stack, world, entity) ->
+	ItemProperties.register(ItemRegistrar.item_portal_key, new ResourceLocation(DimDungeons.MOD_ID, "keytype"), (stack, world, entity, number) ->
 	{
 	    return ItemPortalKey.getKeyLevelAsFloat(stack);
 	});
-	ItemModelsProperties.register(ItemRegistrar.item_secret_bell, new ResourceLocation(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity) ->
+	ItemProperties.register(ItemRegistrar.item_secret_bell, new ResourceLocation(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
 	{
 	    return ItemSecretBell.getUpgradeLevelAsFloat(stack);
 	});
@@ -109,25 +107,19 @@ public class DimDungeons
 	// some example code to receive and process InterModComms from other mods
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
-    @SubscribeEvent
-    public static void onServerStarting(FMLServerStartingEvent event)
-    {
-	// do something when the server starts
-    }
-
-    public void modConfig(ModConfig.ModConfigEvent event)
-    {
-	ModConfig config = event.getConfig();
-	if (config.getSpec() == DungeonConfig.CLIENT_SPEC)
-	{
-	    DungeonConfig.refreshClient();
-	}
-	else if (config.getSpec() == DungeonConfig.SERVER_SPEC)
-	{
-	    DungeonConfig.refreshServer();
-	}
-    }
+    // is this not needed in 1.17?
+    //    public void modConfig(ModConfig.ModConfigEvent event)
+    //    {
+    //	ModConfig config = event.getConfig();
+    //	if (config.getSpec() == DungeonConfig.CLIENT_SPEC)
+    //	{
+    //	    DungeonConfig.refreshClient();
+    //	}
+    //	else if (config.getSpec() == DungeonConfig.SERVER_SPEC)
+    //	{
+    //	    DungeonConfig.refreshServer();
+    //	}
+    //    }
 
     private void registerCommands(RegisterCommandsEvent evt)
     {
@@ -152,11 +144,11 @@ public class DimDungeons
 	}
 
 	@SubscribeEvent
-	public static void registerTE(RegistryEvent.Register<TileEntityType<?>> teRegistryEvent)
+	public static void registerTE(RegistryEvent.Register<BlockEntityType<?>> teRegistryEvent)
 	{
-	    TileEntityType<TileEntityPortalKeyhole> tetPortalKeyhole = TileEntityType.Builder.of(TileEntityPortalKeyhole::new).build(null);
-	    TileEntityType<TileEntityGoldPortal> tetGoldPortal = TileEntityType.Builder.of(TileEntityGoldPortal::new).build(null);
-	    TileEntityType<TileEntityLocalTeleporter> tetLocalTeleporter = TileEntityType.Builder.of(TileEntityLocalTeleporter::new).build(null);
+	    BlockEntityType<TileEntityPortalKeyhole> tetPortalKeyhole = BlockEntityType.Builder.of(TileEntityPortalKeyhole::new).build(null);
+	    BlockEntityType<TileEntityGoldPortal> tetGoldPortal = BlockEntityType.Builder.of(TileEntityGoldPortal::new).build(null);
+	    BlockEntityType<TileEntityLocalTeleporter> tetLocalTeleporter = BlockEntityType.Builder.of(TileEntityLocalTeleporter::new).build(null);
 	    tetPortalKeyhole.setRegistryName(MOD_ID, TileEntityPortalKeyhole.REG_NAME);
 	    tetGoldPortal.setRegistryName(MOD_ID, TileEntityGoldPortal.REG_NAME);
 	    tetLocalTeleporter.setRegistryName(MOD_ID, TileEntityLocalTeleporter.REG_NAME);

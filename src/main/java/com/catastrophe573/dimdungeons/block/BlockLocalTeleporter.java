@@ -5,48 +5,49 @@ import javax.annotation.Nullable;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BreakableBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+//import net.minecraft.world.level.block.HalfTransparentBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
-import net.minecraft.block.AbstractBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
-public class BlockLocalTeleporter extends BreakableBlock
+public class BlockLocalTeleporter extends BaseEntityBlock
 {
     public static String REG_NAME = "block_local_teleporter";
 
     public BlockLocalTeleporter()
     {
-	super(AbstractBlock.Properties.of(Material.PORTAL).strength(50).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
+	super(BlockBehaviour.Properties.of(Material.PORTAL).strength(50).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
 	setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
     // Called by ItemBlocks after a block is set in the world, to allow post-place logic
     @Override
-    public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
+    public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
     {
     }
 
     @Override
-    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving)
+    public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving)
     {
     }
 
     // called by getItemsToDropCount() to determine what BlockItem or Item to drop
     // in this case, do not allow the player to obtain this block as an item
     @Override
-    public ItemStack getCloneItemStack(IBlockReader worldIn, BlockPos pos, BlockState state)
+    public ItemStack getCloneItemStack(BlockGetter worldIn, BlockPos pos, BlockState state)
     {
 	return ItemStack.EMPTY;
     }
@@ -60,7 +61,7 @@ public class BlockLocalTeleporter extends BreakableBlock
 
     // called When an entity collides with the Block
     @Override
-    public void entityInside(BlockState state, World worldIn, BlockPos pos, Entity entityIn)
+    public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn)
     {
 	// do not process this block on the client
 	if (worldIn.isClientSide)
@@ -69,14 +70,14 @@ public class BlockLocalTeleporter extends BreakableBlock
 	}
 
 	// only teleport players! items and mobs and who knows what else must stay behind
-	if (!(entityIn instanceof ServerPlayerEntity))
+	if (!(entityIn instanceof ServerPlayer))
 	{
 	    return;
 	}
 
 	if (entityIn.canChangeDimensions())
 	{
-	    TileEntity tile = worldIn.getBlockEntity(pos);
+	    BlockEntity tile = worldIn.getBlockEntity(pos);
 
 	    if (tile != null && tile instanceof TileEntityLocalTeleporter)
 	    {
@@ -89,29 +90,23 @@ public class BlockLocalTeleporter extends BreakableBlock
 		float newPitch = (float) te.getPitch();
 		float newYaw = (float) te.getYaw();
 
-		actuallyPerformTeleport((ServerPlayerEntity) entityIn, worldIn.getServer().getLevel(entityIn.getCommandSenderWorld().dimension()), warpX, warpY, warpZ, newYaw, newPitch);
+		actuallyPerformTeleport((ServerPlayer) entityIn, worldIn.getServer().getLevel(entityIn.getCommandSenderWorld().dimension()), warpX, warpY, warpZ, newYaw, newPitch);
 	    }
 	}
     }
 
-    @Override
-    public boolean hasTileEntity(BlockState state)
-    {
-	return true;
-    }
-
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world)
-    {
-	return new TileEntityLocalTeleporter();
-    }
-
-    protected Entity actuallyPerformTeleport(ServerPlayerEntity player, ServerWorld dim, double x, double y, double z, float destYaw, float destPitch)
+    protected Entity actuallyPerformTeleport(ServerPlayer player, ServerLevel dim, double x, double y, double z, float destYaw, float destPitch)
     {
 	CustomTeleporter tele = new CustomTeleporter(dim);
 	tele.setDestPos(x, y, z, destYaw, destPitch);
 	player.changeDimension(dim, tele); // changing within the same dimension, but still teleport safely anyways
 	//player.teleport(dim, x, y, z, destYaw, destPitch);
 	return player;
+    }
+
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
+    {
+	return new TileEntityLocalTeleporter(pos, state);
     }
 }

@@ -11,46 +11,47 @@ import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.HorizontalBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.Color;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.Containers;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import net.minecraft.block.AbstractBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
-public class BlockPortalKeyhole extends Block
+public class BlockPortalKeyhole extends BaseEntityBlock
 {
-    public static final DirectionProperty FACING = HorizontalBlock.FACING;
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty FILLED = BooleanProperty.create("filled");
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
 
@@ -58,7 +59,7 @@ public class BlockPortalKeyhole extends Block
 
     public BlockPortalKeyhole()
     {
-	super(AbstractBlock.Properties.of(Material.PORTAL).strength(2).sound(SoundType.METAL));
+	super(BlockBehaviour.Properties.of(Material.PORTAL).strength(2).sound(SoundType.METAL));
 	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
 	this.registerDefaultState(getMyCustomDefaultState());
     }
@@ -72,7 +73,7 @@ public class BlockPortalKeyhole extends Block
     // based on code from vanilla furnaces, which also play a sound effect and make particles when their TileEntity is being productive
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand)
+    public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, Random rand)
     {
 	boolean hasPortalBlockBelow = worldIn.getBlockState(pos.below()).getBlock() == BlockRegistrar.block_gold_portal;
 
@@ -87,7 +88,7 @@ public class BlockPortalKeyhole extends Block
 	    // play sound effects randomly
 	    if (rand.nextDouble() < 0.1D && DungeonConfig.playPortalSounds)
 	    {
-		worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.PORTAL_AMBIENT, SoundCategory.BLOCKS, 1.0F, 3.0F, false);
+		worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.PORTAL_AMBIENT, SoundSource.BLOCKS, 1.0F, 3.0F, false);
 	    }
 
 	    if (DungeonConfig.showParticles)
@@ -121,10 +122,10 @@ public class BlockPortalKeyhole extends Block
 
     // called when the player right clicks this block
     @Override
-    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
+    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit)
     {
 	ItemStack playerItem = player.getItemInHand(handIn);
-	TileEntity tileEntity = worldIn.getBlockEntity(pos);
+	BlockEntity tileEntity = worldIn.getBlockEntity(pos);
 	TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
 
 	// insert or remove an item from this block
@@ -188,7 +189,7 @@ public class BlockPortalKeyhole extends Block
 
 		    playerItem.shrink(1);
 
-		    return ActionResultType.SUCCESS;
+		    return InteractionResult.SUCCESS;
 		}
 	    }
 	    // if the keyhole is currently full
@@ -210,14 +211,14 @@ public class BlockPortalKeyhole extends Block
 		BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated());
 		worldIn.setBlock(pos, newBlockState, 3);
 
-		return ActionResultType.SUCCESS;
+		return InteractionResult.SUCCESS;
 	    }
 	}
 
-	return ActionResultType.PASS;
+	return InteractionResult.PASS;
     }
 
-    protected void addGoldenPortalBlock(World worldIn, BlockPos pos, ItemStack keyStack, Direction.Axis axis)
+    protected void addGoldenPortalBlock(Level worldIn, BlockPos pos, ItemStack keyStack, Direction.Axis axis)
     {
 	worldIn.setBlockAndUpdate(pos, BlockRegistrar.block_gold_portal.defaultBlockState().setValue(BlockGoldPortal.AXIS, axis));
 	TileEntityGoldPortal te = (TileEntityGoldPortal) worldIn.getBlockEntity(pos);
@@ -250,7 +251,7 @@ public class BlockPortalKeyhole extends Block
     }
 
     // helper function for checkForPortalCreation
-    protected boolean isOkayToSpawnPortalBlocks(World worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole myEntity)
+    protected boolean isOkayToSpawnPortalBlocks(Level worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole myEntity)
     {
 	// if the portal is not lit, then that is a fast "no"
 	if (!myEntity.isActivated())
@@ -294,22 +295,10 @@ public class BlockPortalKeyhole extends Block
 	return false;
     }
 
-    @Override
-    public boolean hasTileEntity(BlockState state)
-    {
-	return true;
-    }
-
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world)
-    {
-	return new TileEntityPortalKeyhole();
-    }
-
     // Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the IBlockstate
     //public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context)
+    public BlockState getStateForPlacement(BlockPlaceContext context)
     {
 	BlockState retval = getMyCustomDefaultState();
 	return retval.setValue(FACING, context.getHorizontalDirection().getOpposite());
@@ -317,7 +306,7 @@ public class BlockPortalKeyhole extends Block
 
     // Called by ItemBlocks after a block is set in the world, to allow post-place logic
     @Override
-    public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
+    public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
     {
 	worldIn.setBlock(pos, state.setValue(FACING, placer.getDirection().getOpposite()), 2);
     }
@@ -326,9 +315,9 @@ public class BlockPortalKeyhole extends Block
     // this function is now in charge of preserving TileEntities across block updates, too, instead of the former TileEntity->shouldRefresh()
     @SuppressWarnings("deprecation")
     @Override
-    public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving)
+    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving)
     {
-	TileEntity tileentity = worldIn.getBlockEntity(pos);
+	BlockEntity tileentity = worldIn.getBlockEntity(pos);
 
 	// DO NOT call super.onReplaced() unless this block has no TileEntity, or unless the block was deleted/changed to another block of course
 	if (state.getBlock() != newState.getBlock())
@@ -339,7 +328,7 @@ public class BlockPortalKeyhole extends Block
 		ItemStack item = ((TileEntityPortalKeyhole) tileentity).getObjectInserted();
 		if (!item.isEmpty())
 		{
-		    InventoryHelper.dropItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), item);
+		    Containers.dropItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), item);
 		}
 		worldIn.updateNeighbourForOutputSignal(pos, this);
 	    }
@@ -357,7 +346,7 @@ public class BlockPortalKeyhole extends Block
 
     // returns 2 if a usable key is inside, 1 if the block is filled with any item stack, and 0 otherwise
     @Override
-    public int getAnalogOutputSignal(BlockState blockState, World worldIn, BlockPos pos)
+    public int getAnalogOutputSignal(BlockState blockState, Level worldIn, BlockPos pos)
     {
 	if (blockState.getValue(LIT))
 	{
@@ -368,20 +357,20 @@ public class BlockPortalKeyhole extends Block
 
     // returns the ItemStack that represents this block - this has nothing to do with the item placed inside
     @Override
-    public ItemStack getCloneItemStack(IBlockReader worldIn, BlockPos pos, BlockState state)
+    public ItemStack getCloneItemStack(BlockGetter worldIn, BlockPos pos, BlockState state)
     {
 	return new ItemStack(this);
     }
 
     // The type of render function called. MODEL for mixed tesr and static model, MODELBLOCK_ANIMATED for TESR-only, LIQUID for vanilla liquids, INVISIBLE to skip all rendering
     @Override
-    public BlockRenderType getRenderShape(BlockState state)
+    public RenderShape getRenderShape(BlockState state)
     {
-	return BlockRenderType.MODEL;
+	return RenderShape.MODEL;
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder)
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
 	builder.add(FACING, FILLED, LIT);
     }
@@ -400,13 +389,12 @@ public class BlockPortalKeyhole extends Block
 	return state.setValue(FACING, mirrorIn.mirror(((Direction) state.getValue(FACING))));
     }
 
-    public int predictPortalError(World worldIn, PlayerEntity playerIn)
+    public int predictPortalError(Level worldIn, Player playerIn)
     {
 	return 0;
     }
 
-    @SuppressWarnings("deprecation")
-    protected void checkForProblemsAndLiterallySpeakToPlayer(World worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole tileEntity, PlayerEntity player, boolean dungeonExistsHere, boolean anotherKeyWasFirst)
+    protected void checkForProblemsAndLiterallySpeakToPlayer(Level worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole tileEntity, Player player, boolean dungeonExistsHere, boolean anotherKeyWasFirst)
     {
 	// only run this function once, either on the client or on the server
 	// this runs on the server now because some errors happen exclusively on the server's side
@@ -542,18 +530,24 @@ public class BlockPortalKeyhole extends Block
 	return; // success!
     }
 
-    public void speakLiterallyToPlayerAboutProblems(World worldIn, PlayerEntity playerIn, int problemID, @Nullable BlockState problemBlock)
+    public void speakLiterallyToPlayerAboutProblems(Level worldIn, Player playerIn, int problemID, @Nullable BlockState problemBlock)
     {
-	TranslationTextComponent text1 = new TranslationTextComponent(new TranslationTextComponent("error.dimdungeons.portal_error_" + problemID).getString());
+	TranslatableComponent text1 = new TranslatableComponent(new TranslatableComponent("error.dimdungeons.portal_error_" + problemID).getString());
 
 	// a message that does not call out a specific block
 	if (problemBlock != null)
 	{
 	    // this version of the error message expects a block name to be concatenated
-	    text1 = new TranslationTextComponent(new TranslationTextComponent("error.dimdungeons.portal_error_" + problemID).getString() + problemBlock.getBlock().getRegistryName() + ".");
+	    text1 = new TranslatableComponent(new TranslatableComponent("error.dimdungeons.portal_error_" + problemID).getString() + problemBlock.getBlock().getRegistryName() + ".");
 	}
 	text1.withStyle(text1.getStyle().withItalic(true));
-	text1.withStyle(text1.getStyle().withColor(Color.fromLegacyFormat(TextFormatting.BLUE)));
+	text1.withStyle(text1.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
 	playerIn.sendMessage(text1, Util.NIL_UUID);
+    }
+
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
+    {
+	return new TileEntityPortalKeyhole(pos, state);
     }
 }

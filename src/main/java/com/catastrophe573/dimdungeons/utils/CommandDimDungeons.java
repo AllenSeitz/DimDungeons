@@ -11,25 +11,25 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.command.arguments.EntityArgument;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class CommandDimDungeons
 {
-    public static void register(CommandDispatcher<CommandSource> dispatcher)
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher)
     {
 	// the first half of the /givekey cheat
-	LiteralArgumentBuilder<CommandSource> givekeyArgumentBuilder = Commands.literal("givekey").requires((cmd) ->
+	LiteralArgumentBuilder<CommandSourceStack> givekeyArgumentBuilder = Commands.literal("givekey").requires((cmd) ->
 	{
 	    return cmd.hasPermission(2);
 	});
@@ -55,7 +55,7 @@ public class CommandDimDungeons
 	dispatcher.register(givekeyArgumentBuilder);
 
 	// make the /gendungeon cheat
-	LiteralArgumentBuilder<CommandSource> gendungeonArgumentBuilder = Commands.literal("gendungeon").requires((cmd) ->
+	LiteralArgumentBuilder<CommandSourceStack> gendungeonArgumentBuilder = Commands.literal("gendungeon").requires((cmd) ->
 	{
 	    return cmd.hasPermission(2);
 	});
@@ -69,11 +69,11 @@ public class CommandDimDungeons
 	dispatcher.register(gendungeonArgumentBuilder);
     }
 
-    private static int giveKey(CommandContext<CommandSource> cmd, Collection<ServerPlayerEntity> targets, String type, int theme) throws CommandSyntaxException
+    private static int giveKey(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> targets, String type, int theme) throws CommandSyntaxException
     {
-	TextComponent keyName = new TranslationTextComponent("item.dimdungeons.item_portal_key"); // for use with the logging at the end of the function
+	BaseComponent keyName = new TranslatableComponent("item.dimdungeons.item_portal_key"); // for use with the logging at the end of the function
 
-	for (ServerPlayerEntity serverplayerentity : targets)
+	for (ServerPlayer serverplayerentity : targets)
 	{
 	    // make a new and different key for each player
 	    ItemStack stack = new ItemStack(ItemRegistrar.item_portal_key);
@@ -81,17 +81,17 @@ public class CommandDimDungeons
 	    // which type of key was requested
 	    if ("blank".equals(type))
 	    {
-		keyName = new TranslationTextComponent("item.dimdungeons.item_portal_key");
+		keyName = new TranslatableComponent("item.dimdungeons.item_portal_key");
 	    }
 	    else if ("basic".equals(type))
 	    {
 		((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).activateKeyLevel1(cmd.getSource().getServer(), stack, theme);
-		keyName = new TranslationTextComponent("item.dimdungeons.item_portal_key_basic");
+		keyName = new TranslatableComponent("item.dimdungeons.item_portal_key_basic");
 	    }
 	    else if ("advanced".equals(type))
 	    {
 		((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).activateKeyLevel2(cmd.getSource().getServer(), stack);
-		keyName = new TranslationTextComponent("item.dimdungeons.item_portal_key_advanced");
+		keyName = new TranslatableComponent("item.dimdungeons.item_portal_key_advanced");
 	    }
 	    else
 	    {
@@ -99,7 +99,7 @@ public class CommandDimDungeons
 	    }
 
 	    // try to give the player the item
-	    boolean flag = serverplayerentity.inventory.add(stack);
+	    boolean flag = serverplayerentity.getInventory().add(stack);
 
 	    // if that fails then throw it on the ground at the player's feet
 	    if (flag && stack.isEmpty())
@@ -111,7 +111,7 @@ public class CommandDimDungeons
 		    itementity.makeFakeItem();
 		}
 
-		serverplayerentity.level.playSound((PlayerEntity) null, serverplayerentity.getX(), serverplayerentity.getY(), serverplayerentity.getZ(), SoundEvents.ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F,
+		serverplayerentity.level.playSound((Player) null, serverplayerentity.getX(), serverplayerentity.getY(), serverplayerentity.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F,
 			((serverplayerentity.getRandom().nextFloat() - serverplayerentity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 		serverplayerentity.inventoryMenu.broadcastChanges();
 	    }
@@ -130,17 +130,17 @@ public class CommandDimDungeons
 	// print either "Gave one [key] to Dev" or "Gave one [key] to X players"
 	if (targets.size() == 1)
 	{
-	    cmd.getSource().sendSuccess(new TranslationTextComponent("commands.give.success.single", 1, keyName, targets.iterator().next().getDisplayName()), true);
+	    cmd.getSource().sendSuccess(new TranslatableComponent("commands.give.success.single", 1, keyName, targets.iterator().next().getDisplayName()), true);
 	}
 	else
 	{
-	    cmd.getSource().sendSuccess(new TranslationTextComponent("commands.give.success.single", 1, keyName, targets.size()), true);
+	    cmd.getSource().sendSuccess(new TranslatableComponent("commands.give.success.single", 1, keyName, targets.size()), true);
 	}
 
 	return targets.size();
     }
 
-    private static int generateDungeon(CommandContext<CommandSource> cmd, int destX, int destZ) throws CommandSyntaxException
+    private static int generateDungeon(CommandContext<CommandSourceStack> cmd, int destX, int destZ) throws CommandSyntaxException
     {
 	// set the return point to the the position of whatever entity ran this command. Don't over think this?
 	DungeonGenData fakeData = new DungeonGenData();
@@ -160,11 +160,11 @@ public class CommandDimDungeons
 
 	if (DungeonUtils.buildDungeon(cmd.getSource().getLevel(), fakeData))
 	{
-	    cmd.getSource().sendSuccess(new TranslationTextComponent("commands.gendungeon.success", fakeKey.getHoverName()), true);
+	    cmd.getSource().sendSuccess(new TranslatableComponent("commands.gendungeon.success", fakeKey.getHoverName()), true);
 	    return 1;
 	}
 
-	cmd.getSource().sendSuccess(new TranslationTextComponent("commands.gendungeon.failed"), true);
+	cmd.getSource().sendSuccess(new TranslatableComponent("commands.gendungeon.failed"), true);
 	return 0;
     }
 }

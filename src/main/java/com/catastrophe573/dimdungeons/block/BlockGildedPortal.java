@@ -2,13 +2,13 @@ package com.catastrophe573.dimdungeons.block;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
 
-import net.minecraft.block.AbstractBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class BlockGildedPortal extends Block
 {
@@ -16,13 +16,13 @@ public class BlockGildedPortal extends Block
 
     public BlockGildedPortal()
     {
-	super(AbstractBlock.Properties.of(Material.STONE).strength(2).sound(SoundType.METAL));
+	super(BlockBehaviour.Properties.of(Material.STONE).strength(2).sound(SoundType.METAL));
 	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
     @Override
-    public BlockRenderType getRenderShape(BlockState iBlockState)
+    public RenderShape getRenderShape(BlockState iBlockState)
     {
-	return BlockRenderType.MODEL;
+	return RenderShape.MODEL;
     }
 }

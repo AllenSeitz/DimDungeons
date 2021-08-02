@@ -3,43 +3,38 @@ package com.catastrophe573.dimdungeons.block;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ObjectHolder;
 
-public class TileEntityGoldPortal extends TileEntity
+public class TileEntityGoldPortal extends BlockEntity
 {
     public static final String REG_NAME = "tileentity_gold_portal";
 
     @ObjectHolder(DimDungeons.RESOURCE_PREFIX + REG_NAME)
-    public static TileEntityType<TileEntityGoldPortal> TYPE;
+    public static BlockEntityType<TileEntityGoldPortal> TYPE;
 
     private double destX = 0, destY = -10000, destZ = 0;
     private int cooldown = DungeonConfig.portalCooldownTicks;
     private int lastUpdate = 0;
     private String destDimension = "minecraft:overworld";
 
-    public TileEntityGoldPortal()
+    public TileEntityGoldPortal(BlockPos pos, BlockState state)
     {
-	super(TYPE);
-    }
-
-    public TileEntityGoldPortal(TileEntityType<?> tileEntityTypeIn)
-    {
-	super(tileEntityTypeIn);
+	super(TYPE, pos, state);
     }
 
     @Override
-    public void load(BlockState stateIn, CompoundNBT compound)
+    public void load(CompoundTag compound)
     {
-	super.load(stateIn, compound);
+	super.load(compound);
 	if (compound.contains("destX") && compound.contains("destY") && compound.contains("destZ"))
 	{
 	    this.destX = compound.getDouble("destX");
@@ -63,7 +58,7 @@ public class TileEntityGoldPortal extends TileEntity
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT compound)
+    public CompoundTag save(CompoundTag compound)
     {
 	compound.putDouble("destX", this.destX);
 	compound.putDouble("destY", this.destY);
@@ -91,9 +86,9 @@ public class TileEntityGoldPortal extends TileEntity
 	return cooldown;
     }
 
-    public RegistryKey<World> getDestinationDimension()
+    public ResourceKey<Level> getDestinationDimension()
     {
-	return RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(destDimension));
+	return ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(destDimension));
     }
 
     public boolean needsUpdateThisTick(int tick)
@@ -102,7 +97,7 @@ public class TileEntityGoldPortal extends TileEntity
     }
 
     // return true if recursion is necessary
-    public boolean setCooldown(int value, World worldIn, BlockPos pos, int currentServerTick)
+    public boolean setCooldown(int value, Level worldIn, BlockPos pos, int currentServerTick)
     {
 	if (cooldown == value || currentServerTick <= lastUpdate)
 	{

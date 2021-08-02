@@ -15,44 +15,44 @@ import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ILivingEntityData;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.state.properties.StructureMode;
-import net.minecraft.tileentity.BarrelTileEntity;
-import net.minecraft.tileentity.ChestTileEntity;
-import net.minecraft.tileentity.DispenserTileEntity;
-import net.minecraft.tileentity.LockableLootTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableBoundingBox;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.template.PlacementSettings;
-import net.minecraft.world.gen.feature.template.Template;
-import net.minecraft.world.gen.feature.template.TemplateManager;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.level.block.state.properties.StructureMode;
+import net.minecraft.world.level.block.entity.BarrelBlockEntity;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.entity.DispenserBlockEntity;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
+import net.minecraft.server.level.ServerLevel;
 
 // temporarily, make this not a Feature, because 1.16.2 is going to break it again
 public class DungeonPlacementLogicBasic
@@ -65,7 +65,7 @@ public class DungeonPlacementLogicBasic
 
     // this is the function that actually writes the 8x8 chunk structure to the world, and ALL AT ONCE
     //public static boolean place(IChunk chunk, IWorld world, ChunkGenerator chunkGenerator, Random rand, ChunkPos cpos, NoFeatureConfig config)
-    public static boolean place(ServerWorld world, long x, long z, DungeonGenData genData)
+    public static boolean place(ServerLevel world, long x, long z, DungeonGenData genData)
     {
 	long entranceChunkX = (x / 16) + 8;
 	long entranceChunkZ = (z / 16) + 11;
@@ -81,7 +81,7 @@ public class DungeonPlacementLogicBasic
 	int dungeonSize = DungeonConfig.DEFAULT_BASIC_DUNGEON_SIZE;
 	if (genData.dungeonTheme > 0)
 	{
-	    dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme-1).themeDungeonSize;
+	    dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeDungeonSize;
 	}
 	dbl.calculateDungeonShape(dungeonSize, false);
 
@@ -137,31 +137,31 @@ public class DungeonPlacementLogicBasic
     }
 
     // a test/debugging function that shouldn't be used in the final version
-    public static void putTestStructureHere(long x, long z, IWorld world)
+    public static void putTestStructureHere(long x, long z, LevelAccessor world)
     {
 	ChunkPos cpos = new ChunkPos((int) x, (int) z);
-	MinecraftServer minecraftserver = ((World) world).getServer();
-	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
+	MinecraftServer minecraftserver = ((Level) world).getServer();
+	StructureManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
-	Template template = templatemanager.get(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "basic_template"));
-	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunkPos(cpos);
+	StructureTemplate template = templatemanager.getOrCreate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "basic_template"));
+	StructurePlaceSettings placementsettings = (new StructurePlaceSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false);
 	placementsettings.setBoundingBox(placementsettings.getBoundingBox());
 	placementsettings.setRotation(Rotation.NONE);
 	BlockPos position = new BlockPos(cpos.getMinBlockX(), 50, cpos.getMinBlockZ());
 	BlockPos sizeRange = new BlockPos(16, 13, 16);
 
 	// I assume this function is addBlocksToWorld()	
-	template.placeInWorld((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
+	template.placeInWorld((ServerLevelAccessor) world, position, sizeRange, placementsettings, world.getRandom(), 2);
     }
 
     // used by the place() function to actually place rooms
-    public static boolean putRoomHere(ChunkPos cpos, ServerWorld world, DungeonRoom room, DungeonGenData genData)
+    public static boolean putRoomHere(ChunkPos cpos, ServerLevel world, DungeonRoom room, DungeonGenData genData)
     {
-	MinecraftServer minecraftserver = ((World) world).getServer();
-	TemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
+	MinecraftServer minecraftserver = ((Level) world).getServer();
+	StructureManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
-	Template template = templatemanager.get(new ResourceLocation(room.structure));
-	PlacementSettings placementsettings = (new PlacementSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false).setChunkPos(cpos);
+	StructureTemplate template = templatemanager.getOrCreate(new ResourceLocation(room.structure));
+	StructurePlaceSettings placementsettings = (new StructurePlaceSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false);
 	placementsettings.setBoundingBox(placementsettings.getBoundingBox());
 
 	placementsettings.setRotation(room.rotation);
@@ -201,12 +201,12 @@ public class DungeonPlacementLogicBasic
 
 	// formerly: call Template.addBlocksToWorld()
 	DimDungeons.logMessageInfo("Placing a room: " + room.structure);
-	boolean success = template.placeInWorld((IServerWorld) world, position, sizeRange, placementsettings, world.getRandom(), 2);
+	boolean success = template.placeInWorld((ServerLevelAccessor) world, position, sizeRange, placementsettings, world.getRandom(), 2);
 
 	// handle data blocks - this code block is copied from TemplateStructurePiece
 	//Map<BlockPos, String> map = template.getDataBlocks(position, placementsettings); // 1.12 / 1.13 version
 	//List<Template.BlockInfo> dblocks = template.filterBlocks(position, placementsettings, Blocks.STRUCTURE_BLOCK, true); // my old 1.14.2 method
-	for (Template.BlockInfo template$blockinfo : template.filterBlocks(position, placementsettings, Blocks.STRUCTURE_BLOCK))
+	for (StructureTemplate.StructureBlockInfo template$blockinfo : template.filterBlocks(position, placementsettings, Blocks.STRUCTURE_BLOCK))
 	{
 	    if (template$blockinfo.nbt != null)
 	    {
@@ -235,10 +235,10 @@ public class DungeonPlacementLogicBasic
     }
 
     // resembles TemplateStructurePiece.handleDataMarker()
-    protected static void handleDataBlock(String name, BlockPos pos, ServerWorld world, Random rand, MutableBoundingBox bb, DungeonGenData genData)
+    protected static void handleDataBlock(String name, BlockPos pos, ServerLevel world, Random rand, BoundingBox bb, DungeonGenData genData)
     {
 	//DimDungeons.LOGGER.info("DATA BLOCK NAME: " + name);
-	
+
 	if ("ReturnPortal".equals(name))
 	{
 	    world.setBlock(pos, BlockRegistrar.block_gold_portal.defaultBlockState(), 2); // erase this data block
@@ -274,12 +274,12 @@ public class DungeonPlacementLogicBasic
 	    faceContainerTowardsAir(world, pos.below());
 
 	    // put a message inside the dispenser
-	    TileEntity te = world.getBlockEntity(pos.below());
-	    if (te instanceof DispenserTileEntity)
+	    BlockEntity te = world.getBlockEntity(pos.below());
+	    if (te instanceof DispenserBlockEntity)
 	    {
-		((DispenserTileEntity) te).clearContent();
+		((DispenserBlockEntity) te).clearContent();
 		ItemStack message = generateLuckyMessage(rand);
-		((DispenserTileEntity) te).addItem(message);
+		((DispenserBlockEntity) te).addItem(message);
 	    }
 	    else
 	    {
@@ -320,7 +320,7 @@ public class DungeonPlacementLogicBasic
 	else if ("SetTrappedLoot".equals(name))
 	{
 	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
-	    LockableLootTileEntity.setLootTable(world, rand, pos.below(), new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_basic_easy"));
+	    RandomizableContainerBlockEntity.setLootTable(world, rand, pos.below(), new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_basic_easy"));
 	}
 	else if ("BarrelLoot1".equals(name))
 	{
@@ -390,21 +390,21 @@ public class DungeonPlacementLogicBasic
 	}
     }
 
-    private static void spawnEnemyHere(BlockPos pos, String resourceLocation, ServerWorld world, int theme)
+    private static void spawnEnemyHere(BlockPos pos, String resourceLocation, ServerLevel world, int theme)
     {
 	EntityType<?> entitytype = EntityType.byString(resourceLocation).orElse(EntityType.CHICKEN);
 
-	Entity mob = entitytype.spawn((ServerWorld) world, null, null, pos, SpawnReason.STRUCTURE, true, true);
+	Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, MobSpawnType.STRUCTURE, true, true);
 
-	TranslationTextComponent fancyName = new TranslationTextComponent("enemy.dimdungeons." + resourceLocation);
+	TranslatableComponent fancyName = new TranslatableComponent("enemy.dimdungeons." + resourceLocation);
 	mob.setCustomName(fancyName);
 	mob.moveTo(pos, 0.0F, 0.0F);
 
-	if (mob instanceof MobEntity)
+	if (mob instanceof Mob)
 	{
-	    ((MobEntity) mob).setCanPickUpLoot(false);
-	    ((MobEntity) mob).restrictTo(pos, 8);
-	    ((MobEntity) mob).setPersistenceRequired();
+	    ((Mob) mob).setCanPickUpLoot(false);
+	    ((Mob) mob).restrictTo(pos, 8);
+	    ((Mob) mob).setPersistenceRequired();
 
 	    // health scaling
 	    double healthScaling = DungeonConfig.basicEnemyHealthScaling;
@@ -412,22 +412,22 @@ public class DungeonPlacementLogicBasic
 	    {
 		healthScaling = DungeonConfig.themeSettings.get(theme - 1).themeEnemyHealthScaling;
 	    }
-	    ModifiableAttributeInstance tempHealth = ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH);
-	    ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH).setBaseValue(tempHealth.getBaseValue() * healthScaling);
-	    ((MobEntity) mob).setHealth((float) ((MobEntity) mob).getAttribute(Attributes.MAX_HEALTH).getBaseValue());
-	    
+	    AttributeInstance tempHealth = ((Mob) mob).getAttribute(Attributes.MAX_HEALTH);
+	    ((Mob) mob).getAttribute(Attributes.MAX_HEALTH).setBaseValue(tempHealth.getBaseValue() * healthScaling);
+	    ((Mob) mob).setHealth((float) ((Mob) mob).getAttribute(Attributes.MAX_HEALTH).getBaseValue());
+
 	    // randomly put a themed key into a mob's offhand
-	    if ( world.getRandom().nextInt(100) < DungeonConfig.chanceForThemeKeys && DungeonConfig.themeSettings.size() > 0 && theme < 1 )
+	    if (world.getRandom().nextInt(100) < DungeonConfig.chanceForThemeKeys && DungeonConfig.themeSettings.size() > 0 && theme < 1)
 	    {
 		// if the mob's offhand slot is occupied then just skip it
-		if ( !((MobEntity) mob).hasItemInSlot(EquipmentSlotType.OFFHAND))
+		if (!((Mob) mob).hasItemInSlot(EquipmentSlot.OFFHAND))
 		{
 		    int numThemes = DungeonConfig.themeSettings.size();
 		    ItemStack stack = new ItemStack(ItemRegistrar.item_portal_key);
 		    ((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).activateKeyLevel1(world.getServer(), stack, world.getRandom().nextInt(numThemes) + 1);
-		    
-		    ((MobEntity) mob).setItemInHand(Hand.OFF_HAND, stack);
-		    ((MobEntity) mob).setDropChance(EquipmentSlotType.OFFHAND, 1.0f);
+
+		    ((Mob) mob).setItemInHand(InteractionHand.OFF_HAND, stack);
+		    ((Mob) mob).setDropChance(EquipmentSlot.OFFHAND, 1.0f);
 		}
 	    }
 
@@ -436,26 +436,26 @@ public class DungeonPlacementLogicBasic
 	}
     }
 
-    private static void fillChestBelow(BlockPos pos, ResourceLocation lootTable, IWorld world, Random rand)
+    private static void fillChestBelow(BlockPos pos, ResourceLocation lootTable, LevelAccessor world, Random rand)
     {
 	world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 	faceContainerTowardsAir(world, pos.below());
 
 	// set the loot table
-	LockableLootTileEntity.setLootTable(world, rand, pos.below(), lootTable);
-	if (!(world.getBlockEntity(pos.below()) instanceof ChestTileEntity))
+	RandomizableContainerBlockEntity.setLootTable(world, rand, pos.below(), lootTable);
+	if (!(world.getBlockEntity(pos.below()) instanceof ChestBlockEntity))
 	{
 	    DimDungeons.logMessageWarn("DIMDUNGEONS: FAILED TO PLACE CHEST IN DUNGEON. pos = " + pos.getX() + ", " + pos.getZ());
 	}
     }
 
-    private static void fillBarrelBelow(BlockPos pos, ResourceLocation lootTable, IWorld world, Random rand)
+    private static void fillBarrelBelow(BlockPos pos, ResourceLocation lootTable, LevelAccessor world, Random rand)
     {
 	world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 
 	// set the loot table
-	LockableLootTileEntity.setLootTable(world, rand, pos.below(), lootTable);
-	if (!(world.getBlockEntity(pos.below()) instanceof BarrelTileEntity))
+	RandomizableContainerBlockEntity.setLootTable(world, rand, pos.below(), lootTable);
+	if (!(world.getBlockEntity(pos.below()) instanceof BarrelBlockEntity))
 	{
 	    DimDungeons.logMessageWarn("DIMDUNGEONS: FAILED TO PLACE BARREL IN DUNGEON. pos = " + pos.getX() + ", " + pos.getZ());
 	}
@@ -465,7 +465,7 @@ public class DungeonPlacementLogicBasic
     private static ItemStack generateLuckyMessage(Random rand)
     {
 	ItemStack stack = new ItemStack(Items.WRITTEN_BOOK);
-	stack.setTag(new CompoundNBT());
+	stack.setTag(new CompoundTag());
 
 	// randomize book contents
 	int bookType = rand.nextInt(3);
@@ -477,46 +477,46 @@ public class DungeonPlacementLogicBasic
 	{
 	    //title = I18n.format("book.dimdungeons.title_1");
 	    //body = I18n.format("book.dimdungeons.fun_message_" + messageVariation);
-	    title = new TranslationTextComponent("book.dimdungeons.title_1").getString();
-	    body = new TranslationTextComponent("book.dimdungeons.fun_message_" + messageVariation).getString();
+	    title = new TranslatableComponent("book.dimdungeons.title_1").getString();
+	    body = new TranslatableComponent("book.dimdungeons.fun_message_" + messageVariation).getString();
 
 	}
 	else if (bookType == 1)
 	{
 	    //title = I18n.format("book.dimdungeons.title_2");
 	    //body = I18n.format("book.dimdungeons.helpful_message_" + messageVariation);
-	    title = new TranslationTextComponent("book.dimdungeons.title_2").getString();
-	    body = new TranslationTextComponent("book.dimdungeons.helpful_message_" + messageVariation).getString();
+	    title = new TranslatableComponent("book.dimdungeons.title_2").getString();
+	    body = new TranslatableComponent("book.dimdungeons.helpful_message_" + messageVariation).getString();
 	}
 	else
 	{
 	    //title = I18n.format("book.dimdungeons.title_3");
 	    //body = I18n.format("book.dimdungeons.dangerous_message_" + messageVariation);
-	    title = new TranslationTextComponent("book.dimdungeons.title_3").getString();
-	    body = new TranslationTextComponent("book.dimdungeons.dangerous_message_" + messageVariation).getString();
+	    title = new TranslatableComponent("book.dimdungeons.title_3").getString();
+	    body = new TranslatableComponent("book.dimdungeons.dangerous_message_" + messageVariation).getString();
 	}
 
 	// create the complicated NBT tag list for the list of pages in the book
-	ListNBT pages = new ListNBT();
-	ITextComponent text = new TranslationTextComponent(body);
-	String json = ITextComponent.Serializer.toJson(text);
+	ListTag pages = new ListTag();
+	Component text = new TranslatableComponent(body);
+	String json = Component.Serializer.toJson(text);
 	//pages.appendTag(new NBTTagString(json)); // 1.12
 	//pages.add(0, new NBTTagString(json)); // 1.13
 	//pages.add(0, new StringNBT(json)); // 1.14
-	pages.add(0, StringNBT.valueOf(json)); // 1.15
+	pages.add(0, StringTag.valueOf(json)); // 1.15
 
 	// actually set all the bookish NBT on the item
 	stack.getTag().putBoolean("resolved", false);
 	stack.getTag().putInt("generation", 0);
 	stack.getTag().put("pages", pages);
 	stack.getTag().putString("title", title);
-	stack.getTag().putString("author", new TranslationTextComponent("book.dimdungeons.author").getString());
+	stack.getTag().putString("author", new TranslatableComponent("book.dimdungeons.author").getString());
 	return stack;
     }
 
     // used on dispensers and chests, particularly ones created by data blocks
     // this function might not be needed in versions later thaN 1.13
-    private static void faceContainerTowardsAir(IWorld world, BlockPos pos)
+    private static void faceContainerTowardsAir(LevelAccessor world, BlockPos pos)
     {
 	BlockState bs = world.getBlockState(pos);
 
@@ -542,23 +542,23 @@ public class DungeonPlacementLogicBasic
 	}
     }
 
-    private static void spawnMimicFromArtifactsMod(BlockPos pos, String casualName, IWorld world)
+    private static void spawnMimicFromArtifactsMod(BlockPos pos, String casualName, LevelAccessor world)
     {
-	MobEntity mob = null;
+	Mob mob = null;
 
 	if (!DungeonConfig.isModInstalled("artifacts"))
 	{
 	    return; // fail safe
 	}
 
-	mob = (MobEntity) EntityType.byString("artifacts:mimic").get().create((World) world);
+	mob = (Mob) EntityType.byString("artifacts:mimic").get().create((Level) world);
 	mob.setPos(pos.getX(), pos.getY(), pos.getZ());
 
 	mob.setCanPickUpLoot(false);
 	mob.moveTo(pos, 0.0F, 0.0F);
 	mob.setPersistenceRequired();
 
-	mob.finalizeSpawn((IServerWorld) world, world.getCurrentDifficultyAt(pos), SpawnReason.STRUCTURE, (ILivingEntityData) null, (CompoundNBT) null);
+	mob.finalizeSpawn((ServerLevelAccessor) world, world.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, (SpawnGroupData) null, (CompoundTag) null);
 	world.addFreshEntity(mob);
     }
 }

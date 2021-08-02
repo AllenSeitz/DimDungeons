@@ -1,16 +1,16 @@
 package com.catastrophe573.dimdungeons.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.BlockGetter;
 
-import net.minecraft.block.AbstractBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class BlockKeyCharger extends Block
 {
@@ -18,17 +18,17 @@ public class BlockKeyCharger extends Block
 
     public BlockKeyCharger()
     {
-	super(AbstractBlock.Properties.of(Material.GLASS).strength(10).sound(SoundType.METAL));
+	super(BlockBehaviour.Properties.of(Material.GLASS).strength(10).sound(SoundType.METAL));
     }
 
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
     {
 	return BASE_SHAPE;
     }
 
     @Override
-    public BlockRenderType getRenderShape(BlockState iBlockState)
+    public RenderShape getRenderShape(BlockState iBlockState)
     {
-	return BlockRenderType.MODEL;
+	return RenderShape.MODEL;
     }
 }

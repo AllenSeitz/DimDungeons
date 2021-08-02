@@ -8,7 +8,7 @@ import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonType;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.RoomType;
 import com.google.common.collect.Lists;
 
-import net.minecraft.util.Rotation;
+import net.minecraft.world.level.block.Rotation;
 
 // this class exists to produce some hardcoded test dungeons for me to test with
 public class DungeonBuilderTestShapes

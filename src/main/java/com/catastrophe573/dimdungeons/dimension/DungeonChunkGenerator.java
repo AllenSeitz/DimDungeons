@@ -1,41 +1,44 @@
 package com.catastrophe573.dimdungeons.dimension;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicAdvanced;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicBasic;
 import com.mojang.serialization.Codec;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Blockreader;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.NoiseColumn;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.FlatChunkGenerator;
-import net.minecraft.world.gen.FlatGenerationSettings;
-import net.minecraft.world.gen.GenerationStage;
-import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.WorldGenRegion;
-import net.minecraft.world.gen.feature.structure.StructureManager;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.biome.BiomeManager;
-import net.minecraft.world.biome.provider.SingleBiomeProvider;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.FlatLevelSource;
+import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.Heightmap.Types;
+import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.world.level.StructureFeatureManager;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.biome.BiomeManager;
+import net.minecraft.world.level.biome.FixedBiomeSource;
 
 public final class DungeonChunkGenerator extends ChunkGenerator
 {
-    public static final Codec<FlatChunkGenerator> myCodec = FlatGenerationSettings.CODEC.fieldOf("settings").xmap(FlatChunkGenerator::new, FlatChunkGenerator::settings).codec();
-    private final FlatGenerationSettings settings;
+    public static final Codec<FlatLevelSource> myCodec = FlatLevelGeneratorSettings.CODEC.fieldOf("settings").xmap(FlatLevelSource::new, FlatLevelSource::settings).codec();
+    private final FlatLevelGeneratorSettings settings;
     private long worldSeed = 0;
 
-    public DungeonChunkGenerator(FlatGenerationSettings settings)
+    public DungeonChunkGenerator(FlatLevelGeneratorSettings settings)
     {
-	super(new SingleBiomeProvider(settings.getBiome()), new SingleBiomeProvider(settings.getBiome()), settings.structureSettings(), 0L);
+	super(new FixedBiomeSource(settings.getBiome()), new FixedBiomeSource(settings.getBiome()), settings.structureSettings(), 0L);
 	this.settings = settings;
     }
 
@@ -51,17 +54,17 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	return this;
     }
 
-    public FlatGenerationSettings settings()
+    public FlatLevelGeneratorSettings settings()
     {
 	return this.settings;
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public void buildSurfaceAndBedrock(WorldGenRegion p_225551_1_, IChunk p_225551_2_)
+    public void buildSurfaceAndBedrock(WorldGenRegion p_225551_1_, ChunkAccess p_225551_2_)
     {
 	// generate my sandstone base and void chunks, which usually don't matter at all but might as well
-	ServerWorld world = p_225551_1_.getLevel();
+	ServerLevel world = p_225551_1_.getLevel();
 	makeBase(world, p_225551_2_);
 
 	// and intentionally do nothing with structures
@@ -69,7 +72,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 
     // is this decorate()?
     @Override
-    public void applyBiomeDecoration(WorldGenRegion p_230351_1_, StructureManager p_230351_2_)
+    public void applyBiomeDecoration(WorldGenRegion p_230351_1_, StructureFeatureManager p_230351_2_)
     {
 	// in vanilla this function basically does this:
 	//biome.generateFeatures(p_230351_2_, this, p_230351_1_, i1, sharedseedrandom, blockpos);
@@ -77,59 +80,48 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 
     @Override
     // I think this is Carve()
-    public void applyCarvers(long p_230350_1_, BiomeManager p_230350_3_, IChunk p_230350_4_, GenerationStage.Carving p_230350_5_)
+    public void applyCarvers(long p_230350_1_, BiomeManager p_230350_3_, ChunkAccess p_230350_4_, GenerationStep.Carving p_230350_5_)
     {
     }
 
-    public int getSpawnHeight()
+    // I don't know what this does. I copied it from the vanilla code.
+    public CompletableFuture<ChunkAccess> fillFromNoise(Executor p_158281_, StructureFeatureManager p_158282_, ChunkAccess p_158283_)
     {
-	BlockState[] ablockstate = this.settings.getLayers();
+	List<BlockState> list = this.settings.getLayers();
+	BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+	Heightmap heightmap = p_158283_.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
+	Heightmap heightmap1 = p_158283_.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
 
-	for (int i = 0; i < ablockstate.length; ++i)
+	for (int i = 0; i < Math.min(p_158283_.getHeight(), list.size()); ++i)
 	{
-	    BlockState blockstate = ablockstate[i] == null ? Blocks.AIR.defaultBlockState() : ablockstate[i];
-	    if (!Heightmap.Type.MOTION_BLOCKING.isOpaque().test(blockstate))
-	    {
-		return i - 1;
-	    }
-	}
-
-	return ablockstate.length;
-    }
-
-    public void fillFromNoise(IWorld p_230352_1_, StructureManager p_230352_2_, IChunk p_230352_3_)
-    {
-	BlockState[] ablockstate = this.settings.getLayers();
-	BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
-	Heightmap heightmap = p_230352_3_.getOrCreateHeightmapUnprimed(Heightmap.Type.OCEAN_FLOOR_WG);
-	Heightmap heightmap1 = p_230352_3_.getOrCreateHeightmapUnprimed(Heightmap.Type.WORLD_SURFACE_WG);
-
-	for (int i = 0; i < ablockstate.length; ++i)
-	{
-	    BlockState blockstate = ablockstate[i];
+	    BlockState blockstate = list.get(i);
 	    if (blockstate != null)
 	    {
-		for (int j = 0; j < 16; ++j)
+		int j = p_158283_.getMinBuildHeight() + i;
+
+		for (int k = 0; k < 16; ++k)
 		{
-		    for (int k = 0; k < 16; ++k)
+		    for (int l = 0; l < 16; ++l)
 		    {
-			p_230352_3_.setBlockState(blockpos$mutable.set(j, i, k), blockstate, false);
-			heightmap.update(j, i, k, blockstate);
-			heightmap1.update(j, i, k, blockstate);
+			p_158283_.setBlockState(blockpos$mutableblockpos.set(k, j, l), blockstate, false);
+			heightmap.update(k, j, l, blockstate);
+			heightmap1.update(k, j, l, blockstate);
 		    }
 		}
 	    }
 	}
 
+	return CompletableFuture.completedFuture(p_158283_);
     }
 
-    public int getBaseHeight(int x, int z, Heightmap.Type heightmapType)
+    // 1.16 version
+    public int getBaseHeight(int x, int z, Heightmap.Types heightmapType)
     {
-	BlockState[] ablockstate = this.settings.getLayers();
+	List<BlockState> ablockstate = this.settings.getLayers();
 
-	for (int i = ablockstate.length - 1; i >= 0; --i)
+	for (int i = ablockstate.size() - 1; i >= 0; --i)
 	{
-	    BlockState blockstate = ablockstate[i];
+	    BlockState blockstate = ablockstate.get(i);
 	    if (blockstate != null && heightmapType.isOpaque().test(blockstate))
 	    {
 		return i + 1;
@@ -139,18 +131,26 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	return 0;
     }
 
-    public IBlockReader getBaseColumn(int p_230348_1_, int p_230348_2_)
+    // 1.17 version
+    @Override
+    public int getBaseHeight(int x, int z, Types p_156155_, LevelHeightAccessor p_156156_)
     {
-	return new Blockreader(Arrays.stream(this.settings.getLayers()).map((state) ->
+	return getBaseHeight(x, z, p_156155_);
+    }
+
+    // I don't know what this does. I copied it from the vanilla code.
+    public NoiseColumn getBaseColumn(int p_158270_, int p_158271_, LevelHeightAccessor p_158272_)
+    {
+	return new NoiseColumn(p_158272_.getMinBuildHeight(), this.settings.getLayers().stream().limit((long) p_158272_.getHeight()).map((p_64189_) ->
 	{
-	    return state == null ? Blocks.AIR.defaultBlockState() : state;
-	}).toArray((size) ->
+	    return p_64189_ == null ? Blocks.AIR.defaultBlockState() : p_64189_;
+	}).toArray((p_64171_) ->
 	{
-	    return new BlockState[size];
+	    return new BlockState[p_64171_];
 	}));
     }
 
-    public void makeBase(IWorld worldIn, IChunk chunkIn)
+    public void makeBase(LevelAccessor worldIn, ChunkAccess chunkIn)
     {
 	// I still want a random seed, like the overworld, for use in structures
 	Random randomSeed = worldIn.getRandom();

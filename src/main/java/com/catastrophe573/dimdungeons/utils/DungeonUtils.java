@@ -8,26 +8,26 @@ import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicAdvanced;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicBasic;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicDebug;
 
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
 // basically just global functions
 public class DungeonUtils
 {
     // World.OVERWORLD is the Overworld. This block has different behavior in the Overworld than in the Dungeon Dimension
-    public static boolean isDimensionOverworld(World worldIn)
+    public static boolean isDimensionOverworld(Level worldIn)
     {
-	return worldIn.dimension() == World.OVERWORLD;
+	return worldIn.dimension() == Level.OVERWORLD;
     }
 
     // this is the best idea I have for unmapped 1.16.1
-    public static boolean isDimensionDungeon(World worldIn)
+    public static boolean isDimensionDungeon(Level worldIn)
     {
 	if (worldIn == null)
 	{
@@ -38,13 +38,13 @@ public class DungeonUtils
     }
 
     // this is used by the dungeon building logic
-    public static ServerWorld getDungeonWorld(MinecraftServer server)
+    public static ServerLevel getDungeonWorld(MinecraftServer server)
     {
 	return server.getLevel(DimDungeons.DUNGEON_DIMENSION);
     }
 
     // now returns true if a dungeon was built
-    public static boolean buildDungeon(World worldIn, DungeonGenData genData)
+    public static boolean buildDungeon(Level worldIn, DungeonGenData genData)
     {
 	// only build dungeons on the server
 	if (worldIn.isClientSide)
@@ -64,7 +64,7 @@ public class DungeonUtils
 	long buildZ = (long) key.getDungeonTopLeftZ(genData.keyItem);
 	long entranceX = buildX + (8 * 16);
 	long entranceZ = buildZ + (11 * 16);
-	ServerWorld dungeonWorld = DungeonUtils.getDungeonWorld(worldIn.getServer());
+	ServerLevel dungeonWorld = DungeonUtils.getDungeonWorld(worldIn.getServer());
 
 	if (dungeonAlreadyExistsHere(dungeonWorld, entranceX, entranceZ))
 	{
@@ -173,8 +173,7 @@ public class DungeonUtils
 	return false;
     }
 
-    @SuppressWarnings("deprecation")
-    public static boolean dungeonAlreadyExistsHere(World worldIn, long entranceX, long entranceZ)
+    public static boolean dungeonAlreadyExistsHere(Level worldIn, long entranceX, long entranceZ)
     {
 	BlockState temp = worldIn.getBlockState(new BlockPos(entranceX, 51, entranceZ));
 	if (temp.isAir())
@@ -186,9 +185,9 @@ public class DungeonUtils
     }
 
     // returns false if this function fails because the dungeon on the other side was reset
-    public static boolean reprogramExistingExitDoorway(World worldIn, long entranceX, long entranceZ, DungeonGenData genData)
+    public static boolean reprogramExistingExitDoorway(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData)
     {
-	World ddim = DungeonUtils.getDungeonWorld(worldIn.getServer());
+	Level ddim = DungeonUtils.getDungeonWorld(worldIn.getServer());
 	int zoffset = entranceZ < 0 ? +1 : +2;
 
 	for (int x = 0; x <= 1; x++)
@@ -211,30 +210,30 @@ public class DungeonUtils
 		}
 	    }
 	}
-	
+
 	return true;
     }
 
     // takes World.OVERWORLD and returns "minecraft:overworld"
-    public static String serializeDimensionKey(RegistryKey<World> dimension)
+    public static String serializeDimensionKey(ResourceKey<Level> dimension)
     {
 	return dimension.location().getNamespace() + ":" + dimension.location().getPath();
     }
-    
+
     // returns the limit of the dungeon space not in blocks, but in dungeon widths (BLOCKS_APART_PER_DUNGEON)
     public static int getLimitOfWorldBorder(MinecraftServer server)
     {
 	int block_limit = ItemPortalKey.RANDOM_COORDINATE_RANGE * ItemPortalKey.BLOCKS_APART_PER_DUNGEON;
-		
+
 	// I know that the world border setting is global and affects all dimensions, but some mods change this
-	RegistryKey<World> configkey = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(DungeonConfig.worldborderToRespect));
-	ServerWorld world = server.getLevel(configkey);
+	ResourceKey<Level> configkey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(DungeonConfig.worldborderToRespect));
+	ServerLevel world = server.getLevel(configkey);
 	double size = world.getWorldBorder().getSize() / 2;
-	if ( size < block_limit )
+	if (size < block_limit)
 	{
-	    return (int)(Math.round(size) / ItemPortalKey.BLOCKS_APART_PER_DUNGEON);
+	    return (int) (Math.round(size) / ItemPortalKey.BLOCKS_APART_PER_DUNGEON);
 	}
-	
+
 	// the world border is not an issue, this function does nothing, proceed as normal
 	return ItemPortalKey.RANDOM_COORDINATE_RANGE;
     }

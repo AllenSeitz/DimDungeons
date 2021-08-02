@@ -4,14 +4,14 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
 public class ItemHomewardPearl extends Item
 {
@@ -25,24 +25,24 @@ public class ItemHomewardPearl extends Item
 
     @Override
     //public ActionResultType onItemUse(ItemUseContext parameters)
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn)
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
     {
 	ItemStack itemstack = playerIn.getItemInHand(handIn);
 
 	// this item only works in the Dungeon Dimension
-	if (!DungeonUtils.isDimensionDungeon((World) playerIn.getCommandSenderWorld()))
+	if (!DungeonUtils.isDimensionDungeon((Level) playerIn.getCommandSenderWorld()))
 	{
-	    return new ActionResult<>(ActionResultType.FAIL, itemstack);
+	    return new InteractionResultHolder<>(InteractionResult.FAIL, itemstack);
 	}
 
 	// do nothing on the client, let the server do the teleport
 	if (playerIn.getCommandSenderWorld().isClientSide)
 	{
-	    return new ActionResult<>(ActionResultType.SUCCESS, itemstack);
+	    return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemstack);
 	}
 
 	// this is the dungeon dimension
-	ServerWorld serverWorld = playerIn.getCommandSenderWorld().getServer().getLevel(playerIn.getCommandSenderWorld().dimension());
+	ServerLevel serverWorld = playerIn.getCommandSenderWorld().getServer().getLevel(playerIn.getCommandSenderWorld().dimension());
 
 	// teleport the player
 	double newx = getHomeX(playerIn.getX());
@@ -56,7 +56,7 @@ public class ItemHomewardPearl extends Item
 	itemstack.shrink(1);
 	playerIn.getCooldowns().addCooldown(this, 80);
 
-	return new ActionResult<>(ActionResultType.SUCCESS, itemstack);
+	return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemstack);
     }
 
     public double getHomeX(double currentX)

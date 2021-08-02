@@ -2,9 +2,9 @@ package com.catastrophe573.dimdungeons.item;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.registries.ObjectHolder;
 
@@ -22,7 +22,7 @@ public class ItemRegistrar
     @ObjectHolder("dimdungeons:" + ItemSecretBell.REG_NAME)
     public static Item item_secret_bell;
 
-    public static final ItemGroup CREATIVE_TAB = new ItemGroup(DimDungeons.MOD_ID) {
+    public static final CreativeModeTab CREATIVE_TAB = new CreativeModeTab(DimDungeons.MOD_ID) {
 	@Override
 	public ItemStack makeIcon()
 	{
