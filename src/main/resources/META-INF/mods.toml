@@ -6,9 +6,20 @@
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[24,)" #mandatory (24 is current forge version)
+loaderVersion="[35,)" #mandatory (24 is current forge version)
+license="All rights reserved"
 # A URL to refer people to when problems occur with this mod
 #issueTrackerURL="" #optional
+# A list of mods - how many allowed here is determined by the individual mod loader
+[[mods]] #mandatory
+# The modid of the mod
+modId="dimdungeons" #mandatory
+# The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
+version="1.16.4-1.13.1" #mandatory
+# A display name for the mod
+displayName="Dimensional Dungeons" #mandatory
+# A URL to query for updates for this mod. See the JSON update specification <here>
+#updateJSONURL="" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
 #displayURL="" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
@@ -17,36 +28,27 @@ logoFile="mod-logo.png" #optional
 credits="mod by Catastrophe573 with help from the Forge community" #optional
 # A text field displayed in the mod UI
 authors="Catastrophe573" #optional
-# A list of mods - how many allowed here is determined by the individual mod loader
-[[mods]] #mandatory
-# The modid of the mod
-modId="dimdungeons" #mandatory
-# The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="1.15.2-1.07" #mandatory
-# A display name for the mod
-displayName="Dimensional Dungeons" #mandatory
-# A URL to query for updates for this mod. See the JSON update specification <here>
-#updateJSONURL="" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
 This mod implements limitless proceedurally generated dungeons! These dungeons are placed in their own single dimension. Hence the name: Dimensional Dungeons.
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.examplemod]] #optional
+[[dependencies.dimdungeons]] #optional
     # the modid of the dependency
     modId="forge" #mandatory
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[24,)" #mandatory
+    versionRange="[35,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="BOTH"
 # Here's another dependency
-[[dependencies.examplemod]]
+[[dependencies.dimdungeons]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.13]"
+# This version range declares a minimum of the current minecraft version up to but not including the next major version
+    versionRange="[1.16.4,1.17)"
     ordering="NONE"
     side="BOTH"

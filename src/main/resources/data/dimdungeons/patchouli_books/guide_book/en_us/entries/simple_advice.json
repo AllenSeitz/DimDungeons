@@ -1,0 +1,24 @@
+{
+    "name": "Advice",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:introduction",	
+	"sortnum": 3,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)While most puzzles do not require an Ender Pearl, they are often the easiest solution.$(li)There are literal advice dispensers around the dungeon. Heed them!$(li)Keys can be renamed on an anvil without changing their function or status.$(li)Mobs will not spawn in dungeons, except near spawners."
+        },
+        {
+            "type": "text",
+            "text": "$(li)If you are using a gravestones-type of mod then be sure to configure the server's whitelist so that you can break that block.$(li)Even though some of the traps are cruel, I really $(l)do$() want you to succeed!$(li)Up Up Down Down Left Right Left Right$(li)Cracked bricks are a huge tell.$(li)Using a vanilla map is much more fun than using a minimap."
+		},
+        {
+            "type": "text",
+            "text": "$(li)These dungeons exist in extra-dimensional pocket space! So it's possible that loot from $(o)other dimensions$() has ended up here as well.$(li)I care about your feedback, suggestions, and bug reports! You can contact the mod author through curseforge, github, or Discord.$(li)Some dungeon rooms assume default game rules, such as doFireTick=true."
+		},
+        {
+            "type": "text",
+            "text": "$(li)Save your keys! At least until you're sure you've found everything in a dungeon.$(li)Potions of Luck can be used to upgrade the quality of loot in 'easy' chests.$(li)Thank You For Playing"
+		}
+    ]
+}

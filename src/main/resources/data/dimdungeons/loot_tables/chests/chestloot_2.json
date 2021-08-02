@@ -3,12 +3,8 @@
     {
       "rolls": {
         "min": 1,
-        "max": 2
-      },
-      "bonus_rolls": {
-        "min": 1,
         "max": 1
-	  },
+      },
   	  "name":"dimdungeons:pool_2",
       "entries": [
         {
@@ -110,7 +106,7 @@
         {
           "type": "item",
           "name": "minecraft:diamond_chestplate",
-          "weight": 4,
+          "weight": 3,
           "functions": [
             {
               "function": "enchant_with_levels",
@@ -125,7 +121,7 @@
         {
           "type": "item",
           "name": "minecraft:diamond_helmet",
-          "weight": 4,
+          "weight": 3,
           "functions": [
             {
               "function": "enchant_with_levels",
@@ -140,7 +136,7 @@
         {
           "type": "item",
           "name": "minecraft:diamond_leggings",
-          "weight": 4,
+          "weight": 3,
           "functions": [
             {
               "function": "enchant_with_levels",
@@ -155,7 +151,7 @@
         {
           "type": "item",
           "name": "minecraft:diamond_boots",
-          "weight": 4,
+          "weight": 3,
           "functions": [
             {
               "function": "enchant_with_levels",
@@ -185,7 +181,7 @@
         {
           "type": "item",
           "name": "minecraft:diamond_sword",
-          "weight": 4,
+          "weight": 3,
           "functions": [
             {
               "function": "enchant_with_levels",
@@ -200,7 +196,7 @@
         {
           "type": "item",
           "name": "minecraft:crossbow",
-          "weight": 4,
+          "weight": 3,
           "functions": [
             {
               "function": "enchant_with_levels",
@@ -215,7 +211,7 @@
         {
           "type": "item",
           "name": "minecraft:bow",
-          "weight": 4,
+          "weight": 3,
           "functions": [
             {
               "function": "enchant_with_levels",
@@ -230,13 +226,41 @@
         {
           "type": "item",
           "name": "dimdungeons:item_portal_key",
-          "weight": 8,
+          "weight": 7,
           "functions": [
             {
               "function": "set_count",
               "count": {
                 "min": 1,
-                "max": 2
+                "max": 1
+              }
+            }
+          ]
+        },	
+        {
+          "type": "item",
+          "name": "dimdungeons:item_secret_bell",
+          "weight": 4,
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 1,
+                "max": 1
+              }
+            }
+          ]
+        },	
+        {
+          "type": "item",
+          "name": "dimdungeons:block_key_charger",
+          "weight": 4,
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 1,
+                "max": 1
               }
             }
           ]

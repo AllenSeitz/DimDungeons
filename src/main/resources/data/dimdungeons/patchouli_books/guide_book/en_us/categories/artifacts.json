@@ -1,0 +1,6 @@
+{
+	"name": "Artifacts",
+	"description": "Unique items that can be found in the dungeons.",
+	"icon": "minecraft:enchanted_golden_apple",
+	"sortnum": 40
+}

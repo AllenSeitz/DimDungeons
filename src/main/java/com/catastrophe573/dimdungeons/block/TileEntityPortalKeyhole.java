@@ -3,10 +3,9 @@ package com.catastrophe573.dimdungeons.block;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -33,46 +32,32 @@ public class TileEntityPortalKeyhole extends TileEntity
     private static final String ITEM_PROPERTY_KEY = "objectInserted";
 
     @Override
-    public void read(CompoundNBT compound)
+    public void load(BlockState stateIn, CompoundNBT compound)
     {
-	super.read(compound);
+	super.load(stateIn, compound);
 	readMyNBTData(compound);
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound)
+    public CompoundNBT save(CompoundNBT compound)
     {
 	writeMyNBTData(compound);
-	return super.write(compound);
-    }
-
-    // synchronize on chunk loading
-    @Override
-    public void handleUpdateTag(CompoundNBT nbt)
-    {
-	read(nbt);
+	return super.save(compound);
     }
 
     // synchronize on chunk loading
     @Override
     public CompoundNBT getUpdateTag()
     {
-	return write(new CompoundNBT());
-    }
-
-    // synchronize on block updates
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet)
-    {
-	read(packet.getNbtCompound());
+	return save(new CompoundNBT());
     }
 
     // synchronize on block updates
     @Override
     public SUpdateTileEntityPacket getUpdatePacket()
     {
-	CompoundNBT tag = write(new CompoundNBT());
-	return new SUpdateTileEntityPacket(pos, 1, tag); // Forge recommends putting -1 as the second parameter
+	CompoundNBT tag = save(new CompoundNBT());
+	return new SUpdateTileEntityPacket(worldPosition, 1, tag); // Forge recommends putting -1 as the second parameter
     }
 
     // business logic for this object
@@ -80,7 +65,7 @@ public class TileEntityPortalKeyhole extends TileEntity
     {
 	// always send this, even if it is empty or air
 	CompoundNBT itemNBT = new CompoundNBT();
-	compound.put(ITEM_PROPERTY_KEY, objectInserted.write(itemNBT));
+	compound.put(ITEM_PROPERTY_KEY, objectInserted.save(itemNBT));
     }
 
     // business logic for this object
@@ -88,7 +73,7 @@ public class TileEntityPortalKeyhole extends TileEntity
     {
 	if (compound.contains(ITEM_PROPERTY_KEY))
 	{
-	    this.objectInserted = (ItemStack.read(compound.getCompound(ITEM_PROPERTY_KEY)));
+	    this.objectInserted = (ItemStack.of(compound.getCompound(ITEM_PROPERTY_KEY)));
 	}
     }
 
@@ -111,12 +96,6 @@ public class TileEntityPortalKeyhole extends TileEntity
 	    ItemPortalKey key = (ItemPortalKey) item.getItem();
 	    return key.isActivated(item);
 	}
-	// three vanilla blocks will also open portals to the 3 vanilla dimensions?
-	else if (Block.getBlockFromItem(item.getItem()) != null)
-	{
-//	    Block b = Block.getBlockFromItem(item.getItem());
-//	    return b == Blocks.NETHERRACK || b == Blocks.END_STONE || b == Blocks.GRASS_BLOCK;
-	}
 
 	return false;
     }
@@ -131,13 +110,13 @@ public class TileEntityPortalKeyhole extends TileEntity
     {
 	this.objectInserted = item;
 	this.objectInserted.setCount(1);
-	this.markDirty();
+	this.setChanged();
     }
 
     //  be sure to notify the world of a block update after calling this
     public void removeContents()
     {
 	this.objectInserted = ItemStack.EMPTY;
-	this.markDirty();
+	this.setChanged();
     }
 }

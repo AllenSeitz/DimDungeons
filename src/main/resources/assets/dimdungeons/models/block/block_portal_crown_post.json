@@ -1,6 +1,7 @@
 {
-    "parent": "block/template_wall_post",
+    "parent": "dimdungeons:block/template_mywall_post",
     "textures": {
-        "wall": "dimdungeons:block/portal_crown"
+        "wall": "dimdungeons:block/portal_crown",
+		"side": "minecraft:block/gold_block"
     }
 }

@@ -1,0 +1,6 @@
+{
+	"name": "Keys",
+	"description": "How to craft keys to new dungeons.",
+	"icon": "dimdungeons:textures/item/item_key_level1.png",
+	"sortnum": 20
+}

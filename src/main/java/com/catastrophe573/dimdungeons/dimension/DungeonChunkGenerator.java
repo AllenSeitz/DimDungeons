@@ -1,81 +1,167 @@
 package com.catastrophe573.dimdungeons.dimension;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.Random;
 
-import com.catastrophe573.dimdungeons.feature.AdvancedDungeonFeature;
-import com.catastrophe573.dimdungeons.feature.BasicDungeonFeature;
-import com.catastrophe573.dimdungeons.feature.FeatureRegistrar;
-import com.google.common.collect.Lists;
+import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicAdvanced;
+import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicBasic;
+import com.mojang.serialization.Codec;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Blockreader;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeManager;
-import net.minecraft.world.biome.provider.BiomeProvider;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.OverworldChunkGenerator;
-import net.minecraft.world.gen.OverworldGenSettings;
+import net.minecraft.world.gen.FlatChunkGenerator;
+import net.minecraft.world.gen.FlatGenerationSettings;
+import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.WorldGenRegion;
-import net.minecraft.world.gen.feature.template.TemplateManager;
+import net.minecraft.world.gen.feature.structure.StructureManager;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.biome.BiomeManager;
+import net.minecraft.world.biome.provider.SingleBiomeProvider;
 
-public class DungeonChunkGenerator extends OverworldChunkGenerator
+public final class DungeonChunkGenerator extends ChunkGenerator
 {
-    // I still want a random seed, like the overworld, for use in structures
-    private Random randomSeed;
+    public static final Codec<FlatChunkGenerator> myCodec = FlatGenerationSettings.CODEC.fieldOf("settings").xmap(FlatChunkGenerator::new, FlatChunkGenerator::settings).codec();
+    private final FlatGenerationSettings settings;
+    private long worldSeed = 0;
 
-    public DungeonChunkGenerator(IWorld world, BiomeProvider provider, OverworldGenSettings settingsIn)
+    public DungeonChunkGenerator(FlatGenerationSettings settings)
     {
-	super(world, provider, settingsIn);
+	super(new SingleBiomeProvider(settings.getBiome()), new SingleBiomeProvider(settings.getBiome()), settings.structureSettings(), 0L);
+	this.settings = settings;
+    }
 
-	randomSeed = world.getRandom();
+    protected Codec<? extends ChunkGenerator> codec()
+    {
+	return myCodec;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public ChunkGenerator withSeed(long p_230349_1_)
+    {
+	worldSeed = p_230349_1_;
+	return this;
+    }
+
+    public FlatGenerationSettings settings()
+    {
+	return this.settings;
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void buildSurfaceAndBedrock(WorldGenRegion p_225551_1_, IChunk p_225551_2_)
+    {
+	// generate my sandstone base and void chunks, which usually don't matter at all but might as well
+	ServerWorld world = p_225551_1_.getLevel();
+	makeBase(world, p_225551_2_);
+
+	// and intentionally do nothing with structures
+    }
+
+    // is this decorate()?
+    @Override
+    public void applyBiomeDecoration(WorldGenRegion p_230351_1_, StructureManager p_230351_2_)
+    {
+	// in vanilla this function basically does this:
+	//biome.generateFeatures(p_230351_2_, this, p_230351_1_, i1, sharedseedrandom, blockpos);
     }
 
     @Override
-    public void spawnMobs(WorldGenRegion region)
+    // I think this is Carve()
+    public void applyCarvers(long p_230350_1_, BiomeManager p_230350_3_, IChunk p_230350_4_, GenerationStage.Carving p_230350_5_)
     {
-	// nope, not in this dungeon
     }
 
-    @Override
-    public void spawnMobs(ServerWorld worldIn, boolean spawnHostileMobs, boolean spawnPeacefulMobs)
+    public int getSpawnHeight()
     {
-	// nope, not in this dungeon
+	BlockState[] ablockstate = this.settings.getLayers();
+
+	for (int i = 0; i < ablockstate.length; ++i)
+	{
+	    BlockState blockstate = ablockstate[i] == null ? Blocks.AIR.defaultBlockState() : ablockstate[i];
+	    if (!Heightmap.Type.MOTION_BLOCKING.isOpaque().test(blockstate))
+	    {
+		return i - 1;
+	    }
+	}
+
+	return ablockstate.length;
     }
 
-    @Override
-    public List<Biome.SpawnListEntry> getPossibleCreatures(EntityClassification creatureType, BlockPos pos)
+    public void fillFromNoise(IWorld p_230352_1_, StructureManager p_230352_2_, IChunk p_230352_3_)
     {
-	// returning an empty list to ensure no other mods can add mobs
-	return Lists.newArrayList();
+	BlockState[] ablockstate = this.settings.getLayers();
+	BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
+	Heightmap heightmap = p_230352_3_.getOrCreateHeightmapUnprimed(Heightmap.Type.OCEAN_FLOOR_WG);
+	Heightmap heightmap1 = p_230352_3_.getOrCreateHeightmapUnprimed(Heightmap.Type.WORLD_SURFACE_WG);
+
+	for (int i = 0; i < ablockstate.length; ++i)
+	{
+	    BlockState blockstate = ablockstate[i];
+	    if (blockstate != null)
+	    {
+		for (int j = 0; j < 16; ++j)
+		{
+		    for (int k = 0; k < 16; ++k)
+		    {
+			p_230352_3_.setBlockState(blockpos$mutable.set(j, i, k), blockstate, false);
+			heightmap.update(j, i, k, blockstate);
+			heightmap1.update(j, i, k, blockstate);
+		    }
+		}
+	    }
+	}
+
     }
 
-    @Override
-    public int getGroundHeight()
+    public int getBaseHeight(int x, int z, Heightmap.Type heightmapType)
     {
-	return this.world.getSeaLevel() + 1;
+	BlockState[] ablockstate = this.settings.getLayers();
+
+	for (int i = ablockstate.length - 1; i >= 0; --i)
+	{
+	    BlockState blockstate = ablockstate[i];
+	    if (blockstate != null && heightmapType.isOpaque().test(blockstate))
+	    {
+		return i + 1;
+	    }
+	}
+
+	return 0;
     }
 
-    @Override
-    public int getSeaLevel()
+    public IBlockReader getBaseColumn(int p_230348_1_, int p_230348_2_)
     {
-	return 20; // no reason, and should never matter for my purposes
+	return new Blockreader(Arrays.stream(this.settings.getLayers()).map((state) ->
+	{
+	    return state == null ? Blocks.AIR.defaultBlockState() : state;
+	}).toArray((size) ->
+	{
+	    return new BlockState[size];
+	}));
     }
 
     public void makeBase(IWorld worldIn, IChunk chunkIn)
     {
+	// I still want a random seed, like the overworld, for use in structures
+	Random randomSeed = worldIn.getRandom();
+
+	// 1.14 seed changing logic
 	int x = chunkIn.getPos().x;
 	int z = chunkIn.getPos().z;
-	long worldSeed = world.getSeed();
 	randomSeed.setSeed((worldSeed + (long) (x * x * 4987142) + (long) (x * 5947611) + (long) (z * z) * 4392871L + (long) (z * 389711) ^ worldSeed));
 
 	// first generate a superflat world - sandstone where dungeons can appear, and void otherwise
-	if (BasicDungeonFeature.isDungeonChunk(x, z) || AdvancedDungeonFeature.isDungeonChunk(x, z))
+	if (DungeonPlacementLogicBasic.isDungeonChunk(x, z) || DungeonPlacementLogicAdvanced.isDungeonChunk(x, z))
 	{
 	    for (int px = 0; px < 16; px++)
 	    {
@@ -85,18 +171,18 @@ public class DungeonChunkGenerator extends OverworldChunkGenerator
 		    {
 			if (py < 2)
 			{
-			    chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BEDROCK.getDefaultState(), false);
+			    chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BEDROCK.defaultBlockState(), false);
 			}
 			else if (py < 50)
 			{
 			    // for debugging mostly but it also kind of looks good when you're in creative mode
-			    if (BasicDungeonFeature.isEntranceChunk(x, z) || AdvancedDungeonFeature.isEntranceChunk(x, z))
+			    if (DungeonPlacementLogicBasic.isEntranceChunk(x, z) || DungeonPlacementLogicAdvanced.isEntranceChunk(x, z))
 			    {
-				chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.ANDESITE.getDefaultState(), false);
+				chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BLACKSTONE.defaultBlockState(), false);
 			    }
 			    else
 			    {
-				chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.SANDSTONE.getDefaultState(), false);
+				chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.SANDSTONE.defaultBlockState(), false);
 			    }
 			}
 		    }
@@ -105,7 +191,7 @@ public class DungeonChunkGenerator extends OverworldChunkGenerator
 	}
 	else
 	{
-	    // add barrier blocks to the void, just to be sure (players could escape with ender pearls, use elytra with fireworks, etc)
+	    // add barrier blocks to the void in case the player escapes (although these are escapable, too)
 	    if (x % 16 == 0 || z % 16 == 0)
 	    {
 		for (int px = 0; px < 16; px++)
@@ -114,44 +200,11 @@ public class DungeonChunkGenerator extends OverworldChunkGenerator
 		    {
 			for (int pz = 0; pz < 16; pz++)
 			{
-			    chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BARRIER.getDefaultState(), false);
+			    chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BARRIER.defaultBlockState(), false);
 			}
 		    }
 		}
 	    }
 	}
-    }
-
-    @Override
-    protected void makeBedrock(IChunk chunkIn, Random rand)
-    {
-	// actually nah I'm good, lets keep the void world please because it looks better on a map
-    }
-
-    @Override
-    public void generateStructures(BiomeManager p_227058_1_, IChunk p_227058_2_, ChunkGenerator<?> p_227058_3_, TemplateManager p_227058_4_)
-    {
-	// intentionally do nothing
-    }
-
-    @Override
-    public void decorate(final WorldGenRegion region)
-    {
-	// these local variables are copied from the vanilla ChunkGenerator class
-	int i = region.getMainChunkX();
-	int j = region.getMainChunkZ();
-	int k = i * 16;
-	int l = j * 16;
-	BlockPos blockpos = new BlockPos(k, 0, l);
-	//Biome biome = this.func_225552_a_(region.getBiomeManager(), blockpos.add(8, 8, 8));
-	SharedSeedRandom sharedseedrandom = new SharedSeedRandom();
-	//long i1 = sharedseedrandom.setDecorationSeed(region.getSeed(), k, l);
-
-	// instead of doing this
-	//biome.decorate(generationstage$decoration, this, region, i1, sharedseedrandom, blockpos);
-
-	// let's just place the only two features that I care about. this prevents any other features from other mods from appearing
-	FeatureRegistrar.feature_basic_dungeon.place(region, this, sharedseedrandom, blockpos, null);
-	FeatureRegistrar.feature_advanced_dungeon.place(region, this, sharedseedrandom, blockpos, null);
     }
 }

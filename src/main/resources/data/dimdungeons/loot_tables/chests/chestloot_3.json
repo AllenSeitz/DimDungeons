@@ -3,12 +3,8 @@
     {
       "rolls": {
         "min": 1,
-        "max": 2
-      },
-      "bonus_rolls": {
-        "min": 1,
         "max": 1
-	  },
+      },
   	  "name":"dimdungeons:pool_3",
       "entries": [
         {
@@ -41,28 +37,28 @@
         },
         {
           "type": "item",
-          "name": "minecraft:prismarine_shard",
+          "name": "minecraft:honey_block",
           "weight": 3,
           "functions": [
             {
               "function": "set_count",
               "count": {
-                "min": 16,
-                "max": 32
+                "min": 6,
+                "max": 12
               }
             }
           ]
         },
         {
           "type": "item",
-          "name": "minecraft:prismarine_crystals",
+          "name": "minecraft:tnt",
           "weight": 3,
           "functions": [
             {
               "function": "set_count",
               "count": {
-                "min": 16,
-                "max": 32
+                "min": 10,
+                "max": 20
               }
             }
           ]
@@ -234,7 +230,7 @@
               "function": "set_count",
               "count": {
                 "min": 1,
-                "max": 2
+                "max": 1
               }
             }
           ]

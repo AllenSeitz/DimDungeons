@@ -1,0 +1,39 @@
+{
+	"parent": "dimdungeons:dungeons/find_advanced_key",
+	"display": {
+		"icon": {
+			"item": "dimdungeons:block_gold_portal"
+		},
+		"title": {
+			"translate": "advancements.dimdungeons.dungeons.enter_advanced_dungeon.title"
+		},
+		"description": {
+			"translate": "advancements.dimdungeons.dungeons.enter_advanced_dungeon.description"
+		},
+		"frame": "goal",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"advanced_dungeon": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"dimension": "dimdungeons:dungeon_dimension",
+				"position": {
+					"x": {
+						"min": 1
+					},
+					"z": {
+						"max": -1
+					}
+				}
+			}
+		}
+	},
+	"requirements": [
+		[
+			"advanced_dungeon"
+		]
+	]
+}

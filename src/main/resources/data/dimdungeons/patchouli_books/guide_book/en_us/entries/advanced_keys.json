@@ -1,0 +1,17 @@
+{
+	"name": "Advanced Portal Keys",
+	"icon": "dimdungeons:textures/item/item_key_level2.png",
+	"category": "dimdungeons:keys",
+	"sortnum": 3,
+	"advancement": "dimdungeons:dungeons/enter_basic_dungeon",
+	"pages": [
+		{
+			"type": "text",
+			"text": "While exploring dungeons you may rarely find $(item)portal keyhole blocks$(). These contain $(item)advanced portal keys$(), and this is the only way to find these keys. These keys open portals to dungeons that are TWICE as large with much higher quality loot!"
+		},
+		{
+			"type": "text",
+			"text": "There are a few things you should know about these special keys. First, your portal will need an upgrade before they can be used. Second, the monsters inside will be much stronger and some difficult rooms may appear. You should be very well geared and prepared for an advanced dungeon!"
+		}
+	]
+}

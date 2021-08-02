@@ -1,0 +1,16 @@
+{
+    "name": "Version 1.10",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 100,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Endermen and Shulkers can no longer teleport inside dungeons.$(li)Players can no longer use Chorus Fruit to teleport inside dungeons.$(li)Added a secret new item which can help reveal other secrets! It can be found in chests."
+        },
+        {
+            "type": "text",
+            "text": "$(li)New /givekey cheat that accepts multiple parameters.$(li)Revised loot table functionality and contents.$(li)Many new rooms added and revised.$(li)Basic and advanced tier dungeons now have more unique differences."
+		}
+    ]
+}

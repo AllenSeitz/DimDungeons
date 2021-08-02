@@ -12,55 +12,58 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 
+// this item is now unused
 public class ItemGuidebook extends Item
 {
     public static final String REG_NAME = "item_guidebook";
 
     public ItemGuidebook()
     {
-	super(new Item.Properties().group(ItemGroup.MISC).maxStackSize(1).group(ItemRegistrar.CREATIVE_TAB));
+	super(new Item.Properties().tab(ItemGroup.TAB_MISC).stacksTo(1).tab(ItemRegistrar.CREATIVE_TAB));
 	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn)
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn)
     {
 	if (EffectiveSide.get() == LogicalSide.CLIENT)
 	{
 	    // just because
 	    ITextComponent text1 = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.open_guide_message").getString());
-	    playerIn.sendMessage(text1.setStyle(new Style().setBold(true).setColor(TextFormatting.DARK_PURPLE)));
+
+	    playerIn.sendMessage(((TranslationTextComponent) text1).withStyle(TextFormatting.DARK_PURPLE), Util.NIL_UUID);
+
 	    ITextComponent text2a = new TranslationTextComponent("<");
 	    ITextComponent text2b = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.author").getString());
 	    ITextComponent text2c = new TranslationTextComponent("> ");
 	    ITextComponent text2d = new TranslationTextComponent(new TranslationTextComponent("book.dimdungeons.thank_you_message").getString());
-	    text2a.setStyle(new Style().setColor(TextFormatting.WHITE));
-	    text2b.setStyle(new Style().setColor(TextFormatting.AQUA));
-	    text2c.setStyle(new Style().setColor(TextFormatting.WHITE));
-	    text2d.setStyle(new Style().setColor(TextFormatting.WHITE));
-	    playerIn.sendMessage(text2a.appendSibling(text2b).appendSibling(text2c).appendSibling(text2d));
+	    ((TranslationTextComponent) text2a).withStyle(TextFormatting.WHITE);
+	    ((TranslationTextComponent) text2b).withStyle(TextFormatting.AQUA);
+	    ((TranslationTextComponent) text2c).withStyle(TextFormatting.WHITE);
+	    ((TranslationTextComponent) text2d).withStyle(TextFormatting.WHITE);
+	    playerIn.sendMessage(((TranslationTextComponent) text2a).append(text2b).append(text2c).append(text2d), Util.NIL_UUID);
 	}
 	else
 	{
 	    // create the new guidebook and give it to the player
 	    ItemStack newbook = makeTempGuidebook();
-	    if (playerIn.addItemStackToInventory(newbook))
+	    if (playerIn.addItem(newbook))
 	    {
 		// delete this item
-		ItemStack itemstack = playerIn.getHeldItem(handIn);
+		ItemStack itemstack = playerIn.getItemInHand(handIn);
 		itemstack.shrink(1);
 	    }
 	}
 
-	return ActionResult.func_226248_a_(ItemStack.EMPTY); // return action result type success
+	return ActionResult.success(ItemStack.EMPTY); // return action result type success
     }
 
     public ItemStack makeTempGuidebook()
@@ -87,7 +90,7 @@ public class ItemGuidebook extends Item
     }
 
     // intentionally always return false to hide the enchantment glint
-    public boolean hasEffect(ItemStack stack)
+    public boolean isFoil(ItemStack stack)
     {
 	return false;
     }

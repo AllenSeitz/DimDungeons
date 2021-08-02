@@ -1,0 +1,29 @@
+{
+	"name": "Portal Keys",
+	"icon": "dimdungeons:textures/item/item_key_level1.png",
+	"category": "dimdungeons:keys",
+	"sortnum": 2,
+	"pages": [
+		{
+			"type": "text",
+			"text": "Once you have created your portal you will need a key, for which you will require: $(li)A Blaze Rod$(li)A Name Tag$(br)You will almost certainly want multiple keys, so you should craft as many as you can now."
+		},
+		{
+			"type":   "crafting",
+			"recipe": "dimdungeons:recipe_item_blank_key",
+			"text":   "This creates a blank key."
+		},
+		{
+			"type": "text",
+			"text": "Blank keys cannot be used to enter a dungeon until they have been activated. Activating a key inscribes the name and location of a randomly generated dungeon on the key.$(br2)The activation ritual requires you to 'use' ($(k:use)) the $(item)blank key$() on the hole of an end portal frame. The end portal frame does not need to be part of a valid end portal."
+		},
+		{
+			"type": "text",
+			"text": "If all the end portal frames are occupied you can use the key to break the $(item)eye of ender$() in one of the frames. This does not break the portal to The End.$(br2)Once you have activated a key you can 'place' ($(k:use)) the key in the keyhole block of your portal build. 'Using' ($(k:use)) the keyhole of an active portal will remove the key and close the portal."
+		},
+		{
+			"type": "text",
+			"text": "Keys can only be activated and inscribed once; so you will need to craft and activate a new key for each new dungeon that you explore. But keys are not consumed by the keyhole and old keys can be reused to reopen portals leading back to the same dungeon as they did before. Sometimes you might find a good reason to return to an old dungeon!"
+		}
+	]
+}

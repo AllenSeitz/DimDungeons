@@ -1,0 +1,43 @@
+{
+	"name": "The Basic Portal Frame",
+	"icon": "dimdungeons:block_gilded_portal",
+	"category": "dimdungeons:portals",
+	"sortnum": 2,
+	"pages": [
+		{
+			"type": "text",
+			"text": "First, here is a minimum raw materials list: $(li)9x Stone Bricks$(li)3x Chiseled Stone Bricks$(li)24x Gold Ingots$(li)1x Trapped Chest$(li)1x Eye of Ender$(br)You can also use cracked or mossy stone bricks.$(br2)Keep in mind you will also need to craft and activate keys. Building the portal frame is only the first step."
+		},
+		{
+			"type": "crafting",
+			"recipe": "dimdungeons:recipe_block_gilded_portal",
+			"text": "First craft three gilded portal blocks"
+		},
+		{
+			"type": "crafting",
+			"recipe": "dimdungeons:recipe_block_portal_keyhole",
+			"text": "Then use one to craft a portal keyhole block"
+		},
+		{
+			"type": "multiblock",
+			"multiblock": {
+				"pattern": [
+					[" "," "," ","K"," "," "," "],
+					["G"," ","B"," ","B"," ","G"],
+					["B"," ","B","0","B"," ","B"],
+					["B"," "," ","B"," "," ","B"]
+				],
+				"mapping": {
+					"K": "dimdungeons:block_portal_keyhole",
+					"G": "dimdungeons:block_gilded_portal",
+					"B": "minecraft:stone_bricks"
+				}
+			},
+			"text": "Then create a portal like this."
+		},
+		{
+			"type": "text",
+			"text": "Decorating the portal is highly encouraged! Also any air blocks except the two in the middle where the portal forms can be filled with whatever blocks you like. Sinking the portal one block into the ground or building steps up to it might be a good idea too."
+		}
+	]
+}
