@@ -20,6 +20,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
@@ -61,6 +62,7 @@ public class DimDungeons
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modConfig);
 	//FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerCommands);
 
 	// Register ourselves for server, registry and other game events we are interested in
@@ -69,7 +71,7 @@ public class DimDungeons
 
 	ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, DungeonConfig.SERVER_SPEC);
 	ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, DungeonConfig.CLIENT_SPEC);
-	ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DungeonConfig.COMMON_SPEC, "dimdungeons-common-1.13.1.toml");
+	ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DungeonConfig.COMMON_SPEC, "dimdungeons-common-1.13.1.toml");    
     }
 
     // some preinit code	
@@ -106,23 +108,22 @@ public class DimDungeons
 	// some example code to receive and process InterModComms from other mods
     }
 
-    // is this not needed in 1.17?
-    //    public void modConfig(ModConfig.ModConfigEvent event)
-    //    {
-    //	ModConfig config = event.getConfig();
-    //	if (config.getSpec() == DungeonConfig.CLIENT_SPEC)
-    //	{
-    //	    DungeonConfig.refreshClient();
-    //	}
-    //	else if (config.getSpec() == DungeonConfig.SERVER_SPEC)
-    //	{
-    //	    DungeonConfig.refreshServer();
-    //	}
-    //    }
-
     private void registerCommands(RegisterCommandsEvent evt)
     {
 	CommandDimDungeons.register(evt.getDispatcher());
+    }
+
+    public void modConfig(ModConfigEvent event)
+    {
+	ModConfig config = event.getConfig();
+	if (config.getSpec() == DungeonConfig.CLIENT_SPEC)
+	{
+	    DungeonConfig.refreshClient();
+	}
+	else if (config.getSpec() == DungeonConfig.SERVER_SPEC)
+	{
+	    DungeonConfig.refreshServer();
+	}
     }
 
     // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD event bus
