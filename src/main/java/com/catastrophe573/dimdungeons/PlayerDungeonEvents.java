@@ -2,6 +2,7 @@ package com.catastrophe573.dimdungeons;
 
 import java.util.List;
 
+import com.catastrophe573.dimdungeons.utils.CommandDimDungeons;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 import com.google.common.collect.Lists;
 
@@ -13,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
@@ -27,6 +29,12 @@ public class PlayerDungeonEvents
     //public void pickupItem(EntityItemPickupEvent event)
     //{
     //}
+
+    @SubscribeEvent
+    public void registerCommands(RegisterCommandsEvent event)
+    {
+	CommandDimDungeons.register(event.getDispatcher());
+    }
 
     @SubscribeEvent
     public void explosionStart(ExplosionEvent.Start event)
