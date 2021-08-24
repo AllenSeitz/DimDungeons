@@ -20,7 +20,6 @@
     "item.dimdungeons.item_homeward_pearl": "Homeward Pearl",
     "item.dimdungeons.item_guidebook": "Dimensional Dungeons Guidebook",
 
-// these trophy strings are not used, 1.14 forced them to move into the loot tables
     "item.dimdungeons.item_trophy_1": "1UP Mushroom",
     "item.dimdungeons.item_trophy_2": "Master Sword",
     "item.dimdungeons.item_trophy_3": "Ist Rune",
@@ -143,7 +142,7 @@
     "book.dimdungeons.fun_message_8": "All of these rooms use unmodded, survival mechanics. There are no command blocks or modded blocks.",
 
     "book.dimdungeons.helpful_message_1": "If you see a few red particles coming up through the carpet then try running a lap around the room.",
-    //"book.dimdungeons.helpful_message_1": "There's usually a way to get anywhere you can see. If you're stuck, look for something unusual that you can interact with.",    
+    "book.dimdungeons.helpful_unused_1": "There's usually a way to get anywhere you can see. If you're stuck, look for something unusual that you can interact with.",    
     "book.dimdungeons.helpful_message_2": "If a sample of lava seems impossible to fall into by accident then you might want to jump in on purpose!",
     "book.dimdungeons.helpful_message_3": "An empty chest might be a trap. But if you feel safe then consider making a donation!",
     "book.dimdungeons.helpful_message_4": "Be suspicious of the witch's cauldron. Who is the jailer in this place?",
@@ -197,7 +196,6 @@
     "error.dimdungeons.portal_error_11": "The dungeon on the other side was deleted.",
     "error.dimdungeons.portal_error_12": "This key leads to a dungeon that may have been visited already.",
 
-	// advancements
 	"advancements.dimdungeons.dungeons.root.title": "Dimensional Dungeons",
 	"advancements.dimdungeons.dungeons.root.description": "Craft the portal keyhole block.",
 	"advancements.dimdungeons.dungeons.activate_basic_key.title": "Seek The First Adventure",
@@ -213,7 +211,6 @@
 	"advancements.dimdungeons.dungeons.all_trophies.title": "Collectionist",
 	"advancements.dimdungeons.dungeons.all_trophies.description": "Find all 8 unique trophies.",	
 
-	// advancements - artifacts
 	"advancements.dimdungeons.dungeons.find_bell_1.title": "Bell of Secrets",
 	"advancements.dimdungeons.dungeons.find_bell_1.description": "You've found a Bell of Secrets.",
 	"advancements.dimdungeons.dungeons.find_bell_2.title": "[REDACTED]",
@@ -221,7 +218,6 @@
 	"advancements.dimdungeons.dungeons.find_key_charger.title": "Key Inscribing Station",
 	"advancements.dimdungeons.dungeons.find_key_charger.description": "You've found a Key Inscribing Station.",
 
-	// server configs
 	"config.dimdungeons.configVersion": "configVersion",
 	"config.dimdungeons.globalBlockProtection": "globalBlockProtection",
 	"config.dimdungeons.hardcoreMode": "hardcoreMode",
@@ -234,11 +230,9 @@
 	"config.dimdungeons.breakingWhitelist": "breakingWhitelist",
 	"config.dimdungeons.interactionBlacklist": "interactionBlacklist",
 	
-	// client configs
 	"config.dimdungeons.showParticles": "showParticles",
 	"config.dimdungeons.playPortalSounds": "playPortalSounds",
 
-	// common configs
 	"config.dimdungeons.basicEntrances": "basicEntrances",
 	"config.dimdungeons.basicFourways": "basicFourways",
 	"config.dimdungeons.basicThreeways": "basicThreeways",
@@ -258,11 +252,9 @@
 	"config.dimdungeons.basicEnemyHealthScaling": "basicEnemyHealthScaling",
 	"config.dimdungeons.advancedEnemyHealthScaling": "advancedEnemyHealthScaling",
 
-	// commands
 	"commands.gendungeon.success": "Built the dungeon of %s.",
 	"commands.gendungeon.failed": "Failed to create a dungeon here, likely because it already exists or the coordinates are out of range.",
 
-	// enemy names
     "enemy.dimdungeons.minecraft:enderman": "Enderman",
     "enemy.dimdungeons.minecraft:guardian": "Guardian",
     "enemy.dimdungeons.minecraft:witch": "Witch",
