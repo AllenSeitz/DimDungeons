@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
-//import net.minecraft.world.level.block.HalfTransparentBlock;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.entity.Entity;
@@ -52,7 +52,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 
     public BlockGoldPortal()
     {
-	super(BlockBehaviour.Properties.of(Material.PORTAL).strength(50).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
+	super(BlockBehaviour.Properties.of(Material.PORTAL).strength(50).randomTicks().strength(-1.0F).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
 	setRegistryName(DimDungeons.MOD_ID, REG_NAME);
 	this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X));
     }
@@ -67,6 +67,12 @@ public class BlockGoldPortal extends BaseEntityBlock
 	default:
 	    return X_AABB;
 	}
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState p_49232_)
+    {
+	return RenderShape.MODEL;
     }
 
     public BlockState rotate(BlockState state, Rotation rot)

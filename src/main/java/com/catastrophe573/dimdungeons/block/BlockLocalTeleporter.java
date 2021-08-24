@@ -7,8 +7,8 @@ import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
 
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
-//import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.entity.Entity;
@@ -31,6 +31,12 @@ public class BlockLocalTeleporter extends BaseEntityBlock
     {
 	super(BlockBehaviour.Properties.of(Material.PORTAL).strength(50).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
 	setRegistryName(DimDungeons.MOD_ID, REG_NAME);
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState p_49232_)
+    {
+	return RenderShape.MODEL;
     }
 
     // Called by ItemBlocks after a block is set in the world, to allow post-place logic
