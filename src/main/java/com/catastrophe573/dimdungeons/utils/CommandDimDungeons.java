@@ -24,6 +24,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 
+// TODO: this class should be registering one command, not two. Split this into a separate class for each command.
 public class CommandDimDungeons
 {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher)

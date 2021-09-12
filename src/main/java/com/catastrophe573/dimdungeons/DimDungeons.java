@@ -63,7 +63,6 @@ public class DimDungeons
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modConfig);
-	//FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerCommands);
 
 	// Register ourselves for server, registry and other game events we are interested in
 	//MinecraftForge.EVENT_BUS.register(this);
@@ -96,6 +95,12 @@ public class DimDungeons
 	{
 	    return ItemSecretBell.getUpgradeLevelAsFloat(stack);
 	});
+    }
+
+    @SubscribeEvent
+    public void onRegisterCommands(RegisterCommandsEvent event)
+    {
+	CommandDimDungeons.register(event.getDispatcher());
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)
