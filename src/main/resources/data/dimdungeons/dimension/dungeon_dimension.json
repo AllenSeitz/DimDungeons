@@ -1,11 +1,17 @@
 {
   "generator": {
     "type": "dimdungeons:dimdungeons_chunkgen",
-    "seed": 0,
     "settings": {
 	  "biome": "dimdungeons:biome_dungeon",
       "layers": [],
+	  "features": false,
+	  "lakes": false,
       "structures": {
+        "stronghold": {
+			"distance": 99999999,
+			"count": 0,
+			"spread": 42
+		},
         "structures": {}
       }
     }
