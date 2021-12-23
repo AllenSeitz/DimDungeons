@@ -15,16 +15,18 @@
 		"announce_to_chat": true,
 		"hidden": false
 	},
-	"criteria": {
-		"crown": {
+	"criteria": 
+	{
+		"crown": 
+		{
 			"trigger": "minecraft:inventory_changed",
-			"conditions": {
-				"items": [
+			"conditions":
+			{
+				"items": 
+				[
 					{
 						"item": "dimdungeons:block_portal_crown",
-						"count": {
-							"min": 2
-						}
+						"count": { "min": 2 }
 					}
 				]
 			}

@@ -18,8 +18,10 @@
 	"criteria": {
 		"charger_1": {
 			"trigger": "minecraft:inventory_changed",
-			"conditions": {
-				"items": [
+			"conditions":
+			{
+				"items":
+				[
 					{
 						"item": "dimdungeons:block_key_charger",
 						"count": { "min": 1 }
@@ -29,8 +31,10 @@
 		},
 		"charger_2": {
 			"trigger": "minecraft:inventory_changed",
-			"conditions": {
-				"items": [
+			"conditions":
+			{
+				"items":
+				[
 					{
 						"item": "dimdungeons:block_key_charger_used",
 						"count": { "min": 1 }
@@ -40,8 +44,10 @@
 		},
 		"charger_3": {
 			"trigger": "minecraft:inventory_changed",
-			"conditions": {
-				"items": [
+			"conditions":
+			{
+				"items":
+				[
 					{
 						"item": "dimdungeons:block_key_charger_damaged",
 						"count": { "min": 1 }

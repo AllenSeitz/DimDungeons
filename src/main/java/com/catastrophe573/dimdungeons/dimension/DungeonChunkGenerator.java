@@ -21,13 +21,15 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
-import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.GenerationStep.Carving;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.Heightmap.Types;
+import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.StructureFeatureManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.BiomeManager;
+import net.minecraft.world.level.biome.Climate.Sampler;
 import net.minecraft.world.level.biome.FixedBiomeSource;
 
 public final class DungeonChunkGenerator extends ChunkGenerator
@@ -59,51 +61,27 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	return this.settings;
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public void buildSurfaceAndBedrock(WorldGenRegion p_225551_1_, ChunkAccess p_225551_2_)
-    {
-	// generate my sandstone base and void chunks, which usually don't matter at all but might as well
-	ServerLevel world = p_225551_1_.getLevel();
-	makeBase(world, p_225551_2_);
-
-	// and intentionally do nothing with structures
-    }
-
-    // is this decorate()?
-    @Override
-    public void applyBiomeDecoration(WorldGenRegion p_230351_1_, StructureFeatureManager p_230351_2_)
-    {
-	// in vanilla this function basically does this:
-	//biome.generateFeatures(p_230351_2_, this, p_230351_1_, i1, sharedseedrandom, blockpos);
-    }
-
-    @Override
-    // I think this is Carve()
-    public void applyCarvers(long p_230350_1_, BiomeManager p_230350_3_, ChunkAccess p_230350_4_, GenerationStep.Carving p_230350_5_)
-    {
-    }
-
     // I don't know what this does. I copied it from the vanilla code.
-    public CompletableFuture<ChunkAccess> fillFromNoise(Executor p_158281_, StructureFeatureManager p_158282_, ChunkAccess p_158283_)
+    @Override
+    public CompletableFuture<ChunkAccess> fillFromNoise(Executor p_187748_, Blender p_187749_, StructureFeatureManager p_187750_, ChunkAccess p_187751_)
     {
 	List<BlockState> list = this.settings.getLayers();
 	BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-	Heightmap heightmap = p_158283_.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
-	Heightmap heightmap1 = p_158283_.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
+	Heightmap heightmap = p_187751_.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
+	Heightmap heightmap1 = p_187751_.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
 
-	for (int i = 0; i < Math.min(p_158283_.getHeight(), list.size()); ++i)
+	for (int i = 0; i < Math.min(p_187751_.getHeight(), list.size()); ++i)
 	{
 	    BlockState blockstate = list.get(i);
 	    if (blockstate != null)
 	    {
-		int j = p_158283_.getMinBuildHeight() + i;
+		int j = p_187751_.getMinBuildHeight() + i;
 
 		for (int k = 0; k < 16; ++k)
 		{
 		    for (int l = 0; l < 16; ++l)
 		    {
-			p_158283_.setBlockState(blockpos$mutableblockpos.set(k, j, l), blockstate, false);
+			p_187751_.setBlockState(blockpos$mutableblockpos.set(k, j, l), blockstate, false);
 			heightmap.update(k, j, l, blockstate);
 			heightmap1.update(k, j, l, blockstate);
 		    }
@@ -111,7 +89,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	    }
 	}
 
-	return CompletableFuture.completedFuture(p_158283_);
+	return CompletableFuture.completedFuture(p_187751_);
     }
 
     // 1.16 version
@@ -206,5 +184,52 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 		}
 	    }
 	}
+    }
+
+    @Override
+    public Sampler climateSampler()
+    {
+	// none of the new 1.18 worldgen applies to this pocket dimension
+	return null;
+    }
+
+    @Override
+    public void applyCarvers(WorldGenRegion p_187691_, long p_187692_, BiomeManager p_187693_, StructureFeatureManager p_187694_, ChunkAccess p_187695_, Carving p_187696_)
+    {
+	// intentionally do nothing!
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void buildSurface(WorldGenRegion p_187697_, StructureFeatureManager p_187698_, ChunkAccess p_187699_)
+    {
+	ServerLevel world = p_187697_.getLevel();
+	makeBase(world, p_187699_);
+	
+	// no decoration! no structures!
+    }
+
+    @Override
+    public void spawnOriginalMobs(WorldGenRegion p_62167_)
+    {
+	// not doing this either
+    }
+
+    @Override
+    public int getMinY()
+    {
+	return -63;
+    }
+
+    @Override
+    public int getGenDepth()
+    {
+	return 384;
+    }
+
+    @Override
+    public int getSeaLevel()
+    {
+	return -64;
     }
 }

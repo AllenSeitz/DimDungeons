@@ -58,14 +58,13 @@ public class TileEntityGoldPortal extends BlockEntity
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound)
+    protected void saveAdditional(CompoundTag compound)
     {
 	compound.putDouble("destX", this.destX);
 	compound.putDouble("destY", this.destY);
 	compound.putDouble("destZ", this.destZ);
 	compound.putInt("cooldown", this.cooldown);
 	compound.putString("destDimension", this.destDimension);
-	return super.save(compound);
     }
 
     public void setDestination(double posX, double posY, double posZ, String destDim)

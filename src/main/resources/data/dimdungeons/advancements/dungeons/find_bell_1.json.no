@@ -11,15 +11,19 @@
 			"translate": "advancements.dimdungeons.dungeons.find_bell_1.description"
 		},
 		"frame": "task",
-		"show_toast": false,
+		"show_toast": true,
 		"announce_to_chat": false,
 		"hidden": true
 	},
-	"criteria": {
-		"bell": {
+	"criteria": 
+	{
+		"bell": 
+		{
 			"trigger": "minecraft:inventory_changed",
-			"conditions": {
-				"items": [
+			"conditions":
+			{
+				"items": 
+				[
 					{
 						"item": "dimdungeons:item_secret_bell",
 						"count": { "min": 1 }

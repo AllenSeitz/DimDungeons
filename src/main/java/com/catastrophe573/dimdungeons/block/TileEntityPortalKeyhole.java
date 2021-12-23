@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+//import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.ObjectHolder;
@@ -35,10 +35,9 @@ public class TileEntityPortalKeyhole extends BlockEntity
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound)
+    protected void saveAdditional(CompoundTag compound)
     {
 	writeMyNBTData(compound);
-	return super.save(compound);
     }
 
     // synchronize on chunk loading
@@ -49,12 +48,13 @@ public class TileEntityPortalKeyhole extends BlockEntity
     }
 
     // synchronize on block updates
-    @Override
-    public ClientboundBlockEntityDataPacket getUpdatePacket()
-    {
-	CompoundTag tag = save(new CompoundTag());
-	return new ClientboundBlockEntityDataPacket(worldPosition, 1, tag); // Forge recommends putting -1 as the second parameter
-    }
+    // potentially not needed in 1.18?
+//    @Override
+//    public ClientboundBlockEntityDataPacket getUpdatePacket()
+//    {
+//	CompoundTag tag = save(new CompoundTag());
+//	return new ClientboundBlockEntityDataPacket(worldPosition, 1, tag); // Forge recommends putting -1 as the second parameter
+//    }
 
     // business logic for this object
     public void writeMyNBTData(CompoundTag compound)

@@ -17,14 +17,17 @@
 		"hidden": true
 	},
 	"criteria": {
-		"bell": {
+		"bell": 
+		{
 			"trigger": "minecraft:inventory_changed",
-			"conditions": {
-				"items": [
+			"conditions":
+			{
+				"items": 
+				[
 					{
 						"item": "dimdungeons:item_secret_bell",
 						"count": { "min": 1 },
-						"nbt": "{upgrade:2}"
+						"nbt": "{upgrade:2}"					
 					}
 				]
 			}

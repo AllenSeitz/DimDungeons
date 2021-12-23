@@ -40,14 +40,13 @@ public class TileEntityLocalTeleporter extends BlockEntity
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound)
+    protected void saveAdditional(CompoundTag compound)
     {
 	compound.putDouble("destX", this.destX);
 	compound.putDouble("destY", this.destY);
 	compound.putDouble("destZ", this.destZ);
 	compound.putDouble("destPitch", this.destPitch);
 	compound.putDouble("destYaw", this.destYaw);
-	return super.save(compound);
     }
 
     public void setDestination(double posX, double posY, double posZ, double pitch, double yaw)
