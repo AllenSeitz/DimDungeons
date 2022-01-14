@@ -1,0 +1,16 @@
+{
+    "name": "Version 1.13.2",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 100,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Over 70 rooms were revised.$(li)Some blocks have new textures by MrDenn.$(li)Portals to dungeons can now be built in any dimensionm."
+        },
+        {
+            "type": "text",
+            "text": "$(li)Various bugs relating to the worldborder have been fixed.$(li)New themed dungeons!$(li)Enemies will randomly carry keys to themed dungeons.$(li)"
+		}
+    ]
+}

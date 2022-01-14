@@ -1,0 +1,16 @@
+{
+    "name": "Version 1.12",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 100,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Added the Key Enscribing Station.$(li)Added hardcore mode to the server confgig.$(li)Added the Homeward Pearl."
+        },
+        {
+            "type": "text",
+            "text": "$(li)Various mob stats are now configurable.$(li)Witches and Vindicators now spawn in advanced dungeons! (Configurable.)(li)"
+		}
+    ]
+}
