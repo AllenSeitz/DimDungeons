@@ -7,7 +7,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-//import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.ObjectHolder;
@@ -31,47 +30,37 @@ public class TileEntityPortalKeyhole extends BlockEntity
     public void load(CompoundTag compound)
     {
 	super.load(compound);
-	readMyNBTData(compound);
+	if (compound.contains(ITEM_PROPERTY_KEY))
+	{
+	    setContents(ItemStack.of(compound.getCompound(ITEM_PROPERTY_KEY)));
+	}
     }
 
     @Override
     protected void saveAdditional(CompoundTag compound)
     {
-	writeMyNBTData(compound);
+	super.saveAdditional(compound);
+
+	// always send this, even if it is empty or air
+	compound.put(ITEM_PROPERTY_KEY, objectInserted.save(new CompoundTag()));
     }
 
     // synchronize on chunk loading
-    @Override
-    public CompoundTag getUpdateTag()
-    {
-	return save(new CompoundTag());
-    }
+    // I think if you do this in 1.18, you will spoil the whole chunk. It was good in 1..17 though.
+    //	@Override
+    //	public CompoundTag getUpdateTag()
+    //	{
+    //		 return save(new CompoundTag());
+    //  }
 
     // synchronize on block updates
     // potentially not needed in 1.18?
-//    @Override
-//    public ClientboundBlockEntityDataPacket getUpdatePacket()
-//    {
-//	CompoundTag tag = save(new CompoundTag());
-//	return new ClientboundBlockEntityDataPacket(worldPosition, 1, tag); // Forge recommends putting -1 as the second parameter
-//    }
-
-    // business logic for this object
-    public void writeMyNBTData(CompoundTag compound)
-    {
-	// always send this, even if it is empty or air
-	CompoundTag itemNBT = new CompoundTag();
-	compound.put(ITEM_PROPERTY_KEY, objectInserted.save(itemNBT));
-    }
-
-    // business logic for this object
-    public void readMyNBTData(CompoundTag compound)
-    {
-	if (compound.contains(ITEM_PROPERTY_KEY))
-	{
-	    this.objectInserted = (ItemStack.of(compound.getCompound(ITEM_PROPERTY_KEY)));
-	}
-    }
+    //	@Override
+    //	public ClientboundBlockEntityDataPacket getUpdatePacket()
+    //	{
+    //		CompoundTag tag = save(new CompoundTag());
+    //		return new ClientboundBlockEntityDataPacket(worldPosition);
+    //	}
 
     public boolean isFilled()
     {
