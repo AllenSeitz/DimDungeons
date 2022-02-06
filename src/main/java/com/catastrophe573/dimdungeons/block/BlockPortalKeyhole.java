@@ -59,7 +59,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 
     public BlockPortalKeyhole()
     {
-	super(BlockBehaviour.Properties.of(Material.PORTAL).strength(2).sound(SoundType.METAL));
+	super(BlockBehaviour.Properties.of(Material.STONE).strength(3).explosionResistance(1200).sound(SoundType.METAL));
 	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
 	this.registerDefaultState(getMyCustomDefaultState());
     }

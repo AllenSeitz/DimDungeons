@@ -14,7 +14,7 @@ public class BlockPortalCrown extends WallBlock
 
     public BlockPortalCrown()
     {
-	super(BlockBehaviour.Properties.of(Material.STONE).strength(2).sound(SoundType.METAL));
+	super(BlockBehaviour.Properties.of(Material.STONE).strength(3).sound(SoundType.METAL));
 	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 }

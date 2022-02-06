@@ -18,7 +18,7 @@ public class BlockKeyCharger extends Block
 
     public BlockKeyCharger()
     {
-	super(BlockBehaviour.Properties.of(Material.GLASS).strength(10).sound(SoundType.METAL));
+	super(BlockBehaviour.Properties.of(Material.STONE).strength(3).sound(SoundType.METAL));
     }
 
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
@@ -30,5 +30,5 @@ public class BlockKeyCharger extends Block
     public RenderShape getRenderShape(BlockState iBlockState)
     {
 	return RenderShape.MODEL;
-    }
+    }    
 }
