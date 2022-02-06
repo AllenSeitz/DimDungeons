@@ -1,10 +1,9 @@
 package com.catastrophe573.dimdungeons.item;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,14 +13,15 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
-import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.Tag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -42,6 +42,8 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     public static final String NBT_SECRET_Z = "secret_z";
 
     public static final int BELL_COOLDOWN_TICKS = 80;
+
+    public static final Tag.Named<Block> tag_secret_chime = BlockTags.bind("dimdungeons:dimdungeons_secret_chime_blocks");
 
     public ItemSecretBell(/* IItemTier tier, */ Item.Properties builderIn)
     {
@@ -136,15 +138,22 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 	stack.setTag(data);
     }
 
+    @SuppressWarnings("resource")
     @Override
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
     {
 	ItemStack itemstack = playerIn.getItemInHand(handIn);
 
+	// do nothing on the client, let the server do the chest searching logic
+	if (playerIn.getCommandSenderWorld().isClientSide)
+	{
+	    return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+	}
+
 	// Only the level 2 bell may be used in any dimension. The level 1 bell works exclusively in the dungeon dimension.
 	if (getUpgradeLevel(itemstack) < 2 && !DungeonUtils.isDimensionDungeon((Level) playerIn.getCommandSenderWorld()))
 	{
-	    return new InteractionResultHolder<>(InteractionResult.FAIL, itemstack);
+	    return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 	}
 
 	if (handIn == InteractionHand.MAIN_HAND)
@@ -184,19 +193,19 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 	{
 	    playSoundAtPosition(worldIn, entityIn.blockPosition(), 12);
 	}
-	if (time == BELL_COOLDOWN_TICKS - 6)
-	{
-	    playSoundAtPosition(worldIn, entityIn.blockPosition(), 9);
-	}
-	if (time == BELL_COOLDOWN_TICKS - 9)
-	{
-	    playSoundAtPosition(worldIn, entityIn.blockPosition(), 3);
-	}
 
 	// assume that worlds won't go beyond -10000, even in the upcoming 1.17
 	if (getSecretY(stack) > -10000)
 	{
 	    BlockPos secretPos = new BlockPos(getSecretX(stack), getSecretY(stack), getSecretZ(stack));
+	    if (time == BELL_COOLDOWN_TICKS - 6)
+	    {
+		playSoundAtPosition(worldIn, entityIn.blockPosition(), 9);
+	    }
+	    if (time == BELL_COOLDOWN_TICKS - 9)
+	    {
+		playSoundAtPosition(worldIn, entityIn.blockPosition(), 3);
+	    }
 	    if (time == BELL_COOLDOWN_TICKS - 12)
 	    {
 		playSoundAtPosition(worldIn, secretPos, 2);
@@ -220,10 +229,9 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     public void playSoundAtPosition(Level worldIn, BlockPos pos, int note)
     {
 	float pitch = (float) Math.pow(2.0D, (double) (note - 12) / 12.0D);
-	worldIn.playSound((Player) null, pos, NoteBlockInstrument.BELL.getSoundEvent(), SoundSource.RECORDS, 3.0F, pitch);
+	worldIn.playSound((Player) null, pos, NoteBlockInstrument.BELL.getSoundEvent(), SoundSource.PLAYERS, 3.0F, pitch);
 
 	worldIn.addParticle(ParticleTypes.NOTE, (double) pos.getX() + 0.5D, (double) pos.getY() + 1.6D, (double) pos.getZ() + 0.5D, (double) note / 24.0D, 0.0D, 0.0D);
-	//worldIn.addParticle(ParticleTypes.NOTE, (double)pos.getX() + 0.5D, (double) pos.getY() + 1.2D, (double) pos.getZ() + 0.5D, (double)i / 24.0D, 0.0D, 0.0D);
     }
 
     /**
@@ -289,38 +297,23 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 	int startY = start.getY() - 8;
 
 	// search the player's current chunk, 8 blocks up and 8 blocks down, for any inventory
-	// if that inventory has a loot table then it counts as an "unopened chest" and it triggers the secret chime
+	// if that block is tagged  then trigger the extended chime
 	for (int x = startX; x < startX + 16; x++)
 	{
 	    for (int z = startZ; z < startZ + 16; z++)
 	    {
 		for (int y = startY; y < startY + 16; y++)
 		{
-		    BlockEntity te = worldIn.getBlockEntity(new BlockPos(x, y, z));
-		    if (te != null && te instanceof RandomizableContainerBlockEntity)
+		    BlockState bs = worldIn.getBlockState(new BlockPos(x, y, z));
+		    if (!bs.isAir())
 		    {
-			boolean hasLootTable = false;
-			try
-			{
-			    //hasLootTable = FieldUtils.readField(te, "lootTable", true) != null;
-			    hasLootTable = FieldUtils.readField(te, "lootTable", true) != null;
-			}
-			catch (IllegalAccessException e)
-			{
-			    // not a problem
-			    DimDungeons.logMessageError("Bell of Secrets FAILED - Illegal Access");
-			}
-			catch (IllegalArgumentException e)
-			{
-			    // not a problem
-			    DimDungeons.logMessageError("Bell of Secrets FAILED - Illegal Argument");
-			}
-
-			if (hasLootTable)
-			{
-			    //DimDungeons.logMessageInfo("FOUND A SECRET " + x + ", " + y + ", " + z);
-			    return new BlockPos(x, y, z);
-			}
+			DimDungeons.logMessageInfo("BLOCK: " + bs.getBlock().getRegistryName().getPath());
+		    }
+		    if (bs != null && bs.getBlock().getTags().contains(new ResourceLocation(DimDungeons.MOD_ID, "dimdungeons_secret_chime_blocks")))
+		    {
+			// the bell just rings for any tagged blocks (chests, barrels, etc)
+			// no more checking for loot tables
+			return new BlockPos(x, y, z);
 		    }
 		}
 	    }
