@@ -1,0 +1,11 @@
+{
+    "replace": false,
+    "values": [
+        "dimdungeons:block_gilded_portal",
+        "dimdungeons:block_portal_crown",
+        "dimdungeons:block_portal_keyhole",
+        "dimdungeons:block_key_charger",
+        "dimdungeons:block_key_charger_used",
+        "dimdungeons:block_key_charger_damaged"
+    ]
+}
