@@ -65,12 +65,12 @@ public class DungeonConfig
     public static boolean globalBlockProtection = true;
     public static boolean hardcoreMode = false;
     public static boolean enableDebugCheats = false;
-    public static int portalCooldownTicks = 80;
+    public static int portalCooldownTicks = 40;
     public static int keyEnscriberDowngradeChanceFull = 100;
     public static int keyEnscriberDowngradeChanceUsed = 100;
     public static int keyEnscriberDowngradeChanceDamaged = 100;
     public static String logLevel = "error";
-    public static String worldborderToRespect = "error";
+    public static String worldborderToRespect = "dimdungeons:dungeon_dimension";
     public static int numberOfThemes = 1;
     public static int chanceForThemeKeys = DEFAULT_CHANCE_FOR_THEME_KEYS;
     public static Set<Block> blockBreakWhitelist = Sets.newHashSet();
@@ -236,7 +236,7 @@ public class DungeonConfig
 		    .define("globalBlockProtection", true);
 	    hardcoreMode = builder.comment("If set to TRUE then dungeon keys are consumed whenever a player enters a dungeon portal.").translation("config.dimdungeons.hardcoreMode").define("hardcoreMode", false);
 	    enableDebugCheats = builder.comment("If set to TRUE some cheats are available.").translation("config.dimdungeons.enableDebugCheats").define("enableDebugCheats", false);
-	    portalCooldownTicks = builder.comment("How many ticks the portal blocks cooldown for.").translation("config.dimdungeons.portalCooldownTicks").define("portalCooldownTicks", 80);
+	    portalCooldownTicks = builder.comment("How many ticks the portal blocks cooldown for.").translation("config.dimdungeons.portalCooldownTicks").define("portalCooldownTicks", 40);
 	    keyEnscriberDowngradeChanceFull = builder.comment("The odds of a Key Enscriber taking damage upon use, like an anvil, turning into a Used Key Enscriber. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceFull")
 		    .define("keyEnscriberDowngradeChanceFull", 100);
 	    keyEnscriberDowngradeChanceUsed = builder.comment("The odds of a Used Key Enscriber taking damage upon use, like an anvil, turning into a Damaged Key Enscriber. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceUsed")
@@ -245,7 +245,7 @@ public class DungeonConfig
 		    .define("keyEnscriberDowngradeChanceDamaged", 100);
 	    logLevel = builder.comment("Can be used to limit log spam. Can be set to 'all', 'warn', or 'error'.").translation("config.dimdungeons.logLevel").define("logLevel", "error");
 	    worldborderToRespect = builder.comment("Which dimension's worldborder to consider when activating keys. Using dimdungeons:dungeon_dimension may not work for everyone.").translation("config.dimdungeons.worldborderToRespect")
-		    .define("worldborderToRespect", "minecraft:overworld");
+		    .define("worldborderToRespect", "dimdungeons:dungeon_dimension");
 	    numberOfThemes = builder.comment("The number of themes to expect in the common config.").translation("config.dimdungeons.numberOfThemes").define("numberOfThemes", DEFAULT_NUMBER_OF_THEMES);
 	    chanceForThemeKeys = builder.comment("The chance for an enemy in a basic dungeon to be carrying a theme key.").translation("config.dimdungeons.chanceForThemeKeys").define("chanceForThemeKeys", DEFAULT_CHANCE_FOR_THEME_KEYS);
 	    builder.pop();
