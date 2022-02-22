@@ -20,15 +20,17 @@ import java.util.stream.Collectors;
 // thank you gigaherz for showing me an example of a Forge config
 public class DungeonConfig
 {
-    public static final int DEFAULT_CONFIG_VERSION = 4;
+    public static final int DEFAULT_CONFIG_VERSION = 5;
 
     public static final int DEFAULT_BASIC_DUNGEON_SIZE = 25;
     public static final int DEFAULT_ADVANCED_DUNGEON_SIZE = 46;
 
-    public static final int DEFAULT_NUMBER_OF_THEMES = 1;
+    public static final int DEFAULT_NUMBER_OF_THEMES = 2;
     public static final int MAXIMUM_NUMBER_OF_THEMES = 99;
     public static final int DEFAULT_THEME_DUNGEON_SIZE = 14;
     public static final int DEFAULT_CHANCE_FOR_THEME_KEYS = 4;
+
+    public static final int DEFAULT_PORTAL_TICKS = 40;
 
     public static final ServerConfig SERVER;
     public static final ForgeConfigSpec SERVER_SPEC;
@@ -65,13 +67,12 @@ public class DungeonConfig
     public static boolean globalBlockProtection = true;
     public static boolean hardcoreMode = false;
     public static boolean enableDebugCheats = false;
-    public static int portalCooldownTicks = 40;
+    public static int portalCooldownTicks = DEFAULT_PORTAL_TICKS;
     public static int keyEnscriberDowngradeChanceFull = 100;
     public static int keyEnscriberDowngradeChanceUsed = 100;
     public static int keyEnscriberDowngradeChanceDamaged = 100;
     public static String logLevel = "error";
     public static String worldborderToRespect = "dimdungeons:dungeon_dimension";
-    public static int numberOfThemes = 1;
     public static int chanceForThemeKeys = DEFAULT_CHANCE_FOR_THEME_KEYS;
     public static Set<Block> blockBreakWhitelist = Sets.newHashSet();
     public static Set<Block> blockInteractBlacklist = Sets.newHashSet();
@@ -101,6 +102,7 @@ public class DungeonConfig
     public static List<? extends String> advancedEnemySet2;
     public static double basicEnemyHealthScaling = 1.0f;
     public static double advancedEnemyHealthScaling = 2.0f;
+    public static int numberOfThemes = DEFAULT_NUMBER_OF_THEMES;
 
     // theme options
     public static class ThemeStructure
@@ -133,7 +135,6 @@ public class DungeonConfig
 	public final ConfigValue<Integer> keyEnscriberDowngradeChanceDamaged;
 	public final ConfigValue<String> logLevel;
 	public final ConfigValue<String> worldborderToRespect;
-	public final ConfigValue<Integer> numberOfThemes;
 	public final ConfigValue<Integer> chanceForThemeKeys;
 
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> breakingWhitelist;
@@ -236,7 +237,7 @@ public class DungeonConfig
 		    .define("globalBlockProtection", true);
 	    hardcoreMode = builder.comment("If set to TRUE then dungeon keys are consumed whenever a player enters a dungeon portal.").translation("config.dimdungeons.hardcoreMode").define("hardcoreMode", false);
 	    enableDebugCheats = builder.comment("If set to TRUE some cheats are available.").translation("config.dimdungeons.enableDebugCheats").define("enableDebugCheats", false);
-	    portalCooldownTicks = builder.comment("How many ticks the portal blocks cooldown for.").translation("config.dimdungeons.portalCooldownTicks").define("portalCooldownTicks", 40);
+	    portalCooldownTicks = builder.comment("How many ticks the portal blocks cooldown for.").translation("config.dimdungeons.portalCooldownTicks").define("portalCooldownTicks", DEFAULT_PORTAL_TICKS);
 	    keyEnscriberDowngradeChanceFull = builder.comment("The odds of a Key Enscriber taking damage upon use, like an anvil, turning into a Used Key Enscriber. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceFull")
 		    .define("keyEnscriberDowngradeChanceFull", 100);
 	    keyEnscriberDowngradeChanceUsed = builder.comment("The odds of a Used Key Enscriber taking damage upon use, like an anvil, turning into a Damaged Key Enscriber. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceUsed")
@@ -246,7 +247,6 @@ public class DungeonConfig
 	    logLevel = builder.comment("Can be used to limit log spam. Can be set to 'all', 'warn', or 'error'.").translation("config.dimdungeons.logLevel").define("logLevel", "error");
 	    worldborderToRespect = builder.comment("Which dimension's worldborder to consider when activating keys. Using dimdungeons:dungeon_dimension may not work for everyone.").translation("config.dimdungeons.worldborderToRespect")
 		    .define("worldborderToRespect", "dimdungeons:dungeon_dimension");
-	    numberOfThemes = builder.comment("The number of themes to expect in the common config.").translation("config.dimdungeons.numberOfThemes").define("numberOfThemes", DEFAULT_NUMBER_OF_THEMES);
 	    chanceForThemeKeys = builder.comment("The chance for an enemy in a basic dungeon to be carrying a theme key.").translation("config.dimdungeons.chanceForThemeKeys").define("chanceForThemeKeys", DEFAULT_CHANCE_FOR_THEME_KEYS);
 	    builder.pop();
 	    builder.comment("Options for block behavior in the dungeon dimension.").push("blocks");
@@ -983,7 +983,7 @@ public class DungeonConfig
 	    return Lists.newArrayList("minecraft:skeleton", "minecraft:piglin", "minecraft:blaze");
 	}
 
-	return defaultAdvancedEnemySet1();
+	return defaultBasicEnemySet1();
     }
 
     // this takes themeNum as a parameter to make the loop where it is used more readable
@@ -995,7 +995,7 @@ public class DungeonConfig
 	    return Lists.newArrayList("minecraft:wither_skeleton", "minecraft:blaze", "minecraft:wither_skeleton", "minecraft:blaze", "minecraft:hoglin", "minecraft:piglin_brute");
 	}
 
-	return defaultAdvancedEnemySet2();
+	return defaultBasicEnemySet2();
     }
 
     // this function is silly in purpose, but it is similar to the other hardcoded functions for the tiered dungeons
@@ -1009,6 +1009,23 @@ public class DungeonConfig
 	{
 	    List<String> temp = Lists.newArrayList();
 	    temp.add("dimdungeons:theme" + themeNum + "_" + roomPart + (i + 1));
+	    returnList.add(temp);
+	}
+
+	return returnList;
+    }
+
+    // as an exception to the comment above makeDefaultThemeRoomSet()
+    // this function builds a list of rooms with a different naming convention (used in theme2)
+    public static List<? extends List<String>> makeDefaultThemeRoomSetAlternate(int themeNum, int numRoomsInSet)
+    {
+	List<List<String>> returnList = Lists.newArrayList();
+
+	// make the room sets have just one room each
+	for (int i = 0; i < numRoomsInSet; i++)
+	{
+	    List<String> temp = Lists.newArrayList();
+	    temp.add("dimdungeons:theme" + themeNum + "_room" + (i / 10) + "" + (i % 10));
 	    returnList.add(temp);
 	}
 
@@ -1042,6 +1059,7 @@ public class DungeonConfig
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet2;
 	public final ConfigValue<Double> basicEnemyHealthScaling;
 	public final ConfigValue<Double> advancedEnemyHealthScaling;
+	public final ConfigValue<Integer> numberOfThemes;
 
 	public static class ThemeConfigStructure
 	{
@@ -1091,19 +1109,53 @@ public class DungeonConfig
 	    advancedEnemySet2 = builder.translation("config.dimdungeons.advancedEnemySet2").define("advancedEnemySet2", defaultAdvancedEnemySet2());
 	    basicEnemyHealthScaling = builder.translation("config.dimdungeons.basicEnemyHealthScaling").define("basicEnemyHealthScaling", 1.0);
 	    advancedEnemyHealthScaling = builder.translation("config.dimdungeons.advancedEnemyHealthScaling").define("advancedEnemyHealthScaling", 2.0);
+	    numberOfThemes = builder.comment("The number of themes to expect in the common config.").translation("config.dimdungeons.numberOfThemes").define("numberOfThemes", DEFAULT_NUMBER_OF_THEMES);
 	    builder.pop();
 
-	    // handle each theme with a separate section in a loop
+	    //
+	    // BEGIN DEFAULT THEME CONFIG
+	    //
 	    allThemeConfigs = new ArrayList<ThemeConfigStructure>();
-	    for (int i = 1; i <= MAXIMUM_NUMBER_OF_THEMES; i++)
+
+	    // room generation for theme1
+	    ThemeConfigStructure theme1 = new ThemeConfigStructure();
+	    int theme = 1;
+	    builder.comment("Settings for Theme " + theme).push("dungeonTheme" + theme);
+	    theme1.themeEntrances = builder.translation("config.dimdungeons.themeEntrances" + theme).define("themeEntrances" + theme, makeDefaultThemeRoomSet(theme, "entrance", 3));
+	    theme1.themeFourways = builder.translation("config.dimdungeons.themeFourways" + theme).define("themeFourways" + theme, makeDefaultThemeRoomSet(theme, "fourway", 6));
+	    theme1.themeThreeways = builder.translation("config.dimdungeons.basicThreeways" + theme).define("themeThreeways" + theme, makeDefaultThemeRoomSet(theme, "threeway", 6));
+	    theme1.themeHallways = builder.translation("config.dimdungeons.basicHallways" + theme).define("themeHallways" + theme, makeDefaultThemeRoomSet(theme, "hallway", 6));
+	    theme1.themeCorners = builder.translation("config.dimdungeons.basicCorners" + theme).define("themeCorners" + theme, makeDefaultThemeRoomSet(theme, "corner", 6));
+	    theme1.themeEnds = builder.translation("config.dimdungeons.basicEnds" + theme).define("themeEnds" + theme, makeDefaultThemeRoomSet(theme, "end", 6));
+	    theme1.themeEnemySet1 = builder.translation("config.dimdungeons.basicEnemySet1_" + theme).define("themeEnemySet1_" + theme, defaultThemeEnemySet1(theme));
+	    theme1.themeEnemySet2 = builder.translation("config.dimdungeons.basicEnemySet2_" + theme).define("themeEnemySet2_" + theme, defaultThemeEnemySet2(theme));
+	    theme1.themeEnemyHealthScaling = builder.translation("config.dimdungeons.themeEnemyHealthScaling" + theme).define("themeEnemyHealthScaling" + theme, 1.0);
+	    theme1.themeDungeonSize = builder.translation("config.dimdungeons.themeDungeonSize" + theme).define("themeDungeonSize" + theme, DEFAULT_THEME_DUNGEON_SIZE);
+	    builder.pop();
+	    allThemeConfigs.add(theme - 1, theme1);
+
+	    // room generation for theme2
+	    ThemeConfigStructure theme2 = new ThemeConfigStructure();
+	    theme = 2;
+	    builder.comment("Settings for Theme " + theme).push("dungeonTheme" + theme);
+	    theme2.themeEntrances = builder.translation("config.dimdungeons.themeEntrances" + theme).define("themeEntrances" + theme, makeDefaultThemeRoomSet(theme, "entrance", 4));
+	    theme2.themeFourways = builder.translation("config.dimdungeons.themeFourways" + theme).define("themeFourways" + theme, makeDefaultThemeRoomSetAlternate(theme, 32));
+	    theme2.themeThreeways = builder.translation("config.dimdungeons.basicThreeways" + theme).define("themeThreeways" + theme, makeDefaultThemeRoomSetAlternate(theme, 32));
+	    theme2.themeHallways = builder.translation("config.dimdungeons.basicHallways" + theme).define("themeHallways" + theme, makeDefaultThemeRoomSetAlternate(theme, 32));
+	    theme2.themeCorners = builder.translation("config.dimdungeons.basicCorners" + theme).define("themeCorners" + theme, makeDefaultThemeRoomSetAlternate(theme, 32));
+	    theme2.themeEnds = builder.translation("config.dimdungeons.basicEnds" + theme).define("themeEnds" + theme, makeDefaultThemeRoomSetAlternate(theme, 32));
+	    theme2.themeEnemySet1 = builder.translation("config.dimdungeons.basicEnemySet1_" + theme).define("themeEnemySet1_" + theme, defaultBasicEnemySet1());
+	    theme2.themeEnemySet2 = builder.translation("config.dimdungeons.basicEnemySet2_" + theme).define("themeEnemySet2_" + theme, defaultBasicEnemySet2());
+	    theme2.themeEnemyHealthScaling = builder.translation("config.dimdungeons.themeEnemyHealthScaling" + theme).define("themeEnemyHealthScaling" + theme, 1.0);
+	    theme2.themeDungeonSize = builder.translation("config.dimdungeons.themeDungeonSize" + theme).define("themeDungeonSize" + theme, DEFAULT_THEME_DUNGEON_SIZE);
+	    builder.pop();
+	    allThemeConfigs.add(theme - 1, theme2);
+
+	    // handle each unused theme with a separate section in a loop
+	    for (int i = 3; i <= MAXIMUM_NUMBER_OF_THEMES; i++)
 	    {
-		int numEntrances = 3;
-		int numOtherRooms = 6;
-		if (i > DEFAULT_NUMBER_OF_THEMES)
-		{
-		    numEntrances = 0;
-		    numOtherRooms = 0;
-		}
+		int numEntrances = 0;
+		int numOtherRooms = 0;
 
 		ThemeConfigStructure temp = new ThemeConfigStructure();
 		builder.comment("Settings for Theme " + i).push("dungeonTheme" + i);
@@ -1144,7 +1196,6 @@ public class DungeonConfig
 	logLevel = SERVER.logLevel.get();
 	worldborderToRespect = SERVER.worldborderToRespect.get();
 	chanceForThemeKeys = SERVER.chanceForThemeKeys.get();
-	numberOfThemes = SERVER.numberOfThemes.get();
 	blockBreakWhitelist = SERVER.breakingWhitelist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
 	blockInteractBlacklist = SERVER.interactionBlacklist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
 
@@ -1170,6 +1221,7 @@ public class DungeonConfig
 	advancedEnemySet2 = COMMON.advancedEnemySet2.get();
 	basicEnemyHealthScaling = COMMON.basicEnemyHealthScaling.get();
 	advancedEnemyHealthScaling = COMMON.advancedEnemyHealthScaling.get();
+	numberOfThemes = COMMON.numberOfThemes.get();
 
 	// refresh all theme configs
 	themeSettings = new ArrayList<ThemeStructure>();
