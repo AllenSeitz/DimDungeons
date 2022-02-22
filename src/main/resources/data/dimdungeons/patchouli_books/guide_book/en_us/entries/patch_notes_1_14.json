@@ -1,0 +1,12 @@
+{
+    "name": "Version 1.14.0",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 100,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Added a second themed dungeon.$"
+        }		
+    ]
+}
