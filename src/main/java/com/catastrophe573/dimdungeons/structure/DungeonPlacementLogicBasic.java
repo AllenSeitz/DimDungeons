@@ -1,5 +1,6 @@
 package com.catastrophe573.dimdungeons.structure;
 
+import java.util.List;
 import java.util.Random;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
@@ -14,6 +15,7 @@ import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonRoom;
 import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
+import com.google.common.collect.Lists;
 
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
@@ -105,6 +107,28 @@ public class DungeonPlacementLogicBasic
 		    {
 			DimDungeons.logMessageError("DIMDUNGEONS ERROR UNABLE TO PLACE STRUCTURE: " + nextRoom.structure);
 		    }
+
+		    // place barriers all around this room, except in chunks that have a room
+		    // it is intentional to place barriers one chunk out of bounds
+		    // this was briefly tested, then removed for being too slow
+		    /*
+		    if (i == 0 || !dbl.finalLayout[i - 1][j].hasRoom())
+		    {
+			fillChunkWithBarrier(new ChunkPos(((int) x / 16) + (i - 1) + 4, ((int) z / 16) + j + 4), world);
+		    }
+		    if (i == 7 || !dbl.finalLayout[i + 1][j].hasRoom())
+		    {
+			fillChunkWithBarrier(new ChunkPos(((int) x / 16) + (i + 1) + 4, ((int) z / 16) + j + 4), world);
+		    }
+		    if (j == 0 || !dbl.finalLayout[i][j - 1].hasRoom())
+		    {
+			fillChunkWithBarrier(new ChunkPos(((int) x / 16) + i + 4, ((int) z / 16) + (j - 1) + 4), world);
+		    }
+		    if (j == 7 || !dbl.finalLayout[i][j + 1].hasRoom())
+		    {
+			fillChunkWithBarrier(new ChunkPos(((int) x / 16) + i + 4, ((int) z / 16) + (j + 1) + 4), world);
+		    }
+		    //*/
 		}
 	    }
 	}
@@ -218,6 +242,39 @@ public class DungeonPlacementLogicBasic
 	    }
 	}
 	return success;
+    }
+
+    public static void fillChunkWithBarrier(ChunkPos cpos, ServerLevel world)
+    {
+	BlockPos position = new BlockPos(cpos.getMinBlockX(), 50, cpos.getMinBlockZ());
+	BoundingBox box = new BoundingBox(position.getX(), 50, position.getZ(), position.getX() + 15, 255, position.getZ() + 15);
+
+	fillBlocks(world, box, Blocks.BARRIER.defaultBlockState());
+    }
+
+    // used by the above fillChunkWithBarrier()
+    // this function assumes that every block being replaced is air
+    private static void fillBlocks(ServerLevel serverlevel, BoundingBox p_137387_, BlockState newBlock)
+    {
+	List<BlockPos> list = Lists.newArrayList();
+
+	for (BlockPos blockpos : BlockPos.betweenClosed(p_137387_.minX(), p_137387_.minY(), p_137387_.minZ(), p_137387_.maxX(), p_137387_.maxY(), p_137387_.maxZ()))
+	{
+	    //BlockEntity blockentity = serverlevel.getBlockEntity(blockpos);
+	    //Clearable.tryClear(blockentity);
+	    if (serverlevel.setBlock(blockpos, newBlock, 2))
+	    {
+		list.add(blockpos.immutable());
+	    }
+	}
+
+	/*
+	for (BlockPos blockpos1 : list)
+	{
+	    Block block = serverlevel.getBlockState(blockpos1).getBlock();
+	    serverlevel.blockUpdated(blockpos1, block);
+	}
+	*/
     }
 
     // another debugging function
