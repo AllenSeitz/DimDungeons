@@ -562,7 +562,10 @@ public class DungeonPlacementLogicAdvanced
 	Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, MobSpawnType.STRUCTURE, true, true);
 
 	TranslatableComponent fancyName = new TranslatableComponent("enemy.dimdungeons." + resourceLocation + "2");
-	mob.setCustomName(fancyName);
+	if (!(fancyName == null || fancyName.getString().contains("enemy.dimdungeons.")))
+	{
+	    mob.setCustomName(fancyName);
+	}
 	mob.moveTo(pos, 0.0F, 0.0F);
 
 	if (mob instanceof Mob)
