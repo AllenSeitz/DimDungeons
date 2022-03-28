@@ -18,6 +18,9 @@ public class DungeonGenData
 
     // this is derived from the key, but stored here for convenience. remember theme < 1 means no theme
     public int dungeonTheme = -1;
+    
+    // this is derived from the theme, but also stored here for convenience. (TODO: make this an enum)
+    public int layoutType = 0;
 
     DungeonGenData()
     {

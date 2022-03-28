@@ -79,7 +79,16 @@ public class DungeonPlacementLogicBasic
 	DimDungeons.logMessageInfo("DIMDUNGEONS START BASIC STRUCTURE at " + x + ", " + z);
 
 	// this is the data structure for an entire dungeon
-	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.BASIC, genData.dungeonTheme);
+	DungeonBuilderLogic dbl;
+
+	if (genData.dungeonTheme == 2)
+	{
+	    dbl = new DungeonBuilderLogicThemeOpen(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.BASIC, genData.dungeonTheme);
+	}
+	else
+	{
+	    dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.BASIC, genData.dungeonTheme);
+	}
 	int dungeonSize = DungeonConfig.DEFAULT_BASIC_DUNGEON_SIZE;
 	if (genData.dungeonTheme > 0)
 	{
@@ -112,23 +121,13 @@ public class DungeonPlacementLogicBasic
 		    // it is intentional to place barriers one chunk out of bounds
 		    // this was briefly tested, then removed for being too slow
 		    /*
-		    if (i == 0 || !dbl.finalLayout[i - 1][j].hasRoom())
-		    {
-			fillChunkWithBarrier(new ChunkPos(((int) x / 16) + (i - 1) + 4, ((int) z / 16) + j + 4), world);
-		    }
-		    if (i == 7 || !dbl.finalLayout[i + 1][j].hasRoom())
-		    {
-			fillChunkWithBarrier(new ChunkPos(((int) x / 16) + (i + 1) + 4, ((int) z / 16) + j + 4), world);
-		    }
-		    if (j == 0 || !dbl.finalLayout[i][j - 1].hasRoom())
-		    {
-			fillChunkWithBarrier(new ChunkPos(((int) x / 16) + i + 4, ((int) z / 16) + (j - 1) + 4), world);
-		    }
-		    if (j == 7 || !dbl.finalLayout[i][j + 1].hasRoom())
-		    {
-			fillChunkWithBarrier(new ChunkPos(((int) x / 16) + i + 4, ((int) z / 16) + (j + 1) + 4), world);
-		    }
-		    //*/
+		     * if (i == 0 || !dbl.finalLayout[i - 1][j].hasRoom()) { fillChunkWithBarrier(new ChunkPos(((int) x / 16) + (i - 1) + 4,
+		     * ((int) z / 16) + j + 4), world); } if (i == 7 || !dbl.finalLayout[i + 1][j].hasRoom()) { fillChunkWithBarrier(new
+		     * ChunkPos(((int) x / 16) + (i + 1) + 4, ((int) z / 16) + j + 4), world); } if (j == 0 || !dbl.finalLayout[i][j -
+		     * 1].hasRoom()) { fillChunkWithBarrier(new ChunkPos(((int) x / 16) + i + 4, ((int) z / 16) + (j - 1) + 4), world); } if
+		     * (j == 7 || !dbl.finalLayout[i][j + 1].hasRoom()) { fillChunkWithBarrier(new ChunkPos(((int) x / 16) + i + 4, ((int) z
+		     * / 16) + (j + 1) + 4), world); } //
+		     */
 		}
 	    }
 	}
@@ -269,12 +268,9 @@ public class DungeonPlacementLogicBasic
 	}
 
 	/*
-	for (BlockPos blockpos1 : list)
-	{
-	    Block block = serverlevel.getBlockState(blockpos1).getBlock();
-	    serverlevel.blockUpdated(blockpos1, block);
-	}
-	*/
+	 * for (BlockPos blockpos1 : list) { Block block = serverlevel.getBlockState(blockpos1).getBlock();
+	 * serverlevel.blockUpdated(blockpos1, block); }
+	 */
     }
 
     // another debugging function
@@ -454,7 +450,10 @@ public class DungeonPlacementLogicBasic
 	Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, MobSpawnType.STRUCTURE, true, true);
 
 	TranslatableComponent fancyName = new TranslatableComponent("enemy.dimdungeons." + resourceLocation);
-	mob.setCustomName(fancyName);
+	if (!(fancyName == null || fancyName.getString().contains("enemy.dimdungeons.")))
+	{
+	    mob.setCustomName(fancyName);
+	}
 	mob.moveTo(pos, 0.0F, 0.0F);
 
 	if (mob instanceof Mob)

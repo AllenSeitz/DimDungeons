@@ -23,7 +23,7 @@ public class DungeonBuilderLogic
     // an enumeration of dungeon types
     enum DungeonType
     {
-	BASIC, ADVANCED
+	BASIC, ADVANCED, THEME_OPEN
     };
 
     // dungeons are a maximum of 8x8 chunks (always much smaller) where each chunk is a structure at a specific rotation
