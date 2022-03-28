@@ -271,6 +271,8 @@
     "enemy.dimdungeons.minecraft:hoglin": "Hoglin",
     "enemy.dimdungeons.minecraft:piglin": "Piglin",
     "enemy.dimdungeons.minecraft:piglin_brute": "Brute",
+    "enemy.dimdungeons.minecraft:phantom": "Phantom",
+    "enemy.dimdungeons.minecraft:magma_cube": "Magma Cube",
     
     "enemy.dimdungeons.minecraft:enderman2": "Lunarian",
     "enemy.dimdungeons.minecraft:guardian2": "Hunter",
@@ -287,5 +289,7 @@
     "enemy.dimdungeons.minecraft:vindicator2": "Conqueror",
     "enemy.dimdungeons.minecraft:hoglin2": "Nether Boar",
     "enemy.dimdungeons.minecraft:piglin2": "Piglin Captain",
-    "enemy.dimdungeons.minecraft:piglin_brute2": "Bastion King"    
+    "enemy.dimdungeons.minecraft:piglin_brute2": "Bastion King",
+    "enemy.dimdungeons.minecraft:phantom2": "Nightmare",
+    "enemy.dimdungeons.minecraft:magma_cube": "Nether Slime"    
 }

@@ -982,6 +982,10 @@ public class DungeonConfig
 	{
 	    return Lists.newArrayList("minecraft:skeleton", "minecraft:piglin", "minecraft:blaze");
 	}
+	if (themeNum == 2)
+	{
+	    return Lists.newArrayList("minecraft:husk", "minecraft:pillager", "minecraft:magma_cube");
+	}
 
 	return defaultBasicEnemySet1();
     }
@@ -993,6 +997,10 @@ public class DungeonConfig
 	if (themeNum == 1)
 	{
 	    return Lists.newArrayList("minecraft:wither_skeleton", "minecraft:blaze", "minecraft:wither_skeleton", "minecraft:blaze", "minecraft:hoglin", "minecraft:piglin_brute");
+	}
+	if (themeNum == 2)
+	{
+	    return Lists.newArrayList("minecraft:wither_skeleton", "minecraft:blaze", "minecraft:wither_skeleton", "minecraft:blaze");
 	}
 
 	return defaultBasicEnemySet2();
@@ -1139,13 +1147,13 @@ public class DungeonConfig
 	    theme = 2;
 	    builder.comment("Settings for Theme " + theme).push("dungeonTheme" + theme);
 	    theme2.themeEntrances = builder.translation("config.dimdungeons.themeEntrances" + theme).define("themeEntrances" + theme, makeDefaultThemeRoomSet(theme, "entrance", 4));
-	    theme2.themeFourways = builder.translation("config.dimdungeons.themeFourways" + theme).define("themeFourways" + theme, makeDefaultThemeRoomSetAlternate(theme, 32));
-	    theme2.themeThreeways = builder.translation("config.dimdungeons.basicThreeways" + theme).define("themeThreeways" + theme, makeDefaultThemeRoomSetAlternate(theme, 32));
-	    theme2.themeHallways = builder.translation("config.dimdungeons.basicHallways" + theme).define("themeHallways" + theme, makeDefaultThemeRoomSetAlternate(theme, 32));
-	    theme2.themeCorners = builder.translation("config.dimdungeons.basicCorners" + theme).define("themeCorners" + theme, makeDefaultThemeRoomSetAlternate(theme, 32));
-	    theme2.themeEnds = builder.translation("config.dimdungeons.basicEnds" + theme).define("themeEnds" + theme, makeDefaultThemeRoomSetAlternate(theme, 32));
-	    theme2.themeEnemySet1 = builder.translation("config.dimdungeons.basicEnemySet1_" + theme).define("themeEnemySet1_" + theme, defaultBasicEnemySet1());
-	    theme2.themeEnemySet2 = builder.translation("config.dimdungeons.basicEnemySet2_" + theme).define("themeEnemySet2_" + theme, defaultBasicEnemySet2());
+	    theme2.themeFourways = builder.translation("config.dimdungeons.themeFourways" + theme).define("themeFourways" + theme, makeDefaultThemeRoomSetAlternate(theme, 31));
+	    theme2.themeThreeways = builder.translation("config.dimdungeons.basicThreeways" + theme).define("themeThreeways" + theme, makeDefaultThemeRoomSet(theme, "threeway", 1));
+	    theme2.themeHallways = builder.translation("config.dimdungeons.basicHallways" + theme).define("themeHallways" + theme, makeDefaultThemeRoomSet(theme, "hallway", 1));
+	    theme2.themeCorners = builder.translation("config.dimdungeons.basicCorners" + theme).define("themeCorners" + theme, makeDefaultThemeRoomSet(theme, "corner", 1));
+	    theme2.themeEnds = builder.translation("config.dimdungeons.basicEnds" + theme).define("themeEnds" + theme, makeDefaultThemeRoomSet(theme, "end", 1));
+	    theme2.themeEnemySet1 = builder.translation("config.dimdungeons.basicEnemySet1_" + theme).define("themeEnemySet1_" + theme, defaultThemeEnemySet1(theme));
+	    theme2.themeEnemySet2 = builder.translation("config.dimdungeons.basicEnemySet2_" + theme).define("themeEnemySet2_" + theme, defaultThemeEnemySet2(theme));
 	    theme2.themeEnemyHealthScaling = builder.translation("config.dimdungeons.themeEnemyHealthScaling" + theme).define("themeEnemyHealthScaling" + theme, 1.0);
 	    theme2.themeDungeonSize = builder.translation("config.dimdungeons.themeDungeonSize" + theme).define("themeDungeonSize" + theme, DEFAULT_THEME_DUNGEON_SIZE);
 	    builder.pop();
