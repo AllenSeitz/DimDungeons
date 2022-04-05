@@ -16,12 +16,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -43,7 +43,7 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 
     public static final int BELL_COOLDOWN_TICKS = 60;
 
-    public static final Tag.Named<Block> tag_secret_chime = BlockTags.bind("dimdungeons:dimdungeons_secret_chime_blocks");
+    public static final TagKey<Block> tag_secret_chime = ForgeRegistries.BLOCKS.tags().createTagKey(new ResourceLocation(DimDungeons.MOD_ID, "secret_chime_blocks"));
 
     public ItemSecretBell(/* IItemTier tier, */ Item.Properties builderIn)
     {
@@ -317,7 +317,7 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 		    {
 			DimDungeons.logMessageInfo("BLOCK: " + bs.getBlock().getRegistryName().getPath());
 		    }
-		    if (bs != null && bs.getBlock().getTags().contains(new ResourceLocation(DimDungeons.MOD_ID, "dimdungeons_secret_chime_blocks")))
+		    if (bs != null && ForgeRegistries.BLOCKS.tags().getTag(tag_secret_chime).contains(bs.getBlock()))
 		    {
 			// the bell just rings for any tagged blocks (chests, barrels, etc)
 			// no more checking for loot tables
