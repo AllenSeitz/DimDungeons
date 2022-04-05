@@ -8,10 +8,12 @@ import java.util.concurrent.Executor;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicAdvanced;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicBasic;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.world.level.NoiseColumn;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelHeightAccessor;
@@ -21,6 +23,7 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
+import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.level.levelgen.GenerationStep.Carving;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.Heightmap.Types;
@@ -34,14 +37,19 @@ import net.minecraft.world.level.biome.FixedBiomeSource;
 
 public final class DungeonChunkGenerator extends ChunkGenerator
 {
-    public static final Codec<FlatLevelSource> myCodec = FlatLevelGeneratorSettings.CODEC.fieldOf("settings").xmap(FlatLevelSource::new, FlatLevelSource::settings).codec();
+    // copied from FlatLevelSource
+    public static final Codec<FlatLevelSource> myCodec = RecordCodecBuilder.create((p_204551_) ->
+    {
+	return commonCodec(p_204551_).and(FlatLevelGeneratorSettings.CODEC.fieldOf("settings").forGetter(FlatLevelSource::settings)).apply(p_204551_, p_204551_.stable(FlatLevelSource::new));
+    });
+
     private final FlatLevelGeneratorSettings settings;
     private long worldSeed = 0;
 
-    public DungeonChunkGenerator(FlatLevelGeneratorSettings settings)
+    public DungeonChunkGenerator(Registry<StructureSet> p_209099_, FlatLevelGeneratorSettings p_209100_)
     {
-	super(new FixedBiomeSource(settings.getBiome()), new FixedBiomeSource(settings.getBiome()), settings.structureSettings(), 0L);
-	this.settings = settings;
+	super(p_209099_, p_209100_.structureOverrides(), new FixedBiomeSource(p_209100_.getBiomeFromSettings()), new FixedBiomeSource(p_209100_.getBiome()), 0L);
+	this.settings = p_209100_;
     }
 
     protected Codec<? extends ChunkGenerator> codec()
@@ -205,7 +213,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
     {
 	ServerLevel world = p_187697_.getLevel();
 	makeBase(world, p_187699_);
-	
+
 	// no decoration! no structures!
     }
 
@@ -231,5 +239,11 @@ public final class DungeonChunkGenerator extends ChunkGenerator
     public int getSeaLevel()
     {
 	return -64;
+    }
+
+    @Override
+    public void addDebugScreenInfo(List<String> p_208054_, BlockPos p_208055_)
+    {
+	// this is required in 1.18.2
     }
 }

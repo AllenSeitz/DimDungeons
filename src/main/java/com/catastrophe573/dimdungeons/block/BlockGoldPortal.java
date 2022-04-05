@@ -21,6 +21,7 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
@@ -40,6 +41,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class BlockGoldPortal extends BaseEntityBlock
@@ -49,6 +51,8 @@ public class BlockGoldPortal extends BaseEntityBlock
     public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
     protected static final VoxelShape X_AABB = Block.box(0.0D, 0.0D, 6.0D, 16.0D, 16.0D, 10.0D);
     protected static final VoxelShape Z_AABB = Block.box(6.0D, 0.0D, 0.0D, 10.0D, 16.0D, 16.0D);
+
+    public static final TagKey<Block> tag_portal_frame_blocks = ForgeRegistries.BLOCKS.tags().createTagKey(new ResourceLocation(DimDungeons.MOD_ID, "portal_frame_blocks"));
 
     public BlockGoldPortal()
     {
@@ -354,8 +358,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 
     static public boolean isValidPortalFrameBlock(Block b)
     {
-	//Tag<Block> tag = BlockTags.getAllTags().getTagOrEmpty(new ResourceLocation(DimDungeons.MOD_ID, "dimdungeons_portal_frame_blocks"));
-	return b.getTags().contains(new ResourceLocation(DimDungeons.MOD_ID, "dimdungeons_portal_frame_blocks"));
+	return ForgeRegistries.BLOCKS.tags().getTag(tag_portal_frame_blocks).contains(b);
     }
 
     // just get the block states and keep it simple

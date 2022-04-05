@@ -14,6 +14,6 @@
   "fixed_time": 4000,
   "height": 256,
   "min_y": 0,
-  "infiniburn": "minecraft:infiniburn_overworld",
+  "infiniburn": "#minecraft:infiniburn_overworld",
   "effects": "minecraft:overworld"
 }
