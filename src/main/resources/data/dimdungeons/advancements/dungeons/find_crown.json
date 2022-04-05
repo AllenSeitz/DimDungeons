@@ -1,13 +1,17 @@
 {
 	"parent": "dimdungeons:dungeons/enter_basic_dungeon",
-	"display": {
-		"icon": {
+	"display":
+	{
+		"icon":
+		{
 			"item": "dimdungeons:block_portal_crown"
 		},
-		"title": {
+		"title":
+		{
 			"translate": "advancements.dimdungeons.dungeons.find_crown.title"
 		},
-		"description": {
+		"description":
+		{
 			"translate": "advancements.dimdungeons.dungeons.find_crown.description"
 		},
 		"frame": "task",
@@ -22,19 +26,17 @@
 			"trigger": "minecraft:inventory_changed",
 			"conditions":
 			{
-				"items": 
+				"items":
 				[
 					{
-						"item": "dimdungeons:block_portal_crown",
-						"count": { "min": 2 }
+						"items": ["dimdungeons:block_portal_crown"],
+						"count":
+						{
+							"min": 2
+						}
 					}
 				]
 			}
 		}
-	},
-	"requirements": [
-		[
-			"crown"
-		]
-	]
+	}
 }

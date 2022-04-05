@@ -1,0 +1,75 @@
+{
+	"parent": "dimdungeons:dungeons/root",
+	"display":
+	{
+		"icon":
+		{
+			"item": "dimdungeons:block_key_charger"
+		},
+		"title": 
+		{
+			"translate": "advancements.dimdungeons.dungeons.find_key_charger.title"
+		},
+		"description": 
+		{
+			"translate": "advancements.dimdungeons.dungeons.find_key_charger.description"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": true
+	},
+	"criteria": 
+	{
+		"charger_1":
+		{
+			"trigger": "minecraft:inventory_changed",
+			"conditions":
+			{
+				"items":
+				[
+					{
+						"items": ["dimdungeons:block_key_charger"],
+						"count": { "min": 1 }
+					}
+				]
+			}
+		},
+		"charger_2": 
+		{
+			"trigger": "minecraft:inventory_changed",
+			"conditions":
+			{
+				"items":
+				[
+					{
+						"items": ["dimdungeons:block_key_charger_used"],
+						"count": { "min": 1 }
+					}
+				]
+			}
+		},
+		"charger_3":
+		{
+			"trigger": "minecraft:inventory_changed",
+			"conditions":
+			{
+				"items":
+				[
+					{
+						"items": ["dimdungeons:block_key_charger_damaged"],
+						"count": { "min": 1 }
+					}
+				]
+			}
+		}
+	},
+	"requirements": 
+	[
+        [
+            "charger_1",
+            "charger_2",
+            "charger_3"
+        ]
+    ]
+}

@@ -1,13 +1,17 @@
 {
 	"parent": "dimdungeons:dungeons/activate_basic_key",
-	"display": {
-		"icon": {
+	"display":
+	{
+		"icon":
+		{
 			"item": "dimdungeons:block_gold_portal"
 		},
-		"title": {
+		"title": 
+		{
 			"translate": "advancements.dimdungeons.dungeons.enter_basic_dungeon.title"
 		},
-		"description": {
+		"description": 
+		{
 			"translate": "advancements.dimdungeons.dungeons.enter_basic_dungeon.description"
 		},
 		"frame": "goal",
@@ -15,15 +19,19 @@
 		"announce_to_chat": true,
 		"hidden": false
 	},
-	"criteria": {
-		"entered_dungeon": {
+	"criteria": 
+	{
+		"entered_dungeon": 
+		{
 			"trigger": "minecraft:changed_dimension",
-			"conditions": {
+			"conditions": 
+			{
 				"to": "dimdungeons:dungeon_dimension"
 			}
 		}
 	},
-	"requirements": [
+	"requirements": 
+	[
 		[
 			"entered_dungeon"
 		]

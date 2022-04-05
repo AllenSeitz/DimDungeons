@@ -1,14 +1,18 @@
 {
 	"parent": "dimdungeons:dungeons/root",
-	"display": {
-		"icon": {
+	"display":
+	{
+		"icon":
+		{
 			"item": "dimdungeons:item_secret_bell",
 			"nbt": "{upgrade:2}"
 		},
-		"title": {
+		"title":
+		{
 			"translate": "advancements.dimdungeons.dungeons.find_bell_2.title"
 		},
-		"description": {
+		"description":
+		{
 			"translate": "advancements.dimdungeons.dungeons.find_bell_2.description"
 		},
 		"frame": "task",
@@ -16,8 +20,9 @@
 		"announce_to_chat": false,
 		"hidden": true
 	},
-	"criteria": {
-		"bell": 
+	"criteria":
+	{
+		"find_bell_2": 
 		{
 			"trigger": "minecraft:inventory_changed",
 			"conditions":
@@ -33,9 +38,10 @@
 			}
 		}
 	},
-	"requirements": [
+	"requirements":
+	[
 		[
-			"bell"
+			"find_bell_2"
 		]
 	]
 }
