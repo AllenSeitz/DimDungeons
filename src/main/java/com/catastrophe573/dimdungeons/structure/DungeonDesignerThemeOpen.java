@@ -4,9 +4,9 @@ import java.util.Random;
 
 import net.minecraft.world.level.block.Rotation;
 
-public class DungeonBuilderLogicThemeOpen extends DungeonBuilderLogic
+public class DungeonDesignerThemeOpen extends DungeonDesigner
 {
-    public DungeonBuilderLogicThemeOpen(Random randIn, long chunkX, long chunkZ, DungeonType type, int theme)
+    public DungeonDesignerThemeOpen(Random randIn, long chunkX, long chunkZ, DungeonType type, int theme)
     {
 	super(randIn, chunkX, chunkZ, type, theme);
     }

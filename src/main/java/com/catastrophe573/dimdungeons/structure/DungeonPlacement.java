@@ -10,9 +10,9 @@ import com.catastrophe573.dimdungeons.block.TileEntityLocalTeleporter;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
-import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonRoom;
-import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonType;
-import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.RoomType;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonRoom;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.RoomType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
@@ -60,11 +60,11 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 
 // this class takes the dungeon layout which is designed by DungeonBuilderLogic and actually places it in the world
-public class DungeonPlacementLogic
+public class DungeonPlacement
 {
     public static int SIGN_Y = 49; // for the slow building feature
 
-    public DungeonPlacementLogic()
+    public DungeonPlacement()
     {
     }
 
@@ -84,7 +84,7 @@ public class DungeonPlacementLogic
 	DimDungeons.logMessageInfo("DIMDUNGEONS START STRUCTURE at chunk: " + x + ", " + z);
 
 	// pick which logic and set of configs to use
-	DungeonBuilderLogic dbl;
+	DungeonDesigner dbl;
 	int dungeonSize = DungeonConfig.DEFAULT_BASIC_DUNGEON_SIZE;
 	DungeonType dungeonType = DungeonType.BASIC;
 	boolean useLarge = false;
@@ -92,20 +92,20 @@ public class DungeonPlacementLogic
 	if (genData.dungeonTheme == 2)
 	{
 	    dungeonType = DungeonType.THEME_OPEN;
-	    dbl = new DungeonBuilderLogicThemeOpen(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
+	    dbl = new DungeonDesignerThemeOpen(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
 	    dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeDungeonSize;
 	}
 	else if (z < 0)
 	{
 	    dungeonType = DungeonType.ADVANCED;
-	    dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
+	    dbl = new DungeonDesigner(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
 	    dungeonSize = DungeonConfig.DEFAULT_ADVANCED_DUNGEON_SIZE;
 	    useLarge = true;
 	}
 	else
 	{
 	    dungeonType = DungeonType.BASIC;
-	    dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
+	    dbl = new DungeonDesigner(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
 	    if (genData.dungeonTheme > 0)
 	    {
 		dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeDungeonSize;
@@ -169,7 +169,7 @@ public class DungeonPlacementLogic
 	DimDungeons.logMessageInfo("DIMDUNGEONS START STRUCTURE at chunk: " + x + ", " + z);
 
 	// pick which logic and set of configs to use
-	DungeonBuilderLogic dbl;
+	DungeonDesigner dbl;
 	int dungeonSize = DungeonConfig.DEFAULT_BASIC_DUNGEON_SIZE;
 	DungeonType dungeonType = DungeonType.BASIC;
 	boolean useLarge = false;
@@ -177,20 +177,20 @@ public class DungeonPlacementLogic
 	if (genData.dungeonTheme == 2)
 	{
 	    dungeonType = DungeonType.THEME_OPEN;
-	    dbl = new DungeonBuilderLogicThemeOpen(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
+	    dbl = new DungeonDesignerThemeOpen(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
 	    dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeDungeonSize;
 	}
 	else if (z < 0)
 	{
 	    dungeonType = DungeonType.ADVANCED;
-	    dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
+	    dbl = new DungeonDesigner(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
 	    dungeonSize = DungeonConfig.DEFAULT_ADVANCED_DUNGEON_SIZE;
 	    useLarge = true;
 	}
 	else
 	{
 	    dungeonType = DungeonType.BASIC;
-	    dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
+	    dbl = new DungeonDesigner(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
 	    if (genData.dungeonTheme > 0)
 	    {
 		dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeDungeonSize;
@@ -338,7 +338,7 @@ public class DungeonPlacementLogic
 	return success;
     }
 
-    public static void closeDoorsOnLargeRoom(ChunkPos cpos, ServerLevel world, DungeonRoom room, DungeonGenData genDat, int indexX, int indexZ, DungeonBuilderLogic dbl)
+    public static void closeDoorsOnLargeRoom(ChunkPos cpos, ServerLevel world, DungeonRoom room, DungeonGenData genDat, int indexX, int indexZ, DungeonDesigner dbl)
     {
 	BlockState fillBlock = Blocks.STONE_BRICKS.defaultBlockState();
 	BlockState airBlock = Blocks.AIR.defaultBlockState();
@@ -546,7 +546,7 @@ public class DungeonPlacementLogic
     }
 
     // another debugging function
-    public void printMap(DungeonBuilderLogic dbl)
+    public void printMap(DungeonDesigner dbl)
     {
 	for (int j = 0; j < 8; j++)
 	{

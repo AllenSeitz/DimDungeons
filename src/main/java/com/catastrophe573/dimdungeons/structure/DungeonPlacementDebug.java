@@ -7,9 +7,9 @@ import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityLocalTeleporter;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
-import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonRoom;
-import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonType;
-import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.RoomType;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonRoom;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.RoomType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
@@ -46,9 +46,9 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
 import net.minecraft.server.level.ServerLevel;
 
-public class DungeonPlacementLogicDebug
+public class DungeonPlacementDebug
 {
-    public DungeonPlacementLogicDebug()
+    public DungeonPlacementDebug()
     {
     }
 
@@ -65,53 +65,53 @@ public class DungeonPlacementLogicDebug
 	DimDungeons.logMessageInfo("DIMDUNGEONS START DEBUG STRUCTURE at " + x + ", " + z);
 
 	// this is the data structure for an entire dungeon
-	DungeonBuilderLogic dbl = new DungeonBuilderLogic(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.BASIC, genData.dungeonTheme);
+	DungeonDesigner dbl = new DungeonDesigner(world.getRandom(), entranceChunkX, entranceChunkZ, DungeonType.BASIC, genData.dungeonTheme);
 	switch (debugType)
 	{
 	case 1:
-	    DungeonBuilderTestShapes.MakeTestDungeonOne(dbl);
+	    DungeonDesignerTestShapes.MakeTestDungeonOne(dbl);
 	    break;
 	case 2:
-	    DungeonBuilderTestShapes.MakeTestDungeonTwo(dbl);
+	    DungeonDesignerTestShapes.MakeTestDungeonTwo(dbl);
 	    break;
 	case 3:
-	    DungeonBuilderTestShapes.MakeTestDungeonThree(dbl);
+	    DungeonDesignerTestShapes.MakeTestDungeonThree(dbl);
 	    break;
 	case 4:
-	    DungeonBuilderTestShapes.MakeTestDungeonFour(dbl);
+	    DungeonDesignerTestShapes.MakeTestDungeonFour(dbl);
 	    break;
 	case 5:
-	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.BASIC, RoomType.FOURWAY);
+	    DungeonDesignerTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.BASIC, RoomType.FOURWAY);
 	    break;
 	case 6:
-	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.BASIC, RoomType.THREEWAY);
+	    DungeonDesignerTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.BASIC, RoomType.THREEWAY);
 	    break;
 	case 7:
-	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.BASIC, RoomType.HALLWAY);
+	    DungeonDesignerTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.BASIC, RoomType.HALLWAY);
 	    break;
 	case 8:
-	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.BASIC, RoomType.CORNER);
+	    DungeonDesignerTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.BASIC, RoomType.CORNER);
 	    break;
 	case 9:
-	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.BASIC, RoomType.END);
+	    DungeonDesignerTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.BASIC, RoomType.END);
 	    break;
 	case 10:
-	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.FOURWAY);
+	    DungeonDesignerTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.FOURWAY);
 	    break;
 	case 11:
-	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.THREEWAY);
+	    DungeonDesignerTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.THREEWAY);
 	    break;
 	case 12:
-	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.HALLWAY);
+	    DungeonDesignerTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.HALLWAY);
 	    break;
 	case 13:
-	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.CORNER);
+	    DungeonDesignerTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.CORNER);
 	    break;
 	case 14:
-	    DungeonBuilderTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.END);
+	    DungeonDesignerTestShapes.MakeTestDungeonDynamic(dbl, DungeonType.ADVANCED, RoomType.END);
 	    break;
 	case 15:
-	    DungeonBuilderTestShapes.MakeTestDungeonForTheme(dbl, genData.dungeonTheme);
+	    DungeonDesignerTestShapes.MakeTestDungeonForTheme(dbl, genData.dungeonTheme);
 	    break;
 	}
 
@@ -251,7 +251,7 @@ public class DungeonPlacementLogicDebug
     }
 
     // another debugging function
-    public void printMap(DungeonBuilderLogic dbl)
+    public void printMap(DungeonDesigner dbl)
     {
 	for (int j = 0; j < 8; j++)
 	{

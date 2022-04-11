@@ -4,8 +4,8 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
-import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogic;
-import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicDebug;
+import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
+import com.catastrophe573.dimdungeons.structure.DungeonPlacementDebug;
 
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.server.MinecraftServer;
@@ -76,86 +76,86 @@ public class DungeonUtils
 	    String name = genData.keyItem.getHoverName().getContents();
 	    if (name.contentEquals("DebugOne"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 1, genData);
+		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 1, genData);
 		return true;
 	    }
 	    if (name.contentEquals("DebugTwo"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 2, genData);
+		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 2, genData);
 		return true;
 	    }
 	    if (name.contentEquals("DebugThree"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 3, genData);
+		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 3, genData);
 		return true;
 	    }
 	    if (name.contentEquals("DebugFour"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 4, genData);
+		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 4, genData);
 		return true;
 	    }
 	    if (name.contentEquals("bas-4"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 5, genData);
+		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 5, genData);
 		return true;
 	    }
 	    if (name.contentEquals("bas-3"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 6, genData);
+		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 6, genData);
 		return true;
 	    }
 	    if (name.contentEquals("bas-h"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 7, genData);
+		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 7, genData);
 		return true;
 	    }
 	    if (name.contentEquals("bas-c"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 8, genData);
+		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 8, genData);
 		return true;
 	    }
 	    if (name.contentEquals("bas-1"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 9, genData);
+		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 9, genData);
 		return true;
 	    }
 	    if (name.contentEquals("adv-4"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 10, genData);
+		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 10, genData);
 		return true;
 	    }
 	    if (name.contentEquals("adv-3"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 11, genData);
+		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 11, genData);
 		return true;
 	    }
 	    if (name.contentEquals("adv-h"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 12, genData);
+		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 12, genData);
 		return true;
 	    }
 	    if (name.contentEquals("adv-c"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 13, genData);
+		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 13, genData);
 		return true;
 	    }
 	    if (name.contentEquals("adv-1"))
 	    {
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 14, genData);
+		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 14, genData);
 		return true;
 	    }
 	    if (name.contains("theme-"))
 	    {
 		String themeStr = name.replaceFirst("theme-", "");
 		genData.dungeonTheme = Integer.parseUnsignedInt(themeStr);
-		DungeonPlacementLogicDebug.place(dungeonWorld, buildX, buildZ, 15, genData);
+		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 15, genData);
 		return true;
 	    }
 	}
 
 	// actually place the dungeon
-	DungeonPlacementLogic.place(dungeonWorld, buildX, buildZ, genData);
-	DungeonPlacementLogic.placeSigns(dungeonWorld, buildX, buildZ, genData);
+	DungeonPlacement.place(dungeonWorld, buildX, buildZ, genData);
+	DungeonPlacement.placeSigns(dungeonWorld, buildX, buildZ, genData);
 
 	return false;
     }

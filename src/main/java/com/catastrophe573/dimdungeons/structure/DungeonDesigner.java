@@ -12,7 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Rotation;
 
 // this class designs the dungeon layout, the grid of rooms, but leaves the actual construction to the DungeonPlacement class
-public class DungeonBuilderLogic
+public class DungeonDesigner
 {
     // an enumeration of the six room types, used internally for randomization and classification
     enum RoomType
@@ -102,7 +102,7 @@ public class DungeonBuilderLogic
     // or at least that was the intent in 1.14 anyways, but as of 1.16 dungeons are no longer built insid
     protected Random rand;
 
-    public DungeonBuilderLogic(Random randIn, long chunkX, long chunkZ, DungeonType type, int theme)
+    public DungeonDesigner(Random randIn, long chunkX, long chunkZ, DungeonType type, int theme)
     {
 	rand = randIn;
 

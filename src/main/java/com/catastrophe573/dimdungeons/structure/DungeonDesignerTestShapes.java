@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.catastrophe573.dimdungeons.DungeonConfig;
-import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.DungeonType;
-import com.catastrophe573.dimdungeons.structure.DungeonBuilderLogic.RoomType;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.RoomType;
 import com.google.common.collect.Lists;
 
 import net.minecraft.world.level.block.Rotation;
 
 // this class exists to produce some hardcoded test dungeons for me to test with
-public class DungeonBuilderTestShapes
+public class DungeonDesignerTestShapes
 {
-    public static void MakeTestDungeonOne(DungeonBuilderLogic dbl)
+    public static void MakeTestDungeonOne(DungeonDesigner dbl)
     {
 	for (int i = 1; i <= 8; i++)
 	{
@@ -57,7 +57,7 @@ public class DungeonBuilderTestShapes
 	dbl.placeRoomShape(4, 7, "entrance_9", RoomType.ENTRANCE, Rotation.NONE);
     }
 
-    public static void MakeTestDungeonTwo(DungeonBuilderLogic dbl)
+    public static void MakeTestDungeonTwo(DungeonDesigner dbl)
     {
 	for (int i = 1; i <= 8; i++)
 	{
@@ -96,7 +96,7 @@ public class DungeonBuilderTestShapes
 	dbl.placeRoomShape(4, 7, "entrance_9", RoomType.ENTRANCE, Rotation.NONE);
     }
 
-    public static void MakeTestDungeonThree(DungeonBuilderLogic dbl)
+    public static void MakeTestDungeonThree(DungeonDesigner dbl)
     {
 	for (int i = 1; i <= 4; i++)
 	{
@@ -137,7 +137,7 @@ public class DungeonBuilderTestShapes
 	dbl.placeRoomShape(4, 7, "entrance_9", RoomType.ENTRANCE, Rotation.NONE);
     }
 
-    public static void MakeTestDungeonFour(DungeonBuilderLogic dbl)
+    public static void MakeTestDungeonFour(DungeonDesigner dbl)
     {
 	dbl.placeRoomShape(0, 0, "redspuzzle_4", RoomType.END, Rotation.NONE);
 	dbl.placeRoomShape(1, 0, "morethree_4", RoomType.THREEWAY, Rotation.NONE);
@@ -172,7 +172,7 @@ public class DungeonBuilderTestShapes
 	dbl.placeRoomShape(4, 7, "entrance_9", RoomType.ENTRANCE, Rotation.NONE);
     }
 
-    public static void MakeTestDungeonDynamic(DungeonBuilderLogic dbl, DungeonType tier, RoomType type)
+    public static void MakeTestDungeonDynamic(DungeonDesigner dbl, DungeonType tier, RoomType type)
     {
 	ArrayList<String> allrooms = Lists.newArrayList();
 	List<? extends List<String>> theListWeCareAbout = DungeonConfig.basicEntrances;
@@ -248,7 +248,7 @@ public class DungeonBuilderTestShapes
 	}
     }
 
-    public static void MakeTestDungeonForTheme(DungeonBuilderLogic dbl, int theme)
+    public static void MakeTestDungeonForTheme(DungeonDesigner dbl, int theme)
     {
 	ArrayList<String> allrooms = Lists.newArrayList();
 

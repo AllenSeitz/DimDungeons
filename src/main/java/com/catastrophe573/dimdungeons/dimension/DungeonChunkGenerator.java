@@ -5,8 +5,7 @@ import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicAdvanced;
-import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicBasic;
+import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -147,7 +146,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	randomSeed.setSeed((worldSeed + (long) (x * x * 4987142) + (long) (x * 5947611) + (long) (z * z) * 4392871L + (long) (z * 389711) ^ worldSeed));
 
 	// first generate a superflat world - sandstone where dungeons can appear, and void otherwise
-	if (DungeonPlacementLogicBasic.isDungeonChunk(x, z) || DungeonPlacementLogicAdvanced.isDungeonChunk(x, z))
+	if (DungeonPlacement.isDungeonChunk(x, z))
 	{
 	    for (int px = 0; px < 16; px++)
 	    {
@@ -162,7 +161,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 			else if (py < 50)
 			{
 			    // for debugging mostly but it also kind of looks good when you're in creative mode
-			    if (DungeonPlacementLogicBasic.isEntranceChunk(x, z) || DungeonPlacementLogicAdvanced.isEntranceChunk(x, z))
+			    if (DungeonPlacement.isEntranceChunk(x, z))
 			    {
 				chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BLACKSTONE.defaultBlockState(), false);
 			    }
