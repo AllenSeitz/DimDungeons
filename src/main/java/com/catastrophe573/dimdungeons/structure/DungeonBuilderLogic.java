@@ -11,7 +11,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Rotation;
 
-// this class is used by the DungeonChunkGenerator to design dungeons
+// this class designs the dungeon layout, the grid of rooms, but leaves the actual construction to the DungeonPlacement class
 public class DungeonBuilderLogic
 {
     // an enumeration of the six room types, used internally for randomization and classification
@@ -106,7 +106,7 @@ public class DungeonBuilderLogic
     {
 	rand = randIn;
 
-	if (type == DungeonType.BASIC && (theme > 0 && theme <= DungeonConfig.themeSettings.size()))
+	if (theme > 0 && theme <= DungeonConfig.themeSettings.size())
 	{
 	    // pick one candidate from each pool
 	    for (int i = 0; i < DungeonConfig.themeSettings.get(theme - 1).themeEntrances.size(); i++)

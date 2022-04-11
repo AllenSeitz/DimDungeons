@@ -4,8 +4,7 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
-import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicAdvanced;
-import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicBasic;
+import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogic;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementLogicDebug;
 
 import net.minecraft.world.level.block.state.BlockState;
@@ -155,20 +154,8 @@ public class DungeonUtils
 	}
 
 	// actually place the dungeon
-	if (DungeonPlacementLogicBasic.isEntranceChunk(entranceX / 16, entranceZ / 16))
-	{
-	    DungeonPlacementLogicBasic.place(dungeonWorld, buildX, buildZ, genData);
-	    return true;
-	}
-	else if (DungeonPlacementLogicAdvanced.isEntranceChunk(entranceX / 16, entranceZ / 16))
-	{
-	    DungeonPlacementLogicAdvanced.place(dungeonWorld, buildX, buildZ, genData);
-	    return true;
-	}
-	else
-	{
-	    DimDungeons.logMessageError("DIMDUNGEONS FATAL ERROR: trying to build a dungeon at coordinates where no dungeon is supposed to start?");
-	}
+	DungeonPlacementLogic.place(dungeonWorld, buildX, buildZ, genData);
+	DungeonPlacementLogic.placeSigns(dungeonWorld, buildX, buildZ, genData);
 
 	return false;
     }
