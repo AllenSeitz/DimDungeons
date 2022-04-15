@@ -26,54 +26,6 @@ public class DungeonDesigner
 	BASIC, ADVANCED, THEME_OPEN
     };
 
-    // dungeons are a maximum of 8x8 chunks (always much smaller) where each chunk is a structure at a specific rotation
-    public class DungeonRoom
-    {
-	public String structure;
-	public Rotation rotation;
-	public RoomType type;
-
-	DungeonRoom()
-	{
-	    structure = "";
-	    rotation = Rotation.NONE;
-	    type = RoomType.NONE;
-	}
-
-	public boolean hasRoom()
-	{
-	    return type != RoomType.NONE;
-	}
-
-	public boolean hasDoorNorth()
-	{
-	    return type == RoomType.FOURWAY || type == RoomType.LARGE || type == RoomType.LARGE_DUMMY || (type == RoomType.ENTRANCE && rotation != Rotation.CLOCKWISE_180) || (type == RoomType.THREEWAY && rotation != Rotation.NONE)
-		    || (type == RoomType.CORNER && rotation == Rotation.NONE) || (type == RoomType.CORNER && rotation == Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.HALLWAY && rotation == Rotation.NONE)
-		    || (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_180) || (type == RoomType.END && rotation == Rotation.CLOCKWISE_180);
-	}
-
-	public boolean hasDoorSouth()
-	{
-	    return type == RoomType.FOURWAY || type == RoomType.LARGE || type == RoomType.LARGE_DUMMY || (type == RoomType.ENTRANCE && rotation != Rotation.NONE) || (type == RoomType.THREEWAY && rotation != Rotation.CLOCKWISE_180)
-		    || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_90) || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_180) || (type == RoomType.HALLWAY && rotation == Rotation.NONE)
-		    || (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_180) || (type == RoomType.END && rotation == Rotation.NONE);
-	}
-
-	public boolean hasDoorWest()
-	{
-	    return type == RoomType.FOURWAY || type == RoomType.LARGE || type == RoomType.LARGE_DUMMY || (type == RoomType.ENTRANCE && rotation != Rotation.CLOCKWISE_90) || (type == RoomType.THREEWAY && rotation != Rotation.COUNTERCLOCKWISE_90)
-		    || (type == RoomType.CORNER && rotation == Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_180) || (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_90)
-		    || (type == RoomType.HALLWAY && rotation == Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.END && rotation == Rotation.CLOCKWISE_90);
-	}
-
-	public boolean hasDoorEast()
-	{
-	    return type == RoomType.FOURWAY || type == RoomType.LARGE || type == RoomType.LARGE_DUMMY || (type == RoomType.ENTRANCE && rotation != Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.THREEWAY && rotation != Rotation.CLOCKWISE_90)
-		    || (type == RoomType.CORNER && rotation == Rotation.NONE) || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_90) || (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_90)
-		    || (type == RoomType.HALLWAY && rotation == Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.END && rotation == Rotation.COUNTERCLOCKWISE_90);
-	}
-    };
-
     // this is the final constructed dungeon
     public DungeonRoom finalLayout[][] = new DungeonRoom[8][8];
     public int enemyVariation1 = 0;
