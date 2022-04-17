@@ -1,14 +1,11 @@
 package com.catastrophe573.dimdungeons.block;
 
-import com.catastrophe573.dimdungeons.DimDungeons;
-
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
-
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
 
 public class BlockGildedPortal extends Block
 {
@@ -17,7 +14,6 @@ public class BlockGildedPortal extends Block
     public BlockGildedPortal()
     {
 	super(BlockBehaviour.Properties.of(Material.STONE).strength(2).sound(SoundType.METAL));
-	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
     @Override

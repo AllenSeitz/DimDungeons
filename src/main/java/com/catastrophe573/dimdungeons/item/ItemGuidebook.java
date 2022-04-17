@@ -1,7 +1,5 @@
 package com.catastrophe573.dimdungeons.item;
 
-import com.catastrophe573.dimdungeons.DimDungeons;
-
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.CreativeModeTab;
@@ -28,7 +26,6 @@ public class ItemGuidebook extends Item
     public ItemGuidebook()
     {
 	super(new Item.Properties().tab(CreativeModeTab.TAB_MISC).stacksTo(1).tab(ItemRegistrar.CREATIVE_TAB));
-	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
     @Override

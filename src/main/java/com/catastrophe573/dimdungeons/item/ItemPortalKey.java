@@ -2,7 +2,6 @@ package com.catastrophe573.dimdungeons.item;
 
 import java.util.Random;
 
-import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
@@ -53,7 +52,6 @@ public class ItemPortalKey extends Item
     public ItemPortalKey()
     {
 	super(new Item.Properties().tab(CreativeModeTab.TAB_MISC).stacksTo(1).tab(ItemRegistrar.CREATIVE_TAB));
-	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
     // used in the item model json to change the graphic based on the dimdungeons:keytype property

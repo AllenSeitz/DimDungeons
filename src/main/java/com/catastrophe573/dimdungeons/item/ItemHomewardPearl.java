@@ -1,6 +1,5 @@
 package com.catastrophe573.dimdungeons.item;
 
-import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
@@ -20,7 +19,6 @@ public class ItemHomewardPearl extends Item
     public ItemHomewardPearl(Item.Properties builderIn)
     {
 	super(builderIn);
-	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
     @SuppressWarnings("resource")

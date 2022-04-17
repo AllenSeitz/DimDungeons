@@ -57,7 +57,6 @@ public class BlockGoldPortal extends BaseEntityBlock
     public BlockGoldPortal()
     {
 	super(BlockBehaviour.Properties.of(Material.PORTAL).strength(50).randomTicks().strength(-1.0F).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
-	setRegistryName(DimDungeons.MOD_ID, REG_NAME);
 	this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X));
     }
 

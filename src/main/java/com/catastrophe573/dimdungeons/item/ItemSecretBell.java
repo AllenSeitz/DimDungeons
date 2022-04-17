@@ -49,7 +49,6 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
     {
 	//super(tier, builderIn);
 	super(builderIn);
-	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
 
 	// this item isn't really "tierable" I just want it to be a reparable weapon
 	//this.attackDamage = 3; // appropriate for gold tier, but also will be configurable later

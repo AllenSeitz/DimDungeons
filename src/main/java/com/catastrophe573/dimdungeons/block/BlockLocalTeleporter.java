@@ -2,7 +2,6 @@ package com.catastrophe573.dimdungeons.block;
 
 import javax.annotation.Nullable;
 
-import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
 
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -30,7 +29,6 @@ public class BlockLocalTeleporter extends BaseEntityBlock
     public BlockLocalTeleporter()
     {
 	super(BlockBehaviour.Properties.of(Material.PORTAL).strength(50).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
-	setRegistryName(DimDungeons.MOD_ID, REG_NAME);
     }
 
     @Override
