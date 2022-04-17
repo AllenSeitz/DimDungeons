@@ -180,8 +180,6 @@ public class DungeonUtils
 	    ItemPortalKey key = (ItemPortalKey) genData.keyItem.getItem();
 	    long buildX = (long) key.getDungeonTopLeftX(genData.keyItem);
 	    long buildZ = (long) key.getDungeonTopLeftZ(genData.keyItem);
-	    long entranceX = buildX + (8 * 16);
-	    long entranceZ = buildZ + (11 * 16);
 
 	    // this function only checks for the air blocks below the keyhole and the keyhole blockstate
 	    if (BlockPortalKeyhole.isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
@@ -194,7 +192,9 @@ public class DungeonUtils
 	    }
 
 	    // regardless of if this is a new or old dungeon, reprogram the exit door
-	    boolean dungeonExistsHere = DungeonUtils.reprogramExistingExitDoorway(worldIn, entranceX, entranceZ, genData);
+	    float entranceX = key.getWarpX(genData.keyItem);
+	    float entranceZ = key.getWarpZ(genData.keyItem);	    
+	    boolean dungeonExistsHere = DungeonUtils.reprogramExistingExitDoorway(worldIn, (long)entranceX, (long)entranceZ, genData);
 	    boolean anotherKeyWasFirst = false; // TODO: fix this
 
 	    // this function prints no message on success
