@@ -10,7 +10,6 @@ import com.catastrophe573.dimdungeons.block.TileEntityLocalTeleporter;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
-import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonRoom;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.RoomType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
@@ -128,7 +127,7 @@ public class DungeonPlacement
 		else
 		{
 		    // calculate the chunkpos of the room at 0,0 in the top left of the map
-		    // I'm not sure what the +4 is for, but it is needed
+		    // The +4 offset is so that the dungeons align with vanilla blank maps!
 		    ChunkPos cpos = new ChunkPos(((int) x / 16) + i + 4, ((int) z / 16) + j + 4);
 
 		    if (nextRoom.type == RoomType.LARGE)
@@ -137,12 +136,12 @@ public class DungeonPlacement
 			{
 			    DimDungeons.logMessageError("DIMDUNGEONS ERROR UNABLE TO PLACE ***LARGE*** STRUCTURE: " + nextRoom.structure);
 			}
-			closeDoorsOnLargeRoom(cpos, world, nextRoom, genData, i, j, dbl);
+			closeDoorsOnLargeRoom(cpos, world, nextRoom, genData);
 		    }
 		    else if (nextRoom.type == RoomType.LARGE_DUMMY)
 		    {
 			// this isn't trivial because dummy rooms still have to close doorways that lead out of bounds
-			closeDoorsOnLargeRoom(cpos, world, nextRoom, genData, i, j, dbl);
+			closeDoorsOnLargeRoom(cpos, world, nextRoom, genData);
 		    }
 		    else if (!putRoomHere(cpos, world, nextRoom, genData, dungeonType))
 		    {
@@ -172,6 +171,7 @@ public class DungeonPlacement
 	DungeonDesigner dbl;
 	int dungeonSize = DungeonConfig.DEFAULT_BASIC_DUNGEON_SIZE;
 	DungeonType dungeonType = DungeonType.BASIC;
+	String stringDungeonType = "basic";
 	boolean useLarge = false;
 
 	if (genData.dungeonTheme == 2)
@@ -179,6 +179,7 @@ public class DungeonPlacement
 	    dungeonType = DungeonType.THEME_OPEN;
 	    dbl = new DungeonDesignerThemeOpen(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
 	    dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeDungeonSize;
+	    stringDungeonType = "theme " + genData.dungeonTheme;
 	}
 	else if (z < 0)
 	{
@@ -186,14 +187,17 @@ public class DungeonPlacement
 	    dbl = new DungeonDesigner(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
 	    dungeonSize = DungeonConfig.DEFAULT_ADVANCED_DUNGEON_SIZE;
 	    useLarge = true;
+	    stringDungeonType = "advanced";
 	}
 	else
 	{
 	    dungeonType = DungeonType.BASIC;
 	    dbl = new DungeonDesigner(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
+	    stringDungeonType = "basic";
 	    if (genData.dungeonTheme > 0)
 	    {
 		dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeDungeonSize;
+		stringDungeonType = "theme " + genData.dungeonTheme;
 	    }
 	}
 
@@ -213,6 +217,7 @@ public class DungeonPlacement
 		else
 		{
 		    // calculate the chunkpos of this room and the blockpos to place the sign at
+		    // The +4 offset is so that the dungeons align with vanilla blank maps!
 		    ChunkPos cpos = new ChunkPos(((int) x / 16) + i + 4, ((int) z / 16) + j + 4);
 		    BlockPos bpos = new BlockPos(cpos.getMinBlockX(), SIGN_Y, cpos.getMinBlockZ());
 
@@ -226,7 +231,7 @@ public class DungeonPlacement
 			sign.setMessage(0, new TextComponent(nextRoom.structure));
 			sign.setMessage(1, new TextComponent(nextRoom.rotation.toString()));
 			sign.setMessage(2, new TextComponent(nextRoom.type.toString()));
-			sign.setMessage(3, new TextComponent(dungeonType.toString()));
+			sign.setMessage(3, new TextComponent(stringDungeonType)); // "basic", "advanced", or "theme #"
 			sign.setEditable(false);
 		    }
 		}
@@ -234,6 +239,89 @@ public class DungeonPlacement
 	}
 
 	return true;
+    }
+
+    // returns true if a room was built here or false if this chunk was skipped
+    public static boolean buildRoomAboveSign(ServerLevel world, ChunkPos cpos, DungeonGenData genData)
+    {
+	BlockPos bpos = new BlockPos(cpos.getMinBlockX(), SIGN_Y, cpos.getMinBlockZ());
+	SignBlockEntity sign = (SignBlockEntity) world.getBlockEntity(bpos);
+
+	if (sign == null)
+	{
+	    return false; // no sign here means no room
+	}
+
+	// step 2: decode the sign
+	DungeonRoom nextRoom = readSignAtChunk(world, cpos);
+	String dunTypeText = ((TextComponent) sign.getMessage(3, false)).toString();
+	DungeonType dungeonType = DungeonType.BASIC;
+	if (dunTypeText.contains("advanced"))
+	{
+	    dungeonType = DungeonType.ADVANCED;
+	}
+
+	// also, set bedrock two blocked under the sign to permanently signal that this function has been called on this chunk already
+	world.setBlockAndUpdate(bpos.below().below(), Blocks.BEDROCK.defaultBlockState());
+
+	// step 3: place room here, with these parameters
+	if (nextRoom.type == RoomType.LARGE)
+	{
+	    if (!putLargeRoomHere(cpos, world, nextRoom, genData, dungeonType))
+	    {
+		DimDungeons.logMessageError("DIMDUNGEONS ERROR UNABLE TO PLACE ***LARGE*** STRUCTURE: " + nextRoom.structure);
+	    }
+	    closeDoorsOnLargeRoom(cpos, world, nextRoom, genData);
+	}
+	else if (nextRoom.type == RoomType.LARGE_DUMMY)
+	{
+	    // this isn't trivial because dummy rooms still have to close doorways that lead out of bounds
+	    closeDoorsOnLargeRoom(cpos, world, nextRoom, genData);
+	}
+	else if (!putRoomHere(cpos, world, nextRoom, genData, dungeonType))
+	{
+	    DimDungeons.logMessageError("DIMDUNGEONS ERROR UNABLE TO PLACE STRUCTURE: " + nextRoom.structure);
+	}
+
+	return true;
+    }
+
+    // this function will return null if there is no room at this position
+    public static DungeonRoom readSignAtChunk(ServerLevel world, ChunkPos cpos)
+    {
+	BlockPos bpos = new BlockPos(cpos.getMinBlockX(), SIGN_Y, cpos.getMinBlockZ());
+	SignBlockEntity sign = (SignBlockEntity) world.getBlockEntity(bpos);
+
+	if (sign == null)
+	{
+	    return null; // no sign = no room here, and this result is expected
+	}
+
+	DungeonRoom room = new DungeonRoom();
+	room.structure = ((TextComponent) sign.getMessage(0, false)).getString();
+	String rotationText = ((TextComponent) sign.getMessage(1, false)).getString();
+	String roomTypeText = ((TextComponent) sign.getMessage(2, false)).getString();
+	room.rotation = Rotation.valueOf(rotationText);
+	room.type = RoomType.valueOf(roomTypeText);
+
+	return room;
+    }
+
+    // used to check if any room exists in the given chunk
+    // does a slightly faster check for the bedrock under the sign, technically
+    public static boolean doesSignExistAtChunk(Level world, long x, long z)
+    {
+	ChunkPos cpos = new ChunkPos(((int) x / 16) + 4, ((int) z / 16) + 4);
+	BlockPos bpos = new BlockPos(cpos.getMinBlockX(), SIGN_Y - 1, cpos.getMinBlockZ());
+	return world.getBlockState(bpos).getBlock() == Blocks.BEDROCK;
+    }
+
+    // checks for the second piece of bedrock under the sign. this is placed during buildRoomAboveSign()
+    public static boolean wasRoomBuiltAtChunk(Level world, long x, long z)
+    {
+	ChunkPos cpos = new ChunkPos(((int) x / 16) + 4, ((int) z / 16) + 4);
+	BlockPos bpos = new BlockPos(cpos.getMinBlockX(), SIGN_Y - 2, cpos.getMinBlockZ());
+	return world.getBlockState(bpos).getBlock() == Blocks.BEDROCK;
     }
 
     public static boolean isDungeonChunk(long x, long z)
@@ -316,13 +404,10 @@ public class DungeonPlacement
 	    return false;
 	}
 
-	// I assume this function is addBlocksToWorld()	
 	DimDungeons.logMessageInfo("Placing a large room: " + room.structure);
 	boolean success = template.placeInWorld((ServerLevelAccessor) world, position, sizeRange, placementsettings, world.getRandom(), 2);
 
 	// handle data blocks - this code block is copied from TemplateStructurePiece
-	//Map<BlockPos, String> map = template.getDataBlocks(position, placementsettings); // 1.12 / 1.13 version
-	//List<Template.BlockInfo> dblocks = template.filterBlocks(position, placementsettings, Blocks.STRUCTURE_BLOCK, true); // my old 1.14.2 method
 	for (StructureTemplate.StructureBlockInfo template$blockinfo : template.filterBlocks(position, placementsettings, Blocks.STRUCTURE_BLOCK))
 	{
 	    if (template$blockinfo.nbt != null)
@@ -338,15 +423,27 @@ public class DungeonPlacement
 	return success;
     }
 
-    public static void closeDoorsOnLargeRoom(ChunkPos cpos, ServerLevel world, DungeonRoom room, DungeonGenData genDat, int indexX, int indexZ, DungeonDesigner dbl)
+    public static void closeDoorsOnLargeRoom(ChunkPos cpos, ServerLevel world, DungeonRoom room, DungeonGenData genData)
     {
 	BlockState fillBlock = Blocks.STONE_BRICKS.defaultBlockState();
 	BlockState airBlock = Blocks.AIR.defaultBlockState();
 	BlockState redBlock = Blocks.RED_CONCRETE.defaultBlockState();
 	BlockPos startPos = new BlockPos(cpos.getMinBlockX(), 55, cpos.getMinBlockZ());
+	int x = cpos.x;
+	int z = cpos.z;
+
+	// remember, these can be null
+	ChunkPos west = new ChunkPos(x - 1, z);
+	ChunkPos east = new ChunkPos(x + 1, z);
+	ChunkPos north = new ChunkPos(x, z - 1);
+	ChunkPos south = new ChunkPos(x, z + 1);
+	DungeonRoom westRoom = readSignAtChunk(world, west);
+	DungeonRoom eastRoom = readSignAtChunk(world, east);
+	DungeonRoom northRoom = readSignAtChunk(world, north);
+	DungeonRoom southRoom = readSignAtChunk(world, south);
 
 	// does west lead into a void?
-	if (indexX == 0 || !dbl.finalLayout[indexX - 1][indexZ].hasRoom())
+	if (westRoom == null)
 	{
 	    // place 12 stone bricks
 	    world.setBlock(startPos.south(7).east(0).above(0), fillBlock, 2);
@@ -368,7 +465,7 @@ public class DungeonPlacement
 	else
 	{
 	    // extend the doorway on the minimap
-	    if (!(dbl.finalLayout[indexX - 1][indexZ].type == RoomType.LARGE) && !(dbl.finalLayout[indexX - 1][indexZ].type == RoomType.LARGE_DUMMY))
+	    if (westRoom.type != RoomType.LARGE && westRoom.type != RoomType.LARGE_DUMMY)
 	    {
 		world.setBlock(startPos.south(7).east(1).above(7), redBlock, 2);
 		world.setBlock(startPos.south(8).east(1).above(7), redBlock, 2);
@@ -382,12 +479,11 @@ public class DungeonPlacement
 		world.setBlock(startPos.south(8).east(5).above(7), redBlock, 2);
 		world.setBlock(startPos.south(7).east(6).above(7), redBlock, 2);
 		world.setBlock(startPos.south(8).east(6).above(7), redBlock, 2);
-
 	    }
 	}
 
 	// does east lead into a void?
-	if (indexX == 7 || !dbl.finalLayout[indexX + 1][indexZ].hasRoom())
+	if (eastRoom == null)
 	{
 	    // place 12 stone bricks
 	    world.setBlock(startPos.south(7).east(14).above(0), fillBlock, 2);
@@ -409,7 +505,7 @@ public class DungeonPlacement
 	else
 	{
 	    // extend the doorway on the minimap
-	    if (!(dbl.finalLayout[indexX + 1][indexZ].type == RoomType.LARGE) && !(dbl.finalLayout[indexX + 1][indexZ].type == RoomType.LARGE_DUMMY))
+	    if (eastRoom.type != RoomType.LARGE && eastRoom.type != RoomType.LARGE_DUMMY)
 	    {
 		world.setBlock(startPos.south(7).east(14).above(7), redBlock, 2);
 		world.setBlock(startPos.south(8).east(14).above(7), redBlock, 2);
@@ -427,47 +523,54 @@ public class DungeonPlacement
 	}
 
 	// does north lead into a void?
-	if (indexZ == 0 || !dbl.finalLayout[indexX][indexZ - 1].hasRoom())
+	if (northRoom == null)
 	{
 	    // can't happen yet
 	}
 	else
 	{
 	    // extend the doorway on the minimap
-	    world.setBlock(startPos.south(1).east(7).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(1).east(8).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(2).east(7).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(2).east(8).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(3).east(7).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(3).east(8).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(4).east(7).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(4).east(8).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(5).east(7).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(5).east(8).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(6).east(7).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(6).east(8).above(7), redBlock, 2);
+	    if (northRoom.type != RoomType.LARGE && northRoom.type != RoomType.LARGE_DUMMY)
+	    {
+		// extend the doorway on the minimap
+		world.setBlock(startPos.south(1).east(7).above(7), redBlock, 2);
+		world.setBlock(startPos.south(1).east(8).above(7), redBlock, 2);
+		world.setBlock(startPos.south(2).east(7).above(7), redBlock, 2);
+		world.setBlock(startPos.south(2).east(8).above(7), redBlock, 2);
+		world.setBlock(startPos.south(3).east(7).above(7), redBlock, 2);
+		world.setBlock(startPos.south(3).east(8).above(7), redBlock, 2);
+		world.setBlock(startPos.south(4).east(7).above(7), redBlock, 2);
+		world.setBlock(startPos.south(4).east(8).above(7), redBlock, 2);
+		world.setBlock(startPos.south(5).east(7).above(7), redBlock, 2);
+		world.setBlock(startPos.south(5).east(8).above(7), redBlock, 2);
+		world.setBlock(startPos.south(6).east(7).above(7), redBlock, 2);
+		world.setBlock(startPos.south(6).east(8).above(7), redBlock, 2);
+	    }
 	}
 
 	// does south lead into a void?
-	if (indexZ == 7 || !dbl.finalLayout[indexX][indexZ + 1].hasRoom())
+	if (southRoom == null)
 	{
 	    // can't happen yet
 	}
 	else
 	{
-	    // extend the doorway on the minimap
-	    world.setBlock(startPos.south(14).east(7).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(14).east(8).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(13).east(7).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(13).east(8).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(12).east(7).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(12).east(8).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(11).east(7).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(11).east(8).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(10).east(7).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(10).east(8).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(9).east(7).above(7), redBlock, 2);
-	    world.setBlock(startPos.south(9).east(8).above(7), redBlock, 2);
+	    if (southRoom.type != RoomType.LARGE && southRoom.type != RoomType.LARGE_DUMMY)
+	    {
+		// extend the doorway on the minimap
+		world.setBlock(startPos.south(14).east(7).above(7), redBlock, 2);
+		world.setBlock(startPos.south(14).east(8).above(7), redBlock, 2);
+		world.setBlock(startPos.south(13).east(7).above(7), redBlock, 2);
+		world.setBlock(startPos.south(13).east(8).above(7), redBlock, 2);
+		world.setBlock(startPos.south(12).east(7).above(7), redBlock, 2);
+		world.setBlock(startPos.south(12).east(8).above(7), redBlock, 2);
+		world.setBlock(startPos.south(11).east(7).above(7), redBlock, 2);
+		world.setBlock(startPos.south(11).east(8).above(7), redBlock, 2);
+		world.setBlock(startPos.south(10).east(7).above(7), redBlock, 2);
+		world.setBlock(startPos.south(10).east(8).above(7), redBlock, 2);
+		world.setBlock(startPos.south(9).east(7).above(7), redBlock, 2);
+		world.setBlock(startPos.south(9).east(8).above(7), redBlock, 2);
+	    }
 	}
     }
 

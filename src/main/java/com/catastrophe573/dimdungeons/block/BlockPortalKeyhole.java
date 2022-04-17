@@ -5,9 +5,9 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
+import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
@@ -27,8 +27,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -46,7 +49,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class BlockPortalKeyhole extends BaseEntityBlock
@@ -54,20 +56,38 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty FILLED = BooleanProperty.create("filled");
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
+    public static final IntegerProperty BUILD_STEP = IntegerProperty.create("build_step", 0, 651);
 
     public static final String REG_NAME = "block_portal_keyhole";
 
     public BlockPortalKeyhole()
     {
 	super(BlockBehaviour.Properties.of(Material.STONE).strength(3).explosionResistance(1200).sound(SoundType.METAL));
-	this.setRegistryName(DimDungeons.MOD_ID, REG_NAME);
 	this.registerDefaultState(getMyCustomDefaultState());
     }
 
     // used by the constructor and I'm not sure where else anymore?
     public BlockState getMyCustomDefaultState()
     {
-	return this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(FILLED, false).setValue(LIT, false);
+	return this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(FILLED, false).setValue(LIT, false).setValue(BUILD_STEP, 0);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type)
+    {
+	if (level.isClientSide)
+	{
+	    return null;
+	}
+	else
+	{
+	    if (state.getValue(BUILD_STEP) > 0 && type == TileEntityPortalKeyhole.TYPE)
+	    {
+		return createTickerHelper(type, TileEntityPortalKeyhole.TYPE, TileEntityPortalKeyhole::buildTick);
+	    }
+	}
+	return null;
     }
 
     // based on code from vanilla furnaces, which also play a sound effect and make particles when their TileEntity is being productive
@@ -139,53 +159,45 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		if (!playerItem.isEmpty())
 		{
 		    // DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
+		    int buildStep = 0;
 
-		    // should we build the dungeon on the other side?
-		    boolean dungeonExistsHere = true;
-		    boolean anotherKeyWasFirst = false;
-
+		    // should we begin to build the dungeon on the other side?
 		    if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide)
 		    {
+			// all this math just to figure out where the coordinates of the dungeon are
 			ItemPortalKey key = (ItemPortalKey) playerItem.getItem();
-			DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setTheme(key.getDungeonTheme(playerItem)).setReturnPoint(getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
+			long buildX = (long) key.getDungeonTopLeftX(playerItem);
+			long buildZ = (long) key.getDungeonTopLeftZ(playerItem);
+			long entranceX = buildX + (8 * 16);
+			long entranceZ = buildZ + (11 * 16);
 
+			// this data structure is used for both placing signs and updating the exit portal
+			DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setTheme(key.getDungeonTheme(playerItem)).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
+
+			// should the key be marked as used?
 			if (shouldBuildDungeon(playerItem))
 			{
-			    //DimDungeons.LOGGER.info("BUILDING A NEW DUNGEON!");
-			    anotherKeyWasFirst = !DungeonUtils.buildDungeon(worldIn, genData);
-			    if (!anotherKeyWasFirst)
+			    // at this moment only the signs are placed and the structures will be placed on later ticks
+			    // additionally, mark the key as "built" so it can't be used to place more signs ever again
+			    if (!DungeonUtils.dungeonAlreadyExistsHere(worldIn, entranceX, entranceZ))
 			    {
+				//DimDungeons.LOGGER.info("BUILDING A NEW DUNGEON!");
 				playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
+				DungeonPlacement.placeSigns(DungeonUtils.getDungeonWorld(worldIn.getServer()), buildX, buildZ, genData);
 			    }
 			}
 
-			// regardless of if this is a new or old dungeon, reprogram the exit door
-			float entranceX = key.getWarpX(playerItem);
-			float entranceZ = key.getWarpZ(playerItem);
-			dungeonExistsHere = DungeonUtils.reprogramExistingExitDoorway(worldIn, (long) entranceX, (long) entranceZ, genData);
+			// it's slow, but run through the build steps regardless of if the dungeon already exists
+			// this will catch dungeons that are partially built and finish them
+			// dungeon rooms will never be overwritten or built twice
+			buildStep = 1;
 		    }
 
 		    myEntity.setContents(playerItem.copy());
 
-		    // recalculate the boolean block states
-		    BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated());
+		    // recalculate the block states
+		    BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(BUILD_STEP, buildStep);
 		    worldIn.setBlockAndUpdate(pos, newBlockState);
-
-		    // should portal blocks be spawned?
-		    if (!worldIn.isClientSide)
-		    {
-			if (isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity) && dungeonExistsHere)
-			{
-			    Direction keyholeFacing = state.getValue(FACING);
-			    Direction.Axis axis = (keyholeFacing == Direction.NORTH || keyholeFacing == Direction.SOUTH) ? Direction.Axis.X : Direction.Axis.Z;
-
-			    addGoldenPortalBlock(worldIn, pos.below(), playerItem, axis);
-			    addGoldenPortalBlock(worldIn, pos.below(2), playerItem, axis);
-			}
-
-			// this function prints no message on success
-			checkForProblemsAndLiterallySpeakToPlayer(worldIn, pos, state, myEntity, player, dungeonExistsHere, anotherKeyWasFirst);
-		    }
 
 		    playerItem.shrink(1);
 
@@ -208,7 +220,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		myEntity.removeContents();
 
 		// recalculate the boolean block states
-		BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated());
+		BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(BUILD_STEP, 0);
 		worldIn.setBlock(pos, newBlockState, 3);
 
 		return InteractionResult.SUCCESS;
@@ -218,7 +230,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	return InteractionResult.PASS;
     }
 
-    protected void addGoldenPortalBlock(Level worldIn, BlockPos pos, ItemStack keyStack, Direction.Axis axis)
+    public static void addGoldenPortalBlock(Level worldIn, BlockPos pos, ItemStack keyStack, Direction.Axis axis)
     {
 	worldIn.setBlockAndUpdate(pos, BlockRegistrar.block_gold_portal.defaultBlockState().setValue(BlockGoldPortal.AXIS, axis));
 	TileEntityGoldPortal te = (TileEntityGoldPortal) worldIn.getBlockEntity(pos);
@@ -232,7 +244,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	}
     }
 
-    protected BlockPos getReturnPoint(BlockState state, BlockPos pos)
+    public static BlockPos getReturnPoint(BlockState state, BlockPos pos)
     {
 	Direction dir = (Direction) state.getValue(FACING);
 	switch (dir)
@@ -251,7 +263,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     }
 
     // helper function for checkForPortalCreation
-    protected boolean isOkayToSpawnPortalBlocks(Level worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole myEntity)
+    public static boolean isOkayToSpawnPortalBlocks(Level worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole myEntity)
     {
 	// if the portal is not lit, then that is a fast "no"
 	if (!myEntity.isActivated())
@@ -345,9 +357,16 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     }
 
     // returns 2 if a usable key is inside, 1 if the block is filled with any item stack, and 0 otherwise
+    // can now also output 3-13 during the ticking build process
     @Override
     public int getAnalogOutputSignal(BlockState blockState, Level worldIn, BlockPos pos)
     {
+	if (blockState.getValue(BUILD_STEP) > 0)
+	{
+	    float percent = blockState.getValue(BUILD_STEP) * 100.0f / 65000.0f;
+	    return (int) percent / 10 + 3;
+	}
+
 	if (blockState.getValue(LIT))
 	{
 	    return 2;
@@ -372,7 +391,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
-	builder.add(FACING, FILLED, LIT);
+	builder.add(FACING, FILLED, LIT, BUILD_STEP);
     }
 
     // Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed blockstate.
@@ -394,7 +413,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	return 0;
     }
 
-    protected void checkForProblemsAndLiterallySpeakToPlayer(Level worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole tileEntity, Player player, boolean dungeonExistsHere, boolean anotherKeyWasFirst)
+    public static void checkForProblemsAndLiterallySpeakToPlayer(Level worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole tileEntity, Player player, boolean dungeonExistsHere, boolean anotherKeyWasFirst)
     {
 	// only run this function once, either on the client or on the server
 	// this runs on the server now because some errors happen exclusively on the server's side
@@ -530,7 +549,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	return; // success!
     }
 
-    public void speakLiterallyToPlayerAboutProblems(Level worldIn, Player playerIn, int problemID, @Nullable BlockState problemBlock)
+    public static void speakLiterallyToPlayerAboutProblems(Level worldIn, Player playerIn, int problemID, @Nullable BlockState problemBlock)
     {
 	TranslatableComponent text1 = new TranslatableComponent(new TranslatableComponent("error.dimdungeons.portal_error_" + problemID).getString());
 

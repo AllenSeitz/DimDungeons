@@ -20,7 +20,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 
@@ -54,20 +53,6 @@ public class CommandDimDungeons
 
 	// register the /givekey cheat
 	dispatcher.register(givekeyArgumentBuilder);
-
-	// make the /gendungeon cheat
-	LiteralArgumentBuilder<CommandSourceStack> gendungeonArgumentBuilder = Commands.literal("gendungeon").requires((cmd) ->
-	{
-	    return cmd.hasPermission(2);
-	});
-	gendungeonArgumentBuilder.then(Commands.argument("x", IntegerArgumentType.integer(0, ItemPortalKey.RANDOM_COORDINATE_RANGE))
-		.then(Commands.argument("z", IntegerArgumentType.integer(ItemPortalKey.RANDOM_COORDINATE_RANGE * -1, ItemPortalKey.RANDOM_COORDINATE_RANGE)).executes((cmd) ->
-		{
-		    return generateDungeon(cmd, IntegerArgumentType.getInteger(cmd, "x"), IntegerArgumentType.getInteger(cmd, "z"));
-		})));
-
-	// register the /gendungeon cheat
-	dispatcher.register(gendungeonArgumentBuilder);
     }
 
     private static int giveKey(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> targets, String type, int theme) throws CommandSyntaxException
@@ -112,8 +97,7 @@ public class CommandDimDungeons
 		    itementity.makeFakeItem();
 		}
 
-		serverplayerentity.level.playSound((Player) null, serverplayerentity.getX(), serverplayerentity.getY(), serverplayerentity.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F,
-			((serverplayerentity.getRandom().nextFloat() - serverplayerentity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+		serverplayerentity.level.playSound((Player) null, serverplayerentity.getX(), serverplayerentity.getY(), serverplayerentity.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((serverplayerentity.getRandom().nextFloat() - serverplayerentity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 		serverplayerentity.inventoryMenu.broadcastChanges();
 	    }
 	    else
@@ -139,33 +123,5 @@ public class CommandDimDungeons
 	}
 
 	return targets.size();
-    }
-
-    private static int generateDungeon(CommandContext<CommandSourceStack> cmd, int destX, int destZ) throws CommandSyntaxException
-    {
-	// set the return point to the the position of whatever entity ran this command. Don't over think this?
-	DungeonGenData fakeData = new DungeonGenData();
-	if (cmd.getSource() != null)
-	{
-	    fakeData.setReturnPoint(new BlockPos(cmd.getSource().getPosition().x, cmd.getSource().getPosition().y + 2, cmd.getSource().getPosition().z), "minecraft:overworld");
-	}
-	else
-	{
-	    fakeData.setReturnPoint(new BlockPos(0, 100, 0), "minecraft:overworld");
-	}
-
-	// generate a fake key and use that to run the normal generation function
-	ItemStack fakeKey = new ItemStack(ItemRegistrar.item_portal_key);
-	((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).forceCoordinates(fakeKey, destX, destZ);
-	fakeData.setKeyItem(fakeKey);
-
-	if (DungeonUtils.buildDungeon(cmd.getSource().getLevel(), fakeData))
-	{
-	    cmd.getSource().sendSuccess(new TranslatableComponent("commands.gendungeon.success", fakeKey.getHoverName()), true);
-	    return 1;
-	}
-
-	cmd.getSource().sendSuccess(new TranslatableComponent("commands.gendungeon.failed"), true);
-	return 0;
     }
 }

@@ -1,5 +1,6 @@
 package com.catastrophe573.dimdungeons;
 
+import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole.DungeonBuildSpeed;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -31,6 +32,7 @@ public class DungeonConfig
     public static final int DEFAULT_CHANCE_FOR_THEME_KEYS = 4;
 
     public static final int DEFAULT_PORTAL_TICKS = 40;
+    public static final int DEFAULT_BUILD_SPEED = 2; // corresponds to normal, which is actually pretty fast
 
     public static final ServerConfig SERVER;
     public static final ForgeConfigSpec SERVER_SPEC;
@@ -76,6 +78,7 @@ public class DungeonConfig
     public static int chanceForThemeKeys = DEFAULT_CHANCE_FOR_THEME_KEYS;
     public static Set<Block> blockBreakWhitelist = Sets.newHashSet();
     public static Set<Block> blockInteractBlacklist = Sets.newHashSet();
+    public static int dungeonBuildSpeed = 2;
 
     // client options
     public static boolean showParticles = true;
@@ -136,6 +139,7 @@ public class DungeonConfig
 	public final ConfigValue<String> logLevel;
 	public final ConfigValue<String> worldborderToRespect;
 	public final ConfigValue<Integer> chanceForThemeKeys;
+	public final ConfigValue<Integer> dungeonBuildSpeed;
 
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> breakingWhitelist;
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> interactionBlacklist;
@@ -233,27 +237,21 @@ public class DungeonConfig
 
 	    configVersion = builder.comment("You shouldn't manually change the version number.").translation("config.dimdungeons.configVersion").define("configVersion", DEFAULT_CONFIG_VERSION);
 
-	    globalBlockProtection = builder.comment("If set to FALSE the block protection on the dungeon dimension will be disabled, making the options in the next section useless.").translation("config.dimdungeons.globalBlockProtection")
-		    .define("globalBlockProtection", true);
+	    globalBlockProtection = builder.comment("If set to FALSE the block protection on the dungeon dimension will be disabled, making the options in the next section useless.").translation("config.dimdungeons.globalBlockProtection").define("globalBlockProtection", true);
 	    hardcoreMode = builder.comment("If set to TRUE then dungeon keys are consumed whenever a player enters a dungeon portal.").translation("config.dimdungeons.hardcoreMode").define("hardcoreMode", false);
 	    enableDebugCheats = builder.comment("If set to TRUE some cheats are available.").translation("config.dimdungeons.enableDebugCheats").define("enableDebugCheats", false);
 	    portalCooldownTicks = builder.comment("How many ticks the portal blocks cooldown for.").translation("config.dimdungeons.portalCooldownTicks").define("portalCooldownTicks", DEFAULT_PORTAL_TICKS);
-	    keyEnscriberDowngradeChanceFull = builder.comment("The odds of a Key Enscriber taking damage upon use, like an anvil, turning into a Used Key Enscriber. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceFull")
-		    .define("keyEnscriberDowngradeChanceFull", 100);
-	    keyEnscriberDowngradeChanceUsed = builder.comment("The odds of a Used Key Enscriber taking damage upon use, like an anvil, turning into a Damaged Key Enscriber. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceUsed")
-		    .define("keyEnscriberDowngradeChanceUsed", 100);
-	    keyEnscriberDowngradeChanceDamaged = builder.comment("The odds of a Damaged Key Enscriber being destroyed upon use, like a damaged anvil. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceDamaged")
-		    .define("keyEnscriberDowngradeChanceDamaged", 100);
+	    keyEnscriberDowngradeChanceFull = builder.comment("The odds of a Key Enscriber taking damage upon use, like an anvil, turning into a Used Key Enscriber. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceFull").define("keyEnscriberDowngradeChanceFull", 100);
+	    keyEnscriberDowngradeChanceUsed = builder.comment("The odds of a Used Key Enscriber taking damage upon use, like an anvil, turning into a Damaged Key Enscriber. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceUsed").define("keyEnscriberDowngradeChanceUsed", 100);
+	    keyEnscriberDowngradeChanceDamaged = builder.comment("The odds of a Damaged Key Enscriber being destroyed upon use, like a damaged anvil. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceDamaged").define("keyEnscriberDowngradeChanceDamaged", 100);
 	    logLevel = builder.comment("Can be used to limit log spam. Can be set to 'all', 'warn', or 'error'.").translation("config.dimdungeons.logLevel").define("logLevel", "error");
-	    worldborderToRespect = builder.comment("Which dimension's worldborder to consider when activating keys. Using dimdungeons:dungeon_dimension may not work for everyone.").translation("config.dimdungeons.worldborderToRespect")
-		    .define("worldborderToRespect", "dimdungeons:dungeon_dimension");
+	    worldborderToRespect = builder.comment("Which dimension's worldborder to consider when activating keys. Using dimdungeons:dungeon_dimension may not work for everyone.").translation("config.dimdungeons.worldborderToRespect").define("worldborderToRespect", "dimdungeons:dungeon_dimension");
 	    chanceForThemeKeys = builder.comment("The chance for an enemy in a basic dungeon to be carrying a theme key.").translation("config.dimdungeons.chanceForThemeKeys").define("chanceForThemeKeys", DEFAULT_CHANCE_FOR_THEME_KEYS);
+	    dungeonBuildSpeed = builder.comment("The speed at which to build a dungeon, slower will skip more ticks to avoid lag spikes.").translation("config.dimdungeons.dungeonBuildSpeed").define("dungeonBuildSpeed", DEFAULT_BUILD_SPEED);
 	    builder.pop();
 	    builder.comment("Options for block behavior in the dungeon dimension.").push("blocks");
-	    breakingWhitelist = builder.comment("List of blocks which any player should be allowed to break, defying the block protection. (For example, gravestones or death chests.) Default value is empty.")
-		    .translation("config.dimdungeons.breakingWhitelist").defineList("breakingWhitelist", hardcodedDefaultBreakingWhitelist, o -> o instanceof String);
-	    interactionBlacklist = builder.comment("List of blocks that players will be unable to interact with. It is strongly recommended to preserve the defaults.").translation("config.dimdungeons.interactionBlacklist")
-		    .defineList("interactionBlacklist", hardcodedDefaultInteractionBlacklist, o -> o instanceof String);
+	    breakingWhitelist = builder.comment("List of blocks which any player should be allowed to break, defying the block protection. (For example, gravestones or death chests.) Default value is empty.").translation("config.dimdungeons.breakingWhitelist").defineList("breakingWhitelist", hardcodedDefaultBreakingWhitelist, o -> o instanceof String);
+	    interactionBlacklist = builder.comment("List of blocks that players will be unable to interact with. It is strongly recommended to preserve the defaults.").translation("config.dimdungeons.interactionBlacklist").defineList("interactionBlacklist", hardcodedDefaultInteractionBlacklist, o -> o instanceof String);
 	    builder.pop();
 	}
     }
@@ -1206,6 +1204,7 @@ public class DungeonConfig
 	chanceForThemeKeys = SERVER.chanceForThemeKeys.get();
 	blockBreakWhitelist = SERVER.breakingWhitelist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
 	blockInteractBlacklist = SERVER.interactionBlacklist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
+	dungeonBuildSpeed = SERVER.dungeonBuildSpeed.get();
 
 	// this is also where the common config is refreshed
 	basicEntrances = COMMON.basicEntrances.get();
@@ -1261,6 +1260,21 @@ public class DungeonConfig
 	}
 
 	return block;
+    }
+
+    public static DungeonBuildSpeed getDungeonBuildSpeed()
+    {
+	switch (dungeonBuildSpeed)
+	{
+	case 0:
+	    return DungeonBuildSpeed.STOPPED;
+	case 1:
+	    return DungeonBuildSpeed.SLOW;
+	case 2:
+	    return DungeonBuildSpeed.NORMAL;
+	default:
+	    return DungeonBuildSpeed.FASTEST;
+	}
     }
 
     public static boolean isModInstalled(String namespace)

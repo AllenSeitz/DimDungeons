@@ -2,18 +2,22 @@ package com.catastrophe573.dimdungeons.utils;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
+import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
+import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacementDebug;
 
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.server.level.ServerLevel;
 
 // basically just global functions
@@ -30,7 +34,6 @@ public class DungeonUtils
     {
 	if (worldIn == null)
 	{
-	    DimDungeons.logMessageError("FATAL ERROR: This 1.16 port is still broken.");
 	    return false;
 	}
 	return worldIn.dimension().location().getPath() == DimDungeons.dungeon_basic_regname;
@@ -42,7 +45,9 @@ public class DungeonUtils
 	return server.getLevel(DimDungeons.DUNGEON_DIMENSION);
     }
 
-    // now returns true if a dungeon was built
+    // thus function is now deprecated and will be removed soon
+    @Deprecated
+    // TODO: move the debug functionality elsewhere
     public static boolean buildDungeon(Level worldIn, DungeonGenData genData)
     {
 	// only build dungeons on the server
@@ -154,21 +159,48 @@ public class DungeonUtils
 	}
 
 	// actually place the dungeon
-	DungeonPlacement.place(dungeonWorld, buildX, buildZ, genData);
-	DungeonPlacement.placeSigns(dungeonWorld, buildX, buildZ, genData);
-
-	return false;
-    }
-
-    public static boolean dungeonAlreadyExistsHere(Level worldIn, long entranceX, long entranceZ)
-    {
-	BlockState temp = worldIn.getBlockState(new BlockPos(entranceX, 51, entranceZ));
-	if (temp.isAir())
-	{
-	    return false;
-	}
+	//DungeonPlacement.place(dungeonWorld, buildX, buildZ, genData);
+	//DungeonPlacement.placeSigns(dungeonWorld, buildX, buildZ, genData);
 
 	return true;
+    }
+
+    // assume that if a sign was placed in the entrance chunk that the build must be either started or finished
+    public static boolean dungeonAlreadyExistsHere(Level worldIn, long entranceX, long entranceZ)
+    {
+	return DungeonPlacement.doesSignExistAtChunk(worldIn, entranceX, entranceZ);
+    }
+
+    public static void openPortalAfterBuild(Level worldIn, BlockPos pos, DungeonGenData genData, TileEntityPortalKeyhole myEntity)
+    {
+	// should portal blocks be spawned?
+	if (!worldIn.isClientSide)
+	{
+	    BlockState state = worldIn.getBlockState(pos);
+	    ItemPortalKey key = (ItemPortalKey) genData.keyItem.getItem();
+	    long buildX = (long) key.getDungeonTopLeftX(genData.keyItem);
+	    long buildZ = (long) key.getDungeonTopLeftZ(genData.keyItem);
+	    long entranceX = buildX + (8 * 16);
+	    long entranceZ = buildZ + (11 * 16);
+
+	    // this function only checks for the air blocks below the keyhole and the keyhole blockstate
+	    if (BlockPortalKeyhole.isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
+	    {
+		Direction keyholeFacing = state.getValue(BlockPortalKeyhole.FACING);
+		Direction.Axis axis = (keyholeFacing == Direction.NORTH || keyholeFacing == Direction.SOUTH) ? Direction.Axis.X : Direction.Axis.Z;
+
+		BlockPortalKeyhole.addGoldenPortalBlock(worldIn, pos.below(), genData.keyItem, axis);
+		BlockPortalKeyhole.addGoldenPortalBlock(worldIn, pos.below(2), genData.keyItem, axis);
+	    }
+
+	    // regardless of if this is a new or old dungeon, reprogram the exit door
+	    boolean dungeonExistsHere = DungeonUtils.reprogramExistingExitDoorway(worldIn, entranceX, entranceZ, genData);
+	    boolean anotherKeyWasFirst = false; // TODO: fix this
+
+	    // this function prints no message on success
+	    Player player = worldIn.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), -1.0f, false);
+	    BlockPortalKeyhole.checkForProblemsAndLiterallySpeakToPlayer(worldIn, pos, state, myEntity, player, dungeonExistsHere, anotherKeyWasFirst);
+	}
     }
 
     // returns false if this function fails because the dungeon on the other side was reset
