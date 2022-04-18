@@ -247,7 +247,7 @@ public class DungeonPlacement
 	BlockPos bpos = new BlockPos(cpos.getMinBlockX(), SIGN_Y, cpos.getMinBlockZ());
 	SignBlockEntity sign = (SignBlockEntity) world.getBlockEntity(bpos);
 
-	if (sign == null)
+	if (sign == null || wasRoomBuiltAtChunk(world, cpos))
 	{
 	    return false; // no sign here means no room
 	}
@@ -309,17 +309,15 @@ public class DungeonPlacement
 
     // used to check if any room exists in the given chunk
     // does a slightly faster check for the bedrock under the sign, technically
-    public static boolean doesSignExistAtChunk(Level world, long x, long z)
+    public static boolean doesSignExistAtChunk(Level world, ChunkPos cpos)
     {
-	ChunkPos cpos = new ChunkPos(((int) x / 16) + 4, ((int) z / 16) + 4);
 	BlockPos bpos = new BlockPos(cpos.getMinBlockX(), SIGN_Y - 1, cpos.getMinBlockZ());
 	return world.getBlockState(bpos).getBlock() == Blocks.BEDROCK;
     }
 
     // checks for the second piece of bedrock under the sign. this is placed during buildRoomAboveSign()
-    public static boolean wasRoomBuiltAtChunk(Level world, long x, long z)
+    public static boolean wasRoomBuiltAtChunk(Level world, ChunkPos cpos)
     {
-	ChunkPos cpos = new ChunkPos(((int) x / 16) + 4, ((int) z / 16) + 4);
 	BlockPos bpos = new BlockPos(cpos.getMinBlockX(), SIGN_Y - 2, cpos.getMinBlockZ());
 	return world.getBlockState(bpos).getBlock() == Blocks.BEDROCK;
     }

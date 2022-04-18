@@ -16,6 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.server.level.ServerLevel;
@@ -168,7 +169,8 @@ public class DungeonUtils
     // assume that if a sign was placed in the entrance chunk that the build must be either started or finished
     public static boolean dungeonAlreadyExistsHere(Level worldIn, long entranceX, long entranceZ)
     {
-	return DungeonPlacement.doesSignExistAtChunk(worldIn, entranceX, entranceZ);
+	ChunkPos cpos = new ChunkPos(((int) entranceX / 16) + 4, ((int) entranceZ / 16) + 4);
+	return DungeonPlacement.doesSignExistAtChunk(worldIn, cpos);
     }
 
     public static void openPortalAfterBuild(Level worldIn, BlockPos pos, DungeonGenData genData, TileEntityPortalKeyhole myEntity)
@@ -178,8 +180,6 @@ public class DungeonUtils
 	{
 	    BlockState state = worldIn.getBlockState(pos);
 	    ItemPortalKey key = (ItemPortalKey) genData.keyItem.getItem();
-	    long buildX = (long) key.getDungeonTopLeftX(genData.keyItem);
-	    long buildZ = (long) key.getDungeonTopLeftZ(genData.keyItem);
 
 	    // this function only checks for the air blocks below the keyhole and the keyhole blockstate
 	    if (BlockPortalKeyhole.isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
@@ -193,8 +193,8 @@ public class DungeonUtils
 
 	    // regardless of if this is a new or old dungeon, reprogram the exit door
 	    float entranceX = key.getWarpX(genData.keyItem);
-	    float entranceZ = key.getWarpZ(genData.keyItem);	    
-	    boolean dungeonExistsHere = DungeonUtils.reprogramExistingExitDoorway(worldIn, (long)entranceX, (long)entranceZ, genData);
+	    float entranceZ = key.getWarpZ(genData.keyItem);
+	    boolean dungeonExistsHere = DungeonUtils.reprogramExistingExitDoorway(worldIn, (long) entranceX, (long) entranceZ, genData);
 	    boolean anotherKeyWasFirst = false; // TODO: fix this
 
 	    // this function prints no message on success
