@@ -7,7 +7,6 @@ import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
-import com.catastrophe573.dimdungeons.structure.DungeonPlacementDebug;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.resources.ResourceKey;
@@ -46,35 +45,13 @@ public class DungeonUtils
 	return server.getLevel(DimDungeons.DUNGEON_DIMENSION);
     }
 
-    // thus function is now deprecated and will be removed soon
-    @Deprecated
-    // TODO: move the debug functionality elsewhere
-    public static boolean buildDungeon(Level worldIn, DungeonGenData genData)
+    // returns 0 for false, or 1 or higher for the type of debug dungeon to build
+    public static int doesKeyMatchDebugCheat(DungeonGenData genData)
     {
-	// only build dungeons on the server
-	if (worldIn.isClientSide)
-	{
-	    return false;
-	}
-
 	if (!(genData.keyItem.getItem() instanceof ItemPortalKey))
 	{
 	    DimDungeons.logMessageError("FATAL ERROR: Using a non-key item to build a dungeon? What happened?");
-	    return false;
-	}
-
-	ItemPortalKey key = (ItemPortalKey) genData.keyItem.getItem();
-
-	long buildX = (long) key.getDungeonTopLeftX(genData.keyItem);
-	long buildZ = (long) key.getDungeonTopLeftZ(genData.keyItem);
-	long entranceX = buildX + (8 * 16);
-	long entranceZ = buildZ + (11 * 16);
-	ServerLevel dungeonWorld = DungeonUtils.getDungeonWorld(worldIn.getServer());
-
-	if (dungeonAlreadyExistsHere(dungeonWorld, entranceX, entranceZ))
-	{
-	    DimDungeons.logMessageWarn("DIMDUNGEONS: Cancelling dungeon contruction. A dungeon already exists here.");
-	    return false;
+	    return 0;
 	}
 
 	if (genData.keyItem.hasCustomHoverName() && DungeonConfig.enableDebugCheats)
@@ -82,88 +59,68 @@ public class DungeonUtils
 	    String name = genData.keyItem.getHoverName().getContents();
 	    if (name.contentEquals("DebugOne"))
 	    {
-		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 1, genData);
-		return true;
+		return 1;
 	    }
 	    if (name.contentEquals("DebugTwo"))
 	    {
-		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 2, genData);
-		return true;
+		return 2;
 	    }
 	    if (name.contentEquals("DebugThree"))
 	    {
-		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 3, genData);
-		return true;
+		return 3;
 	    }
 	    if (name.contentEquals("DebugFour"))
 	    {
-		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 4, genData);
-		return true;
+		return 4;
 	    }
 	    if (name.contentEquals("bas-4"))
 	    {
-		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 5, genData);
-		return true;
+		return 5;
 	    }
 	    if (name.contentEquals("bas-3"))
 	    {
-		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 6, genData);
-		return true;
+		return 6;
 	    }
 	    if (name.contentEquals("bas-h"))
 	    {
-		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 7, genData);
-		return true;
+		return 7;
 	    }
 	    if (name.contentEquals("bas-c"))
 	    {
-		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 8, genData);
-		return true;
+		return 8;
 	    }
 	    if (name.contentEquals("bas-1"))
 	    {
-		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 9, genData);
-		return true;
+		return 9;
 	    }
 	    if (name.contentEquals("adv-4"))
 	    {
-		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 10, genData);
-		return true;
+		return 10;
 	    }
 	    if (name.contentEquals("adv-3"))
 	    {
-		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 11, genData);
-		return true;
+		return 11;
 	    }
 	    if (name.contentEquals("adv-h"))
 	    {
-		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 12, genData);
-		return true;
+		return 12;
 	    }
 	    if (name.contentEquals("adv-c"))
 	    {
-		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 13, genData);
-		return true;
+		return 13;
 	    }
 	    if (name.contentEquals("adv-1"))
 	    {
-		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 14, genData);
-		return true;
+		return 14;
 	    }
 	    if (name.contains("theme-"))
 	    {
-		String themeStr = name.replaceFirst("theme-", "");
-		genData.dungeonTheme = Integer.parseUnsignedInt(themeStr);
-		DungeonPlacementDebug.place(dungeonWorld, buildX, buildZ, 15, genData);
-		return true;
+		//String themeStr = name.replaceFirst("theme-", "");
+		//genData.dungeonTheme = Integer.parseUnsignedInt(themeStr);
+		return 15;
 	    }
 	}
-
-	// actually place the dungeon
-	//DungeonPlacement.place(dungeonWorld, buildX, buildZ, genData);
-	//DungeonPlacement.placeSigns(dungeonWorld, buildX, buildZ, genData);
-
-	return true;
+	return 0;
     }
 
     // assume that if a sign was placed in the entrance chunk that the build must be either started or finished

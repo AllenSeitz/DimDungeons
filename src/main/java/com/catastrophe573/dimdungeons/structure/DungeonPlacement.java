@@ -67,93 +67,6 @@ public class DungeonPlacement
     {
     }
 
-    // this is the function that actually writes the 8x8 chunk structure to the world, and ALL AT ONCE
-    // this function is deprecated now that slow building is implemented
-    @Deprecated
-    public static boolean place(ServerLevel world, long x, long z, DungeonGenData genData)
-    {
-	// calculate and double check the starting point
-	long entranceChunkX = getEntranceX(x);
-	long entranceChunkZ = getEntranceZ(z);
-	if (!isEntranceChunk(entranceChunkX, entranceChunkZ))
-	{
-	    DimDungeons.logMessageError("DIMDUNGEONS FATAL ERROR: incorrect entrance chunk chosen: " + x + ", " + z);
-	    return false;
-	}
-	DimDungeons.logMessageInfo("DIMDUNGEONS START STRUCTURE at chunk: " + x + ", " + z);
-
-	// pick which logic and set of configs to use
-	DungeonDesigner dbl;
-	int dungeonSize = DungeonConfig.DEFAULT_BASIC_DUNGEON_SIZE;
-	DungeonType dungeonType = DungeonType.BASIC;
-	boolean useLarge = false;
-
-	if (genData.dungeonTheme == 2)
-	{
-	    dungeonType = DungeonType.THEME_OPEN;
-	    dbl = new DungeonDesignerThemeOpen(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
-	    dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeDungeonSize;
-	}
-	else if (z < 0)
-	{
-	    dungeonType = DungeonType.ADVANCED;
-	    dbl = new DungeonDesigner(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
-	    dungeonSize = DungeonConfig.DEFAULT_ADVANCED_DUNGEON_SIZE;
-	    useLarge = true;
-	}
-	else
-	{
-	    dungeonType = DungeonType.BASIC;
-	    dbl = new DungeonDesigner(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
-	    if (genData.dungeonTheme > 0)
-	    {
-		dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeDungeonSize;
-	    }
-	}
-
-	// this is the big call that shuffles the rooms and actually designs the build
-	dbl.calculateDungeonShape(dungeonSize, useLarge);
-
-	// place all 64 rooms (many will be blank), for example the entrance room is at [4][7] in this array
-	for (int i = 0; i < 8; i++)
-	{
-	    for (int j = 0; j < 8; j++)
-	    {
-		DungeonRoom nextRoom = dbl.finalLayout[i][j];
-		if (!nextRoom.hasRoom())
-		{
-		    continue;
-		}
-		else
-		{
-		    // calculate the chunkpos of the room at 0,0 in the top left of the map
-		    // The +4 offset is so that the dungeons align with vanilla blank maps!
-		    ChunkPos cpos = new ChunkPos(((int) x / 16) + i + 4, ((int) z / 16) + j + 4);
-
-		    if (nextRoom.type == RoomType.LARGE)
-		    {
-			if (!putLargeRoomHere(cpos, world, nextRoom, genData, dungeonType))
-			{
-			    DimDungeons.logMessageError("DIMDUNGEONS ERROR UNABLE TO PLACE ***LARGE*** STRUCTURE: " + nextRoom.structure);
-			}
-			closeDoorsOnLargeRoom(cpos, world, nextRoom, genData);
-		    }
-		    else if (nextRoom.type == RoomType.LARGE_DUMMY)
-		    {
-			// this isn't trivial because dummy rooms still have to close doorways that lead out of bounds
-			closeDoorsOnLargeRoom(cpos, world, nextRoom, genData);
-		    }
-		    else if (!putRoomHere(cpos, world, nextRoom, genData, dungeonType))
-		    {
-			DimDungeons.logMessageError("DIMDUNGEONS ERROR UNABLE TO PLACE STRUCTURE: " + nextRoom.structure);
-		    }
-		}
-	    }
-	}
-
-	return true;
-    }
-
     // step 1 of the dungeon building process: build the dungeon in memory, then place signs where all the rooms will go
     public static boolean placeSigns(ServerLevel world, long x, long z, DungeonGenData genData)
     {
@@ -174,6 +87,11 @@ public class DungeonPlacement
 	String stringDungeonType = "basic";
 	boolean useLarge = false;
 
+	if (DungeonConfig.enableDebugCheats && DungeonUtils.doesKeyMatchDebugCheat(genData) > 0)
+	{
+	    // no signs, the dungeon is built instantly abort the operation here
+	    return DungeonPlacementDebug.place(world, x, z, DungeonUtils.doesKeyMatchDebugCheat(genData), genData);
+	}
 	if (genData.dungeonTheme == 2)
 	{
 	    dungeonType = DungeonType.THEME_OPEN;
