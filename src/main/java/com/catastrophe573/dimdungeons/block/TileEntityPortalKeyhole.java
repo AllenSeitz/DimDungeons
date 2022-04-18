@@ -12,8 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -47,6 +45,7 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	long buildX = (long) key.getDungeonTopLeftX(genData.keyItem);
 	long buildZ = (long) key.getDungeonTopLeftZ(genData.keyItem);
 	ServerLevel dungeonWorld = DungeonUtils.getDungeonWorld(level.getServer());
+	boolean placedRoom = false;
 
 	if (!(genData.keyItem.getItem() instanceof ItemPortalKey))
 	{
@@ -72,19 +71,12 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	    ChunkPos cpos = new ChunkPos(((int) buildX / 16) + i + 4, ((int) buildZ / 16) + j + 4); // the arbitrary +4 is to make the dungeons line up with vanilla maps
 
 	    DimDungeons.logMessageInfo("Ticking BUILD_STEP: " + buildStep + ", building chunk " + chunk);
-	    boolean placedRoom = DungeonPlacement.buildRoomAboveSign(dungeonWorld, cpos, genData);
-
-	    // this was a bad idea
-	    // TODO: something else
-	    if (placedRoom)
-	    {
-		float randomPitch = level.getRandom().nextFloat() * 2.0f;
-		level.playSound(null, pos, SoundEvents.ANVIL_LAND, SoundSource.BLOCKS, 1.0F, randomPitch);
-	    }
+	    placedRoom = DungeonPlacement.buildRoomAboveSign(dungeonWorld, cpos, genData);
 	}
 
 	// save the new buildStep
 	BlockState newBlockState = state.setValue(BlockPortalKeyhole.BUILD_STEP, nextBuildStep(buildStep, DungeonConfig.getDungeonBuildSpeed()));
+	newBlockState = newBlockState.setValue(BlockPortalKeyhole.BUILD_PARTICLE, placedRoom);
 	level.setBlockAndUpdate(pos, newBlockState);
     }
 

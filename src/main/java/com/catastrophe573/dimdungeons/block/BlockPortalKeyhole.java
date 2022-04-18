@@ -57,6 +57,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     public static final BooleanProperty FILLED = BooleanProperty.create("filled");
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
     public static final IntegerProperty BUILD_STEP = IntegerProperty.create("build_step", 0, 651);
+    public static final BooleanProperty BUILD_PARTICLE = BooleanProperty.create("build_particle");
 
     public static final String REG_NAME = "block_portal_keyhole";
 
@@ -69,7 +70,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     // used by the constructor and I'm not sure where else anymore?
     public BlockState getMyCustomDefaultState()
     {
-	return this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(FILLED, false).setValue(LIT, false).setValue(BUILD_STEP, 0);
+	return this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(FILLED, false).setValue(LIT, false).setValue(BUILD_STEP, 0).setValue(BUILD_PARTICLE, false);
     }
 
     @Nullable
@@ -97,18 +98,18 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     {
 	boolean hasPortalBlockBelow = worldIn.getBlockState(pos.below()).getBlock() == BlockRegistrar.block_gold_portal;
 
+	Direction enumfacing = (Direction) stateIn.getValue(FACING);
+	double d0 = (double) pos.getX() + 0.5D;
+	double d1 = (double) pos.getY() + rand.nextDouble() * 6.0D / 16.0D;
+	double d2 = (double) pos.getZ() + 0.5D;
+	double d4 = rand.nextDouble() * 0.6D - 0.3D;
+
 	if (stateIn.getValue(LIT) && hasPortalBlockBelow)
 	{
-	    Direction enumfacing = (Direction) stateIn.getValue(FACING);
-	    double d0 = (double) pos.getX() + 0.5D;
-	    double d1 = (double) pos.getY() + rand.nextDouble() * 6.0D / 16.0D;
-	    double d2 = (double) pos.getZ() + 0.5D;
-	    double d4 = rand.nextDouble() * 0.6D - 0.3D;
-
 	    // play sound effects randomly
 	    if (rand.nextDouble() < 0.1D && DungeonConfig.playPortalSounds)
 	    {
-		worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.PORTAL_AMBIENT, SoundSource.BLOCKS, 1.0F, 3.0F, false);
+		worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.PORTAL_AMBIENT, SoundSource.BLOCKS, 1.0F, 2.5F, false);
 	    }
 
 	    if (DungeonConfig.showParticles)
@@ -117,24 +118,50 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		{
 		case WEST:
 		    worldIn.addParticle(ParticleTypes.PORTAL, d0 - 0.52D, d1, d2 + d4, -1.0D, 1.0D, 0.0D);
-		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
-		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, -0.23D);
 		    break;
 		case EAST:
 		    worldIn.addParticle(ParticleTypes.PORTAL, d0 + 0.52D, d1, d2 + d4, 1.0D, 1.0D, 0.0D);
-		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 + 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
-		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 + 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, -0.23D);
 		    break;
 		case NORTH:
 		    worldIn.addParticle(ParticleTypes.PORTAL, d0 + d4, d1, d2 - 0.52D, 0.0D, 1.0D, -1.0D);
-		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, 0.23D, 0.0D, 0.0D);
-		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, -0.23D, 0.0D, 0.0D);
+		    break;
+		default:
+		    worldIn.addParticle(ParticleTypes.PORTAL, d0 + d4, d1, d2 + 0.52D, 0.0D, 1.0D, 1.0D);
+		    break;
+		}
+	    }
+	}
+
+	// this happens on ticks when the keyhole places a structure
+	if (stateIn.getValue(BUILD_PARTICLE))
+	{
+	    if (DungeonConfig.playPortalSounds)
+	    {
+		float randomPitch = worldIn.getRandom().nextFloat() * 2.0f;
+		worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 0.7F, randomPitch, false);
+	    }
+
+	    if (DungeonConfig.showParticles)
+	    {
+		switch (enumfacing)
+		{
+		case WEST:
+		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
+		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, -0.23D);
+		    break;
+		case EAST:
+		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
+		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, -0.23D);
+		    break;
+		case NORTH:
+		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, 0.23D, 0.0D, 0.0D);
+		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, -0.23D, 0.0D, 0.0D);
 		    break;
 		default:
 		case SOUTH:
-		    worldIn.addParticle(ParticleTypes.PORTAL, d0 + d4, d1, d2 + 0.52D, 0.0D, 1.0D, 1.0D);
-		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, 0.23D, 0.0D, 0.0D);
-		    //worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, -0.23D, 0.0D, 0.0D);
+		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, 0.23D, 0.0D, 0.0D);
+		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, -0.23D, 0.0D, 0.0D);
+		    break;
 		}
 	    }
 	}
@@ -391,7 +418,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
-	builder.add(FACING, FILLED, LIT, BUILD_STEP);
+	builder.add(FACING, FILLED, LIT, BUILD_STEP, BUILD_PARTICLE);
     }
 
     // Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed blockstate.
