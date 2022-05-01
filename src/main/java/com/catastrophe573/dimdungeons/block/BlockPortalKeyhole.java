@@ -133,12 +133,20 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	}
 
 	// this happens on ticks when the keyhole places a structure
+	if (stateIn.getValue(BUILD_STEP) == 650)
+	{
+	    if (DungeonConfig.playPortalSounds)
+	    {
+		worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.END_PORTAL_SPAWN, SoundSource.BLOCKS, 0.4F, 1.0F, false);
+	    }	    
+	}
+	
 	if (stateIn.getValue(BUILD_PARTICLE))
 	{
 	    if (DungeonConfig.playPortalSounds)
 	    {
 		float randomPitch = worldIn.getRandom().nextFloat() * 2.0f;
-		worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 0.7F, randomPitch, false);
+		worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.END_PORTAL_FRAME_FILL, SoundSource.BLOCKS, 0.7F, randomPitch, false);
 	    }
 
 	    if (DungeonConfig.showParticles)
@@ -148,19 +156,27 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		case WEST:
 		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
 		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, -0.23D);
+
+		    worldIn.addParticle(ParticleTypes.FLAME, d0 + d4, d1 + 0.5D, d2 - 0.12D, -0. -0.08D, 0.0D, 0.0D);		    
 		    break;
 		case EAST:
 		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
 		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, -0.23D);
+
+		    worldIn.addParticle(ParticleTypes.FLAME, d0 + d4, d1 + 0.5D, d2 - 0.12D, 0.08D, 0.0D, 0.0D);
 		    break;
 		case NORTH:
 		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, 0.23D, 0.0D, 0.0D);
 		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, -0.23D, 0.0D, 0.0D);
+		    
+		    worldIn.addParticle(ParticleTypes.FLAME, d0 - 0.12D, d1 + 0.5D, d2 + d4, 0.0D, 0.0D, -0.08D);
 		    break;
 		default:
 		case SOUTH:
 		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, 0.23D, 0.0D, 0.0D);
 		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, -0.23D, 0.0D, 0.0D);
+		    
+		    worldIn.addParticle(ParticleTypes.FLAME, d0 - 0.12D, d1 + 0.5D, d2 + d4, 0.0D, 0.0D, 0.08D);
 		    break;
 		}
 	    }
