@@ -2,7 +2,7 @@
     "name": "Version 1.13.4",
     "icon": "minecraft:book",
     "category": "dimdungeons:patch_notes",	
-	"sortnum": 100,
+	"sortnum": 130,
     "pages": [
         {
             "type": "text",
