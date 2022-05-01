@@ -70,7 +70,7 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	    int j = chunk % 8;
 	    ChunkPos cpos = new ChunkPos(((int) buildX / 16) + i + 4, ((int) buildZ / 16) + j + 4); // the arbitrary +4 is to make the dungeons line up with vanilla maps
 
-	    DimDungeons.logMessageInfo("Ticking BUILD_STEP: " + buildStep + ", building chunk " + chunk);
+	    //DimDungeons.logMessageInfo("Ticking BUILD_STEP: " + buildStep + ", building chunk " + chunk);
 	    placedRoom = DungeonPlacement.buildRoomAboveSign(dungeonWorld, cpos, genData);
 	}
 
