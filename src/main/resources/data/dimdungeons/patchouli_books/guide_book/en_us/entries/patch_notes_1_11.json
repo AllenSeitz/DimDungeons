@@ -6,7 +6,7 @@
     "pages": [
         {
             "type": "text",
-            "text": "$(li)Added new LARGE rooms to advanced dungeons.$(li). Added other new rooms.$(li)Adjusted the models for both Gold Portal and Portal Crown Vlocks."
+            "text": "$(li)Added new LARGE rooms to advanced dungeons.$(li)Added other new rooms.$(li)Adjusted the models for both Gold Portal and Portal Crown Blocks."
         }
     ]
 }

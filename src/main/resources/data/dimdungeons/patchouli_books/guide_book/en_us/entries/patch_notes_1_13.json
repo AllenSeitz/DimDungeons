@@ -6,15 +6,11 @@
     "pages": [
         {
             "type": "text",
-            "text": "$(li)Over 70 rooms were revised.$(li)Some blocks have new textures by MrDenn.$(li)Portals to dungeons can now be built in any dimension."
+            "text": "$(li)Over 70 rooms were revised.$(li)Some blocks have new textures by MrDenn.$(li)Portals to dungeons can now be built in any dimension.$(li)Fixed some rooms in which players could get stuck.$(li)Improved the functionality of the Bell of Secrets. (It now works.)"
         },
         {
             "type": "text",
-            "text": "$(li)Various bugs relating to the worldborder have been fixed.$(li)New themed dungeons!$(li)Enemies will randomly carry keys to themed dungeons.$(li)"
-		},
-        {
-            "type": "text",
-            "text": "$(li)Fixed some rooms in which players could get stuck.$(li)Changed the functionality of the Bell of Secrets. (It now works.)$(li)Made the pickaxe the official tool for all blocks in this mod."
-        }		
+            "text": "$(li)Various bugs relating to the worldborder have been fixed.$(li)New themed dungeons!$(li)Enemies will randomly carry keys to themed dungeons.$(li)Made the pickaxe the official tool for all blocks in this mod."
+		}		
     ]
 }

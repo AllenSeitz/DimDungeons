@@ -6,7 +6,7 @@
     "pages": [
         {
             "type": "text",
-            "text": "$(li)Added a second themed dungeon.$"
+            "text": "$(li)Added a second themed dungeon with a sandy theme."
         }		
     ]
 }

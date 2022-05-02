@@ -6,7 +6,7 @@
     "pages": [
         {
             "type": "text",
-            "text": "$(li)Endermen and Shulkers can no longer teleport inside dungeons.$(li)Players can no longer use Chorus Fruit to teleport inside dungeons.$(li)Added a secret new item which can help reveal other secrets! It can be found in chests."
+            "text": "$(li)Endermen and Shulkers can no longer teleport inside dungeons.$(li)Players can no longer use Chorus Fruit to teleport inside dungeons.$(li)Added the Bell of Secrets, which can help reveal hidden treasures! It can be found in chests."
         },
         {
             "type": "text",
