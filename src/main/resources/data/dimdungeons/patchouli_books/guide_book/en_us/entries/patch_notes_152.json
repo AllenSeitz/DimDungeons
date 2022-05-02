@@ -1,0 +1,16 @@
+{
+    "name": "Version 152",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 152,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Changed dungeon generation to occur in smaller steps over multiple ticks.$(li)Added sound effects and particles to the keyhole to let you know that it is working.$(li)Fixed multiple bugs related to advancements."
+        },
+        {
+            "type": "text",
+            "text": "$(li)Added a ceiling to the sandy theme and made changes to a few rooms.$(li)Fixed an armor stand bug in one of the advice rooms.$(li)Fixed a certain jailed villager's trades.$(li)Changed the mod version numbers to be less confusing with Minecraft version numbers."
+		}		
+    ]
+}
