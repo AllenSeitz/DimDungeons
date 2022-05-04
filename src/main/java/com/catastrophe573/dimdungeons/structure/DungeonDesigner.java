@@ -15,15 +15,15 @@ import net.minecraft.world.level.block.Rotation;
 public class DungeonDesigner
 {
     // an enumeration of the six room types, used internally for randomization and classification
-    enum RoomType
+    public enum RoomType
     {
 	ENTRANCE, END, CORNER, HALLWAY, THREEWAY, FOURWAY, LARGE, LARGE_DUMMY, NONE
     };
 
     // an enumeration of dungeon types
-    enum DungeonType
+    public enum DungeonType
     {
-	BASIC, ADVANCED, THEME_OPEN
+	BASIC, ADVANCED, THEME_OPEN, THEME_REGULAR
     };
 
     // this is the final constructed dungeon
@@ -31,6 +31,8 @@ public class DungeonDesigner
     public int enemyVariation1 = 0;
     public int enemyVariation2 = 0;
     public int dungeonSize = 20;
+    DungeonType dungeonType = DungeonType.BASIC;
+    public int dungeonTheme = 0;
 
     // these contain the candidates from pool selection, from the config file
     ArrayList<String> entrance = Lists.newArrayList();
@@ -57,6 +59,8 @@ public class DungeonDesigner
     public DungeonDesigner(Random randIn, long chunkX, long chunkZ, DungeonType type, int theme)
     {
 	rand = randIn;
+	dungeonType = type; // saved for later and attached to rooms in world data
+	dungeonTheme = theme; // saved for later and attached to rooms in world data
 
 	if (theme > 0 && theme <= DungeonConfig.themeSettings.size())
 	{
@@ -844,8 +848,10 @@ public class DungeonDesigner
     public void placeRoomShape(int x, int z, String room, RoomType type, Rotation rot)
     {
 	finalLayout[x][z].structure = room;
-	finalLayout[x][z].type = type;
+	finalLayout[x][z].roomType = type;
 	finalLayout[x][z].rotation = rot;
+	finalLayout[x][z].dungeonType = dungeonType;
+	finalLayout[x][z].theme = dungeonTheme;
 	//System.out.println("Put a " + type.toString() + " at (" + x + ", " + z + ") with rotation " + rot.toString() + ".");
 	//DimDungeons.LOGGER.info("Put a " + room + " at (" + x + ", " + z + ") with rotation " + rot.toString() + ".");
 
@@ -853,16 +859,22 @@ public class DungeonDesigner
 	if (type == RoomType.LARGE)
 	{
 	    finalLayout[x + 1][z].structure = "large_dummy";
-	    finalLayout[x + 1][z].type = RoomType.LARGE_DUMMY;
+	    finalLayout[x + 1][z].roomType = RoomType.LARGE_DUMMY;
 	    finalLayout[x + 1][z].rotation = rot;
+	    finalLayout[x + 1][z].dungeonType = dungeonType;
+	    finalLayout[x + 1][z].theme = dungeonTheme;
 
 	    finalLayout[x][z + 1].structure = "large_dummy";
-	    finalLayout[x][z + 1].type = RoomType.LARGE_DUMMY;
+	    finalLayout[x][z + 1].roomType = RoomType.LARGE_DUMMY;
 	    finalLayout[x][z + 1].rotation = rot;
+	    finalLayout[x][z + 1].dungeonType = dungeonType;
+	    finalLayout[x][z + 1].theme = dungeonTheme;
 
 	    finalLayout[x + 1][z + 1].structure = "large_dummy";
-	    finalLayout[x + 1][z + 1].type = RoomType.LARGE_DUMMY;
+	    finalLayout[x + 1][z + 1].roomType = RoomType.LARGE_DUMMY;
 	    finalLayout[x + 1][z + 1].rotation = rot;
+	    finalLayout[x + 1][z + 1].dungeonType = dungeonType;
+	    finalLayout[x + 1][z + 1].theme = dungeonTheme;
 	}
     }
 

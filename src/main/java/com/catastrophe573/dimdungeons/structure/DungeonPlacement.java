@@ -148,7 +148,7 @@ public class DungeonPlacement
 			sign.setHasGlowingText(true);
 			sign.setMessage(0, new TextComponent(nextRoom.structure));
 			sign.setMessage(1, new TextComponent(nextRoom.rotation.toString()));
-			sign.setMessage(2, new TextComponent(nextRoom.type.toString()));
+			sign.setMessage(2, new TextComponent(nextRoom.roomType.toString()));
 			sign.setMessage(3, new TextComponent(stringDungeonType)); // "basic", "advanced", or "theme #"
 			sign.setEditable(false);
 		    }
@@ -183,7 +183,7 @@ public class DungeonPlacement
 	world.setBlockAndUpdate(bpos.below().below(), Blocks.BEDROCK.defaultBlockState());
 
 	// step 3: place room here, with these parameters
-	if (nextRoom.type == RoomType.LARGE)
+	if (nextRoom.roomType == RoomType.LARGE)
 	{
 	    if (!putLargeRoomHere(cpos, world, nextRoom, genData, dungeonType))
 	    {
@@ -191,7 +191,7 @@ public class DungeonPlacement
 	    }
 	    closeDoorsOnLargeRoom(cpos, world, nextRoom, genData);
 	}
-	else if (nextRoom.type == RoomType.LARGE_DUMMY)
+	else if (nextRoom.roomType == RoomType.LARGE_DUMMY)
 	{
 	    // this isn't trivial because dummy rooms still have to close doorways that lead out of bounds
 	    closeDoorsOnLargeRoom(cpos, world, nextRoom, genData);
@@ -220,7 +220,7 @@ public class DungeonPlacement
 	String rotationText = ((TextComponent) sign.getMessage(1, false)).getString();
 	String roomTypeText = ((TextComponent) sign.getMessage(2, false)).getString();
 	room.rotation = Rotation.valueOf(rotationText);
-	room.type = RoomType.valueOf(roomTypeText);
+	room.roomType = RoomType.valueOf(roomTypeText);
 
 	return room;
     }
@@ -381,7 +381,7 @@ public class DungeonPlacement
 	else
 	{
 	    // extend the doorway on the minimap
-	    if (westRoom.type != RoomType.LARGE && westRoom.type != RoomType.LARGE_DUMMY)
+	    if (westRoom.roomType != RoomType.LARGE && westRoom.roomType != RoomType.LARGE_DUMMY)
 	    {
 		world.setBlock(startPos.south(7).east(1).above(7), redBlock, 2);
 		world.setBlock(startPos.south(8).east(1).above(7), redBlock, 2);
@@ -421,7 +421,7 @@ public class DungeonPlacement
 	else
 	{
 	    // extend the doorway on the minimap
-	    if (eastRoom.type != RoomType.LARGE && eastRoom.type != RoomType.LARGE_DUMMY)
+	    if (eastRoom.roomType != RoomType.LARGE && eastRoom.roomType != RoomType.LARGE_DUMMY)
 	    {
 		world.setBlock(startPos.south(7).east(14).above(7), redBlock, 2);
 		world.setBlock(startPos.south(8).east(14).above(7), redBlock, 2);
@@ -446,7 +446,7 @@ public class DungeonPlacement
 	else
 	{
 	    // extend the doorway on the minimap
-	    if (northRoom.type != RoomType.LARGE && northRoom.type != RoomType.LARGE_DUMMY)
+	    if (northRoom.roomType != RoomType.LARGE && northRoom.roomType != RoomType.LARGE_DUMMY)
 	    {
 		// extend the doorway on the minimap
 		world.setBlock(startPos.south(1).east(7).above(7), redBlock, 2);
@@ -471,7 +471,7 @@ public class DungeonPlacement
 	}
 	else
 	{
-	    if (southRoom.type != RoomType.LARGE && southRoom.type != RoomType.LARGE_DUMMY)
+	    if (southRoom.roomType != RoomType.LARGE && southRoom.roomType != RoomType.LARGE_DUMMY)
 	    {
 		// extend the doorway on the minimap
 		world.setBlock(startPos.south(14).east(7).above(7), redBlock, 2);

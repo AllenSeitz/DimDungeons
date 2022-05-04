@@ -1,5 +1,6 @@
 package com.catastrophe573.dimdungeons.structure;
 
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.RoomType;
 
 import net.minecraft.world.level.block.Rotation;
@@ -9,49 +10,53 @@ public class DungeonRoom
 {
     public String structure;
     public Rotation rotation;
-    public RoomType type;
+    public RoomType roomType;
+    public DungeonDesigner.DungeonType dungeonType;
+    public int theme;
 
-    DungeonRoom()
+    public DungeonRoom()
     {
 	structure = "";
 	rotation = Rotation.NONE;
-	type = RoomType.NONE;
+	roomType = RoomType.NONE;
+	dungeonType = DungeonType.BASIC;
+	theme = 0;
     }
 
     public boolean hasRoom()
     {
-	return type != RoomType.NONE;
+	return roomType != RoomType.NONE;
     }
 
     // warning: this function always returns true for large rooms
     public boolean hasDoorNorth()
     {
-	return type == RoomType.FOURWAY || type == RoomType.LARGE || type == RoomType.LARGE_DUMMY || (type == RoomType.ENTRANCE && rotation != Rotation.CLOCKWISE_180) || (type == RoomType.THREEWAY && rotation != Rotation.NONE)
-		|| (type == RoomType.CORNER && rotation == Rotation.NONE) || (type == RoomType.CORNER && rotation == Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.HALLWAY && rotation == Rotation.NONE)
-		|| (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_180) || (type == RoomType.END && rotation == Rotation.CLOCKWISE_180);
+	return roomType == RoomType.FOURWAY || roomType == RoomType.LARGE || roomType == RoomType.LARGE_DUMMY || (roomType == RoomType.ENTRANCE && rotation != Rotation.CLOCKWISE_180) || (roomType == RoomType.THREEWAY && rotation != Rotation.NONE)
+		|| (roomType == RoomType.CORNER && rotation == Rotation.NONE) || (roomType == RoomType.CORNER && rotation == Rotation.COUNTERCLOCKWISE_90) || (roomType == RoomType.HALLWAY && rotation == Rotation.NONE)
+		|| (roomType == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_180) || (roomType == RoomType.END && rotation == Rotation.CLOCKWISE_180);
     }
 
     // warning: this function always returns true for large rooms
     public boolean hasDoorSouth()
     {
-	return type == RoomType.FOURWAY || type == RoomType.LARGE || type == RoomType.LARGE_DUMMY || (type == RoomType.ENTRANCE && rotation != Rotation.NONE) || (type == RoomType.THREEWAY && rotation != Rotation.CLOCKWISE_180)
-		|| (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_90) || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_180) || (type == RoomType.HALLWAY && rotation == Rotation.NONE)
-		|| (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_180) || (type == RoomType.END && rotation == Rotation.NONE);
+	return roomType == RoomType.FOURWAY || roomType == RoomType.LARGE || roomType == RoomType.LARGE_DUMMY || (roomType == RoomType.ENTRANCE && rotation != Rotation.NONE) || (roomType == RoomType.THREEWAY && rotation != Rotation.CLOCKWISE_180)
+		|| (roomType == RoomType.CORNER && rotation == Rotation.CLOCKWISE_90) || (roomType == RoomType.CORNER && rotation == Rotation.CLOCKWISE_180) || (roomType == RoomType.HALLWAY && rotation == Rotation.NONE)
+		|| (roomType == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_180) || (roomType == RoomType.END && rotation == Rotation.NONE);
     }
 
     // warning: this function always returns true for large rooms
     public boolean hasDoorWest()
     {
-	return type == RoomType.FOURWAY || type == RoomType.LARGE || type == RoomType.LARGE_DUMMY || (type == RoomType.ENTRANCE && rotation != Rotation.CLOCKWISE_90) || (type == RoomType.THREEWAY && rotation != Rotation.COUNTERCLOCKWISE_90)
-		|| (type == RoomType.CORNER && rotation == Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_180) || (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_90)
-		|| (type == RoomType.HALLWAY && rotation == Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.END && rotation == Rotation.CLOCKWISE_90);
+	return roomType == RoomType.FOURWAY || roomType == RoomType.LARGE || roomType == RoomType.LARGE_DUMMY || (roomType == RoomType.ENTRANCE && rotation != Rotation.CLOCKWISE_90) || (roomType == RoomType.THREEWAY && rotation != Rotation.COUNTERCLOCKWISE_90)
+		|| (roomType == RoomType.CORNER && rotation == Rotation.COUNTERCLOCKWISE_90) || (roomType == RoomType.CORNER && rotation == Rotation.CLOCKWISE_180) || (roomType == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_90)
+		|| (roomType == RoomType.HALLWAY && rotation == Rotation.COUNTERCLOCKWISE_90) || (roomType == RoomType.END && rotation == Rotation.CLOCKWISE_90);
     }
 
     // warning: this function always returns true for large rooms
     public boolean hasDoorEast()
     {
-	return type == RoomType.FOURWAY || type == RoomType.LARGE || type == RoomType.LARGE_DUMMY || (type == RoomType.ENTRANCE && rotation != Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.THREEWAY && rotation != Rotation.CLOCKWISE_90)
-		|| (type == RoomType.CORNER && rotation == Rotation.NONE) || (type == RoomType.CORNER && rotation == Rotation.CLOCKWISE_90) || (type == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_90)
-		|| (type == RoomType.HALLWAY && rotation == Rotation.COUNTERCLOCKWISE_90) || (type == RoomType.END && rotation == Rotation.COUNTERCLOCKWISE_90);
+	return roomType == RoomType.FOURWAY || roomType == RoomType.LARGE || roomType == RoomType.LARGE_DUMMY || (roomType == RoomType.ENTRANCE && rotation != Rotation.COUNTERCLOCKWISE_90) || (roomType == RoomType.THREEWAY && rotation != Rotation.CLOCKWISE_90)
+		|| (roomType == RoomType.CORNER && rotation == Rotation.NONE) || (roomType == RoomType.CORNER && rotation == Rotation.CLOCKWISE_90) || (roomType == RoomType.HALLWAY && rotation == Rotation.CLOCKWISE_90)
+		|| (roomType == RoomType.HALLWAY && rotation == Rotation.COUNTERCLOCKWISE_90) || (roomType == RoomType.END && rotation == Rotation.COUNTERCLOCKWISE_90);
     }
 };
