@@ -41,7 +41,7 @@ public class TileEntityPortalKeyhole extends BlockEntity
     public static void buildTick(Level level, BlockPos pos, BlockState state, TileEntityPortalKeyhole self)
     {
 	ItemPortalKey key = (ItemPortalKey) self.getObjectInserted().getItem();
-	DungeonGenData genData = DungeonGenData.Create().setKeyItem(self.getObjectInserted()).setTheme(key.getDungeonTheme(self.getObjectInserted())).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(level.dimension()));
+	DungeonGenData genData = DungeonGenData.Create().setKeyItem(self.getObjectInserted()).setDungeonType(key.getDungeonType(self.getObjectInserted())).setTheme(key.getDungeonTheme(self.getObjectInserted())).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(level.dimension()));
 	long buildX = (long) key.getDungeonTopLeftX(genData.keyItem);
 	long buildZ = (long) key.getDungeonTopLeftZ(genData.keyItem);
 	ServerLevel dungeonWorld = DungeonUtils.getDungeonWorld(level.getServer());

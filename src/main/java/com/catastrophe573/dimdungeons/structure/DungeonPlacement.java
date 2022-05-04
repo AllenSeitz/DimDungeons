@@ -8,6 +8,7 @@ import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import com.catastrophe573.dimdungeons.block.TileEntityLocalTeleporter;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
+import com.catastrophe573.dimdungeons.dimension.DungeonData;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
@@ -99,7 +100,7 @@ public class DungeonPlacement
 	    dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeDungeonSize;
 	    stringDungeonType = "theme " + genData.dungeonTheme;
 	}
-	else if (z < 0)
+	else if (genData.dungeonType == DungeonType.ADVANCED)
 	{
 	    dungeonType = DungeonType.ADVANCED;
 	    dbl = new DungeonDesigner(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
@@ -121,7 +122,8 @@ public class DungeonPlacement
 
 	// this is the big call that shuffles the rooms and actually designs the build
 	dbl.calculateDungeonShape(dungeonSize, useLarge);
-
+	DungeonData.get(world).registerNewRooms(dbl, x, z);
+	
 	// place signs in chunks where rooms will go. the contents of the room are written on the sign for future ticks to refer to
 	for (int i = 0; i < 8; i++)
 	{

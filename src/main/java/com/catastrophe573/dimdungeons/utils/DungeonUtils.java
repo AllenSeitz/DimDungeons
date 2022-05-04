@@ -196,21 +196,13 @@ public class DungeonUtils
 	return dimension.location().getNamespace() + ":" + dimension.location().getPath();
     }
 
-    // returns the limit of the dungeon space not in blocks, but in dungeon widths (BLOCKS_APART_PER_DUNGEON)
-    public static int getLimitOfWorldBorder(MinecraftServer server)
+    // returns the limit of the dungeon space not in blocks, but in dungeon widths (which is BLOCKS_APART_PER_DUNGEON)
+    public static long getLimitOfWorldBorder(MinecraftServer server)
     {
-	int block_limit = ItemPortalKey.RANDOM_COORDINATE_RANGE * ItemPortalKey.BLOCKS_APART_PER_DUNGEON;
-
-	// I know that the world border setting is global and affects all dimensions, but some mods change this
 	ResourceKey<Level> configkey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(DungeonConfig.worldborderToRespect));
 	ServerLevel world = server.getLevel(configkey);
 	double size = world.getWorldBorder().getSize() / 2;
-	if (size < block_limit)
-	{
-	    return (int) (Math.round(size) / ItemPortalKey.BLOCKS_APART_PER_DUNGEON);
-	}
 
-	// the world border is not an issue, this function does nothing, proceed as normal
-	return ItemPortalKey.RANDOM_COORDINATE_RANGE;
+	return Math.round(size);
     }
 }

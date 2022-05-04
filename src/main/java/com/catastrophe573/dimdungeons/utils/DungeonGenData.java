@@ -2,6 +2,7 @@ package com.catastrophe573.dimdungeons.utils;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
@@ -18,10 +19,8 @@ public class DungeonGenData
 
     // this is derived from the key, but stored here for convenience. remember theme < 1 means no theme
     public int dungeonTheme = -1;
+    public DungeonType dungeonType = DungeonType.BASIC;
     
-    // this is derived from the theme, but also stored here for convenience. (TODO: make this an enum)
-    public int layoutType = 0;
-
     DungeonGenData()
     {
     }
@@ -52,6 +51,12 @@ public class DungeonGenData
 	    DimDungeons.logMessageError("DIMDUNGEONS ERROR: attempting to build a dungeon with a theme number greater than the number of themes defined in the config. The theme will be ignored.");
 	    dungeonTheme = 0;
 	}
+	return this;
+    }
+    
+    public DungeonGenData setDungeonType(DungeonType type)
+    {
+	dungeonType = type;
 	return this;
     }
 }

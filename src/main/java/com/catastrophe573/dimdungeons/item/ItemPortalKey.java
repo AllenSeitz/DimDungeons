@@ -2,8 +2,11 @@ package com.catastrophe573.dimdungeons.item;
 
 import java.util.Random;
 
+import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
+import com.catastrophe573.dimdungeons.dimension.DungeonData;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.world.level.block.state.BlockState;
@@ -43,9 +46,9 @@ public class ItemPortalKey extends Item
     public static final String NBT_NAME_PART_1 = "name_part_1";
     public static final String NBT_NAME_PART_2 = "name_part_2";
     public static final String NBT_THEME = "theme";
+    public static final String NBT_DUNGEON_TYPE = "dungeon_type";
 
     public static final int BLOCKS_APART_PER_DUNGEON = 256; // 16 chunks to try to keep "noise" or other interference from neighbors to a minimum (also makes maps work)
-    public static final int RANDOM_COORDINATE_RANGE = 8192; // (0-8192 * 256) = 0 to 2,097,152
     public static final float ENTRANCE_OFFSET_X = 8.0f + (8 * 16); // applied when the player teleports in, centered on the two-block-wide return portal
     public static final float ENTRANCE_OFFSET_Z = 12.5f + (11 * 16); // applied when the player teleports in, centered on the two-block-wide return portal
 
@@ -59,7 +62,7 @@ public class ItemPortalKey extends Item
     {
 	if (((ItemPortalKey) stack.getItem()).isActivated(stack))
 	{
-	    if (((ItemPortalKey) stack.getItem()).getWarpZ(stack) < 0)
+	    if (((ItemPortalKey) stack.getItem()).getKeyLevel(stack) == 2)
 	    {
 		return 0.2f; // level 2 key
 	    }
@@ -75,7 +78,7 @@ public class ItemPortalKey extends Item
 	{
 	    return 0;
 	}
-	if (getWarpZ(stack) < 0)
+	if (getWarpZ(stack) < 0 || getDungeonType(stack) == DungeonType.ADVANCED)
 	{
 	    return 2;
 	}
@@ -89,16 +92,21 @@ public class ItemPortalKey extends Item
 	data.putBoolean(NBT_KEY_ACTIVATED, true);
 	data.putBoolean(NBT_BUILT, false);
 	data.putInt(NBT_THEME, theme);
-
+	data.putString(NBT_DUNGEON_TYPE, DungeonType.BASIC.toString());	    
+	
 	// where is this key going?
-	Random random = server.overworld().getRandom();
-	int generation_limit = DungeonUtils.getLimitOfWorldBorder(server);
-	int destX = random.nextInt(generation_limit);
-	int destZ = random.nextInt(generation_limit);
-	data.putInt(NBT_KEY_DESTINATION_X, destX);
-	data.putInt(NBT_KEY_DESTINATION_Z, destZ);
+	long generation_limit = DungeonUtils.getLimitOfWorldBorder(server);
+	long dungeonsPerLimit = generation_limit / BLOCKS_APART_PER_DUNGEON;
+	int nextDungeonNumber = DungeonData.get(server.getLevel(DimDungeons.DUNGEON_DIMENSION)).getNumKeysRegistered() + 1;
+
+	// go as far as possible on the z-axis, then the x-axis, staying in the positive x/z quadrant
+	long destZ = nextDungeonNumber / dungeonsPerLimit;
+	long destX = nextDungeonNumber % dungeonsPerLimit;
+	data.putInt(NBT_KEY_DESTINATION_X, (int) destX);
+	data.putInt(NBT_KEY_DESTINATION_Z, (int) destZ);
 
 	// give it a funny random name
+	Random random = server.overworld().getRandom();
 	int nameType = random.nextInt(3);
 	if (theme > 0)
 	{
@@ -117,6 +125,7 @@ public class ItemPortalKey extends Item
 	}
 
 	stack.setTag(data);
+	DungeonData.get(DungeonUtils.getDungeonWorld(server)).notifyOfNewKeyActivation();
     }
 
     // the only way to obtain level 2 keys is to find them already activated
@@ -126,43 +135,27 @@ public class ItemPortalKey extends Item
 	data.putBoolean(NBT_KEY_ACTIVATED, true);
 	data.putBoolean(NBT_BUILT, false);
 	data.putInt(NBT_THEME, 0);
+	data.putString(NBT_DUNGEON_TYPE, DungeonType.ADVANCED.toString());	    
 
 	// where is this key going?
-	Random random = server.overworld().getRandom();
-	int generation_limit = DungeonUtils.getLimitOfWorldBorder(server);
-	int destX = random.nextInt(generation_limit);
-	int destZ = random.nextInt(generation_limit);
-	data.putInt(NBT_KEY_DESTINATION_X, destX);
-	data.putInt(NBT_KEY_DESTINATION_Z, destZ * -1);
+	long generation_limit = DungeonUtils.getLimitOfWorldBorder(server);
+	long dungeonsPerLimit = generation_limit / BLOCKS_APART_PER_DUNGEON;
+	long nextDungeonNumber = DungeonData.get(server.getLevel(DimDungeons.DUNGEON_DIMENSION)).getNumKeysRegistered() + 1;
+
+	// go as far as possible on the z-axis, then the x-axis, staying in the positive x/z quadrant
+	long destZ = nextDungeonNumber / dungeonsPerLimit;
+	long destX = nextDungeonNumber % dungeonsPerLimit;
+	data.putInt(NBT_KEY_DESTINATION_X, (int) destX);
+	data.putInt(NBT_KEY_DESTINATION_Z, (int) destZ);
 
 	// give it a funny random name like "Key to the [LARGE] [PLACE]"
+	Random random = server.overworld().getRandom();
 	data.putInt(NBT_NAME_TYPE, 3);
 	data.putInt(NBT_NAME_PART_1, random.nextInt(20)); // place
 	data.putInt(NBT_NAME_PART_2, random.nextInt(12)); // largeness
 
 	stack.setTag(data);
-    }
-
-    // used by the /gendungeon cheat and nothing else
-    public void forceCoordinates(ItemStack stack, int destX, int destZ)
-    {
-	CompoundTag data = new CompoundTag();
-	data.putBoolean(NBT_KEY_ACTIVATED, true);
-	data.putBoolean(NBT_BUILT, false);
-	data.putInt(NBT_THEME, 0);
-
-	// where is this key going?
-	destX = destX < 0 || destX > RANDOM_COORDINATE_RANGE ? 0 : destX;
-	destZ = destZ < RANDOM_COORDINATE_RANGE * -1 || destZ > RANDOM_COORDINATE_RANGE ? 0 : destZ;
-	data.putInt(NBT_KEY_DESTINATION_X, destX);
-	data.putInt(NBT_KEY_DESTINATION_Z, destZ);
-
-	// give it a funny random name like "Key to the [LARGE] [PLACE]"
-	data.putInt(NBT_NAME_TYPE, 3);
-	data.putInt(NBT_NAME_PART_1, destX % 20); // place
-	data.putInt(NBT_NAME_PART_2, destZ % 12); // largeness
-
-	stack.setTag(data);
+	DungeonData.get(DungeonUtils.getDungeonWorld(server)).notifyOfNewKeyActivation();	
     }
 
     public boolean isActivated(ItemStack stack)
@@ -337,6 +330,28 @@ public class ItemPortalKey extends Item
 	    }
 	}
 	return -1;
+    }
+
+    public DungeonType getDungeonType(ItemStack stack)
+    {
+	if (stack != null && !stack.isEmpty())
+	{
+	    CompoundTag itemData = stack.getTag();
+
+	    // keys created prior to version 153 will not have this field
+	    if (itemData != null && itemData.contains(NBT_DUNGEON_TYPE))
+	    {
+		return DungeonType.valueOf(itemData.getString(NBT_DUNGEON_TYPE));
+	    }
+
+	    // this is for legacy keys that relied on a -Z coordinate to signal advanced dungeons
+	    if (getWarpZ(stack) < 0)
+	    {
+		return DungeonType.ADVANCED;
+	    }
+	}
+
+	return DungeonType.BASIC;
     }
 
     @Override

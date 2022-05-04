@@ -215,7 +215,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			long entranceZ = buildZ + (11 * 16);
 
 			// this data structure is used for both placing signs and updating the exit portal
-			DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setTheme(key.getDungeonTheme(playerItem)).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
+			DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setDungeonType(key.getDungeonType(playerItem)).setTheme(key.getDungeonTheme(playerItem)).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
 
 			// should the key be marked as used?
 			if (shouldBuildDungeon(playerItem))
