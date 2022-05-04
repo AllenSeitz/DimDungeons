@@ -8,7 +8,10 @@ import javax.annotation.Nullable;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
+import com.catastrophe573.dimdungeons.dimension.DungeonData;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
+import com.catastrophe573.dimdungeons.structure.DungeonRoom;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -36,6 +39,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
@@ -244,6 +248,15 @@ public class BlockGoldPortal extends BaseEntityBlock
 	{
 	    destPitch = 0;
 	    destYaw = 180;
+	    
+	    // also check for teleporting into an advanced dungeon for the first time
+	    ChunkPos cpos = new ChunkPos(new BlockPos(x, y, z));
+	    DungeonRoom entrance = DungeonData.get(dim).getRoomAtPos(cpos);
+	    if ( entrance != null && entrance.dungeonType == DungeonType.ADVANCED)
+	    {
+		// since the condition is minecraft:impossible, this is the only way to trigger it
+		player.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new ResourceLocation(DimDungeons.RESOURCE_PREFIX+"dungeons/enter_advanced_dungeon")), "advanced_dungeon"); 
+	    }
 	}
 
 	CustomTeleporter tele = new CustomTeleporter(dim);

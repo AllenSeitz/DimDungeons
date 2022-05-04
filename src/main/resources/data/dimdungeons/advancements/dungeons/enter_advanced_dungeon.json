@@ -23,7 +23,7 @@
 	{
 		"advanced_dungeon":
 		{
-			"trigger": "minecraft:location",
+			"trigger": "minecraft:impossible",
 			"conditions": 
 			{
 				"dimension": "dimdungeons:dungeon_dimension",
