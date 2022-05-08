@@ -212,8 +212,6 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			// should the key be marked as used?
 			if (shouldBuildDungeon(playerItem))
 			{
-			    // at this moment only the signs are placed and the structures will be placed on later ticks
-			    // additionally, mark the key as "built" so it can't be used to place more signs ever again
 			    if (!DungeonUtils.dungeonAlreadyExistsHere(worldIn, entranceX, entranceZ))
 			    {
 				//DimDungeons.LOGGER.info("BUILDING A NEW DUNGEON!");
@@ -395,18 +393,15 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	return true;
     }
 
-    // returns 2 if a usable key is inside, 1 if the block is filled with any item stack, and 0 otherwise
-    // can now also output 3-13 during the ticking build process
+    // return 3 if a build is in progress, 2 if a usable key is inside, 1 if the block is filled with any item stack, and 0 otherwise
     @Override
     public int getAnalogOutputSignal(BlockState blockState, Level worldIn, BlockPos pos)
     {
 	if (blockState.getValue(BUILD_STEP) > 0)
 	{
-	    float percent = blockState.getValue(BUILD_STEP) * 100.0f / 65000.0f;
-	    return (int) percent / 10 + 3;
+	    return 3;
 	}
-
-	if (blockState.getValue(LIT))
+	else if (blockState.getValue(LIT))
 	{
 	    return 2;
 	}
