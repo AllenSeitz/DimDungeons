@@ -133,15 +133,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	}
 
 	// this happens on ticks when the keyhole places a structure
-	if (stateIn.getValue(BUILD_STEP) == 650)
-	{
-	    if (DungeonConfig.playPortalSounds)
-	    {
-		worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.END_PORTAL_SPAWN, SoundSource.BLOCKS, 0.4F, 1.0F, false);
-	    }	    
-	}
-	
-	if (stateIn.getValue(BUILD_PARTICLE))
+	if (stateIn.getValue(BUILD_PARTICLE) || stateIn.getValue(BUILD_STEP) > 0)
 	{
 	    if (DungeonConfig.playPortalSounds)
 	    {
@@ -157,7 +149,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
 		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 - 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, -0.23D);
 
-		    worldIn.addParticle(ParticleTypes.FLAME, d0 + d4, d1 + 0.5D, d2 - 0.12D, -0. -0.08D, 0.0D, 0.0D);		    
+		    worldIn.addParticle(ParticleTypes.FLAME, d0 + d4, d1 + 0.5D, d2 - 0.12D, -0. - 0.08D, 0.0D, 0.0D);
 		    break;
 		case EAST:
 		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + 0.12D, d1 + 1.5D, d2 + d4, 0.0D, 0.0D, 0.23D);
@@ -168,14 +160,14 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		case NORTH:
 		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, 0.23D, 0.0D, 0.0D);
 		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 - 0.12D, -0.23D, 0.0D, 0.0D);
-		    
+
 		    worldIn.addParticle(ParticleTypes.FLAME, d0 - 0.12D, d1 + 0.5D, d2 + d4, 0.0D, 0.0D, -0.08D);
 		    break;
 		default:
 		case SOUTH:
 		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, 0.23D, 0.0D, 0.0D);
 		    worldIn.addParticle(ParticleTypes.FIREWORK, d0 + d4, d1 + 1.5D, d2 + 0.12D, -0.23D, 0.0D, 0.0D);
-		    
+
 		    worldIn.addParticle(ParticleTypes.FLAME, d0 - 0.12D, d1 + 0.5D, d2 + d4, 0.0D, 0.0D, 0.08D);
 		    break;
 		}
@@ -228,12 +220,16 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 				playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
 				DungeonPlacement.placeSigns(DungeonUtils.getDungeonWorld(worldIn.getServer()), buildX, buildZ, genData);
 			    }
-			}
 
-			// it's slow, but run through the build steps regardless of if the dungeon already exists
-			// this will catch dungeons that are partially built and finish them
-			// dungeon rooms will never be overwritten or built twice
-			buildStep = 1;
+			    // it's slow, but run through the build steps regardless of if the dungeon already exists
+			    // this will catch dungeons that are partially built and finish them
+			    // dungeon rooms will never be overwritten or built twice
+			    buildStep = 1;
+			}
+			else
+			{
+			    buildStep = 650;
+			}
 		    }
 
 		    myEntity.setContents(playerItem.copy());

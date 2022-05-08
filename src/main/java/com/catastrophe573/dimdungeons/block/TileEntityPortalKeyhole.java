@@ -113,7 +113,7 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	{
 	    if (currentStep < 10)
 	    {
-		return 5;
+		return 10;
 	    }
 	    if (currentStep >= 650)
 	    {

@@ -19,6 +19,8 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 
 // basically just global functions
 public class DungeonUtils
@@ -152,7 +154,10 @@ public class DungeonUtils
 	    float entranceX = key.getWarpX(genData.keyItem);
 	    float entranceZ = key.getWarpZ(genData.keyItem);
 	    boolean dungeonExistsHere = DungeonUtils.reprogramExistingExitDoorway(worldIn, (long) entranceX, (long) entranceZ, genData);
-	    boolean anotherKeyWasFirst = false; // TODO: fix this
+	    boolean anotherKeyWasFirst = false; // TODO: figure out if this can happen anymore and if it matters?
+
+	    // the client config can't disable this because it is played on the server, sorry
+	    worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.END_PORTAL_SPAWN, SoundSource.BLOCKS, 0.4F, 1.0F, false);
 
 	    // this function prints no message on success
 	    Player player = worldIn.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), -1.0f, false);
