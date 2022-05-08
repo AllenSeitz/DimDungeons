@@ -140,8 +140,14 @@ public class DungeonUtils
 	    BlockState state = worldIn.getBlockState(pos);
 	    ItemPortalKey key = (ItemPortalKey) genData.keyItem.getItem();
 
+	    // regardless of if this is a new or old dungeon, reprogram the exit door
+	    float entranceX = key.getWarpX(genData.keyItem);
+	    float entranceZ = key.getWarpZ(genData.keyItem);
+	    boolean dungeonExistsHere = DungeonUtils.reprogramExistingExitDoorway(worldIn, (long) entranceX, (long) entranceZ, genData);
+	    boolean anotherKeyWasFirst = false; // TODO: figure out if this can happen anymore and if it matters?	    
+
 	    // this function only checks for the air blocks below the keyhole and the keyhole blockstate
-	    if (BlockPortalKeyhole.isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
+	    if (BlockPortalKeyhole.isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity) && dungeonExistsHere)
 	    {
 		Direction keyholeFacing = state.getValue(BlockPortalKeyhole.FACING);
 		Direction.Axis axis = (keyholeFacing == Direction.NORTH || keyholeFacing == Direction.SOUTH) ? Direction.Axis.X : Direction.Axis.Z;
@@ -149,12 +155,6 @@ public class DungeonUtils
 		BlockPortalKeyhole.addGoldenPortalBlock(worldIn, pos.below(), genData.keyItem, axis);
 		BlockPortalKeyhole.addGoldenPortalBlock(worldIn, pos.below(2), genData.keyItem, axis);
 	    }
-
-	    // regardless of if this is a new or old dungeon, reprogram the exit door
-	    float entranceX = key.getWarpX(genData.keyItem);
-	    float entranceZ = key.getWarpZ(genData.keyItem);
-	    boolean dungeonExistsHere = DungeonUtils.reprogramExistingExitDoorway(worldIn, (long) entranceX, (long) entranceZ, genData);
-	    boolean anotherKeyWasFirst = false; // TODO: figure out if this can happen anymore and if it matters?
 
 	    // the client config can't disable this because it is played on the server, sorry
 	    worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.END_PORTAL_SPAWN, SoundSource.BLOCKS, 0.4F, 1.0F, false);

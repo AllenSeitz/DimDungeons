@@ -1,9 +1,8 @@
 package com.catastrophe573.dimdungeons.block;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
-import com.catastrophe573.dimdungeons.DungeonConfig;
+import com.catastrophe573.dimdungeons.dimension.DungeonData;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
-import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
@@ -11,8 +10,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -42,10 +39,6 @@ public class TileEntityPortalKeyhole extends BlockEntity
     {
 	ItemPortalKey key = (ItemPortalKey) self.getObjectInserted().getItem();
 	DungeonGenData genData = DungeonGenData.Create().setKeyItem(self.getObjectInserted()).setDungeonType(key.getDungeonType(self.getObjectInserted())).setTheme(key.getDungeonTheme(self.getObjectInserted())).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(level.dimension()));
-	long buildX = (long) key.getDungeonTopLeftX(genData.keyItem);
-	long buildZ = (long) key.getDungeonTopLeftZ(genData.keyItem);
-	ServerLevel dungeonWorld = DungeonUtils.getDungeonWorld(level.getServer());
-	boolean placedRoom = false;
 
 	if (!(genData.keyItem.getItem() instanceof ItemPortalKey))
 	{
@@ -59,24 +52,19 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	{
 	    DimDungeons.logMessageError("DIMDUNGEONS ERROR: Keyhole block ticked when it should not have."); // unreachable code
 	}
-	else if (buildStep == 650)
+	else
 	{
-	    DungeonUtils.openPortalAfterBuild(level, pos, genData, self);
-	}
-	else if (buildStep % 10 == 0)
-	{
-	    int chunk = (buildStep - 10) / 10;
-	    int i = chunk / 8;
-	    int j = chunk % 8;
-	    ChunkPos cpos = new ChunkPos(((int) buildX / 16) + i + 4, ((int) buildZ / 16) + j + 4); // the arbitrary +4 is to make the dungeons line up with vanilla maps
-
-	    //DimDungeons.logMessageInfo("Ticking BUILD_STEP: " + buildStep + ", building chunk " + chunk);
-	    placedRoom = DungeonPlacement.buildRoomAtChunk(dungeonWorld, cpos, genData);
+	    // wait until all keys on the whole server are done building (this is the easiest way, I don't think this will be a problem)
+	    if (!DungeonData.get(DungeonUtils.getDungeonWorld(level.getServer())).hasMoreRoomsToBuild())
+	    {
+		DungeonUtils.openPortalAfterBuild(level, pos, genData, self);
+		buildStep = 0;
+	    }
 	}
 
 	// save the new buildStep
-	BlockState newBlockState = state.setValue(BlockPortalKeyhole.BUILD_STEP, nextBuildStep(buildStep, DungeonConfig.getDungeonBuildSpeed()));
-	newBlockState = newBlockState.setValue(BlockPortalKeyhole.BUILD_PARTICLE, placedRoom);
+	BlockState newBlockState = state.setValue(BlockPortalKeyhole.BUILD_STEP, buildStep);
+	newBlockState = newBlockState.setValue(BlockPortalKeyhole.BUILD_PARTICLE, buildStep == 1);
 	level.setBlockAndUpdate(pos, newBlockState);
     }
 

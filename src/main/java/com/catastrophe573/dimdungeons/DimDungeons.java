@@ -60,6 +60,7 @@ public class DimDungeons
 
 	// Register ourselves for server, registry and other game events we are interested in
 	MinecraftForge.EVENT_BUS.register(eventHandler);
+	MinecraftForge.EVENT_BUS.addListener(PlayerDungeonEvents::onWorldTick);
 
 	ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, DungeonConfig.SERVER_SPEC);
 	ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, DungeonConfig.CLIENT_SPEC);
