@@ -1,6 +1,5 @@
 package com.catastrophe573.dimdungeons;
 
-import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole.DungeonBuildSpeed;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -32,7 +31,7 @@ public class DungeonConfig
     public static final int DEFAULT_CHANCE_FOR_THEME_KEYS = 4;
 
     public static final int DEFAULT_PORTAL_TICKS = 40;
-    public static final int DEFAULT_BUILD_SPEED = 2; // corresponds to normal, which is actually pretty fast
+    public static final int DEFAULT_BUILD_SPEED = 5;
 
     public static final ServerConfig SERVER;
     public static final ForgeConfigSpec SERVER_SPEC;
@@ -78,7 +77,7 @@ public class DungeonConfig
     public static int chanceForThemeKeys = DEFAULT_CHANCE_FOR_THEME_KEYS;
     public static Set<Block> blockBreakWhitelist = Sets.newHashSet();
     public static Set<Block> blockInteractBlacklist = Sets.newHashSet();
-    public static int dungeonBuildSpeed = 2;
+    public static int dungeonBuildSpeed = 5;
 
     // client options
     public static boolean showParticles = true;
@@ -247,7 +246,7 @@ public class DungeonConfig
 	    logLevel = builder.comment("Can be used to limit log spam. Can be set to 'all', 'warn', or 'error'.").translation("config.dimdungeons.logLevel").define("logLevel", "error");
 	    worldborderToRespect = builder.comment("Which dimension's worldborder to consider when activating keys. Using dimdungeons:dungeon_dimension may not work for everyone.").translation("config.dimdungeons.worldborderToRespect").define("worldborderToRespect", "dimdungeons:dungeon_dimension");
 	    chanceForThemeKeys = builder.comment("The chance for an enemy in a basic dungeon to be carrying a theme key.").translation("config.dimdungeons.chanceForThemeKeys").define("chanceForThemeKeys", DEFAULT_CHANCE_FOR_THEME_KEYS);
-	    dungeonBuildSpeed = builder.comment("The speed at which to build a dungeon, slower will skip more ticks to avoid lag spikes.").translation("config.dimdungeons.dungeonBuildSpeed").define("dungeonBuildSpeed", DEFAULT_BUILD_SPEED);
+	    dungeonBuildSpeed = builder.comment("The speed at which to build a dungeon. Value corresponds to the number of ticks skipped between chunks, to avoid lag spikes.").translation("config.dimdungeons.dungeonBuildSpeed").define("dungeonBuildSpeed", DEFAULT_BUILD_SPEED);
 	    builder.pop();
 	    builder.comment("Options for block behavior in the dungeon dimension.").push("blocks");
 	    breakingWhitelist = builder.comment("List of blocks which any player should be allowed to break, defying the block protection. (For example, gravestones or death chests.) Default value is empty.").translation("config.dimdungeons.breakingWhitelist").defineList("breakingWhitelist", hardcodedDefaultBreakingWhitelist, o -> o instanceof String);
@@ -1262,19 +1261,9 @@ public class DungeonConfig
 	return block;
     }
 
-    public static DungeonBuildSpeed getDungeonBuildSpeed()
+    public static int getDungeonBuildSpeed()
     {
-	switch (dungeonBuildSpeed)
-	{
-	case 0:
-	    return DungeonBuildSpeed.STOPPED;
-	case 1:
-	    return DungeonBuildSpeed.SLOW;
-	case 2:
-	    return DungeonBuildSpeed.NORMAL;
-	default:
-	    return DungeonBuildSpeed.FASTEST;
-	}
+	return dungeonBuildSpeed;
     }
 
     public static boolean isModInstalled(String namespace)
