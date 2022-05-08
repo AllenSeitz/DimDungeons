@@ -312,10 +312,6 @@ public class ItemSecretBell extends Item //extends TieredItem implements IVanish
 		for (int y = startY; y < startY + 16; y++)
 		{
 		    BlockState bs = worldIn.getBlockState(new BlockPos(x, y, z));
-		    if (!bs.isAir())
-		    {
-			DimDungeons.logMessageInfo("BLOCK: " + bs.getBlock().getRegistryName().getPath());
-		    }
 		    if (bs != null && ForgeRegistries.BLOCKS.tags().getTag(tag_secret_chime).contains(bs.getBlock()))
 		    {
 			// the bell just rings for any tagged blocks (chests, barrels, etc)
