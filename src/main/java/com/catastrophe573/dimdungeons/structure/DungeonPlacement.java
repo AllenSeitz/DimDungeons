@@ -114,7 +114,7 @@ public class DungeonPlacement
 
 	// this is the big call that shuffles the rooms and actually designs the build
 	dbl.calculateDungeonShape(dungeonSize, useLarge);
-	
+
 	// and this function registers all the rooms the in the dimension data so they can be built later
 	DungeonData.get(world).registerNewRooms(dbl, x, z);
 
@@ -122,11 +122,11 @@ public class DungeonPlacement
     }
 
     // returns true if a room was built here or false if this chunk was skipped
-    public static boolean buildRoomAtChunk(ServerLevel world, ChunkPos cpos, DungeonGenData genData)
+    public static boolean buildRoomAtChunk(ServerLevel world, ChunkPos cpos)
     {
 	BlockPos bpos = new BlockPos(cpos.getMinBlockX(), SIGN_Y, cpos.getMinBlockZ());
 
-	DungeonRoom nextRoom = DungeonData.get(world).getRoomAtPos(cpos);	
+	DungeonRoom nextRoom = DungeonData.get(world).getRoomAtPos(cpos);
 	if (nextRoom == null || wasRoomBuiltAtChunk(world, cpos))
 	{
 	    return false; // no sign here means no room
@@ -138,18 +138,18 @@ public class DungeonPlacement
 	// step 3: place room here, with these parameters
 	if (nextRoom.roomType == RoomType.LARGE)
 	{
-	    if (!putLargeRoomHere(cpos, world, nextRoom, genData))
+	    if (!putLargeRoomHere(cpos, world, nextRoom))
 	    {
 		DimDungeons.logMessageError("DIMDUNGEONS ERROR UNABLE TO PLACE ***LARGE*** STRUCTURE: " + nextRoom.structure);
 	    }
-	    closeDoorsOnLargeRoom(cpos, world, nextRoom, genData);
+	    closeDoorsOnLargeRoom(cpos, world, nextRoom);
 	}
 	else if (nextRoom.roomType == RoomType.LARGE_DUMMY)
 	{
 	    // this isn't trivial because dummy rooms still have to close doorways that lead out of bounds
-	    closeDoorsOnLargeRoom(cpos, world, nextRoom, genData);
+	    closeDoorsOnLargeRoom(cpos, world, nextRoom);
 	}
-	else if (!putRoomHere(cpos, world, nextRoom, genData))
+	else if (!putRoomHere(cpos, world, nextRoom))
 	{
 	    DimDungeons.logMessageError("DIMDUNGEONS ERROR UNABLE TO PLACE STRUCTURE: " + nextRoom.structure);
 	}
@@ -234,7 +234,7 @@ public class DungeonPlacement
     }
 
     // used by the place() function to actually place rooms
-    public static boolean putLargeRoomHere(ChunkPos cpos, ServerLevel world, DungeonRoom room, DungeonGenData genData)
+    public static boolean putLargeRoomHere(ChunkPos cpos, ServerLevel world, DungeonRoom room)
     {
 	MinecraftServer minecraftserver = ((Level) world).getServer();
 	StructureManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
@@ -263,7 +263,7 @@ public class DungeonPlacement
 		StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt.getString("mode"));
 		if (structuremode == StructureMode.DATA)
 		{
-		    handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox(), genData, room.dungeonType);
+		    handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox(), room);
 		}
 	    }
 	}
@@ -271,7 +271,7 @@ public class DungeonPlacement
 	return success;
     }
 
-    public static void closeDoorsOnLargeRoom(ChunkPos cpos, ServerLevel world, DungeonRoom room, DungeonGenData genData)
+    public static void closeDoorsOnLargeRoom(ChunkPos cpos, ServerLevel world, DungeonRoom room)
     {
 	BlockState fillBlock = Blocks.STONE_BRICKS.defaultBlockState();
 	BlockState airBlock = Blocks.AIR.defaultBlockState();
@@ -423,7 +423,7 @@ public class DungeonPlacement
     }
 
     // used by the place() and the slow building logic function to place a single room
-    public static boolean putRoomHere(ChunkPos cpos, ServerLevel world, DungeonRoom room, DungeonGenData genData)
+    public static boolean putRoomHere(ChunkPos cpos, ServerLevel world, DungeonRoom room)
     {
 	MinecraftServer minecraftserver = ((Level) world).getServer();
 	StructureManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
@@ -468,7 +468,6 @@ public class DungeonPlacement
 	}
 
 	// this is the big call to the structure block
-	DimDungeons.logMessageInfo("Placing a room: " + room.structure);
 	boolean success = template.placeInWorld((ServerLevelAccessor) world, position, sizeRange, placementsettings, world.getRandom(), 2);
 
 	// handle data blocks - this code block is copied from TemplateStructurePiece
@@ -479,7 +478,7 @@ public class DungeonPlacement
 		StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt.getString("mode"));
 		if (structuremode == StructureMode.DATA)
 		{
-		    handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox(), genData, room.dungeonType);
+		    handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox(), room);
 		}
 	    }
 	}
@@ -511,7 +510,7 @@ public class DungeonPlacement
     }
 
     // resembles TemplateStructurePiece.handleDataMarker() from vanilla
-    protected static void handleDataBlock(String name, BlockPos pos, ServerLevel world, Random rand, BoundingBox bb, DungeonGenData genData, DungeonType type)
+    protected static void handleDataBlock(String name, BlockPos pos, ServerLevel world, Random rand, BoundingBox bb, DungeonRoom room)
     {
 	//DimDungeons.LOGGER.info("DATA BLOCK NAME: " + name);
 
@@ -521,7 +520,8 @@ public class DungeonPlacement
 	    TileEntityGoldPortal te = (TileEntityGoldPortal) world.getBlockEntity(pos);
 	    if (te != null)
 	    {
-		te.setDestination(genData.returnPoint.getX() + 0.5D, genData.returnPoint.getY() + 0.1D, genData.returnPoint.getZ() + 0.5D, genData.returnDimension);
+		// rely on the portal linking logic to update this later
+		te.setDestination(0, -10000, 0, "minecraft:overworld");
 	    }
 	}
 	else if ("BackToEntrance".equals(name))
@@ -530,9 +530,12 @@ public class DungeonPlacement
 	    TileEntityLocalTeleporter te = (TileEntityLocalTeleporter) world.getBlockEntity(pos);
 	    if (te != null)
 	    {
-		ItemPortalKey key = (ItemPortalKey) genData.keyItem.getItem();
-		double entranceX = key.getWarpX(genData.keyItem);
-		double entranceZ = key.getWarpZ(genData.keyItem);
+		// this logic is copy/pasted from the HomewardPearl, which was implemented later than this block
+		double topLeftX = Math.floor(pos.getX() / ItemPortalKey.BLOCKS_APART_PER_DUNGEON);
+		double entranceX = topLeftX * ItemPortalKey.BLOCKS_APART_PER_DUNGEON + ItemPortalKey.ENTRANCE_OFFSET_X;
+		double topLeftZ = Math.floor(pos.getZ() / ItemPortalKey.BLOCKS_APART_PER_DUNGEON);
+		double entranceZ = topLeftZ * ItemPortalKey.BLOCKS_APART_PER_DUNGEON + ItemPortalKey.ENTRANCE_OFFSET_Z;
+
 		te.setDestination(entranceX, 55.1D, entranceZ, 0.0f, 180.0f);
 	    }
 	}
@@ -553,19 +556,19 @@ public class DungeonPlacement
 	    if (te instanceof DispenserBlockEntity)
 	    {
 		((DispenserBlockEntity) te).clearContent();
-		ItemStack message = generateLuckyMessage(rand, type);
+		ItemStack message = generateLuckyMessage(rand, room.dungeonType);
 		((DispenserBlockEntity) te).addItem(message);
 	    }
 	}
 	else if ("ChestLoot1".equals(name) || "SetTrappedLoot".equals(name) || "BarrelLoot1".equals(name))
 	{
-	    String lootType = type == DungeonType.BASIC ? "basic" : "advanced";
+	    String lootType = room.dungeonType == DungeonType.BASIC ? "basic" : "advanced";
 	    String lootTable = "chests/chestloot_" + lootType + "_easy";
 	    fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + lootTable), world, rand);
 	}
 	else if ("ChestLoot2".equals(name))
 	{
-	    String lootType = type == DungeonType.BASIC ? "basic" : "advanced";
+	    String lootType = room.dungeonType == DungeonType.BASIC ? "basic" : "advanced";
 	    String lootTable = "chests/chestloot_" + lootType + "_hard";
 	    fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + lootTable), world, rand);
 	}
@@ -575,7 +578,7 @@ public class DungeonPlacement
 	    int lucky = rand.nextInt(100);
 	    if (lucky < 30)
 	    {
-		if (type == DungeonType.BASIC)
+		if (room.dungeonType == DungeonType.BASIC)
 		{
 		    fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_lucky"), world, rand);
 		}
@@ -616,17 +619,17 @@ public class DungeonPlacement
 	else if ("SummonWitch".equals(name))
 	{
 	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
-	    spawnEnemyHere(pos, "minecraft:witch", world, genData.dungeonTheme, type);
+	    spawnEnemyHere(pos, "minecraft:witch", world, room.theme, room.dungeonType);
 	}
 	else if ("SummonWaterEnemy".equals(name))
 	{
 	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
-	    spawnEnemyHere(pos, "minecraft:guardian", world, genData.dungeonTheme, type);
+	    spawnEnemyHere(pos, "minecraft:guardian", world, room.theme, room.dungeonType);
 	}
 	else if ("SummonEnderman".equals(name))
 	{
 	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
-	    spawnEnemyHere(pos, "minecraft:enderman", world, genData.dungeonTheme, type);
+	    spawnEnemyHere(pos, "minecraft:enderman", world, room.theme, room.dungeonType);
 	}
 	else if ("SummonEnemy1".equals(name))
 	{
@@ -634,18 +637,18 @@ public class DungeonPlacement
 
 	    int poolSize = DungeonConfig.basicEnemySet1.size();
 	    String mobid = DungeonConfig.basicEnemySet1.get(rand.nextInt(poolSize));
-	    if (genData.dungeonTheme > 0)
+	    if (room.theme > 0)
 	    {
-		poolSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeEnemySet1.size();
-		mobid = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeEnemySet1.get(rand.nextInt(poolSize));
+		poolSize = DungeonConfig.themeSettings.get(room.theme - 1).themeEnemySet1.size();
+		mobid = DungeonConfig.themeSettings.get(room.theme - 1).themeEnemySet1.get(rand.nextInt(poolSize));
 	    }
-	    if (type == DungeonType.ADVANCED)
+	    if (room.dungeonType == DungeonType.ADVANCED)
 	    {
 		poolSize = DungeonConfig.advancedEnemySet1.size();
 		mobid = DungeonConfig.advancedEnemySet1.get(rand.nextInt(poolSize));
 	    }
 
-	    spawnEnemyHere(pos, mobid, world, genData.dungeonTheme, type);
+	    spawnEnemyHere(pos, mobid, world, room.theme, room.dungeonType);
 	}
 	else if ("SummonEnemy2".equals(name))
 	{
@@ -653,18 +656,18 @@ public class DungeonPlacement
 
 	    int poolSize = DungeonConfig.basicEnemySet2.size();
 	    String mobid = DungeonConfig.basicEnemySet2.get(rand.nextInt(poolSize));
-	    if (genData.dungeonTheme > 0)
+	    if (room.theme > 0)
 	    {
-		poolSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeEnemySet2.size();
-		mobid = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeEnemySet2.get(rand.nextInt(poolSize));
+		poolSize = DungeonConfig.themeSettings.get(room.theme - 1).themeEnemySet2.size();
+		mobid = DungeonConfig.themeSettings.get(room.theme - 1).themeEnemySet2.get(rand.nextInt(poolSize));
 	    }
-	    if (type == DungeonType.ADVANCED)
+	    if (room.dungeonType == DungeonType.ADVANCED)
 	    {
 		poolSize = DungeonConfig.advancedEnemySet2.size();
 		mobid = DungeonConfig.advancedEnemySet2.get(rand.nextInt(poolSize));
 	    }
 
-	    spawnEnemyHere(pos, mobid, world, genData.dungeonTheme, type);
+	    spawnEnemyHere(pos, mobid, world, room.theme, room.dungeonType);
 	}
 	else
 	{

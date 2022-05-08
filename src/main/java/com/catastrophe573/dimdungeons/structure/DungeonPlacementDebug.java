@@ -218,7 +218,7 @@ public class DungeonPlacementDebug extends DungeonPlacement
 		StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt.getString("mode"));
 		if (structuremode == StructureMode.DATA)
 		{
-		    handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox(), genData, DungeonType.BASIC);
+		    handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox(), room);
 		}
 	    }
 	}
