@@ -218,7 +218,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			    {
 				//DimDungeons.LOGGER.info("BUILDING A NEW DUNGEON!");
 				playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
-				DungeonPlacement.placeSigns(DungeonUtils.getDungeonWorld(worldIn.getServer()), buildX, buildZ, genData);
+				DungeonPlacement.beginDesignAndBuild(DungeonUtils.getDungeonWorld(worldIn.getServer()), buildX, buildZ, genData);
 			    }
 
 			    // it's slow, but run through the build steps regardless of if the dungeon already exists

@@ -21,7 +21,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -37,7 +36,6 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
@@ -50,7 +48,6 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
-import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.StructureMode;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -69,7 +66,7 @@ public class DungeonPlacement
     }
 
     // step 1 of the dungeon building process: build the dungeon in memory, then place signs where all the rooms will go
-    public static boolean placeSigns(ServerLevel world, long x, long z, DungeonGenData genData)
+    public static boolean beginDesignAndBuild(ServerLevel world, long x, long z, DungeonGenData genData)
     {
 	// calculate and double check the starting point
 	long entranceChunkX = getEntranceX(x);
@@ -85,12 +82,11 @@ public class DungeonPlacement
 	DungeonDesigner dbl;
 	int dungeonSize = DungeonConfig.DEFAULT_BASIC_DUNGEON_SIZE;
 	DungeonType dungeonType = DungeonType.BASIC;
-	String stringDungeonType = "basic";
 	boolean useLarge = false;
 
 	if (DungeonConfig.enableDebugCheats && DungeonUtils.doesKeyMatchDebugCheat(genData) > 0)
 	{
-	    // no signs, the dungeon is built instantly abort the operation here
+	    // no ticking, the dungeon is built instantly abort the operation here
 	    return DungeonPlacementDebug.place(world, x, z, DungeonUtils.doesKeyMatchDebugCheat(genData), genData);
 	}
 	if (genData.dungeonTheme == 2)
@@ -98,7 +94,6 @@ public class DungeonPlacement
 	    dungeonType = DungeonType.THEME_OPEN;
 	    dbl = new DungeonDesignerThemeOpen(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
 	    dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeDungeonSize;
-	    stringDungeonType = "theme " + genData.dungeonTheme;
 	}
 	else if (genData.dungeonType == DungeonType.ADVANCED)
 	{
@@ -106,79 +101,35 @@ public class DungeonPlacement
 	    dbl = new DungeonDesigner(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
 	    dungeonSize = DungeonConfig.DEFAULT_ADVANCED_DUNGEON_SIZE;
 	    useLarge = true;
-	    stringDungeonType = "advanced";
 	}
 	else
 	{
 	    dungeonType = DungeonType.BASIC;
 	    dbl = new DungeonDesigner(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
-	    stringDungeonType = "basic";
 	    if (genData.dungeonTheme > 0)
 	    {
 		dungeonSize = DungeonConfig.themeSettings.get(genData.dungeonTheme - 1).themeDungeonSize;
-		stringDungeonType = "theme " + genData.dungeonTheme;
 	    }
 	}
 
 	// this is the big call that shuffles the rooms and actually designs the build
 	dbl.calculateDungeonShape(dungeonSize, useLarge);
-	DungeonData.get(world).registerNewRooms(dbl, x, z);
 	
-	// place signs in chunks where rooms will go. the contents of the room are written on the sign for future ticks to refer to
-	for (int i = 0; i < 8; i++)
-	{
-	    for (int j = 0; j < 8; j++)
-	    {
-		DungeonRoom nextRoom = dbl.finalLayout[i][j];
-		if (!nextRoom.hasRoom())
-		{
-		    continue;
-		}
-		else
-		{
-		    // calculate the chunkpos of this room and the blockpos to place the sign at
-		    // The +4 offset is so that the dungeons align with vanilla blank maps!
-		    ChunkPos cpos = new ChunkPos(((int) x / 16) + i + 4, ((int) z / 16) + j + 4);
-		    BlockPos bpos = new BlockPos(cpos.getMinBlockX(), SIGN_Y, cpos.getMinBlockZ());
-
-		    world.setBlockAndUpdate(bpos.below(), Blocks.BEDROCK.defaultBlockState());
-		    world.setBlockAndUpdate(bpos, Blocks.OAK_SIGN.defaultBlockState());
-		    SignBlockEntity sign = (SignBlockEntity) world.getBlockEntity(bpos);
-		    if (sign != null)
-		    {
-			sign.setColor(DyeColor.BLACK);
-			sign.setHasGlowingText(true);
-			sign.setMessage(0, new TextComponent(nextRoom.structure));
-			sign.setMessage(1, new TextComponent(nextRoom.rotation.toString()));
-			sign.setMessage(2, new TextComponent(nextRoom.roomType.toString()));
-			sign.setMessage(3, new TextComponent(stringDungeonType)); // "basic", "advanced", or "theme #"
-			sign.setEditable(false);
-		    }
-		}
-	    }
-	}
+	// and this function registers all the rooms the in the dimension data so they can be built later
+	DungeonData.get(world).registerNewRooms(dbl, x, z);
 
 	return true;
     }
 
     // returns true if a room was built here or false if this chunk was skipped
-    public static boolean buildRoomAboveSign(ServerLevel world, ChunkPos cpos, DungeonGenData genData)
+    public static boolean buildRoomAtChunk(ServerLevel world, ChunkPos cpos, DungeonGenData genData)
     {
 	BlockPos bpos = new BlockPos(cpos.getMinBlockX(), SIGN_Y, cpos.getMinBlockZ());
-	SignBlockEntity sign = (SignBlockEntity) world.getBlockEntity(bpos);
 
-	if (sign == null || wasRoomBuiltAtChunk(world, cpos))
+	DungeonRoom nextRoom = DungeonData.get(world).getRoomAtPos(cpos);	
+	if (nextRoom == null || wasRoomBuiltAtChunk(world, cpos))
 	{
 	    return false; // no sign here means no room
-	}
-
-	// step 2: decode the sign
-	DungeonRoom nextRoom = readSignAtChunk(world, cpos);
-	String dunTypeText = ((TextComponent) sign.getMessage(3, false)).toString();
-	DungeonType dungeonType = DungeonType.BASIC;
-	if (dunTypeText.contains("advanced"))
-	{
-	    dungeonType = DungeonType.ADVANCED;
 	}
 
 	// also, set bedrock two blocked under the sign to permanently signal that this function has been called on this chunk already
@@ -187,7 +138,7 @@ public class DungeonPlacement
 	// step 3: place room here, with these parameters
 	if (nextRoom.roomType == RoomType.LARGE)
 	{
-	    if (!putLargeRoomHere(cpos, world, nextRoom, genData, dungeonType))
+	    if (!putLargeRoomHere(cpos, world, nextRoom, genData))
 	    {
 		DimDungeons.logMessageError("DIMDUNGEONS ERROR UNABLE TO PLACE ***LARGE*** STRUCTURE: " + nextRoom.structure);
 	    }
@@ -198,33 +149,12 @@ public class DungeonPlacement
 	    // this isn't trivial because dummy rooms still have to close doorways that lead out of bounds
 	    closeDoorsOnLargeRoom(cpos, world, nextRoom, genData);
 	}
-	else if (!putRoomHere(cpos, world, nextRoom, genData, dungeonType))
+	else if (!putRoomHere(cpos, world, nextRoom, genData))
 	{
 	    DimDungeons.logMessageError("DIMDUNGEONS ERROR UNABLE TO PLACE STRUCTURE: " + nextRoom.structure);
 	}
 
 	return true;
-    }
-
-    // this function will return null if there is no room at this position
-    public static DungeonRoom readSignAtChunk(ServerLevel world, ChunkPos cpos)
-    {
-	BlockPos bpos = new BlockPos(cpos.getMinBlockX(), SIGN_Y, cpos.getMinBlockZ());
-	SignBlockEntity sign = (SignBlockEntity) world.getBlockEntity(bpos);
-
-	if (sign == null)
-	{
-	    return null; // no sign = no room here, and this result is expected
-	}
-
-	DungeonRoom room = new DungeonRoom();
-	room.structure = ((TextComponent) sign.getMessage(0, false)).getString();
-	String rotationText = ((TextComponent) sign.getMessage(1, false)).getString();
-	String roomTypeText = ((TextComponent) sign.getMessage(2, false)).getString();
-	room.rotation = Rotation.valueOf(rotationText);
-	room.roomType = RoomType.valueOf(roomTypeText);
-
-	return room;
     }
 
     // used to check if any room exists in the given chunk
@@ -304,7 +234,7 @@ public class DungeonPlacement
     }
 
     // used by the place() function to actually place rooms
-    public static boolean putLargeRoomHere(ChunkPos cpos, ServerLevel world, DungeonRoom room, DungeonGenData genData, DungeonType type)
+    public static boolean putLargeRoomHere(ChunkPos cpos, ServerLevel world, DungeonRoom room, DungeonGenData genData)
     {
 	MinecraftServer minecraftserver = ((Level) world).getServer();
 	StructureManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
@@ -333,7 +263,7 @@ public class DungeonPlacement
 		StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt.getString("mode"));
 		if (structuremode == StructureMode.DATA)
 		{
-		    handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox(), genData, type);
+		    handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox(), genData, room.dungeonType);
 		}
 	    }
 	}
@@ -355,10 +285,10 @@ public class DungeonPlacement
 	ChunkPos east = new ChunkPos(x + 1, z);
 	ChunkPos north = new ChunkPos(x, z - 1);
 	ChunkPos south = new ChunkPos(x, z + 1);
-	DungeonRoom westRoom = readSignAtChunk(world, west);
-	DungeonRoom eastRoom = readSignAtChunk(world, east);
-	DungeonRoom northRoom = readSignAtChunk(world, north);
-	DungeonRoom southRoom = readSignAtChunk(world, south);
+	DungeonRoom westRoom = DungeonData.get(world).getRoomAtPos(west);
+	DungeonRoom eastRoom = DungeonData.get(world).getRoomAtPos(east);
+	DungeonRoom northRoom = DungeonData.get(world).getRoomAtPos(north);
+	DungeonRoom southRoom = DungeonData.get(world).getRoomAtPos(south);
 
 	// does west lead into a void?
 	if (westRoom == null)
@@ -493,7 +423,7 @@ public class DungeonPlacement
     }
 
     // used by the place() and the slow building logic function to place a single room
-    public static boolean putRoomHere(ChunkPos cpos, ServerLevel world, DungeonRoom room, DungeonGenData genData, DungeonType type)
+    public static boolean putRoomHere(ChunkPos cpos, ServerLevel world, DungeonRoom room, DungeonGenData genData)
     {
 	MinecraftServer minecraftserver = ((Level) world).getServer();
 	StructureManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
@@ -549,13 +479,13 @@ public class DungeonPlacement
 		StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt.getString("mode"));
 		if (structuremode == StructureMode.DATA)
 		{
-		    handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox(), genData, type);
+		    handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox(), genData, room.dungeonType);
 		}
 	    }
 	}
 
 	// replace all red carpet in entrance rooms with green carpet
-	if (type == DungeonType.ADVANCED)
+	if (room.dungeonType == DungeonType.ADVANCED)
 	{
 	    for (StructureBlockInfo info : template.filterBlocks(position, placementsettings, Blocks.RED_CARPET))
 	    {
