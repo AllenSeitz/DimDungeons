@@ -1,0 +1,16 @@
+{
+    "name": "Version 154",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 154,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Greatly improved the speed of dungeon building!$(li)Almost completely eliminated the lag spike that occurs when a new dungeon is built.$(li)Fixed a major oversight involving breaking the Keyhole block while a build is in progress."
+        },
+        {
+            "type": "text",
+            "text": "$(li)Portals will once again refuse to open if they lead to a void.$(li)Increased the default build speed from 2 ticks skipped per chunk, to 5.$(li)Therefore, check your server config if you're still experiencing lag.$(li)Portals will now open faster if the dungeon is already built."
+		}		
+    ]
+}

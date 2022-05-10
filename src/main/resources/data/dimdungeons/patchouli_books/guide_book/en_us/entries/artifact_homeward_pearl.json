@@ -1,0 +1,18 @@
+{
+	"name": "Homeward Pearl",
+	"icon": "dimdungeons:item_homeward_pearl",
+	"category": "dimdungeons:artifacts",
+	"sortnum": 30,
+	"pages": [
+		{
+			"type": "spotlight",
+			"item": "dimdungeons:item_homeward_pearl",
+			"text": "The Homeward Pearl is a handy tool that will teleport you back to the entrance of the dungeon. It breaks after it is used."
+		},
+		{
+			"type":   "crafting",
+			"recipe": "dimdungeons:recipe_item_homeward_pearl",
+			"text":   "Crafting Homeward Pearls is a good use for unwanted keys!"
+		}
+	]
+}
