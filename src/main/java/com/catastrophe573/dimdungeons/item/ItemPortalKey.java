@@ -92,8 +92,8 @@ public class ItemPortalKey extends Item
 	data.putBoolean(NBT_KEY_ACTIVATED, true);
 	data.putBoolean(NBT_BUILT, false);
 	data.putInt(NBT_THEME, theme);
-	data.putString(NBT_DUNGEON_TYPE, DungeonType.BASIC.toString());	    
-	
+	data.putString(NBT_DUNGEON_TYPE, DungeonType.BASIC.toString());
+
 	// where is this key going?
 	long generation_limit = DungeonUtils.getLimitOfWorldBorder(server);
 	long dungeonsPerLimit = generation_limit / BLOCKS_APART_PER_DUNGEON;
@@ -135,7 +135,7 @@ public class ItemPortalKey extends Item
 	data.putBoolean(NBT_KEY_ACTIVATED, true);
 	data.putBoolean(NBT_BUILT, false);
 	data.putInt(NBT_THEME, 0);
-	data.putString(NBT_DUNGEON_TYPE, DungeonType.ADVANCED.toString());	    
+	data.putString(NBT_DUNGEON_TYPE, DungeonType.ADVANCED.toString());
 
 	// where is this key going?
 	long generation_limit = DungeonUtils.getLimitOfWorldBorder(server);
@@ -155,7 +155,7 @@ public class ItemPortalKey extends Item
 	data.putInt(NBT_NAME_PART_2, random.nextInt(12)); // largeness
 
 	stack.setTag(data);
-	DungeonData.get(DungeonUtils.getDungeonWorld(server)).notifyOfNewKeyActivation();	
+	DungeonData.get(DungeonUtils.getDungeonWorld(server)).notifyOfNewKeyActivation();
     }
 
     public boolean isActivated(ItemStack stack)
