@@ -6,7 +6,9 @@ import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
+import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.resources.ResourceKey;
@@ -14,7 +16,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -209,5 +213,22 @@ public class DungeonUtils
 	double size = world.getWorldBorder().getSize() / 2;
 
 	return Math.round(size);
+    }
+
+    // THIS MUST ONLY BE USED for the purposes of displaying an activated in a gui
+    // the key returned by this function is not valid
+    public static ItemStack getExampleKey()
+    {
+	ItemStack icon = new ItemStack(ItemRegistrar.item_portal_key);
+	CompoundTag data = new CompoundTag();
+	data.putBoolean(ItemPortalKey.NBT_KEY_ACTIVATED, true);
+	data.putString(ItemPortalKey.NBT_DUNGEON_TYPE, DungeonType.BASIC.toString());
+	data.putInt(ItemPortalKey.NBT_KEY_DESTINATION_Z, 0);
+	data.putInt(ItemPortalKey.NBT_NAME_TYPE, 2); // key to the
+	data.putInt(ItemPortalKey.NBT_NAME_PART_1, 0); // dungeon of
+	data.putInt(ItemPortalKey.NBT_NAME_PART_2, 17); // catastrophe
+
+	icon.setTag(data);
+	return icon;
     }
 }

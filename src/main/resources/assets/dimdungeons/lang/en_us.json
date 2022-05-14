@@ -4,6 +4,8 @@
 	"biome.dimdungeons.biome_dungeon": "Dungeon",
 	"dimension.dimdungeons.dimension_dungeon": "Dungeon Dimension",
 
+	"dimdungeons:activate_key": "Key Activation", // JEI
+
     "block.dimdungeons.block_gilded_portal": "Gilded Portal Block",
     "block.dimdungeons.block_gold_portal": "Gold Dungeon Portal",
     "block.dimdungeons.block_local_teleporter": "Local Teleporter",
