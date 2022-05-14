@@ -34,8 +34,7 @@ credits="mod by Catastrophe573 with help from the Forge community" #optional
 authors="Catastrophe573" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-This mod implements limitless proceedurally generated dungeons! These dungeons are placed in their own single dimension. Hence the name: Dimensional Dungeons.
-'''
+This mod implements limitless proceedurally generated dungeons! These dungeons are placed in their own single dimension. Hence the name: Dimensional Dungeons.'''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.dimdungeons]] #optional
     # the modid of the dependency
