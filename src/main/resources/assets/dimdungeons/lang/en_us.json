@@ -18,6 +18,8 @@
     "item.dimdungeons.item_portal_key": "Blank Portal Key",
     "item.dimdungeons.item_portal_key_basic": "Basic Portal Key",
     "item.dimdungeons.item_portal_key_advanced": "Advanced Portal Key",
+    "item.dimdungeons.item_blank_advanced_key": "Blank Advanced Key",
+    "item.dimdungeons.item_blank_theme_key": "Blank Theme Key",
     "item.dimdungeons.item_secret_bell": "Bell of Secrets",
     "item.dimdungeons.item_homeward_pearl": "Homeward Pearl",
     "item.dimdungeons.item_guidebook": "Dimensional Dungeons Guidebook",
@@ -171,6 +173,7 @@
     "book.dimdungeons.advanced_message_7": "You can safely rename dungeon keys and they will still teleport you to the same place.",
     "book.dimdungeons.advanced_message_8": "There is more to come! This isn't the final dungeon.",
 
+	// guidebook text is not used
     "book.dimdungeons.guidebook_1": "This short guide will spell out everything you need to know about building a portal, crafting keys, and raiding dungeons!",
     "book.dimdungeons.guidebook_2": "First, your portal will require 3 Gilded Portal Blocks. To craft a Gilded Portal Block surround a Chiseled Stone Brick with 8 Gold Ingots.",
     "book.dimdungeons.guidebook_3": "Second, your portal requires a Keyhole Block. To craft this item take one of your 3 Gilded Portal Blocks and combine it with a Trapped Chest and an Eye of Ender.",
@@ -180,7 +183,6 @@
     "book.dimdungeons.guidebook_7": "To activate a Portal Key, find a stronghold, and use the key on the top side of an End Portal Frame block. The key should now have a unique name!",
     "book.dimdungeons.guidebook_8": "Once a key is activated it will always take you to the same dungeon. You will need to craft and activate more keys to visit new dungeons. Keys may be inserted and removed from keyholes any number of times.",
     "book.dimdungeons.guidebook_9": "More advice will be dispensed inside the dungeons themselves.                                     (The author's penmanship looks very rushed...)",
-
     "book.dimdungeons.title_guidebook": "Dimensional Dungeons Guidebook",
     "book.dimdungeons.open_guide_message": "Catastrophe573 suddenly appears for just a moment, hastily writes into the book, and hands it back to you.",
     "book.dimdungeons.thank_you_message": "Thank you for playing Dimensional Dungeons! I'm sorry I didn't finish the guidebook but I'm working very hard!",

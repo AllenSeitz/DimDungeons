@@ -608,12 +608,8 @@ public class DungeonPlacement
 	    TileEntityPortalKeyhole te = (TileEntityPortalKeyhole) world.getBlockEntity(pos.below());
 	    if (te != null)
 	    {
-		ItemStack key = te.getObjectInserted();
-		if (key.getItem() instanceof ItemPortalKey)
-		{
-		    ((ItemPortalKey) key.getItem()).activateKeyLevel2(world.getServer(), key);
-		    te.setContents(key);
-		}
+		te.removeContents();
+		te.setContents(new ItemStack(ItemRegistrar.item_blank_advanced_key));
 	    }
 	}
 	else if ("SummonWitch".equals(name))
