@@ -10,19 +10,22 @@ import com.google.common.collect.Lists;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Shulker;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityTeleportEvent;
+import net.minecraftforge.event.entity.living.LivingDestroyBlockEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class PlayerDungeonEvents
@@ -38,6 +41,7 @@ public class PlayerDungeonEvents
 	CommandDimDungeons.register(event.getDispatcher());
     }
 
+    // for some reason this doesn't use SubscribeEvent and is instead registered from the main class
     public static void onWorldTick(TickEvent.WorldTickEvent event)
     {
 	if (event.world.isClientSide)
@@ -119,7 +123,7 @@ public class PlayerDungeonEvents
 	event.setCanceled(true);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void blockPlace(BlockEvent.EntityPlaceEvent event)
     {
 	if (!DungeonConfig.globalBlockProtection)
@@ -144,6 +148,23 @@ public class PlayerDungeonEvents
 	event.setCanceled(true);
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void blockMultiPlace(BlockEvent.EntityMultiPlaceEvent event)
+    {
+	if (!DungeonConfig.globalBlockProtection)
+	{
+	    return; // config disabled
+	}
+
+	// I only care about placing blocks in the Dungeon Dimension
+	if (!DungeonUtils.isDimensionDungeon((Level) event.getWorld()))
+	{
+	    return;
+	}
+
+	event.setCanceled(true);
+    }
+
     @SubscribeEvent
     public void fillBucket(FillBucketEvent event)
     {
@@ -154,6 +175,54 @@ public class PlayerDungeonEvents
 
 	// I only care about taking liquids in the Dungeon Dimension
 	if (!DungeonUtils.isDimensionDungeon((Level) event.getWorld()))
+	{
+	    return;
+	}
+
+	event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public void anythingDestroyBlock(LivingDestroyBlockEvent event)
+    {
+	if (!DungeonConfig.globalBlockProtection)
+	{
+	    return; // config disabled
+	}
+
+	// I only care about restricting access in the Dungeon Dimension
+	if (!DungeonUtils.isDimensionDungeon((Level) event.getEntityLiving().getLevel()))
+	{
+	    return;
+	}
+
+	// check for a possible whitelist exception
+	BlockState targetBlock = event.getEntityLiving().getLevel().getBlockState(event.getPos());
+	if (DungeonConfig.blockBreakWhitelist.contains(targetBlock.getBlock()))
+	{
+	    return;
+	}
+
+	event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public void leftClickBlock(LeftClickBlock event)
+    {
+	if (!DungeonConfig.globalBlockProtection)
+	{
+	    return; // config disabled
+	}
+
+	// I only care about restricting access in the Dungeon Dimension
+	if (!DungeonUtils.isDimensionDungeon((Level) event.getEntityLiving().getLevel()))
+	{
+	    return;
+	}
+
+	// check for a possible whitelist exception
+	BlockState targetBlock = event.getEntityLiving().getLevel().getBlockState(event.getPos());
+	if (DungeonConfig.blockBreakWhitelist.contains(targetBlock.getBlock()))
 	{
 	    return;
 	}
@@ -184,6 +253,17 @@ public class PlayerDungeonEvents
 	    return;
 	}
 
+	// one other thing, if the player's hands aren't empty, then don't let them place a block? since canceling block placement happens too late?
+	ItemStack itemInHand = event.getItemStack();
+	if (itemInHand != null && !itemInHand.isEmpty())
+	{
+	    if (itemInHand.getItem() instanceof BlockItem)
+	    {
+		event.setCanceled(true);
+	    }
+	    return;
+	}
+
 	//DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() + " just interacted with: " + targetBlock.getBlock().getTranslatedName().getString());
     }
 
@@ -193,11 +273,6 @@ public class PlayerDungeonEvents
 	// restrict player teleports
 	if (event.getEntity() instanceof ServerPlayer)
 	{
-	    // I only care about restricting teleports in the Dungeon CHALLENGE Dimension
-	    //	    if (DungeonUtils.isDimensionDungeon(event.getEntityLiving().getEntityWorld()))
-	    //	    {
-	    //		event.setCanceled(true);
-	    //	    }
 	}
 
 	// restrict enderman/shulker teleports
@@ -212,25 +287,22 @@ public class PlayerDungeonEvents
     }
 
     @SubscribeEvent
+    public void onChorusTeleport(EntityTeleportEvent.ChorusFruit event)
+    {
+	// I only care about restricting teleports within my dimensions
+	if (DungeonUtils.isDimensionDungeon(event.getEntity().getCommandSenderWorld()))
+	{
+	    event.setCanceled(true);
+	}
+    }
+
+    @SubscribeEvent
     public void useItem(LivingEntityUseItemEvent.Start event)
     {
-	ItemStack stack = event.getItem();
-
 	// do not run this function on non-players
 	if (!(event.getEntityLiving() instanceof ServerPlayer))
 	{
 	    return;
-	}
-
-	// cancel chorus fruits in any of my dimensions
-	if (DungeonUtils.isDimensionDungeon(event.getEntityLiving().getCommandSenderWorld()))
-	{
-	    if (stack.getItem() == Items.CHORUS_FRUIT)
-	    {
-		event.setDuration(-1); // stop the chorus fruit from being used
-		event.setCanceled(true);
-		//DimDungeons.LOGGER.info("CANCELLING CHORUS FRUIT at START!");
-	    }
 	}
     }
 }
