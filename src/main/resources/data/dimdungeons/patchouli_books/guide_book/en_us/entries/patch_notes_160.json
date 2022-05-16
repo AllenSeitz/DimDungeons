@@ -1,0 +1,16 @@
+{
+    "name": "Version 160",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 160,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Added $(bold)Blank Advanced Keys$() and $(bold)Blank Theme Keys$() for modpack makers!$(li)Added custom JEI support.$(li)Fixed a bug with the roofs of large rooms being drawn incorrectly."
+        },
+        {
+            "type": "text",
+            "text": "$(li)Breaking and placing blocks no longer flickers for a frame.$(li)Eating Chorus Fruit is now handled a little better."
+		}		
+    ]
+}
