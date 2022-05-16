@@ -141,13 +141,18 @@ public class DungeonPlacement
 	    if (!putLargeRoomHere(cpos, world, nextRoom))
 	    {
 		DimDungeons.logMessageError("DIMDUNGEONS ERROR UNABLE TO PLACE ***LARGE*** STRUCTURE: " + nextRoom.structure);
+		return false;
 	    }
 	    closeDoorsOnLargeRoom(cpos, world, nextRoom);
+
+	    // close the doors on the other 3 'fake' rooms now
+	    closeDoorsOnLargeRoom(new ChunkPos(cpos.x + 1, cpos.z), world, nextRoom);
+	    closeDoorsOnLargeRoom(new ChunkPos(cpos.x, cpos.z + 1), world, nextRoom);
+	    closeDoorsOnLargeRoom(new ChunkPos(cpos.x + 1, cpos.z + 1), world, nextRoom);
 	}
 	else if (nextRoom.roomType == RoomType.LARGE_DUMMY)
 	{
-	    // this isn't trivial because dummy rooms still have to close doorways that lead out of bounds
-	    closeDoorsOnLargeRoom(cpos, world, nextRoom);
+	    // these doors are now closed after placing the large room, to ensure they aren't overwritten
 	}
 	else if (!putRoomHere(cpos, world, nextRoom))
 	{
@@ -277,6 +282,7 @@ public class DungeonPlacement
 	BlockState airBlock = Blocks.AIR.defaultBlockState();
 	BlockState redBlock = Blocks.RED_CONCRETE.defaultBlockState();
 	BlockPos startPos = new BlockPos(cpos.getMinBlockX(), 55, cpos.getMinBlockZ());
+
 	int x = cpos.x;
 	int z = cpos.z;
 
