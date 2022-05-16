@@ -26,8 +26,11 @@ public class ItemRegistrar
     public static Item item_portal_key;
 
     @ObjectHolder("dimdungeons:" + ItemBlankAdvancedKey.REG_NAME)
-    public static Item item_blank_advanced_key;    
-    
+    public static Item item_blank_advanced_key;
+
+    @ObjectHolder("dimdungeons:" + ItemBlankThemeKey.REG_NAME)
+    public static Item item_blank_theme_key;
+
     // this item is now unused because I've switched to Patchouli
     //@ObjectHolder("dimdungeons:" + ItemGuidebook.REG_NAME)
     //public static Item item_guidebook;
@@ -49,6 +52,7 @@ public class ItemRegistrar
 
     public static final RegistryObject<Item> ITEM_PORTAL_KEY = ITEMS.register(ItemPortalKey.REG_NAME, () -> new ItemPortalKey());
     public static final RegistryObject<Item> ITEM_BLANK_ADVANCED_KEY = ITEMS.register(ItemBlankAdvancedKey.REG_NAME, () -> new ItemBlankAdvancedKey());
+    public static final RegistryObject<Item> ITEM_BLANK_THEME_KEY = ITEMS.register(ItemBlankThemeKey.REG_NAME, () -> new ItemBlankThemeKey());
     public static final RegistryObject<Item> ITEM_SECRET_BELL = ITEMS.register(ItemSecretBell.REG_NAME, () -> new ItemSecretBell(new Item.Properties().tab(CREATIVE_TAB).stacksTo(1)));
     public static final RegistryObject<Item> ITEM_HOMEWARD_PEARL = ITEMS.register(ItemHomewardPearl.REG_NAME, () -> new ItemHomewardPearl(new Item.Properties().tab(CREATIVE_TAB).stacksTo(16)));
     public static final RegistryObject<Item> ITEM_TROPHY_1 = ITEMS.register("item_trophy_1", () -> new Item(new Item.Properties().stacksTo(1)));
