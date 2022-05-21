@@ -451,7 +451,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     {
 	// only run this function once, either on the client or on the server
 	// this runs on the server now because some errors happen exclusively on the server's side
-	if (worldIn.isClientSide)
+	if (worldIn.isClientSide || player == null)
 	{
 	    return;
 	}
@@ -583,6 +583,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	return; // success!
     }
 
+    // assumes that playerIn is not null
     public static void speakLiterallyToPlayerAboutProblems(Level worldIn, Player playerIn, int problemID, @Nullable BlockState problemBlock)
     {
 	TranslatableComponent text1 = new TranslatableComponent(new TranslatableComponent("error.dimdungeons.portal_error_" + problemID).getString());

@@ -165,7 +165,10 @@ public class DungeonUtils
 
 	    // this function prints no message on success
 	    Player player = worldIn.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), -1.0f, false);
-	    BlockPortalKeyhole.checkForProblemsAndLiterallySpeakToPlayer(worldIn, pos, state, myEntity, player, dungeonExistsHere, anotherKeyWasFirst);
+	    if (player != null)
+	    {
+		BlockPortalKeyhole.checkForProblemsAndLiterallySpeakToPlayer(worldIn, pos, state, myEntity, player, dungeonExistsHere, anotherKeyWasFirst);
+	    }
 	}
     }
 
