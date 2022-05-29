@@ -250,7 +250,7 @@ public class BaseItemKey extends Item
 	Direction facing = parameters.getClickedFace();
 	double hitX = parameters.getClickLocation().x();
 	double hitZ = parameters.getClickLocation().z();
-	Player player = parameters.getPlayer();	
+	Player player = parameters.getPlayer();
 	Random random = worldIn.getRandom();
 
 	BlockState iblockstate = worldIn.getBlockState(pos);
