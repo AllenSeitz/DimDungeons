@@ -3,8 +3,11 @@ package com.catastrophe573.dimdungeons.utils;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
+import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
+import com.catastrophe573.dimdungeons.item.BaseItemKey;
+import com.catastrophe573.dimdungeons.item.ItemBuildKey;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
@@ -21,34 +24,47 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 
 // basically just global functions
 public class DungeonUtils
 {
-    // World.OVERWORLD is the Overworld. This block has different behavior in the Overworld than in the Dungeon Dimension
     public static boolean isDimensionOverworld(Level worldIn)
     {
 	return worldIn.dimension() == Level.OVERWORLD;
     }
 
-    // this is the best idea I have for unmapped 1.16.1
     public static boolean isDimensionDungeon(Level worldIn)
     {
 	if (worldIn == null)
 	{
 	    return false;
 	}
-	return worldIn.dimension().location().getPath() == DimDungeons.dungeon_basic_regname;
+	return worldIn.dimension().location().getPath() == DimDungeons.dungeon_dimension_regname;
+    }
+
+    public static boolean isDimensionPersonalBuild(Level worldIn)
+    {
+	if (worldIn == null)
+	{
+	    return false;
+	}
+	return worldIn.dimension().location().getPath() == DimDungeons.build_dimension_regname;
     }
 
     // this is used by the dungeon building logic
     public static ServerLevel getDungeonWorld(MinecraftServer server)
     {
 	return server.getLevel(DimDungeons.DUNGEON_DIMENSION);
+    }
+
+    // this is used by the personal key activating logic
+    public static ServerLevel getPersonalBuildWorld(MinecraftServer server)
+    {
+	return server.getLevel(DimDungeons.BUILD_DIMENSION);
     }
 
     // returns 0 for false, or 1 or higher for the type of debug dungeon to build
@@ -136,19 +152,40 @@ public class DungeonUtils
 	return DungeonPlacement.doesSignExistAtChunk(worldIn, cpos);
     }
 
+    // assume that if a portal was placed, that the other 64 chunks are already done
+    public static boolean personalPortalAlreadyExistsHere(Level worldIn, long entranceX, long entranceZ)
+    {
+	ChunkPos cpos = new ChunkPos(((int) entranceX / 16) + 4, ((int) entranceZ / 16) + 4);
+	BlockPos bpos = new BlockPos(cpos.getMinBlockX() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_X, 50, cpos.getMinBlockZ() + +ItemBuildKey.PLOT_ENTRANCE_OFFSET_Z);
+
+	BlockState block = worldIn.getBlockState(bpos);
+	if (block.getBlock() == Blocks.BEDROCK)
+	{
+	    return true;
+	}
+	return false;
+    }
+
     public static void openPortalAfterBuild(Level worldIn, BlockPos pos, DungeonGenData genData, TileEntityPortalKeyhole myEntity)
     {
 	// should portal blocks be spawned?
 	if (!worldIn.isClientSide)
 	{
 	    BlockState state = worldIn.getBlockState(pos);
-	    ItemPortalKey key = (ItemPortalKey) genData.keyItem.getItem();
+	    BaseItemKey key = (BaseItemKey) genData.keyItem.getItem();
 
 	    // regardless of if this is a new or old dungeon, reprogram the exit door
 	    float entranceX = key.getWarpX(genData.keyItem);
 	    float entranceZ = key.getWarpZ(genData.keyItem);
-	    boolean dungeonExistsHere = DungeonUtils.reprogramExistingExitDoorway(worldIn, (long) entranceX, (long) entranceZ, genData);
-	    boolean anotherKeyWasFirst = false; // TODO: figure out if this can happen anymore and if it matters?	    
+	    boolean dungeonExistsHere = false;
+	    if (key instanceof ItemBuildKey)
+	    {
+		dungeonExistsHere = DungeonUtils.reprogramPersonalPortal(worldIn, (long) entranceX, (long) entranceZ, genData);
+	    }
+	    else
+	    {
+		dungeonExistsHere = DungeonUtils.reprogramExistingExitDoorway(worldIn, (long) entranceX, (long) entranceZ, genData);
+	    }
 
 	    // this function only checks for the air blocks below the keyhole and the keyhole blockstate
 	    if (BlockPortalKeyhole.isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity) && dungeonExistsHere)
@@ -160,14 +197,11 @@ public class DungeonUtils
 		BlockPortalKeyhole.addGoldenPortalBlock(worldIn, pos.below(2), genData.keyItem, axis);
 	    }
 
-	    // the client config can't disable this because it is played on the server, sorry
-	    worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.END_PORTAL_SPAWN, SoundSource.BLOCKS, 0.4F, 1.0F, false);
-
 	    // this function prints no message on success
 	    Player player = worldIn.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), -1.0f, false);
 	    if (player != null)
 	    {
-		BlockPortalKeyhole.checkForProblemsAndLiterallySpeakToPlayer(worldIn, pos, state, myEntity, player, dungeonExistsHere, anotherKeyWasFirst);
+		BlockPortalKeyhole.checkForProblemsAndLiterallySpeakToPlayer(worldIn, pos, state, myEntity, player, dungeonExistsHere);
 	    }
 	}
     }
@@ -175,20 +209,39 @@ public class DungeonUtils
     // returns false if this function fails because the dungeon on the other side was reset
     public static boolean reprogramExistingExitDoorway(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData)
     {
-	Level ddim = DungeonUtils.getDungeonWorld(worldIn.getServer());
-	int zoffset = entranceZ < 0 ? +1 : +2;
+	Level dim = DungeonUtils.getDungeonWorld(worldIn.getServer());
+	BlockPos portalStart = new BlockPos(entranceX, 55, entranceZ + 2);
 
-	for (int x = 0; x <= 1; x++)
+	return actuallyReprogramGoldPortalBlocks(portalStart, dim, genData);
+    }
+
+    // returns false if this function fails because the dungeon on the other side was reset
+    public static boolean reprogramPersonalPortal(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData)
+    {
+	Level dim = DungeonUtils.getPersonalBuildWorld(worldIn.getServer());
+	BlockPos portalStart = new BlockPos(entranceX + 1, 51, entranceZ + 1);
+
+	if (genData.returnDimension.equals(DimDungeons.BUILD_DIMENSION.location().toString()))
 	{
-	    for (int y = 55; y <= 57; y++)
-	    {
-		BlockPos pos = new BlockPos(entranceX - x, y, entranceZ + zoffset);
+	    return false; // for now, do not allow this
+	}
 
-		TileEntityGoldPortal te = (TileEntityGoldPortal) ddim.getBlockEntity(pos);
+	return actuallyReprogramGoldPortalBlocks(portalStart, dim, genData);
+    }
+
+    protected static boolean actuallyReprogramGoldPortalBlocks(BlockPos bottomLeft, Level dim, DungeonGenData genData)
+    {
+	for (int z = 0; z < 2; z++)
+	{
+	    for (int y = 0; y < 3; y++)
+	    {
+		BlockPos pos = bottomLeft.west(z).above(y);
+
+		TileEntityGoldPortal te = (TileEntityGoldPortal) dim.getBlockEntity(pos);
 		if (te != null)
 		{
-		    te.setDestination(genData.returnPoint.getX() + 0.5D, genData.returnPoint.getY() + 0.1D, genData.returnPoint.getZ() + 0.5D, genData.returnDimension);
-		    //DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")");
+		    te.setDestination(genData.returnPoint.getX(), genData.returnPoint.getY(), genData.returnPoint.getZ(), genData.returnDimension);
+		    DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ") in dim " + genData.returnDimension);
 		}
 		else
 		{
@@ -200,6 +253,69 @@ public class DungeonUtils
 	}
 
 	return true;
+    }
+
+    // takes the chunkpos of the top left corner
+    public static void buildSuperflatPersonalSpace(long buildX, long buildZ, MinecraftServer server)
+    {
+	BlockState[] layers = { Blocks.GRASS_BLOCK.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState(), Blocks.BEDROCK.defaultBlockState() };
+	ServerLevel dim = getPersonalBuildWorld(server);
+	ChunkPos cpos = new ChunkPos(((int) buildX / 16) + 4, ((int) buildZ / 16) + 4); // the +4 offset is for lining up with maps
+	BlockPos bpos = new BlockPos(cpos.getMinBlockX(), 50, cpos.getMinBlockZ());
+
+	// for each layer calculate the 128x1x128 area to be filled with the block from that layer and do it just like the FillCommand
+	for (int y = 0; y < 8; y++)
+	{
+	    BoundingBox pArea = new BoundingBox(bpos.getX(), 50 - y, bpos.getZ(), bpos.getX() + (8 * 16) - 1, 50 - y, bpos.getZ() + (8 * 16) - 1);
+
+	    for (BlockPos blockpos : BlockPos.betweenClosed(pArea.minX(), pArea.minY(), pArea.minZ(), pArea.maxX(), pArea.maxY(), pArea.maxZ()))
+	    {
+		dim.setBlock(blockpos, layers[y], 2);
+	    }
+	}
+
+	// finally, hand build the portal just outside the center of the south side
+	BlockPos portalStart = new BlockPos(cpos.getMinBlockX() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_X, 50, cpos.getMinBlockZ() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_Z);
+	dim.setBlock(portalStart, Blocks.BEDROCK.defaultBlockState(), 2);
+	dim.setBlock(portalStart.east(), Blocks.BEDROCK.defaultBlockState(), 2);
+	dim.setBlock(portalStart.west(), Blocks.BEDROCK.defaultBlockState(), 2);
+	dim.setBlock(portalStart.east(2), Blocks.BEDROCK.defaultBlockState(), 2);
+
+	// floor
+	dim.setBlock(portalStart.south().west(), Blocks.BEDROCK.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south(), Blocks.BEDROCK.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east(), Blocks.BEDROCK.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east(2), Blocks.BEDROCK.defaultBlockState(), 2);
+
+	// portal frame
+	dim.setBlock(portalStart.south().west().above(), Blocks.STONE_BRICKS.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east(2).above(), Blocks.STONE_BRICKS.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().west().above(2), Blocks.STONE_BRICKS.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east(2).above(2), Blocks.STONE_BRICKS.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().west().above(3), Blocks.STONE_BRICKS.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east(2).above(3), Blocks.STONE_BRICKS.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().west().above(4), BlockRegistrar.block_gilded_portal.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east(2).above(4), BlockRegistrar.block_gilded_portal.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().above(4), Blocks.STONE_BRICKS.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east().above(4), Blocks.STONE_BRICKS.defaultBlockState(), 2);
+
+	// spires too because why not
+	dim.setBlock(portalStart.south().west(3), Blocks.BEDROCK.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east(4), Blocks.BEDROCK.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().west(3).above(), Blocks.STONE_BRICKS.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east(4).above(), Blocks.STONE_BRICKS.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().west(3).above(2), Blocks.STONE_BRICKS.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east(4).above(2), Blocks.STONE_BRICKS.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().west(3).above(3), BlockRegistrar.block_gilded_portal.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east(4).above(3), BlockRegistrar.block_gilded_portal.defaultBlockState(), 2);
+
+	// place the actual 6 portal blocks
+	dim.setBlock(portalStart.south().above(), BlockRegistrar.block_gold_portal.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east().above(), BlockRegistrar.block_gold_portal.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().above(2), BlockRegistrar.block_gold_portal.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east().above(2), BlockRegistrar.block_gold_portal.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().above(3), BlockRegistrar.block_gold_portal.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east().above(3), BlockRegistrar.block_gold_portal.defaultBlockState(), 2);
     }
 
     // takes World.OVERWORLD and returns "minecraft:overworld"
@@ -216,6 +332,32 @@ public class DungeonUtils
 	double size = world.getWorldBorder().getSize() / 2;
 
 	return Math.round(size);
+    }
+
+    // returns the limit of the dungeon space not in blocks, but in dungeon widths (which is BLOCKS_APART_PER_DUNGEON)
+    public static long getLimitOfPersonalBuildDimension(MinecraftServer server)
+    {
+	ServerLevel world = getPersonalBuildWorld(server);
+	double size = world.getWorldBorder().getSize() / 2;
+
+	return Math.round(size);
+    }
+
+    // takes a block pos (not a chunk pos) and returns true if this space is potentially buildable or false if it is void
+    public static boolean isPersonalBuildChunk(BlockPos pos)
+    {
+	ChunkPos chunk = new ChunkPos(pos);
+
+	if (chunk.x < 4 || chunk.z < 4)
+	{
+	    return false;
+	}
+
+	int nx = (chunk.x - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
+	int nz = (chunk.z - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
+
+	// remember the +4 offset was for map art
+	return (nx) < 8 && (nz) < 8;
     }
 
     // THIS MUST ONLY BE USED for the purposes of displaying an activated in a gui

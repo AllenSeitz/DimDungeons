@@ -23,7 +23,7 @@ public class DungeonDesigner
     // an enumeration of dungeon types
     public enum DungeonType
     {
-	BASIC, ADVANCED, THEME_OPEN, THEME_REGULAR
+	BASIC, ADVANCED, THEME_OPEN, THEME_REGULAR, PERSONAL_BUILD, TELEPORTER_HUB
     };
 
     // this is the final constructed dungeon

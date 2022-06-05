@@ -2,6 +2,7 @@ package com.catastrophe573.dimdungeons.block;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.dimension.DungeonData;
+import com.catastrophe573.dimdungeons.item.BaseItemKey;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
@@ -145,10 +146,10 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	{
 	    return false;
 	}
-	// awakened ItemPortalKeys will open a portal to the dungeon dimension
-	else if (item.getItem() instanceof ItemPortalKey)
+	// awakened keys will open a portal to the dungeon dimension
+	else if (item.getItem() instanceof BaseItemKey)
 	{
-	    ItemPortalKey key = (ItemPortalKey) item.getItem();
+	    BaseItemKey key = (BaseItemKey) item.getItem();
 	    return key.isActivated(item);
 	}
 

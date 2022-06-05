@@ -9,6 +9,7 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
 import com.catastrophe573.dimdungeons.dimension.DungeonData;
+import com.catastrophe573.dimdungeons.item.BaseItemKey;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import com.catastrophe573.dimdungeons.structure.DungeonRoom;
@@ -33,6 +34,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
@@ -182,6 +184,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		float warpX = destination.getX();
 		float warpY = destination.getY();
 		float warpZ = destination.getZ();
+		ResourceKey<Level> destDim = te.getDestinationDimension();
 		int cooldown = te.getCooldown();
 
 		// implement the cooldown on the portal block itself
@@ -202,7 +205,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		    te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
 		}
 
-		if (!DungeonUtils.isDimensionDungeon(worldIn))
+		if (destDim.getRegistryName().getPath().equals(DimDungeons.dungeon_dimension_regname))
 		{
 		    // implement hardcore mode
 		    if (DungeonConfig.hardcoreMode)
@@ -215,25 +218,11 @@ public class BlockGoldPortal extends BaseEntityBlock
 			    worldIn.setBlockAndUpdate(keyhole.getBlockPos(), emptyState.setValue(BlockPortalKeyhole.FILLED, false).setValue(BlockPortalKeyhole.LIT, false));
 			}
 		    }
+		}
 
-		    // intentionally don't add 0.5f to the X, so the player is centered between the two blocks of the doorway
-		    DimDungeons.logMessageInfo("Player used a key to teleport to dungeon at (" + warpX + ", " + warpZ + ").");
-		    actuallyPerformTeleport((ServerPlayer) entityIn, DungeonUtils.getDungeonWorld(worldIn.getServer()), warpX, 55.1D, warpZ + 0.5f, 0);
-		}
-		else
-		{
-		    // first check for an unassigned gold portal block
-		    if (destination.getX() == 0 && destination.getZ() == 0)
-		    {
-			sendPlayerBackHome((ServerPlayer) entityIn);
-		    }
-		    else
-		    {
-			//System.out.println("Player is returning from a dungeon at (" + warpX + " " + warpY + " " + warpZ + ").");
-			ServerPlayer player = (ServerPlayer) entityIn;
-			actuallyPerformTeleport(player, player.getServer().getLevel(te.getDestinationDimension()), warpX + 0.5f, warpY + 0.5f, warpZ + 0.5f, 0);
-		    }
-		}
+		DimDungeons.logMessageInfo("Player is using a gold portal to teleport to (" + warpX + " " + warpY + " " + warpZ + ") in dimension " + destDim.location().toString() + ".");
+		ServerPlayer player = (ServerPlayer) entityIn;
+		actuallyPerformTeleport(player, player.getServer().getLevel(te.getDestinationDimension()), warpX, warpY, warpZ, 0);
 	    }
 	}
     }
@@ -248,15 +237,36 @@ public class BlockGoldPortal extends BaseEntityBlock
 	{
 	    destPitch = 0;
 	    destYaw = 180;
-	    
+	    x -= 0.00;
+	    z += 1.0D;
+
 	    // also check for teleporting into an advanced dungeon for the first time
 	    ChunkPos cpos = new ChunkPos(new BlockPos(x, y, z));
 	    DungeonRoom entrance = DungeonData.get(dim).getRoomAtPos(cpos);
-	    if ( entrance != null && entrance.dungeonType == DungeonType.ADVANCED)
+	    if (entrance != null && entrance.dungeonType == DungeonType.ADVANCED)
 	    {
 		// since the condition is minecraft:impossible, this is the only way to trigger it
-		player.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new ResourceLocation(DimDungeons.RESOURCE_PREFIX+"dungeons/enter_advanced_dungeon")), "advanced_dungeon"); 
+		player.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
 	    }
+	}
+	else if (DungeonUtils.isDimensionPersonalBuild(dim) && !DungeonUtils.isPersonalBuildChunk(new BlockPos(x, y, z)))
+	{
+	    // also apply to the "face north" hack to teleports entering this dimension too
+	    destPitch = 0;
+	    destYaw = 180;
+	    x += 1.0D; // an additional hack to center on the two block wide portal
+	    z += 0.5D;
+
+	    // try to award a joke advancement
+	    if (DungeonUtils.isDimensionPersonalBuild(player.getLevel()) && DungeonUtils.isDimensionPersonalBuild(dim))
+	    {
+		//player.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/build_recursive_portal")), "build_portal_inside");
+	    }
+	}
+	else
+	{
+	    x += 0.5D; // stand on the target block
+	    z += 0.5D;
 	}
 
 	CustomTeleporter tele = new CustomTeleporter(dim);
@@ -296,6 +306,16 @@ public class BlockGoldPortal extends BaseEntityBlock
     // this function returns boolean and relies on another function to actually destroy the block
     public boolean checkPortalIntegrity(BlockState state, LevelAccessor worldIn, BlockPos pos)
     {
+	// the return portal in the build dimension must never shatter
+	if (DungeonUtils.isDimensionPersonalBuild((Level) worldIn))
+	{
+	    // the portal appears outside of the buildable area
+	    if (!DungeonUtils.isPersonalBuildChunk(pos))
+	    {
+		return true;
+	    }
+	}
+
 	// valid portal shapes are not needed for persistence in the dungeon dimension
 	return DungeonUtils.isDimensionDungeon((Level) worldIn) || isPortalShapeIntact(state, worldIn, pos);
     }
@@ -325,7 +345,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 
 	// step 4: if this is a level 2 key then check additional portal frame requirements
 	ItemStack key = te.getObjectInserted();
-	int keyLevel = ((ItemPortalKey) key.getItem()).getKeyLevel(key);
+	int keyLevel = ((BaseItemKey) key.getItem()).getKeyLevel(key);
 	if (key.getItem() instanceof ItemPortalKey)
 	{
 	    if (keyLevel >= 2)

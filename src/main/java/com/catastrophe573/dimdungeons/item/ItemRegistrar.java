@@ -31,6 +31,15 @@ public class ItemRegistrar
     @ObjectHolder("dimdungeons:" + ItemBlankThemeKey.REG_NAME)
     public static Item item_blank_theme_key;
 
+    @ObjectHolder("dimdungeons:" + ItemBlankBuildKey.REG_NAME)
+    public static Item item_blank_build_key;
+    
+    @ObjectHolder("dimdungeons:" + ItemBuildKey.REG_NAME)
+    public static Item item_build_key;
+
+    @ObjectHolder("dimdungeons:" + ItemBlankTeleporterKey.REG_NAME)
+    public static Item item_blank_teleporter_key;
+    
     // this item is now unused because I've switched to Patchouli
     //@ObjectHolder("dimdungeons:" + ItemGuidebook.REG_NAME)
     //public static Item item_guidebook;
@@ -53,8 +62,13 @@ public class ItemRegistrar
     public static final RegistryObject<Item> ITEM_PORTAL_KEY = ITEMS.register(ItemPortalKey.REG_NAME, () -> new ItemPortalKey());
     public static final RegistryObject<Item> ITEM_BLANK_ADVANCED_KEY = ITEMS.register(ItemBlankAdvancedKey.REG_NAME, () -> new ItemBlankAdvancedKey());
     public static final RegistryObject<Item> ITEM_BLANK_THEME_KEY = ITEMS.register(ItemBlankThemeKey.REG_NAME, () -> new ItemBlankThemeKey());
+    public static final RegistryObject<Item> ITEM_BLANK_BUILD_KEY = ITEMS.register(ItemBlankBuildKey.REG_NAME, () -> new ItemBlankBuildKey());
+    public static final RegistryObject<Item> ITEM_BUILD_KEY = ITEMS.register(ItemBuildKey.REG_NAME, () -> new ItemBuildKey());
+    public static final RegistryObject<Item> ITEM_BLANK_TELEPORTER_KEY = ITEMS.register(ItemBlankTeleporterKey.REG_NAME, () -> new ItemBlankTeleporterKey());
+    
     public static final RegistryObject<Item> ITEM_SECRET_BELL = ITEMS.register(ItemSecretBell.REG_NAME, () -> new ItemSecretBell(new Item.Properties().tab(CREATIVE_TAB).stacksTo(1)));
     public static final RegistryObject<Item> ITEM_HOMEWARD_PEARL = ITEMS.register(ItemHomewardPearl.REG_NAME, () -> new ItemHomewardPearl(new Item.Properties().tab(CREATIVE_TAB).stacksTo(16)));
+    
     public static final RegistryObject<Item> ITEM_TROPHY_1 = ITEMS.register("item_trophy_1", () -> new Item(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> ITEM_TROPHY_2 = ITEMS.register("item_trophy_2", () -> new Item(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> ITEM_TROPHY_3 = ITEMS.register("item_trophy_3", () -> new Item(new Item.Properties().stacksTo(1)));

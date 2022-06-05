@@ -40,9 +40,12 @@ public class DimDungeons
     // constants used by other classes
     public static final String MOD_ID = "dimdungeons"; // this must match mods.toml
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
-    public static final String dungeon_basic_regname = "dungeon_dimension";
+    
+    public static final String dungeon_dimension_regname = "dungeon_dimension";
+    public static final String build_dimension_regname = "build_dimension";
 
-    public static final ResourceKey<Level> DUNGEON_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(MOD_ID, dungeon_basic_regname));
+    public static final ResourceKey<Level> DUNGEON_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(MOD_ID, dungeon_dimension_regname));
+    public static final ResourceKey<Level> BUILD_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(MOD_ID, build_dimension_regname));
 
     public static final PlayerDungeonEvents eventHandler = new PlayerDungeonEvents();
 

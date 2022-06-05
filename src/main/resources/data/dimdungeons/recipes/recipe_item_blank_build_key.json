@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "OHO",
+    "OKO",
+    "OGO"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:grass_block"
+    },
+    "O": {
+      "item": "minecraft:ender_pearl",
+      "_comment": "in 1.19 these might become echo_shard"
+    },
+    "H": {
+      "item": "dimdungeons:item_homeward_pearl"
+    },
+    "K": {
+      "item": "dimdungeons:item_portal_key"
+    }	
+  },
+  "result": {
+    "item": "dimdungeons:item_blank_build_key"
+  }
+}

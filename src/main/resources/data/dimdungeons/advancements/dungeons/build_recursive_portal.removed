@@ -1,0 +1,50 @@
+{
+	"parent": "dimdungeons:dungeons/root",
+	"display": 
+	{
+		"icon": 
+		{
+			"item": "minecraft:barrier"
+		},
+		"title": 
+		{
+			"translate": "advancements.dimdungeons.dungeons.build_recursive_portal.title"
+		},
+		"description": 
+		{
+			"translate": "advancements.dimdungeons.dungeons.build_recursive_portal.description"
+		},
+		"frame": "challenge",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": true
+	},
+	"criteria":
+	{
+		"build_portal_inside":
+		{
+			"trigger": "minecraft:impossible",
+			"conditions": 
+			{
+				"dimension": "dimdungeons:build_dimension",
+				"position": 
+				{
+					"x": 
+					{
+						"min": 1
+					},
+					"z": 
+					{
+						"max": -1
+					}
+				}
+			}
+		}
+	},
+	"requirements": 
+	[
+		[
+			"build_portal_inside"
+		]
+	]
+}

@@ -5,7 +5,10 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
+import com.catastrophe573.dimdungeons.item.BaseItemKey;
+import com.catastrophe573.dimdungeons.item.ItemBuildKey;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
@@ -196,6 +199,8 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		    // DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
 		    int buildStep = 0;
 
+		    myEntity.setContents(playerItem.copy());
+
 		    // should we begin to build the dungeon on the other side?
 		    if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide)
 		    {
@@ -206,7 +211,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			long entranceX = buildX + (8 * 16);
 			long entranceZ = buildZ + (11 * 16);
 
-			// this data structure is used for both placing signs and updating the exit portal
+			// this data structure is used for both building the layout and updating the exit portal
 			DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setDungeonType(key.getDungeonType(playerItem)).setTheme(key.getDungeonTheme(playerItem)).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
 
 			// should the key be marked as used?
@@ -216,6 +221,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			    {
 				//DimDungeons.LOGGER.info("BUILDING A NEW DUNGEON!");
 				playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
+				myEntity.setContents(playerItem.copy()); // do this again to solve a bug
 				DungeonPlacement.beginDesignAndBuild(DungeonUtils.getDungeonWorld(worldIn.getServer()), buildX, buildZ, genData);
 			    }
 
@@ -229,8 +235,30 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			    buildStep = 650;
 			}
 		    }
+		    else if (playerItem.getItem() instanceof ItemBuildKey && !worldIn.isClientSide)
+		    {
+			// building a personal build space is different
+			ItemBuildKey key = (ItemBuildKey) playerItem.getItem();
+			long buildX = (long) key.getDungeonTopLeftX(playerItem);
+			long buildZ = (long) key.getDungeonTopLeftZ(playerItem);
 
-		    myEntity.setContents(playerItem.copy());
+			// this is used for updating the exist portal
+			DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
+
+			if (key.isActivated(playerItem) && !key.isPlotBuilt(playerItem))
+			{
+			    if (!DungeonUtils.personalPortalAlreadyExistsHere(worldIn, buildX, buildZ))
+			    {
+				DimDungeons.logMessageInfo("DIMENSIONAL DUNGEONS: building a new personal dimension.");
+				playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
+				DungeonUtils.buildSuperflatPersonalSpace(buildX, buildZ, player.getServer());
+			    }
+			}
+
+			// buildStep must ALWAYS be 0 when using an ItemBuildKey, or else the keyhole might start ticking
+			buildStep = 0;
+			DungeonUtils.openPortalAfterBuild(worldIn, pos, genData, myEntity);
+		    }
 
 		    // recalculate the block states
 		    BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(BUILD_STEP, buildStep);
@@ -273,10 +301,17 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	TileEntityGoldPortal te = (TileEntityGoldPortal) worldIn.getBlockEntity(pos);
 	if (te != null && te instanceof TileEntityGoldPortal)
 	{
-	    ItemPortalKey key = (ItemPortalKey) keyStack.getItem();
+	    BaseItemKey key = (BaseItemKey) keyStack.getItem();
 	    if (key != null)
 	    {
-		te.setDestination(key.getWarpX(keyStack), 55.1D, key.getWarpZ(keyStack), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
+		if (key instanceof ItemPortalKey)
+		{
+		    te.setDestination(key.getWarpX(keyStack), 55.1D, key.getWarpZ(keyStack), DungeonUtils.serializeDimensionKey(DimDungeons.DUNGEON_DIMENSION));
+		}
+		else if (key instanceof ItemBuildKey)
+		{
+		    te.setDestination(key.getWarpX(keyStack), 51.1D, key.getWarpZ(keyStack), DungeonUtils.serializeDimensionKey(DimDungeons.BUILD_DIMENSION));
+		}
 	    }
 	}
     }
@@ -302,12 +337,6 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     // helper function for checkForPortalCreation
     public static boolean isOkayToSpawnPortalBlocks(Level worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole myEntity)
     {
-	// if the portal is not lit, then that is a fast "no"
-	if (!myEntity.isActivated())
-	{
-	    return false;
-	}
-
 	// check for air or existing portal blocks below this keyhole
 	Block b1 = worldIn.getBlockState(pos.below()).getBlock();
 	Block b2 = worldIn.getBlockState(pos.below(2)).getBlock();
@@ -322,9 +351,9 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 
 	// awakened ItemPortalKeys will open a portal to the dungeon dimension
 	ItemStack item = myEntity.getObjectInserted();
-	if (item.getItem() instanceof ItemPortalKey)
+	if (item.getItem() instanceof BaseItemKey)
 	{
-	    ItemPortalKey key = (ItemPortalKey) item.getItem();
+	    BaseItemKey key = (BaseItemKey) item.getItem();
 	    return key.isActivated(item);
 	}
 
@@ -447,7 +476,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	return 0;
     }
 
-    public static void checkForProblemsAndLiterallySpeakToPlayer(Level worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole tileEntity, Player player, boolean dungeonExistsHere, boolean anotherKeyWasFirst)
+    public static void checkForProblemsAndLiterallySpeakToPlayer(Level worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole tileEntity, Player player, boolean dungeonExistsHere)
     {
 	// only run this function once, either on the client or on the server
 	// this runs on the server now because some errors happen exclusively on the server's side
@@ -541,10 +570,10 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	}
 
 	// error (warning) #12: this key is a duplicate of another key (this is not a fatal or serious error, it'll happen sometimes)	
-	if (anotherKeyWasFirst)
-	{
-	    speakLiterallyToPlayerAboutProblems(worldIn, player, 12, null);
-	}
+	//if (anotherKeyWasFirst)
+	//{
+	//    speakLiterallyToPlayerAboutProblems(worldIn, player, 12, null);
+	//}
 
 	// only continue performing advanced checks for advanced portal keys
 	if (keyLevel < 2)
