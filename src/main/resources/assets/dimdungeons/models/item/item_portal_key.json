@@ -16,7 +16,13 @@
         "dimdungeons:keytype": 0.2
       },
       "model": "dimdungeons:item/item_key_level2"
-    }	
+    },
+    {
+      "predicate": {
+        "dimdungeons:keytype": 0.21
+      },
+      "model": "dimdungeons:item/item_key_teleporter"
+    }
   ],	
 	
   "display": {

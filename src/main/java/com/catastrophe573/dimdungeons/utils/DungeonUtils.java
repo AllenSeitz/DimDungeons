@@ -2,6 +2,7 @@ package com.catastrophe573.dimdungeons.utils;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
+import com.catastrophe573.dimdungeons.block.BlockGoldPortal;
 import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
@@ -174,23 +175,28 @@ public class DungeonUtils
 	    BlockState state = worldIn.getBlockState(pos);
 	    BaseItemKey key = (BaseItemKey) genData.keyItem.getItem();
 
+	    Direction keyholeFacing = state.getValue(BlockPortalKeyhole.FACING);
+
 	    // regardless of if this is a new or old dungeon, reprogram the exit door
 	    float entranceX = key.getWarpX(genData.keyItem);
 	    float entranceZ = key.getWarpZ(genData.keyItem);
 	    boolean dungeonExistsHere = false;
 	    if (key instanceof ItemBuildKey)
 	    {
-		dungeonExistsHere = DungeonUtils.reprogramPersonalPortal(worldIn, (long) entranceX, (long) entranceZ, genData);
+		dungeonExistsHere = DungeonUtils.reprogramPersonalPortal(worldIn, (long) entranceX, (long) entranceZ, genData, keyholeFacing);
+	    }
+	    else if (genData.dungeonType == DungeonType.TELEPORTER_HUB)
+	    {
+		dungeonExistsHere = DungeonUtils.reprogramTeleporterHubDoorway(worldIn, (long) entranceX, (long) entranceZ, genData, keyholeFacing);
 	    }
 	    else
 	    {
-		dungeonExistsHere = DungeonUtils.reprogramExistingExitDoorway(worldIn, (long) entranceX, (long) entranceZ, genData);
+		dungeonExistsHere = DungeonUtils.reprogramExistingExitDoorway(worldIn, (long) entranceX, (long) entranceZ, genData, keyholeFacing);
 	    }
 
 	    // this function only checks for the air blocks below the keyhole and the keyhole blockstate
 	    if (BlockPortalKeyhole.isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity) && dungeonExistsHere)
 	    {
-		Direction keyholeFacing = state.getValue(BlockPortalKeyhole.FACING);
 		Direction.Axis axis = (keyholeFacing == Direction.NORTH || keyholeFacing == Direction.SOUTH) ? Direction.Axis.X : Direction.Axis.Z;
 
 		BlockPortalKeyhole.addGoldenPortalBlock(worldIn, pos.below(), genData.keyItem, axis);
@@ -207,16 +213,16 @@ public class DungeonUtils
     }
 
     // returns false if this function fails because the dungeon on the other side was reset
-    public static boolean reprogramExistingExitDoorway(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData)
+    public static boolean reprogramExistingExitDoorway(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing)
     {
 	Level dim = DungeonUtils.getDungeonWorld(worldIn.getServer());
 	BlockPos portalStart = new BlockPos(entranceX, 55, entranceZ + 2);
 
-	return actuallyReprogramGoldPortalBlocks(portalStart, dim, genData);
+	return actuallyReprogramGoldPortalBlocks(portalStart, dim, genData, keyholeFacing);
     }
 
     // returns false if this function fails because the dungeon on the other side was reset
-    public static boolean reprogramPersonalPortal(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData)
+    public static boolean reprogramPersonalPortal(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing)
     {
 	Level dim = DungeonUtils.getPersonalBuildWorld(worldIn.getServer());
 	BlockPos portalStart = new BlockPos(entranceX + 1, 51, entranceZ + 1);
@@ -226,10 +232,66 @@ public class DungeonUtils
 	    return false; // for now, do not allow this
 	}
 
-	return actuallyReprogramGoldPortalBlocks(portalStart, dim, genData);
+	return actuallyReprogramGoldPortalBlocks(portalStart, dim, genData, keyholeFacing);
     }
 
-    protected static boolean actuallyReprogramGoldPortalBlocks(BlockPos bottomLeft, Level dim, DungeonGenData genData)
+    // this function creates the gold portal blocks if they do not exist, which the other similar functions do not!
+    public static boolean reprogramTeleporterHubDoorway(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing)
+    {
+	Level dim = DungeonUtils.getDungeonWorld(worldIn.getServer());
+	BlockPos portalStart = new BlockPos(entranceX, 55, entranceZ);
+
+	// figure out which of the 8 portals we're using and "move" the "entrance" there
+	// this math is awkward because when we call getWarpX() or Z() on the key, the coordinates are already transformed
+	int[] undo_x_offset = { 0, -16, -21, -21, -16, 0, 5, 5 };
+	int[] undo_z_offset = { 0, 0, -5, -21, -26, -26, -21, -5 };
+
+	int[] x_offset = { 0, -16, -23, -23, -16, 0, 6, 6 };
+	int[] z_offset = { -2, -2, -6, -22, -25, -25, -22, -6 };
+	int doornum = genData.dungeonTheme;
+	portalStart = portalStart.west(undo_x_offset[doornum]).east(x_offset[doornum]);
+	portalStart = portalStart.south(undo_z_offset[doornum]).north(z_offset[doornum]);
+
+	// figure out which direction the player will be facing in the dungeon dimension
+
+	// create the gold portal blocks
+	for (int xz = 0; xz < 2; xz++)
+	{
+	    for (int y = 0; y < 3; y++)
+	    {
+		BlockPos nextBlock = portalStart;
+		Direction.Axis face = Direction.Axis.X;
+
+		if (doornum == 0 || doornum == 1 || doornum == 4 || doornum == 5)
+		{
+		    nextBlock = nextBlock.west(xz).above(y);
+		}
+		else
+		{
+		    nextBlock = nextBlock.north(xz).above(y);
+		    face = Direction.Axis.Z;
+		}
+
+		dim.setBlock(nextBlock, BlockRegistrar.block_gold_portal.defaultBlockState().setValue(BlockGoldPortal.AXIS, face), 2);
+
+		TileEntityGoldPortal te = (TileEntityGoldPortal) dim.getBlockEntity(nextBlock);
+		if (te != null)
+		{
+		    te.setDestination(genData.returnPoint.getX(), genData.returnPoint.getY(), genData.returnPoint.getZ(), genData.returnDimension, keyholeFacing);
+		    DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + nextBlock.getX() + ", " + nextBlock.getY() + ", " + nextBlock.getZ() + ") in dim " + dim.dimension().location().getPath());
+		}
+		else
+		{
+		    DimDungeons.logMessageWarn("DIMDUNGEONS WARNING: why is there no exit portal here? (" + nextBlock.getX() + ", " + nextBlock.getY() + ", " + nextBlock.getZ() + ")");
+		}
+	    }
+	}
+
+	return true;
+    }
+
+    // this function only works for "normal" north/south entrances, it does not handle east/west entrances at all
+    protected static boolean actuallyReprogramGoldPortalBlocks(BlockPos bottomLeft, Level dim, DungeonGenData genData, Direction keyholeFacing)
     {
 	for (int z = 0; z < 2; z++)
 	{
@@ -240,8 +302,8 @@ public class DungeonUtils
 		TileEntityGoldPortal te = (TileEntityGoldPortal) dim.getBlockEntity(pos);
 		if (te != null)
 		{
-		    te.setDestination(genData.returnPoint.getX(), genData.returnPoint.getY(), genData.returnPoint.getZ(), genData.returnDimension);
-		    DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ") in dim " + genData.returnDimension);
+		    te.setDestination(genData.returnPoint.getX(), genData.returnPoint.getY(), genData.returnPoint.getZ(), genData.returnDimension, keyholeFacing);
+		    DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ") in dim " + dim.dimension().location().getPath());
 		}
 		else
 		{

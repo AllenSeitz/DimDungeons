@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "KKK",
+    "KGK",
+    "KKK"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:bedrock"
+    },
+    "K": {
+      "item": "dimdungeons:item_portal_key"
+    }
+  },
+  "result": {
+    "item": "dimdungeons:item_blank_teleporter_key"
+  }
+}

@@ -20,7 +20,7 @@ public class DungeonGenData
     // this is derived from the key, but stored here for convenience. remember theme < 1 means no theme
     public int dungeonTheme = -1;
     public DungeonType dungeonType = DungeonType.BASIC;
-    
+
     DungeonGenData()
     {
     }
@@ -46,14 +46,14 @@ public class DungeonGenData
     public DungeonGenData setTheme(int themeNum)
     {
 	dungeonTheme = themeNum;
-	if (dungeonTheme > DungeonConfig.themeSettings.size())
+	if (dungeonTheme > DungeonConfig.themeSettings.size() && dungeonType != DungeonType.TELEPORTER_HUB)
 	{
 	    DimDungeons.logMessageError("DIMDUNGEONS ERROR: attempting to build a dungeon with a theme number greater than the number of themes defined in the config. The theme will be ignored.");
 	    dungeonTheme = 0;
 	}
 	return this;
     }
-    
+
     public DungeonGenData setDungeonType(DungeonType type)
     {
 	dungeonType = type;

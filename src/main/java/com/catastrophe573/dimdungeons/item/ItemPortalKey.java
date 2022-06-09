@@ -1,5 +1,7 @@
 package com.catastrophe573.dimdungeons.item;
 
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
+
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -26,13 +28,16 @@ public class ItemPortalKey extends BaseItemKey
     {
 	if (((ItemPortalKey) stack.getItem()).isActivated(stack))
 	{
+	    if (((ItemPortalKey) stack.getItem()).getDungeonType(stack) == DungeonType.TELEPORTER_HUB)
+	    {
+		return 0.21f; // teleporter hub
+	    }
 	    if (((ItemPortalKey) stack.getItem()).getKeyLevel(stack) == 2)
 	    {
 		return 0.2f; // level 2 key
 	    }
 	    return 0.1f; // level 1 key
 	}
-
 	return 0.0f; // unactivated key	
     }
 
@@ -75,6 +80,7 @@ public class ItemPortalKey extends BaseItemKey
 
 		if (nameType == 0)
 		{
+		    // some tier 1 keys
 		    String start = I18n.get("npart.dimdungeons.struct_1");
 		    String preposition = I18n.get("npart.dimdungeons.struct_2");
 		    String noun1 = I18n.get("npart.dimdungeons.noun_" + word_index_1);
@@ -90,6 +96,7 @@ public class ItemPortalKey extends BaseItemKey
 		}
 		else if (nameType == 1)
 		{
+		    // some tier 1 keys
 		    String start = I18n.get("npart.dimdungeons.struct_3");
 		    String preposition = I18n.get("npart.dimdungeons.struct_4");
 		    String noun1 = I18n.get("npart.dimdungeons.noun_" + word_index_1);
@@ -105,6 +112,7 @@ public class ItemPortalKey extends BaseItemKey
 		}
 		else if (nameType == 2)
 		{
+		    // themes AND some tier 1 keys
 		    String start = I18n.get("npart.dimdungeons.struct_5");
 		    String preposition = I18n.get("npart.dimdungeons.struct_6");
 		    String place = I18n.get("npart.dimdungeons.place_" + word_index_1);
@@ -117,10 +125,24 @@ public class ItemPortalKey extends BaseItemKey
 		}
 		else if (nameType == 3)
 		{
+		    // advanced keys
 		    String start = I18n.get("npart.dimdungeons.struct_7");
 		    String place = I18n.get("npart.dimdungeons.place_" + word_index_1);
 		    String largeness = I18n.get("npart.dimdungeons.large_" + word_index_2);
 		    retval = start + " " + largeness + " " + place;
+		}
+		else if (nameType == 4)
+		{
+		    // teleporter hub - main key
+		    String start = I18n.get("npart.dimdungeons.struct_9");
+		    String noun1 = I18n.get("npart.dimdungeons.noun_" + word_index_1);
+		    retval = start + noun1;
+		}
+		else if (nameType == 5)
+		{
+		    // teleporter hub - 7 other keys
+		    String start = I18n.get("npart.dimdungeons.struct_9_" + word_index_1);
+		    retval = start;
 		}
 
 		return new TextComponent(retval);

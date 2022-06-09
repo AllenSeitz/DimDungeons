@@ -222,21 +222,37 @@ public class BlockGoldPortal extends BaseEntityBlock
 
 		DimDungeons.logMessageInfo("Player is using a gold portal to teleport to (" + warpX + " " + warpY + " " + warpZ + ") in dimension " + destDim.location().toString() + ".");
 		ServerPlayer player = (ServerPlayer) entityIn;
-		actuallyPerformTeleport(player, player.getServer().getLevel(te.getDestinationDimension()), warpX, warpY, warpZ, 0);
+		actuallyPerformTeleport(player, player.getServer().getLevel(te.getDestinationDimension()), warpX, warpY, warpZ, getReturnYawForDirection(te.getExitDirection()));
 	    }
 	}
     }
 
-    protected Entity actuallyPerformTeleport(ServerPlayer player, ServerLevel dim, double x, double y, double z, double yaw)
+    protected float getReturnYawForDirection(Direction exitFacing)
     {
-	float destPitch = player.getRotationVector().x;
-	float destYaw = player.getRotationVector().y;
+	switch (exitFacing)
+	{
+	case SOUTH:
+	    return 0.0f;
+	case EAST:
+	    return 270.0f;
+	case WEST:
+	    return 90.0f;
+	case NORTH:
+	default:
+	    return 180.0f;
+	}
+    }
+
+    protected Entity actuallyPerformTeleport(ServerPlayer player, ServerLevel dim, double x, double y, double z, float yaw)
+    {
+	//float destPitch = player.getRotationVector().x; // for reference
+	//float destPitch = player.getRotationVector().y;
+	float destPitch = 0;
+	float destYaw = yaw;	
 
 	// if the player just entered a dungeon then force them to face north
 	if (DungeonUtils.isDimensionDungeon(dim))
 	{
-	    destPitch = 0;
-	    destYaw = 180;
 	    x -= 0.00;
 	    z += 1.0D;
 
@@ -251,9 +267,6 @@ public class BlockGoldPortal extends BaseEntityBlock
 	}
 	else if (DungeonUtils.isDimensionPersonalBuild(dim) && !DungeonUtils.isPersonalBuildChunk(new BlockPos(x, y, z)))
 	{
-	    // also apply to the "face north" hack to teleports entering this dimension too
-	    destPitch = 0;
-	    destYaw = 180;
 	    x += 1.0D; // an additional hack to center on the two block wide portal
 	    z += 0.5D;
 

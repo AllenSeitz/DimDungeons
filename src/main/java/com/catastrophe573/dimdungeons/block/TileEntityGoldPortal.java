@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ObjectHolder;
@@ -22,6 +23,7 @@ public class TileEntityGoldPortal extends BlockEntity
     public static BlockEntityType<TileEntityGoldPortal> TYPE;
 
     private double destX = 0, destY = -10000, destZ = 0;
+    private Direction facing = Direction.NORTH; // the direction to face after teleporting
     private int cooldown = DungeonConfig.portalCooldownTicks;
     private int lastUpdate = 0;
     private String destDimension = "minecraft:overworld";
@@ -55,6 +57,16 @@ public class TileEntityGoldPortal extends BlockEntity
 	{
 	    this.destDimension = "minecraft:overworld";
 	}
+
+	// default value for portals that players created before I allowed portals to face directions other than north 
+	if (compound.contains("facing"))
+	{
+	    this.facing = Direction.valueOf(compound.getString("facing"));
+	}
+	else
+	{
+	    this.facing = Direction.NORTH;
+	}
     }
 
     @Override
@@ -65,14 +77,16 @@ public class TileEntityGoldPortal extends BlockEntity
 	compound.putDouble("destZ", this.destZ);
 	compound.putInt("cooldown", this.cooldown);
 	compound.putString("destDimension", this.destDimension);
+	compound.putString("facing", this.facing.name());
     }
 
-    public void setDestination(double posX, double posY, double posZ, String destDim)
+    public void setDestination(double posX, double posY, double posZ, String destDim, Direction faceExit)
     {
 	this.destX = posX;
 	this.destY = posY;
 	this.destZ = posZ;
 	this.destDimension = destDim;
+	this.facing = faceExit;
     }
 
     public BlockPos getDestination()
@@ -88,6 +102,11 @@ public class TileEntityGoldPortal extends BlockEntity
     public ResourceKey<Level> getDestinationDimension()
     {
 	return ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(destDimension));
+    }
+
+    public Direction getExitDirection()
+    {
+	return facing;
     }
 
     public boolean needsUpdateThisTick(int tick)

@@ -131,6 +131,53 @@ public class BaseItemKey extends Item
 	DungeonData.get(DungeonUtils.getDungeonWorld(server)).notifyOfNewKeyActivation();
     }
 
+    public void activateKeyForNewTeleporterHub(MinecraftServer server, ItemStack stack)
+    {
+	CompoundTag data = new CompoundTag();
+	data.putBoolean(NBT_KEY_ACTIVATED, true);
+	data.putBoolean(NBT_BUILT, false);
+	data.putInt(NBT_THEME, 0); // the first door
+	data.putString(NBT_DUNGEON_TYPE, DungeonType.TELEPORTER_HUB.toString());
+
+	// where is this key going?
+	long generation_limit = DungeonUtils.getLimitOfWorldBorder(server);
+	long dungeonsPerLimit = generation_limit / BLOCKS_APART_PER_DUNGEON;
+	int nextDungeonNumber = DungeonData.get(server.getLevel(DimDungeons.DUNGEON_DIMENSION)).getNumKeysRegistered() + 1;
+
+	// go as far as possible on the z-axis, then the x-axis, staying in the positive x/z quadrant
+	long destZ = nextDungeonNumber / dungeonsPerLimit;
+	long destX = nextDungeonNumber % dungeonsPerLimit;
+	data.putInt(NBT_KEY_DESTINATION_X, (int) destX);
+	data.putInt(NBT_KEY_DESTINATION_Z, (int) destZ);
+
+	// give it a funny random name
+	Random random = server.overworld().getRandom();
+	data.putInt(NBT_NAME_TYPE, 4); // teleporter hub format
+	data.putInt(NBT_NAME_PART_1, random.nextInt(32));
+
+	stack.setTag(data);
+	DungeonData.get(DungeonUtils.getDungeonWorld(server)).notifyOfNewKeyActivation();
+    }
+
+    public static void activateKeyForExistingTeleporterHub(MinecraftServer server, ItemStack stack, int destX, int destZ, int doorIndex)
+    {
+	CompoundTag data = new CompoundTag();
+	data.putBoolean(NBT_KEY_ACTIVATED, true);
+	data.putBoolean(NBT_BUILT, true); // the original key built this space
+	data.putInt(NBT_THEME, doorIndex); // the eight doors are numbered 0-7 clockwise from the entrance
+	data.putString(NBT_DUNGEON_TYPE, DungeonType.TELEPORTER_HUB.toString());
+
+	// re-use the destX and destZ from the original key
+	data.putInt(NBT_KEY_DESTINATION_X, destX);
+	data.putInt(NBT_KEY_DESTINATION_Z, destZ);
+
+	// give it a new name based on its door color
+	data.putInt(NBT_NAME_TYPE, 5);
+	data.putInt(NBT_NAME_PART_1, doorIndex);
+
+	stack.setTag(data);
+    }
+
     public boolean isActivated(ItemStack stack)
     {
 	if (stack.hasTag())
@@ -150,6 +197,19 @@ public class BaseItemKey extends Item
 	    CompoundTag itemData = stack.getTag();
 	    if (itemData != null && itemData.contains(NBT_KEY_DESTINATION_X))
 	    {
+		// teleporter keys make everything weird!
+		if (itemData.contains(NBT_DUNGEON_TYPE))
+		{
+		    DungeonType dtype = DungeonType.valueOf(itemData.getString(NBT_DUNGEON_TYPE));
+		    if (dtype == DungeonType.TELEPORTER_HUB)
+		    {
+			float tempx = (itemData.getInt(NBT_KEY_DESTINATION_X) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_X;
+			int doornum = itemData.getInt(NBT_THEME);
+			int[] x_offset = { 0, -16, -21, -21, -16, 0, 5, 5 };
+			return tempx + x_offset[doornum];
+		    }
+		}
+
 		return (itemData.getInt(NBT_KEY_DESTINATION_X) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_X;
 	    }
 	}
@@ -163,8 +223,20 @@ public class BaseItemKey extends Item
 	    CompoundTag itemData = stack.getTag();
 	    if (itemData != null && itemData.contains(NBT_KEY_DESTINATION_Z))
 	    {
-		float z = (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_Z;
-		return z;
+		// teleporter keys make everything weird!
+		if (itemData.contains(NBT_DUNGEON_TYPE))
+		{
+		    DungeonType dtype = DungeonType.valueOf(itemData.getString(NBT_DUNGEON_TYPE));
+		    if (dtype == DungeonType.TELEPORTER_HUB)
+		    {
+			float tempz = (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_Z;
+			int doornum = itemData.getInt(NBT_THEME);
+			int[] z_offset = { 0, 0, -5, -21, -26, -26, -21, -5 };
+			return tempz + z_offset[doornum];
+		    }
+		}
+
+		return (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_Z;
 	    }
 	}
 	return -1;

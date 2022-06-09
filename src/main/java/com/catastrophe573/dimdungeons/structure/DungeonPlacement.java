@@ -17,6 +17,7 @@ import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -102,6 +103,11 @@ public class DungeonPlacement
 	    dungeonSize = DungeonConfig.DEFAULT_ADVANCED_DUNGEON_SIZE;
 	    useLarge = true;
 	}
+	else if (genData.dungeonType == DungeonType.TELEPORTER_HUB)
+	{
+	    dungeonType = DungeonType.TELEPORTER_HUB;
+	    dbl = new DungeonDesignerTeleporterHub(world.getRandom(), entranceChunkX, entranceChunkZ, dungeonType, genData.dungeonTheme);
+	}
 	else
 	{
 	    dungeonType = DungeonType.BASIC;
@@ -143,12 +149,17 @@ public class DungeonPlacement
 		DimDungeons.logMessageError("DIMDUNGEONS ERROR UNABLE TO PLACE ***LARGE*** STRUCTURE: " + nextRoom.structure);
 		return false;
 	    }
-	    closeDoorsOnLargeRoom(cpos, world, nextRoom);
 
-	    // close the doors on the other 3 'fake' rooms now
-	    closeDoorsOnLargeRoom(new ChunkPos(cpos.x + 1, cpos.z), world, nextRoom);
-	    closeDoorsOnLargeRoom(new ChunkPos(cpos.x, cpos.z + 1), world, nextRoom);
-	    closeDoorsOnLargeRoom(new ChunkPos(cpos.x + 1, cpos.z + 1), world, nextRoom);
+	    // only perform this step on normal dungeons. Teleporter hubs have a glass roof.
+	    if (nextRoom.dungeonType != DungeonType.TELEPORTER_HUB)
+	    {
+		closeDoorsOnLargeRoom(cpos, world, nextRoom);
+
+		// close the doors on the other 3 'fake' rooms now
+		closeDoorsOnLargeRoom(new ChunkPos(cpos.x + 1, cpos.z), world, nextRoom);
+		closeDoorsOnLargeRoom(new ChunkPos(cpos.x, cpos.z + 1), world, nextRoom);
+		closeDoorsOnLargeRoom(new ChunkPos(cpos.x + 1, cpos.z + 1), world, nextRoom);
+	    }
 	}
 	else if (nextRoom.roomType == RoomType.LARGE_DUMMY)
 	{
@@ -527,7 +538,7 @@ public class DungeonPlacement
 	    if (te != null)
 	    {
 		// rely on the portal linking logic to update this later
-		te.setDestination(0, -10000, 0, "minecraft:overworld");
+		te.setDestination(0, -10000, 0, "minecraft:overworld", Direction.NORTH);
 	    }
 	}
 	else if ("BackToEntrance".equals(name))
@@ -616,6 +627,29 @@ public class DungeonPlacement
 	    {
 		te.removeContents();
 		te.setContents(new ItemStack(ItemRegistrar.item_blank_advanced_key));
+	    }
+	}
+	else if (name.contains("TeleporterKey_"))
+	{
+	    String tempDoornum = name.replace("TeleporterKey_", "");
+	    int doornum = Integer.valueOf(tempDoornum);
+
+	    world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+	    TileEntityPortalKeyhole te = (TileEntityPortalKeyhole) world.getBlockEntity(pos.below(2));
+	    if (te != null)
+	    {
+		ItemStack newkey = new ItemStack(ItemRegistrar.item_portal_key);
+
+		// reverse calculate the destX and destZ of the original key
+		int topLeftX = bb.minX() - (3 * 16);
+		int destX = (topLeftX / ItemPortalKey.BLOCKS_APART_PER_DUNGEON);
+		int topLeftZ = bb.minZ() - (3 * 16);
+		int destZ = (topLeftZ / ItemPortalKey.BLOCKS_APART_PER_DUNGEON);
+
+		ItemPortalKey.activateKeyForExistingTeleporterHub(world.getServer(), newkey, destX, destZ, doornum);
+
+		te.removeContents();
+		te.setContents(newkey);
 	    }
 	}
 	else if ("SummonWitch".equals(name))

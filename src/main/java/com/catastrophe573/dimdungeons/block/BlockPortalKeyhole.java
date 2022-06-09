@@ -11,6 +11,7 @@ import com.catastrophe573.dimdungeons.item.BaseItemKey;
 import com.catastrophe573.dimdungeons.item.ItemBuildKey;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
@@ -38,8 +39,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.level.block.Mirror;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.Util;
@@ -306,14 +305,40 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	    {
 		if (key instanceof ItemPortalKey)
 		{
-		    te.setDestination(key.getWarpX(keyStack), 55.1D, key.getWarpZ(keyStack), DungeonUtils.serializeDimensionKey(DimDungeons.DUNGEON_DIMENSION));
+		    ItemPortalKey keyItem = (ItemPortalKey) keyStack.getItem();
+		    Direction enterFacing = Direction.NORTH;
+
+		    // teleporter hubs are currently the only way a player can enter the dungeon dimension facing not-north
+		    if (keyItem.getDungeonType(keyStack) == DungeonType.TELEPORTER_HUB)
+		    {
+			enterFacing = getTeleporterHubEntranceDirection(keyItem.getDungeonTheme(keyStack));
+		    }
+		    te.setDestination(key.getWarpX(keyStack), 55.1D, key.getWarpZ(keyStack), DungeonUtils.serializeDimensionKey(DimDungeons.DUNGEON_DIMENSION), enterFacing);
 		}
 		else if (key instanceof ItemBuildKey)
 		{
-		    te.setDestination(key.getWarpX(keyStack), 51.1D, key.getWarpZ(keyStack), DungeonUtils.serializeDimensionKey(DimDungeons.BUILD_DIMENSION));
+		    te.setDestination(key.getWarpX(keyStack), 51.1D, key.getWarpZ(keyStack), DungeonUtils.serializeDimensionKey(DimDungeons.BUILD_DIMENSION), Direction.NORTH);
 		}
 	    }
 	}
+    }
+
+    public static Direction getTeleporterHubEntranceDirection(int doornum)
+    {
+	Direction exitDirection = Direction.NORTH;
+	if (doornum == 2 || doornum == 3)
+	{
+	    exitDirection = Direction.EAST;
+	}
+	if (doornum == 4 || doornum == 5)
+	{
+	    exitDirection = Direction.SOUTH;
+	}
+	if (doornum == 6 || doornum == 7)
+	{
+	    exitDirection = Direction.WEST;
+	}
+	return exitDirection;
     }
 
     public static BlockPos getReturnPoint(BlockState state, BlockPos pos)
@@ -455,20 +480,6 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
 	builder.add(FACING, FILLED, LIT, BUILD_STEP, BUILD_PARTICLE);
-    }
-
-    // Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed blockstate.
-    @Override
-    public BlockState rotate(BlockState state, Rotation rot)
-    {
-	return state.setValue(FACING, rot.rotate((Direction) state.getValue(FACING)));
-    }
-
-    // Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed blockstate.
-    @Override
-    public BlockState mirror(BlockState state, Mirror mirrorIn)
-    {
-	return state.setValue(FACING, mirrorIn.mirror(((Direction) state.getValue(FACING))));
     }
 
     public int predictPortalError(Level worldIn, Player playerIn)

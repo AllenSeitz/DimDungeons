@@ -139,6 +139,16 @@
 
     "npart.dimdungeons.struct_8": "Key to the World of ",
 
+    "npart.dimdungeons.struct_9": "Key to the Crossroads of ",
+    "npart.dimdungeons.struct_9_0": "Key to the Oak Door",
+    "npart.dimdungeons.struct_9_1": "Key to the Spruce Door",
+    "npart.dimdungeons.struct_9_2": "Key to the Birch Door",
+    "npart.dimdungeons.struct_9_3": "Key to the Acacia Door",
+    "npart.dimdungeons.struct_9_4": "Key to the Jungle Door",
+    "npart.dimdungeons.struct_9_5": "Key to the Dark Oak Door",
+    "npart.dimdungeons.struct_9_6": "Key to the Crimson Door",
+    "npart.dimdungeons.struct_9_7": "Key to the Warped Door",
+
     "book.dimdungeons.title_1": "Good News",
     "book.dimdungeons.title_2": "Puzzle Hint",
     "book.dimdungeons.title_3": "Scroll of Ill Omen",
@@ -222,11 +232,11 @@
 	"advancements.dimdungeons.dungeons.enter_advanced_dungeon.title": "The Next Level",
 	"advancements.dimdungeons.dungeons.enter_advanced_dungeon.description": "Twice the peril, twice the loot!",
 	"advancements.dimdungeons.dungeons.all_trophies.title": "Collectionist",
-	"advancements.dimdungeons.dungeons.all_trophies.description": "Find all 8 unique trophies.",	
-	"advancements.dimdungeons.dungeons.enter_personal_space.title": "Home Away From All Homes",
+	"advancements.dimdungeons.dungeons.all_trophies.description": "Find all 8 unique trophies.",
 	
+	"advancements.dimdungeons.dungeons.enter_personal_space.title": "Home Space Home",	
 	"advancements.dimdungeons.dungeons.enter_personal_space.description": "Find a key to your own personal dimension and enter it!",
-	"advancements.dimdungeons.dungeons.find_teleporter_key.title": "A Resting Place at the Edge of Space",
+	"advancements.dimdungeons.dungeons.find_teleporter_key.title": "Crossworld Crossroads",
 	"advancements.dimdungeons.dungeons.find_teleporter_key.description": "Find a key to a teleporter hub!",
 	"advancements.dimdungeons.dungeons.build_recursive_portal.title": "Recursive Portals?",
 	"advancements.dimdungeons.dungeons.build_recursive_portal.description": "Build a portal to your personal dimension inside your personal dimension.",
