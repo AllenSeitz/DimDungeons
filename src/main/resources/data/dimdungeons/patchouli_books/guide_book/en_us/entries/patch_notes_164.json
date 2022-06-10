@@ -1,0 +1,16 @@
+{
+    "name": "Version 164",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 160,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Added $(bold)Personal Dimension Keys$()! $(li)Personal Dimension Keys are craftable as soon as you craft your first key and keyhole. $(li)Personal Dimension Keys will 'bind' to the player that activates them, and all keys activated by the same player will lead to the same place."
+        },
+        {
+            "type": "text",
+            "text": "$(li)Added $(bold)Teleporter Hub Keys$()! $(li)Teleporter Hub Keys can be found in advanced dungeons. $(li)Exiting a portal in any dimension now causes you to face away from that portal."
+		}		
+    ]
+}

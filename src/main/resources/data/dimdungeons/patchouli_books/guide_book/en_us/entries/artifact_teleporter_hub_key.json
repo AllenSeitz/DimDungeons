@@ -1,0 +1,22 @@
+{
+	"name": "Teleporter Hub Key",
+	"icon": "dimdungeons:item_blank_teleporter_key",
+	"category": "dimdungeons:artifacts",
+	"sortnum": 60,
+	"advancement": "dimdungeons:dungeons/find_teleporter_key",
+	"pages": [
+		{
+			"type": "spotlight",
+			"item": "dimdungeons:item_blank_teleporter_key",
+			"text": "You've found a key to a $(bold)Teleporter Hub!$() Each teleporter hub is technically a dungeon, but there are no mobs or treasure. Instead there is just one big open room with 8 doors leading to 8 portals. Each of those doors has its own key."
+		},
+		{
+			"type": "text",
+			"text": "You are currently holding the key to the first of 8 doors. When you enter you'll be able to take the other 7 keys. Any portals you build with those keys will connect logically. Now you have the power to quickly travel great distances and even across dimensions at convenience!"
+		},
+		{
+			"type": "text",
+			"text": "Remember that portals to the dungeon dimension can be built in any dimension. You could use your keys to build a shortcut between your base, a stronghold, and the outer end islands. Each blank teleporter hub key that you find will lead to a new hub with seven different keys. All teleporter hub keys are unreplaceable so do not lose them!"
+		}
+	]
+}

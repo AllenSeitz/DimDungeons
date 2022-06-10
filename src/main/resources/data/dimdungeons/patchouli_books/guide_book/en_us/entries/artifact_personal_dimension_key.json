@@ -1,0 +1,18 @@
+{
+	"name": "Personal Dimension Key",
+	"icon": "dimdungeons:item_key_build",
+	"category": "dimdungeons:artifacts",
+	"sortnum": 40,
+	"advancement": "dimdungeons:dungeons/activate_basic_key",
+	"pages": [
+		{
+			"type": "spotlight",
+			"item": "dimdungeons:item_key_build",
+			"text": "You've created a key to your $(bold)own personal dimension!$() Your personal dimension is an 8x8 chunk space where you can build whatever you like! You could build a farm there, use it as a portable base, or take advantage of the flat area to make map art!"
+		},
+		{
+			"type": "text",
+			"text": "Don't worry if you lose the key to your personal dimension. All blank personal dimension keys that you activate will lead back to your dimension. And that is true for each other player in multiplayer as well."
+		}
+	]
+}
