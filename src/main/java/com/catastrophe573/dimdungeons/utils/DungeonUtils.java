@@ -149,17 +149,19 @@ public class DungeonUtils
     // assume that if a sign was placed in the entrance chunk that the build must be either started or finished
     public static boolean dungeonAlreadyExistsHere(Level worldIn, long entranceX, long entranceZ)
     {
-	ChunkPos cpos = new ChunkPos(((int) entranceX / 16) + 4, ((int) entranceZ / 16) + 4);
-	return DungeonPlacement.doesSignExistAtChunk(worldIn, cpos);
+	ChunkPos cpos = new ChunkPos((int) entranceX/16, (int) entranceZ/16);
+	return DungeonPlacement.wasRoomBuiltAtChunk(worldIn, cpos);
     }
 
     // assume that if a portal was placed, that the other 64 chunks are already done
     public static boolean personalPortalAlreadyExistsHere(Level worldIn, long entranceX, long entranceZ)
     {
+	Level buildDim = DungeonUtils.getPersonalBuildWorld(worldIn.getServer());
+
 	ChunkPos cpos = new ChunkPos(((int) entranceX / 16) + 4, ((int) entranceZ / 16) + 4);
 	BlockPos bpos = new BlockPos(cpos.getMinBlockX() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_X, 50, cpos.getMinBlockZ() + +ItemBuildKey.PLOT_ENTRANCE_OFFSET_Z);
 
-	BlockState block = worldIn.getBlockState(bpos);
+	BlockState block = buildDim.getBlockState(bpos);
 	if (block.getBlock() == Blocks.BEDROCK)
 	{
 	    return true;

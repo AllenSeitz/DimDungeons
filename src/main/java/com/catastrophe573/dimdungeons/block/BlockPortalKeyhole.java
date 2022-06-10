@@ -241,7 +241,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			long buildX = (long) key.getDungeonTopLeftX(playerItem);
 			long buildZ = (long) key.getDungeonTopLeftZ(playerItem);
 
-			// this is used for updating the exist portal
+			// this is used for updating the existing portal
 			DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
 
 			if (key.isActivated(playerItem) && !key.isPlotBuilt(playerItem))
@@ -250,6 +250,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			    {
 				DimDungeons.logMessageInfo("DIMENSIONAL DUNGEONS: building a new personal dimension.");
 				playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
+				myEntity.setContents(playerItem.copy()); // do this again to solve a bug				
 				DungeonUtils.buildSuperflatPersonalSpace(buildX, buildZ, player.getServer());
 			    }
 			}

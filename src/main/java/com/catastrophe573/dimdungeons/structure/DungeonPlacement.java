@@ -173,19 +173,12 @@ public class DungeonPlacement
 	return true;
     }
 
-    // used to check if any room exists in the given chunk
-    // does a slightly faster check for the bedrock under the sign, technically
-    public static boolean doesSignExistAtChunk(Level world, ChunkPos cpos)
-    {
-	BlockPos bpos = new BlockPos(cpos.getMinBlockX(), SIGN_Y - 1, cpos.getMinBlockZ());
-	return world.getBlockState(bpos).getBlock() == Blocks.BEDROCK;
-    }
-
     // checks for the second piece of bedrock under the sign. this is placed during buildRoomAboveSign()
     public static boolean wasRoomBuiltAtChunk(Level world, ChunkPos cpos)
     {
+	Level dungeonDim = DungeonUtils.getDungeonWorld(world.getServer());
 	BlockPos bpos = new BlockPos(cpos.getMinBlockX(), SIGN_Y - 2, cpos.getMinBlockZ());
-	return world.getBlockState(bpos).getBlock() == Blocks.BEDROCK;
+	return dungeonDim.getBlockState(bpos).getBlock() == Blocks.BEDROCK;
     }
 
     public static boolean isDungeonChunk(long x, long z)
