@@ -7,6 +7,7 @@ import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
+import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
 import com.catastrophe573.dimdungeons.item.BaseItemKey;
 import com.catastrophe573.dimdungeons.item.ItemBuildKey;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
@@ -21,6 +22,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
@@ -149,7 +151,7 @@ public class DungeonUtils
     // assume that if a sign was placed in the entrance chunk that the build must be either started or finished
     public static boolean dungeonAlreadyExistsHere(Level worldIn, long entranceX, long entranceZ)
     {
-	ChunkPos cpos = new ChunkPos((int) entranceX/16, (int) entranceZ/16);
+	ChunkPos cpos = new ChunkPos((int) entranceX / 16, (int) entranceZ / 16);
 	return DungeonPlacement.wasRoomBuiltAtChunk(worldIn, cpos);
     }
 
@@ -322,7 +324,7 @@ public class DungeonUtils
     // takes the chunkpos of the top left corner
     public static void buildSuperflatPersonalSpace(long buildX, long buildZ, MinecraftServer server)
     {
-	BlockState[] layers = { Blocks.GRASS_BLOCK.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState(), Blocks.BEDROCK.defaultBlockState() };
+	BlockState[] layers = { Blocks.GRASS_BLOCK.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState() };
 	ServerLevel dim = getPersonalBuildWorld(server);
 	ChunkPos cpos = new ChunkPos(((int) buildX / 16) + 4, ((int) buildZ / 16) + 4); // the +4 offset is for lining up with maps
 	BlockPos bpos = new BlockPos(cpos.getMinBlockX(), 50, cpos.getMinBlockZ());
@@ -422,6 +424,23 @@ public class DungeonUtils
 
 	// remember the +4 offset was for map art
 	return (nx) < 8 && (nz) < 8;
+    }
+
+    // assumes this is called on the server only (and only on entities already in this dimension)
+    public static void sendEntityHomeInBuildWorld(Entity entity)
+    {
+	// figure out what the x/z of this key would be
+	double topLeftX = Math.floor((entity.position().x) / ItemBuildKey.BLOCKS_APART_PER_PLOT);
+	topLeftX = (topLeftX * ItemBuildKey.BLOCKS_APART_PER_PLOT) + ItemBuildKey.ENTRANCE_OFFSET_X;
+
+	double topLeftZ = Math.floor((entity.position().z) / ItemBuildKey.BLOCKS_APART_PER_PLOT);
+	topLeftZ = (topLeftZ * ItemBuildKey.BLOCKS_APART_PER_PLOT) + ItemBuildKey.ENTRANCE_OFFSET_Z;
+
+	ServerLevel dim = DungeonUtils.getPersonalBuildWorld(entity.getServer());
+	CustomTeleporter tele = new CustomTeleporter(dim);
+	tele.setDestPos(topLeftX-7, 51, topLeftZ+4, 180.0f, 0);
+	entity.resetFallDistance();
+	entity.changeDimension(dim, tele);
     }
 
     // THIS MUST ONLY BE USED for the purposes of displaying an activated in a gui

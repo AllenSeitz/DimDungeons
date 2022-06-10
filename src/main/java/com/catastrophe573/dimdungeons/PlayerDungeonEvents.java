@@ -3,6 +3,7 @@ package com.catastrophe573.dimdungeons;
 import java.util.List;
 
 import com.catastrophe573.dimdungeons.dimension.DungeonData;
+import com.catastrophe573.dimdungeons.item.ItemBuildKey;
 import com.catastrophe573.dimdungeons.utils.CommandDimDungeons;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 import com.google.common.collect.Lists;
@@ -10,16 +11,19 @@ import com.google.common.collect.Lists;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Shulker;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingDestroyBlockEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
@@ -57,6 +61,49 @@ public class PlayerDungeonEvents
 	if (DungeonUtils.isDimensionDungeon(event.world))
 	{
 	    DungeonData.get(event.world).tick(event.world);
+	}
+    }
+
+    @SubscribeEvent
+    public void livingUpdate(LivingEvent.LivingUpdateEvent event)
+    {
+	if (event.getEntity().getLevel().isClientSide())
+	{
+	    return;
+	}
+
+	if (event.getEntityLiving() instanceof Player)
+	{
+	    if (((Player) (event.getEntityLiving())).isSpectator())
+	    {
+		return; // ignore spectators, they don't need to be saved from the void
+	    }
+	}
+
+	// handle standing on the void in the build world
+	if (DungeonUtils.isDimensionPersonalBuild(event.getEntity().getLevel()))
+	{
+	    if (!DungeonUtils.isPersonalBuildChunk(event.getEntity().blockPosition()))
+	    {
+		// player is leaving the build area (probably on elytra) and needs a correction
+		ChunkPos chunk = new ChunkPos(event.getEntity().blockPosition());
+
+		int nx = (chunk.x - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
+		int nz = (chunk.z - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
+
+		if (nx < -1 || (nx > 8 && nx < 31) || nz < -1 || (nz > 8 && nz < 31))
+		{
+		    DungeonUtils.sendEntityHomeInBuildWorld(event.getEntity());
+		    return;
+		}
+	    }
+
+	    // if the player is in the buildable area or just one chunk away then only snap them back to safety if they've fallen below the map
+	    if (event.getEntity().position().y < 1)
+	    {
+		DungeonUtils.sendEntityHomeInBuildWorld(event.getEntity());
+		return;
+	    }
 	}
     }
 
@@ -101,12 +148,23 @@ public class PlayerDungeonEvents
     @SubscribeEvent
     public void blockBreak(BlockEvent.BreakEvent event)
     {
+	// the build dimension is always block-protected outside of the build space, no matter what
+	if (DungeonUtils.isDimensionPersonalBuild((Level) event.getWorld()))
+	{
+	    if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
+	    {
+		event.setCanceled(true);
+		return;
+	    }
+	}
+
+	// intentionally check this AFTER the build dimension
 	if (!DungeonConfig.globalBlockProtection)
 	{
 	    return; // config disabled
 	}
 
-	// I only care about blocks breaking in the Dungeon Dimension
+	// next after the build world, I only care about blocks breaking in the Dungeon Dimension
 	if (!DungeonUtils.isDimensionDungeon((Level) event.getWorld()))
 	{
 	    return;
@@ -126,6 +184,17 @@ public class PlayerDungeonEvents
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void blockPlace(BlockEvent.EntityPlaceEvent event)
     {
+	// the build dimension is always block-protected outside of the build space, no matter what
+	if (DungeonUtils.isDimensionPersonalBuild((Level) event.getWorld()))
+	{
+	    if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
+	    {
+		event.setCanceled(true);
+		return;
+	    }
+	}
+
+	// intentionally check this AFTER the build dimension	
 	if (!DungeonConfig.globalBlockProtection)
 	{
 	    return; // config disabled
@@ -151,6 +220,17 @@ public class PlayerDungeonEvents
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void blockMultiPlace(BlockEvent.EntityMultiPlaceEvent event)
     {
+	// the build dimension is always block-protected outside of the build space, no matter what
+	if (DungeonUtils.isDimensionPersonalBuild((Level) event.getWorld()))
+	{
+	    if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
+	    {
+		event.setCanceled(true);
+		return;
+	    }
+	}
+
+	// intentionally check this AFTER the build dimension
 	if (!DungeonConfig.globalBlockProtection)
 	{
 	    return; // config disabled
@@ -185,6 +265,17 @@ public class PlayerDungeonEvents
     @SubscribeEvent
     public void anythingDestroyBlock(LivingDestroyBlockEvent event)
     {
+	// the build dimension is always block-protected outside of the build space, no matter what
+	if (DungeonUtils.isDimensionPersonalBuild((Level) event.getEntity().getLevel()))
+	{
+	    if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
+	    {
+		event.setCanceled(true);
+		return;
+	    }
+	}
+
+	// intentionally check this AFTER the build dimension	
 	if (!DungeonConfig.globalBlockProtection)
 	{
 	    return; // config disabled
@@ -209,6 +300,17 @@ public class PlayerDungeonEvents
     @SubscribeEvent
     public void leftClickBlock(LeftClickBlock event)
     {
+	// the build dimension is always block-protected outside of the build space, no matter what
+	if (DungeonUtils.isDimensionPersonalBuild((Level) event.getWorld()))
+	{
+	    if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
+	    {
+		event.setCanceled(true);
+		return;
+	    }
+	}
+
+	// intentionally check this AFTER the build dimension	
 	if (!DungeonConfig.globalBlockProtection)
 	{
 	    return; // config disabled
@@ -233,6 +335,17 @@ public class PlayerDungeonEvents
     @SubscribeEvent
     public void rightClickBlock(RightClickBlock event)
     {
+	// the build dimension is always block-protected outside of the build space, no matter what
+	if (DungeonUtils.isDimensionPersonalBuild((Level) event.getWorld()))
+	{
+	    if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
+	    {
+		event.setCanceled(true);
+		return;
+	    }
+	}
+
+	// intentionally check this AFTER the build dimension	
 	if (!DungeonConfig.globalBlockProtection)
 	{
 	    return; // config disabled
@@ -273,6 +386,11 @@ public class PlayerDungeonEvents
 	// restrict player teleports
 	if (event.getEntity() instanceof ServerPlayer)
 	{
+	    if (DungeonUtils.isDimensionDungeon(event.getEntity().getCommandSenderWorld()))
+	    {
+		// TODO: teleporting over the void? cancelled
+		// TODO: teleporting above y= roof level? cancelled
+	    }
 	}
 
 	// restrict enderman/shulker teleports
