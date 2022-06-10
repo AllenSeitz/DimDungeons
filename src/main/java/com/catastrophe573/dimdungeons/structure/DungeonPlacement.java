@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
+import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import com.catastrophe573.dimdungeons.block.TileEntityLocalTeleporter;
@@ -643,6 +644,12 @@ public class DungeonPlacement
 
 		te.removeContents();
 		te.setContents(newkey);
+		
+		// mark this keyhole as filled
+		BlockState state = world.getBlockState(pos.below(2));
+		BlockState newBlockState = state.setValue(BlockPortalKeyhole.FACING, state.getValue(BlockPortalKeyhole.FACING)).setValue(BlockPortalKeyhole.FILLED, true).setValue(BlockPortalKeyhole.LIT, false);
+		world.setBlockAndUpdate(pos.below(2), newBlockState);
+		
 	    }
 	}
 	else if ("SummonWitch".equals(name))

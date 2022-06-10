@@ -18,9 +18,11 @@ import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.entity.LivingEntity;
@@ -201,7 +203,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		    myEntity.setContents(playerItem.copy());
 
 		    // should we begin to build the dungeon on the other side?
-		    if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide)
+		    if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide && isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
 		    {
 			// all this math just to figure out where the coordinates of the dungeon are
 			ItemPortalKey key = (ItemPortalKey) playerItem.getItem();
@@ -234,7 +236,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			    buildStep = 650;
 			}
 		    }
-		    else if (playerItem.getItem() instanceof ItemBuildKey && !worldIn.isClientSide)
+		    else if (playerItem.getItem() instanceof ItemBuildKey && !worldIn.isClientSide && isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
 		    {
 			// building a personal build space is different
 			ItemBuildKey key = (ItemBuildKey) playerItem.getItem();
@@ -461,6 +463,20 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	    return 2;
 	}
 	return blockState.getValue(FILLED) ? 1 : 0;
+    }
+
+    // Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed blockstate.
+    @Override
+    public BlockState rotate(BlockState state, Rotation rot)
+    {
+	return state.setValue(FACING, rot.rotate((Direction) state.getValue(FACING)));
+    }
+
+    // Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed blockstate.
+    @Override
+    public BlockState mirror(BlockState state, Mirror mirrorIn)
+    {
+	return state.setValue(FACING, mirrorIn.mirror(((Direction) state.getValue(FACING))));
     }
 
     // returns the ItemStack that represents this block - this has nothing to do with the item placed inside
