@@ -150,7 +150,7 @@
         },
         {
           "type": "item",
-          "name": "dimdungeons:homeward_pearl",
+          "name": "dimdungeons:item_homeward_pearl",
           "weight": 3,
           "functions": [
             {
