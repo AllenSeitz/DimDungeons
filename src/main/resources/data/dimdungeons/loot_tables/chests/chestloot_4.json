@@ -9,28 +9,14 @@
       "entries": [
         {
           "type": "item",
-          "name": "minecraft:emerald",
+          "name": "minecraft:ancient_debris",
           "weight": 3,
           "functions": [
             {
               "function": "set_count",
               "count": {
-                "min": 12,
-                "max": 16
-              }
-            }
-          ]
-        },
-        {
-          "type": "item",
-          "name": "minecraft:diamond",
-          "weight": 3,
-          "functions": [
-            {
-              "function": "set_count",
-              "count": {
-                "min": 4,
-                "max": 8
+                "min": 1,
+                "max": 3
               }
             }
           ]
@@ -256,7 +242,21 @@
         {
           "type": "item",
           "name": "dimdungeons:block_key_charger",
-          "weight": 5,
+          "weight": 4,
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 1,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "item",
+          "name": "dimdungeons:item_blank_teleporter_key",
+          "weight": 4,
           "functions": [
             {
               "function": "set_count",
