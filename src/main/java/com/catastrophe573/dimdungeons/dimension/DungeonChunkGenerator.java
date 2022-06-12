@@ -14,23 +14,23 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.level.NoiseColumn;
+import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
-import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.GenerationStep.Carving;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.Heightmap.Types;
+import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.server.level.WorldGenRegion;
-import net.minecraft.world.level.StructureFeatureManager;
 import net.minecraft.world.level.biome.BiomeManager;
-import net.minecraft.world.level.biome.Climate.Sampler;
 import net.minecraft.world.level.biome.FixedBiomeSource;
 
 public final class DungeonChunkGenerator extends ChunkGenerator
@@ -45,7 +45,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 
     public DungeonChunkGenerator(Registry<StructureSet> p_209099_, FlatLevelGeneratorSettings p_209100_)
     {
-	super(p_209099_, p_209100_.structureOverrides(), new FixedBiomeSource(p_209100_.getBiomeFromSettings()), new FixedBiomeSource(p_209100_.getBiome()), 0L);
+	super(p_209099_, p_209100_.structureOverrides(), new FixedBiomeSource(p_209100_.getBiome()));
 	this.settings = p_209100_;
     }
 
@@ -66,16 +66,6 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	return this.settings;
     }
 
-    // in vanilla this would build the flat worldgen layers, I think
-    @Override
-    public CompletableFuture<ChunkAccess> fillFromNoise(Executor p_187748_, Blender p_187749_, StructureFeatureManager p_187750_, ChunkAccess p_187751_)
-    {
-	// I don't know why this function isn't being called, but it doesn't really matter
-	makeBase(p_187751_);
-
-	return CompletableFuture.completedFuture(p_187751_);
-    }
-
     // 1.16 version
     public int getBaseHeight(int x, int z, Heightmap.Types heightmapType)
     {
@@ -91,13 +81,6 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	}
 
 	return 0;
-    }
-
-    // 1.17 version
-    @Override
-    public int getBaseHeight(int x, int z, Types p_156155_, LevelHeightAccessor p_156156_)
-    {
-	return getBaseHeight(x, z, p_156155_);
     }
 
     // I don't know what this does. I copied it from the vanilla code.
@@ -167,33 +150,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
     }
 
     @Override
-    public Sampler climateSampler()
-    {
-	// none of the new 1.18 worldgen applies to this pocket dimension
-	return null;
-    }
-
-    @Override
-    public void applyCarvers(WorldGenRegion p_187691_, long p_187692_, BiomeManager p_187693_, StructureFeatureManager p_187694_, ChunkAccess p_187695_, GenerationStep.Carving p_187696_)
-    {
-	// intentionally do nothing!
-    }
-
-    //@Override
-    //public void applyBiomeDecoration(WorldGenLevel p_187712_, ChunkAccess p_187713_, StructureFeatureManager p_187714_)
-    //{
-    // intentionally do nothing!
-    //}
-
-    @Override
-    // I do not know why this isn't being called in 1.18 
-    public void buildSurface(WorldGenRegion p_187697_, StructureFeatureManager p_187698_, ChunkAccess p_187699_)
-    {
-	// no decoration! no structures!
-    }
-
-    @Override
-    public void createStructures(RegistryAccess p_62200_, StructureFeatureManager p_62201_, ChunkAccess p_62202_, StructureManager p_62203_, long p_62204_)
+    public void createStructures(RegistryAccess p_223165_, RandomState p_223166_, StructureManager p_223167_, ChunkAccess p_223168_, StructureTemplateManager p_223169_, long p_223170_)
     {
 	// intentionally do nothing!
     }
@@ -223,8 +180,52 @@ public final class DungeonChunkGenerator extends ChunkGenerator
     }
 
     @Override
-    public void addDebugScreenInfo(List<String> p_208054_, BlockPos p_208055_)
+    public void applyCarvers(WorldGenRegion p_223043_, long p_223044_, RandomState p_223045_, BiomeManager p_223046_, net.minecraft.world.level.StructureManager p_223047_, ChunkAccess p_223048_, Carving p_223049_)
     {
-	// this is required in 1.18.2
+	// intentionally do nothing!
+    }
+
+    @Override
+    public void buildSurface(WorldGenRegion p_223050_, net.minecraft.world.level.StructureManager p_223051_, RandomState p_223052_, ChunkAccess p_223053_)
+    {
+	// intentionally do nothing!
+    }
+
+    @Override
+    public CompletableFuture<ChunkAccess> fillFromNoise(Executor p_223209_, Blender p_223210_, RandomState p_223211_, net.minecraft.world.level.StructureManager p_223212_, ChunkAccess p_223213_)
+    {
+	// I don't know why this function isn't being called, but it doesn't really matter
+	makeBase(p_223213_);
+
+	return CompletableFuture.completedFuture(p_223213_);
+    }
+
+    @Override
+    public int getBaseHeight(int x, int z, Types p_223034_, LevelHeightAccessor p_223035_, RandomState p_223036_)
+    {
+	return getBaseHeight(x, z, p_223034_);
+    }
+
+    @Override
+    // copied this from FlatLevelSource just to have something that doesn't return null
+    public NoiseColumn getBaseColumn(int p_223028_, int p_223029_, LevelHeightAccessor p_223030_, RandomState p_223031_)
+    {
+	return new NoiseColumn(p_223030_.getMinBuildHeight(), this.settings.getLayers().stream().limit((long) p_223030_.getHeight()).map((p_204549_) ->
+	{
+	    return p_204549_ == null ? Blocks.AIR.defaultBlockState() : p_204549_;
+	}).toArray((p_204543_) ->
+	{
+	    return new BlockState[p_204543_];
+	}));
+    }
+
+    @Override
+    public void addDebugScreenInfo(List<String> p_223175_, RandomState p_223176_, BlockPos p_223177_)
+    {
+	//ChunkPos cpos = new ChunkPos(p_223177_);
+	//DungeonRoom room = DungeonData.get().getRoomAtPos(cpos);	
+	//p_223175_.add("Dungeon Room: " + room.structure);
+
+	p_223175_.add("Dungeon Room: " + "TODO maybe print dungeon room here");
     }
 }

@@ -1,7 +1,6 @@
 package com.catastrophe573.dimdungeons.block;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import javax.annotation.Nullable;
 
@@ -42,13 +41,14 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
@@ -87,9 +87,9 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	}
 	else
 	{
-	    if (state.getValue(BUILD_STEP) > 0 && type == TileEntityPortalKeyhole.TYPE)
+	    if (state.getValue(BUILD_STEP) > 0 && type == BlockRegistrar.BE_PORTAL_KEYHOLE.get())
 	    {
-		return createTickerHelper(type, TileEntityPortalKeyhole.TYPE, TileEntityPortalKeyhole::buildTick);
+		return type == BlockRegistrar.BE_PORTAL_KEYHOLE.get() ? TileEntityPortalKeyhole::tick : null;
 	    }
 	}
 	return null;
@@ -98,9 +98,9 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     // based on code from vanilla furnaces, which also play a sound effect and make particles when their TileEntity is being productive
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, Random rand)
+    public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, RandomSource rand)
     {
-	boolean hasPortalBlockBelow = worldIn.getBlockState(pos.below()).getBlock() == BlockRegistrar.block_gold_portal;
+	boolean hasPortalBlockBelow = worldIn.getBlockState(pos.below()).getBlock() == BlockRegistrar.BLOCK_GOLD_PORTAL.get();
 
 	Direction enumfacing = (Direction) stateIn.getValue(FACING);
 	double d0 = (double) pos.getX() + 0.5D;
@@ -299,7 +299,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 
     public static void addGoldenPortalBlock(Level worldIn, BlockPos pos, ItemStack keyStack, Direction.Axis axis)
     {
-	worldIn.setBlockAndUpdate(pos, BlockRegistrar.block_gold_portal.defaultBlockState().setValue(BlockGoldPortal.AXIS, axis));
+	worldIn.setBlockAndUpdate(pos, BlockRegistrar.BLOCK_GOLD_PORTAL.get().defaultBlockState().setValue(BlockGoldPortal.AXIS, axis));
 	TileEntityGoldPortal te = (TileEntityGoldPortal) worldIn.getBlockEntity(pos);
 	if (te != null && te instanceof TileEntityGoldPortal)
 	{
@@ -368,11 +368,11 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	// check for air or existing portal blocks below this keyhole
 	Block b1 = worldIn.getBlockState(pos.below()).getBlock();
 	Block b2 = worldIn.getBlockState(pos.below(2)).getBlock();
-	if (!(b1 == Blocks.AIR || b1 == BlockRegistrar.block_gold_portal))
+	if (!(b1 == Blocks.AIR || b1 == BlockRegistrar.BLOCK_GOLD_PORTAL.get()))
 	{
 	    return false;
 	}
-	if (!(b2 == Blocks.AIR || b2 == BlockRegistrar.block_gold_portal))
+	if (!(b2 == Blocks.AIR || b2 == BlockRegistrar.BLOCK_GOLD_PORTAL.get()))
 	{
 	    return false;
 	}
@@ -583,7 +583,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	for (int i = 9; i < 11; i++)
 	{
 	    BlockState b = blocks.get(i);
-	    if (b.getBlock() != BlockRegistrar.block_gilded_portal)
+	    if (b.getBlock() != BlockRegistrar.BLOCK_GILDED_PORTAL.get())
 	    {
 		speakLiterallyToPlayerAboutProblems(worldIn, player, 7, b);
 		return;
@@ -613,7 +613,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	for (int i = 11; i < 13; i++)
 	{
 	    BlockState b = blocks.get(i);
-	    if (b.getBlock() != BlockRegistrar.block_portal_crown)
+	    if (b.getBlock() != BlockRegistrar.BLOCK_PORTAL_CROWN.get())
 	    {
 		speakLiterallyToPlayerAboutProblems(worldIn, player, 8, null);
 		return;
@@ -643,17 +643,18 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     // assumes that playerIn is not null
     public static void speakLiterallyToPlayerAboutProblems(Level worldIn, Player playerIn, int problemID, @Nullable BlockState problemBlock)
     {
-	TranslatableComponent text1 = new TranslatableComponent(new TranslatableComponent("error.dimdungeons.portal_error_" + problemID).getString());
+	MutableComponent text1 = Component.translatable(Component.translatable("error.dimdungeons.portal_error_" + problemID).getString());
 
 	// a message that does not call out a specific block
 	if (problemBlock != null)
 	{
 	    // this version of the error message expects a block name to be concatenated
-	    text1 = new TranslatableComponent(new TranslatableComponent("error.dimdungeons.portal_error_" + problemID).getString() + problemBlock.getBlock().getRegistryName() + ".");
+	    String blockName = problemBlock.getBlock().getName().getString();
+	    text1 = Component.literal(Component.translatable("error.dimdungeons.portal_error_" + problemID).getString() + blockName  + ".");
 	}
 	text1.withStyle(text1.getStyle().withItalic(true));
 	text1.withStyle(text1.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
-	playerIn.sendMessage(text1, Util.NIL_UUID);
+	playerIn.displayClientMessage(text1, true);
     }
 
     @Override

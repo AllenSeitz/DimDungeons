@@ -1,7 +1,5 @@
 package com.catastrophe573.dimdungeons.item;
 
-import java.util.Random;
-
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.dimension.DungeonData;
 import com.catastrophe573.dimdungeons.dimension.PersonalBuildData;
@@ -11,10 +9,11 @@ import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -49,7 +48,7 @@ public class ItemBlankBuildKey extends BaseItemKey
 	    itemstack.shrink(1);
 
 	    // generate the activated key and try to insert it into the player's inventory multiple ways as a fail-safe
-	    ItemStack newkey = new ItemStack(ItemRegistrar.item_build_key);
+	    ItemStack newkey = new ItemStack(ItemRegistrar.ITEM_BUILD_KEY.get());
 	    activateBuildKey(worldIn.getServer(), newkey, player);
 
 	    if (!player.getInventory().add(slot, newkey))
@@ -77,7 +76,7 @@ public class ItemBlankBuildKey extends BaseItemKey
 	data.putInt(NBT_KEY_DESTINATION_Z, dest.z);
 
 	// name the key after the player
-	stack.setHoverName(new TranslatableComponent("npart.dimdungeons.struct_8").append(" " + player.getName().getString()));
+	stack.setHoverName(Component.translatable("npart.dimdungeons.struct_8", " ", player.getName().getString()));
 
 	stack.setTag(data);
 	DungeonData.get(DungeonUtils.getDungeonWorld(server)).notifyOfNewKeyActivation();
@@ -86,7 +85,7 @@ public class ItemBlankBuildKey extends BaseItemKey
     // EVEN MORE particle effects for this special event!
     public void createActivationParticleEffectsForBuildKey(Level worldIn, BlockPos pos)
     {
-	Random random = worldIn.getRandom();
+	RandomSource random = worldIn.getRandom();
 	for (int i = 0; i < 8; i++)
 	{
 	    double d0 = (double) ((float) pos.getX() + 0.5F);

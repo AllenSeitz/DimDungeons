@@ -2,7 +2,6 @@ package com.catastrophe573.dimdungeons.item;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -110,10 +109,10 @@ public class ItemBuildKey extends BaseItemKey
 	// this will likely never be seen because the key will probably be renamed
 	if (this.isActivated(stack))
 	{
-	    return new TranslatableComponent("item.dimdungeons.item_build_key");
+	    return Component.translatable("item.dimdungeons.item_build_key");
 	}
 
 	// basically return "Blank Personal Dimension Key"
-	return new TranslatableComponent("item.dimdungeons.item_blank_build_key");
+	return Component.translatable("item.dimdungeons.item_blank_build_key");
     }
 }

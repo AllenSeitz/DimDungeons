@@ -13,15 +13,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.registries.ObjectHolder;
 
 public class TileEntityPortalKeyhole extends BlockEntity
 {
     public static final String REG_NAME = "tileentity_portal_keyhole";
-
-    @ObjectHolder(DimDungeons.RESOURCE_PREFIX + REG_NAME)
-    public static BlockEntityType<TileEntityPortalKeyhole> TYPE;
 
     public enum DungeonBuildSpeed
     {
@@ -30,14 +25,16 @@ public class TileEntityPortalKeyhole extends BlockEntity
 
     public TileEntityPortalKeyhole(BlockPos pos, BlockState state)
     {
-	super(TYPE, pos, state);
+	super(BlockRegistrar.BE_PORTAL_KEYHOLE.get(), pos, state);
     }
 
     private ItemStack objectInserted = ItemStack.EMPTY;
     private static final String ITEM_PROPERTY_KEY = "objectInserted";
 
-    public static void buildTick(Level level, BlockPos pos, BlockState state, TileEntityPortalKeyhole self)
+    public static <T> void tick(Level level, BlockPos pos, BlockState state, T blockEntity)
     {
+	TileEntityPortalKeyhole self = (TileEntityPortalKeyhole) blockEntity;
+
 	ItemPortalKey key = (ItemPortalKey) self.getObjectInserted().getItem();
 	DungeonGenData genData = DungeonGenData.Create().setKeyItem(self.getObjectInserted()).setDungeonType(key.getDungeonType(self.getObjectInserted())).setTheme(key.getDungeonTheme(self.getObjectInserted())).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(level.dimension()));
 

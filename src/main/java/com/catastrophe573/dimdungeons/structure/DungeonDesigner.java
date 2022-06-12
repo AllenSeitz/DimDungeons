@@ -1,7 +1,6 @@
 package com.catastrophe573.dimdungeons.structure;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -9,6 +8,7 @@ import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.google.common.collect.Lists;
 
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Rotation;
 
 // this class designs the dungeon layout, the grid of rooms, but leaves the actual construction to the DungeonPlacement class
@@ -54,9 +54,9 @@ public class DungeonDesigner
 
     // this is initialized during the constructor with values from the ChunkGenerator, to ensure the dungeons use the world seed
     // or at least that was the intent in 1.14 anyways, but as of 1.16 dungeons are no longer built insid
-    protected Random rand;
+    protected RandomSource rand;
 
-    public DungeonDesigner(Random randIn, long chunkX, long chunkZ, DungeonType type, int theme)
+    public DungeonDesigner(RandomSource randIn, long chunkX, long chunkZ, DungeonType type, int theme)
     {
 	rand = randIn;
 	dungeonType = type; // saved for later and attached to rooms in world data

@@ -81,7 +81,7 @@ public class DungeonUtils
 
 	if (genData.keyItem.hasCustomHoverName() && DungeonConfig.enableDebugCheats)
 	{
-	    String name = genData.keyItem.getHoverName().getContents();
+	    String name = genData.keyItem.getHoverName().getString();
 	    if (name.contentEquals("DebugOne"))
 	    {
 		return 1;
@@ -276,7 +276,7 @@ public class DungeonUtils
 		    face = Direction.Axis.Z;
 		}
 
-		dim.setBlock(nextBlock, BlockRegistrar.block_gold_portal.defaultBlockState().setValue(BlockGoldPortal.AXIS, face), 2);
+		dim.setBlock(nextBlock, BlockRegistrar.BLOCK_GOLD_PORTAL.get().defaultBlockState().setValue(BlockGoldPortal.AXIS, face), 2);
 
 		TileEntityGoldPortal te = (TileEntityGoldPortal) dim.getBlockEntity(nextBlock);
 		if (te != null)
@@ -360,8 +360,8 @@ public class DungeonUtils
 	dim.setBlock(portalStart.south().east(2).above(2), Blocks.STONE_BRICKS.defaultBlockState(), 2);
 	dim.setBlock(portalStart.south().west().above(3), Blocks.STONE_BRICKS.defaultBlockState(), 2);
 	dim.setBlock(portalStart.south().east(2).above(3), Blocks.STONE_BRICKS.defaultBlockState(), 2);
-	dim.setBlock(portalStart.south().west().above(4), BlockRegistrar.block_gilded_portal.defaultBlockState(), 2);
-	dim.setBlock(portalStart.south().east(2).above(4), BlockRegistrar.block_gilded_portal.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().west().above(4), BlockRegistrar.BLOCK_GILDED_PORTAL.get().defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east(2).above(4), BlockRegistrar.BLOCK_GILDED_PORTAL.get().defaultBlockState(), 2);
 	dim.setBlock(portalStart.south().above(4), Blocks.STONE_BRICKS.defaultBlockState(), 2);
 	dim.setBlock(portalStart.south().east().above(4), Blocks.STONE_BRICKS.defaultBlockState(), 2);
 
@@ -372,16 +372,16 @@ public class DungeonUtils
 	dim.setBlock(portalStart.south().east(4).above(), Blocks.STONE_BRICKS.defaultBlockState(), 2);
 	dim.setBlock(portalStart.south().west(3).above(2), Blocks.STONE_BRICKS.defaultBlockState(), 2);
 	dim.setBlock(portalStart.south().east(4).above(2), Blocks.STONE_BRICKS.defaultBlockState(), 2);
-	dim.setBlock(portalStart.south().west(3).above(3), BlockRegistrar.block_gilded_portal.defaultBlockState(), 2);
-	dim.setBlock(portalStart.south().east(4).above(3), BlockRegistrar.block_gilded_portal.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().west(3).above(3), BlockRegistrar.BLOCK_GILDED_PORTAL.get().defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east(4).above(3), BlockRegistrar.BLOCK_GILDED_PORTAL.get().defaultBlockState(), 2);
 
 	// place the actual 6 portal blocks
-	dim.setBlock(portalStart.south().above(), BlockRegistrar.block_gold_portal.defaultBlockState(), 2);
-	dim.setBlock(portalStart.south().east().above(), BlockRegistrar.block_gold_portal.defaultBlockState(), 2);
-	dim.setBlock(portalStart.south().above(2), BlockRegistrar.block_gold_portal.defaultBlockState(), 2);
-	dim.setBlock(portalStart.south().east().above(2), BlockRegistrar.block_gold_portal.defaultBlockState(), 2);
-	dim.setBlock(portalStart.south().above(3), BlockRegistrar.block_gold_portal.defaultBlockState(), 2);
-	dim.setBlock(portalStart.south().east().above(3), BlockRegistrar.block_gold_portal.defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().above(), BlockRegistrar.BLOCK_GOLD_PORTAL.get().defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east().above(), BlockRegistrar.BLOCK_GOLD_PORTAL.get().defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().above(2), BlockRegistrar.BLOCK_GOLD_PORTAL.get().defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east().above(2), BlockRegistrar.BLOCK_GOLD_PORTAL.get().defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().above(3), BlockRegistrar.BLOCK_GOLD_PORTAL.get().defaultBlockState(), 2);
+	dim.setBlock(portalStart.south().east().above(3), BlockRegistrar.BLOCK_GOLD_PORTAL.get().defaultBlockState(), 2);
     }
 
     // takes World.OVERWORLD and returns "minecraft:overworld"
@@ -438,7 +438,7 @@ public class DungeonUtils
 
 	ServerLevel dim = DungeonUtils.getPersonalBuildWorld(entity.getServer());
 	CustomTeleporter tele = new CustomTeleporter(dim);
-	tele.setDestPos(topLeftX-7, 51, topLeftZ+4, 180.0f, 0);
+	tele.setDestPos(topLeftX - 7, 51, topLeftZ + 4, 180.0f, 0);
 	entity.resetFallDistance();
 	entity.changeDimension(dim, tele);
     }
@@ -447,7 +447,7 @@ public class DungeonUtils
     // the key returned by this function is not valid
     public static ItemStack getExampleKey()
     {
-	ItemStack icon = new ItemStack(ItemRegistrar.item_portal_key);
+	ItemStack icon = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
 	CompoundTag data = new CompoundTag();
 	data.putBoolean(ItemPortalKey.NBT_KEY_ACTIVATED, true);
 	data.putString(ItemPortalKey.NBT_DUNGEON_TYPE, DungeonType.BASIC.toString());

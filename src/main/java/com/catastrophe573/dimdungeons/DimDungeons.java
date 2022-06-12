@@ -40,7 +40,7 @@ public class DimDungeons
     // constants used by other classes
     public static final String MOD_ID = "dimdungeons"; // this must match mods.toml
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
-    
+
     public static final String dungeon_dimension_regname = "dungeon_dimension";
     public static final String build_dimension_regname = "build_dimension";
 
@@ -53,7 +53,7 @@ public class DimDungeons
     {
 	BlockRegistrar.register();
 	ItemRegistrar.register();
-	
+
 	// register event listeners that don't use the event bus
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
 	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
@@ -80,15 +80,15 @@ public class DimDungeons
 	// this needs enqueueWork() because of the DeferredRegister
 	event.enqueueWork(() ->
 	{
-	    ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.block_gold_portal, RenderType.translucent());
-	    ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.block_local_teleporter, RenderType.translucent());
+	    ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_GOLD_PORTAL.get(), RenderType.translucent());
+	    ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get(), RenderType.translucent());
 
 	    // register the custom property for the keys that allows for switching their model
-	    ItemProperties.register(ItemRegistrar.item_portal_key, new ResourceLocation(DimDungeons.MOD_ID, "keytype"), (stack, world, entity, number) ->
+	    ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), new ResourceLocation(DimDungeons.MOD_ID, "keytype"), (stack, world, entity, number) ->
 	    {
 		return ItemPortalKey.getKeyLevelAsFloat(stack);
 	    });
-	    ItemProperties.register(ItemRegistrar.item_secret_bell, new ResourceLocation(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
+	    ItemProperties.register(ItemRegistrar.ITEM_SECRET_BELL.get(), new ResourceLocation(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
 	    {
 		return ItemSecretBell.getUpgradeLevelAsFloat(stack);
 	    });

@@ -1,20 +1,13 @@
 package com.catastrophe573.dimdungeons.block;
 
-import com.catastrophe573.dimdungeons.DimDungeons;
-
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.BlockPos;
-import net.minecraftforge.registries.ObjectHolder;
 
 public class TileEntityLocalTeleporter extends BlockEntity
 {
     public static final String REG_NAME = "tileentity_local_teleporter";
-
-    @ObjectHolder(DimDungeons.RESOURCE_PREFIX + REG_NAME)
-    public static BlockEntityType<TileEntityLocalTeleporter> TYPE;
 
     private double destX, destY, destZ;
     private double destYaw;
@@ -22,7 +15,7 @@ public class TileEntityLocalTeleporter extends BlockEntity
 
     public TileEntityLocalTeleporter(BlockPos pos, BlockState state)
     {
-	super(TYPE, pos, state);
+	super(BlockRegistrar.BE_LOCAL_TELEPORTER.get(), pos, state);
     }
 
     @Override

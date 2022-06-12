@@ -1,12 +1,11 @@
 package com.catastrophe573.dimdungeons.item;
 
-import java.util.Random;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +33,7 @@ public class ItemBlankTeleporterKey extends BaseItemKey
 	    itemstack.shrink(1);
 
 	    // generate the activated key and try to insert it into the player's inventory multiple ways as a fail-safe
-	    ItemStack newkey = new ItemStack(ItemRegistrar.item_portal_key);
+	    ItemStack newkey = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
 	    activateKeyForNewTeleporterHub(worldIn.getServer(), newkey);
 
 	    if (!player.getInventory().add(slot, newkey))
@@ -53,7 +52,7 @@ public class ItemBlankTeleporterKey extends BaseItemKey
     // EVEN MORE particle effects for this special event!
     public void createActivationParticleEffectsForTeleporterKey(Level worldIn, BlockPos pos, ItemStack itemstack)
     {
-	Random random = worldIn.getRandom();
+	RandomSource random = worldIn.getRandom();
 	for (int i = 0; i < 24; i++)
 	{
 	    double d0 = (double) ((float) pos.getX() + 0.5F);

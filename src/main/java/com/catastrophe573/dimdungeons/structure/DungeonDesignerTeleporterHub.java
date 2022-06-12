@@ -1,12 +1,11 @@
 package com.catastrophe573.dimdungeons.structure;
 
-import java.util.Random;
-
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Rotation;
 
 public class DungeonDesignerTeleporterHub extends DungeonDesigner
 {
-    public DungeonDesignerTeleporterHub(Random randIn, long chunkX, long chunkZ, DungeonType type, int theme)
+    public DungeonDesignerTeleporterHub(RandomSource randIn, long chunkX, long chunkZ, DungeonType type, int theme)
     {
 	super(randIn, chunkX, chunkZ, type, theme);
     }

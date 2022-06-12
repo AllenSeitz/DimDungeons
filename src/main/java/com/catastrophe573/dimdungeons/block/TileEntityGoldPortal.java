@@ -1,26 +1,20 @@
 package com.catastrophe573.dimdungeons.block;
 
-import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ObjectHolder;
 
 public class TileEntityGoldPortal extends BlockEntity
 {
     public static final String REG_NAME = "tileentity_gold_portal";
-
-    @ObjectHolder(DimDungeons.RESOURCE_PREFIX + REG_NAME)
-    public static BlockEntityType<TileEntityGoldPortal> TYPE;
 
     private double destX = 0, destY = -10000, destZ = 0;
     private Direction facing = Direction.NORTH; // the direction to face after teleporting
@@ -30,7 +24,7 @@ public class TileEntityGoldPortal extends BlockEntity
 
     public TileEntityGoldPortal(BlockPos pos, BlockState state)
     {
-	super(TYPE, pos, state);
+	super(BlockRegistrar.BE_GOLD_PORTAL.get(), pos, state);
     }
 
     @Override

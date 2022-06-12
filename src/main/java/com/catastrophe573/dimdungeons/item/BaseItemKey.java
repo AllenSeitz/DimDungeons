@@ -1,7 +1,5 @@
 package com.catastrophe573.dimdungeons.item;
 
-import java.util.Random;
-
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
@@ -16,6 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -80,7 +79,7 @@ public class BaseItemKey extends Item
 	data.putInt(NBT_KEY_DESTINATION_Z, (int) destZ);
 
 	// give it a funny random name
-	Random random = server.overworld().getRandom();
+	RandomSource random = server.overworld().getRandom();
 	int nameType = random.nextInt(3);
 	if (theme > 0)
 	{
@@ -122,7 +121,7 @@ public class BaseItemKey extends Item
 	data.putInt(NBT_KEY_DESTINATION_Z, (int) destZ);
 
 	// give it a funny random name like "Key to the [LARGE] [PLACE]"
-	Random random = server.overworld().getRandom();
+	RandomSource random = server.overworld().getRandom();
 	data.putInt(NBT_NAME_TYPE, 3);
 	data.putInt(NBT_NAME_PART_1, random.nextInt(20)); // place
 	data.putInt(NBT_NAME_PART_2, random.nextInt(12)); // largeness
@@ -151,7 +150,7 @@ public class BaseItemKey extends Item
 	data.putInt(NBT_KEY_DESTINATION_Z, (int) destZ);
 
 	// give it a funny random name
-	Random random = server.overworld().getRandom();
+	RandomSource random = server.overworld().getRandom();
 	data.putInt(NBT_NAME_TYPE, 4); // teleporter hub format
 	data.putInt(NBT_NAME_PART_1, random.nextInt(32));
 
@@ -305,7 +304,7 @@ public class BaseItemKey extends Item
 
     public boolean isBlockKeyCharger(BlockState state)
     {
-	if (state.getBlock() == BlockRegistrar.block_key_charger || state.getBlock() == BlockRegistrar.block_key_charger_used || state.getBlock() == BlockRegistrar.block_key_charger_damaged)
+	if (state.getBlock() == BlockRegistrar.BLOCK_CHARGER_FULL.get() || state.getBlock() == BlockRegistrar.BLOCK_CHARGER_USED.get() || state.getBlock() == BlockRegistrar.BLOCK_CHARGER_DAMAGED.get())
 	{
 	    return true;
 	}
@@ -313,6 +312,7 @@ public class BaseItemKey extends Item
 	return false;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public InteractionResult useOn(UseOnContext parameters)
     {
@@ -323,7 +323,7 @@ public class BaseItemKey extends Item
 	double hitX = parameters.getClickLocation().x();
 	double hitZ = parameters.getClickLocation().z();
 	Player player = parameters.getPlayer();
-	Random random = worldIn.getRandom();
+	RandomSource random = worldIn.getRandom();
 
 	BlockState iblockstate = worldIn.getBlockState(pos);
 	ItemStack itemstack = parameters.getItemInHand();
@@ -392,10 +392,10 @@ public class BaseItemKey extends Item
 		    worldIn.playSound((Player) null, pos, SoundEvents.GLASS_HIT, SoundSource.BLOCKS, 1.0F, 1.0F);
 		}
 	    }
-	    else if (worldIn.getBlockState(pos).getBlock().getRegistryName().getNamespace().equals("endrem"))
+	    else if (worldIn.getBlockState(pos).getBlock().builtInRegistryHolder().key().location().getNamespace().equals("endrem"))
 	    {
 		// compatibility for End:Remastered
-		String blockid = worldIn.getBlockState(pos).getBlock().getRegistryName().getPath();
+		String blockid = worldIn.getBlockState(pos).getBlock().builtInRegistryHolder().key().location().getPath();
 		if (isActivated(itemstack))
 		{
 		    //System.out.println("Key already activated!");
@@ -424,14 +424,14 @@ public class BaseItemKey extends Item
 			// running this block of code on the client can cause a flicker
 			if (!worldIn.isClientSide)
 			{
-			    String blockid = worldIn.getBlockState(pos).getBlock().getRegistryName().getPath();
+			    String blockid = worldIn.getBlockState(pos).getBlock().builtInRegistryHolder().key().location().getPath();
 			    int roll = worldIn.getRandom().nextInt(100);
 			    if (blockid.equals(BlockRegistrar.REG_NAME_CHARGER_FULL))
 			    {
 				if (roll < DungeonConfig.keyEnscriberDowngradeChanceFull)
 				{
 				    worldIn.playSound((Player) null, pos, SoundEvents.ANVIL_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
-				    worldIn.setBlockAndUpdate(pos, BlockRegistrar.block_key_charger_used.defaultBlockState());
+				    worldIn.setBlockAndUpdate(pos, BlockRegistrar.BLOCK_CHARGER_USED.get().defaultBlockState());
 				}
 				else
 				{
@@ -443,7 +443,7 @@ public class BaseItemKey extends Item
 				if (roll < DungeonConfig.keyEnscriberDowngradeChanceUsed)
 				{
 				    worldIn.playSound((Player) null, pos, SoundEvents.ANVIL_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
-				    worldIn.setBlockAndUpdate(pos, BlockRegistrar.block_key_charger_damaged.defaultBlockState());
+				    worldIn.setBlockAndUpdate(pos, BlockRegistrar.BLOCK_CHARGER_DAMAGED.get().defaultBlockState());
 				}
 				else
 				{
@@ -496,7 +496,7 @@ public class BaseItemKey extends Item
     // more particle effects for this special event!
     public void createActivationParticleEffects(Level worldIn, BlockPos pos)
     {
-	Random random = worldIn.getRandom();
+	RandomSource random = worldIn.getRandom();
 	for (int i = 0; i < 32; i++)
 	{
 	    double d0 = (double) ((float) pos.getX() + 0.5F);

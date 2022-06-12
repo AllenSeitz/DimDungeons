@@ -9,8 +9,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -145,13 +143,13 @@ public class ItemPortalKey extends BaseItemKey
 		    retval = start;
 		}
 
-		return new TextComponent(retval);
+		return Component.translatable(retval);
 	    }
 	}
 
 	// basically return "Blank Portal Key"
 	//return I18n.format(stack.getTranslationKey());
-	return new TranslatableComponent(this.getDescriptionId(stack), new Object[0]);
+	return Component.translatable(this.getDescriptionId(stack));
     }
 
     /**

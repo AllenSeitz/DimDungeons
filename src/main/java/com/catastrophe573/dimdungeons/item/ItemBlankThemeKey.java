@@ -7,8 +7,6 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -31,7 +29,7 @@ public class ItemBlankThemeKey extends BaseItemKey
     public static int getTheme(ItemStack stack)
     {
 	CompoundTag itemData = stack.getTag();
-	if ( itemData == null )
+	if (itemData == null)
 	{
 	    return 0;
 	}
@@ -43,7 +41,7 @@ public class ItemBlankThemeKey extends BaseItemKey
     public Component getName(ItemStack stack)
     {
 	int theme = 0;
-	
+
 	// no NBT data on this item at all? well then return a blank key
 	if (stack.hasTag())
 	{
@@ -52,11 +50,11 @@ public class ItemBlankThemeKey extends BaseItemKey
 	    String start = I18n.get("item.dimdungeons.item_blank_theme_key");
 	    String place = I18n.get("npart.dimdungeons.theme_" + theme);
 
-	    return new TextComponent(start + " (" + place + ")");
+	    return Component.translatable(start + " (" + place + ")");
 	}
 
 	// basically return "Blank Theme Key"
-	return new TranslatableComponent(this.getDescriptionId(stack), new Object[0]);
+	return Component.translatable(this.getDescriptionId(stack), new Object[0]);
     }
 
     @Override
@@ -83,7 +81,7 @@ public class ItemBlankThemeKey extends BaseItemKey
 	    itemstack.shrink(1);
 
 	    // generate the blank key and try to insert it into the player's inventory multiple ways as a fail-safe
-	    ItemStack newkey = new ItemStack(ItemRegistrar.item_portal_key);
+	    ItemStack newkey = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
 	    activateKeyLevel1(worldIn.getServer(), newkey, theme);
 
 	    if (!player.getInventory().add(slot, newkey))

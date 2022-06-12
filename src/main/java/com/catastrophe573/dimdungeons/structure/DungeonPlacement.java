@@ -1,7 +1,5 @@
 package com.catastrophe573.dimdungeons.structure;
 
-import java.util.Random;
-
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
@@ -23,10 +21,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -53,10 +52,10 @@ import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.StructureMode;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 
 // this class takes the dungeon layout which is designed by DungeonBuilderLogic and actually places it in the world
 public class DungeonPlacement
@@ -247,7 +246,7 @@ public class DungeonPlacement
     public static boolean putLargeRoomHere(ChunkPos cpos, ServerLevel world, DungeonRoom room)
     {
 	MinecraftServer minecraftserver = ((Level) world).getServer();
-	StructureManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
+	StructureTemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
 	StructureTemplate template = templatemanager.getOrCreate(new ResourceLocation(room.structure));
 	StructurePlaceSettings placementsettings = (new StructurePlaceSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false);
@@ -437,7 +436,7 @@ public class DungeonPlacement
     public static boolean putRoomHere(ChunkPos cpos, ServerLevel world, DungeonRoom room)
     {
 	MinecraftServer minecraftserver = ((Level) world).getServer();
-	StructureManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
+	StructureTemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
 	StructureTemplate template = templatemanager.getOrCreate(new ResourceLocation(room.structure));
 	StructurePlaceSettings placementsettings = (new StructurePlaceSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false);
@@ -521,13 +520,13 @@ public class DungeonPlacement
     }
 
     // resembles TemplateStructurePiece.handleDataMarker() from vanilla
-    protected static void handleDataBlock(String name, BlockPos pos, ServerLevel world, Random rand, BoundingBox bb, DungeonRoom room)
+    protected static void handleDataBlock(String name, BlockPos pos, ServerLevel world, RandomSource rand, BoundingBox bb, DungeonRoom room)
     {
 	//DimDungeons.LOGGER.info("DATA BLOCK NAME: " + name);
 
 	if ("ReturnPortal".equals(name))
 	{
-	    world.setBlock(pos, BlockRegistrar.block_gold_portal.defaultBlockState(), 2); // erase this data block
+	    world.setBlock(pos, BlockRegistrar.BLOCK_GOLD_PORTAL.get().defaultBlockState(), 2); // erase this data block
 	    TileEntityGoldPortal te = (TileEntityGoldPortal) world.getBlockEntity(pos);
 	    if (te != null)
 	    {
@@ -537,7 +536,7 @@ public class DungeonPlacement
 	}
 	else if ("BackToEntrance".equals(name))
 	{
-	    world.setBlock(pos, BlockRegistrar.block_local_teleporter.defaultBlockState(), 2); // erase this data block
+	    world.setBlock(pos, BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get().defaultBlockState(), 2); // erase this data block
 	    TileEntityLocalTeleporter te = (TileEntityLocalTeleporter) world.getBlockEntity(pos);
 	    if (te != null)
 	    {
@@ -620,7 +619,7 @@ public class DungeonPlacement
 	    if (te != null)
 	    {
 		te.removeContents();
-		te.setContents(new ItemStack(ItemRegistrar.item_blank_advanced_key));
+		te.setContents(new ItemStack(ItemRegistrar.ITEM_BLANK_ADVANCED_KEY.get()));
 	    }
 	}
 	else if (name.contains("TeleporterKey_"))
@@ -632,7 +631,7 @@ public class DungeonPlacement
 	    TileEntityPortalKeyhole te = (TileEntityPortalKeyhole) world.getBlockEntity(pos.below(2));
 	    if (te != null)
 	    {
-		ItemStack newkey = new ItemStack(ItemRegistrar.item_portal_key);
+		ItemStack newkey = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
 
 		// reverse calculate the destX and destZ of the original key
 		int topLeftX = bb.minX() - (3 * 16);
@@ -644,12 +643,12 @@ public class DungeonPlacement
 
 		te.removeContents();
 		te.setContents(newkey);
-		
+
 		// mark this keyhole as filled
 		BlockState state = world.getBlockState(pos.below(2));
 		BlockState newBlockState = state.setValue(BlockPortalKeyhole.FACING, state.getValue(BlockPortalKeyhole.FACING)).setValue(BlockPortalKeyhole.FILLED, true).setValue(BlockPortalKeyhole.LIT, false);
 		world.setBlockAndUpdate(pos.below(2), newBlockState);
-		
+
 	    }
 	}
 	else if ("SummonWitch".equals(name))
@@ -717,11 +716,15 @@ public class DungeonPlacement
 	EntityType<?> entitytype = EntityType.byString(resourceLocation).orElse(EntityType.CHICKEN);
 
 	Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, MobSpawnType.STRUCTURE, true, true);
+	if (mob == null)
+	{
+	    return; // this can happen if other mods somehow disrupt or prevent the mob from spawning
+	}
 	mob.moveTo(pos, 0.0F, 0.0F);
 
 	// append a "2" to the mob name in advanced dungeons
 	String advancedDungeonNames = type == DungeonType.ADVANCED ? "2" : "";
-	TranslatableComponent fancyName = new TranslatableComponent("enemy.dimdungeons." + resourceLocation + advancedDungeonNames);
+	MutableComponent fancyName = Component.translatable("enemy.dimdungeons." + resourceLocation + advancedDungeonNames);
 
 	// don't nametag the mob if the translation string fails
 	if (!(fancyName == null || fancyName.getString().contains("enemy.dimdungeons.")))
@@ -756,8 +759,8 @@ public class DungeonPlacement
 		if (!((Mob) mob).hasItemInSlot(EquipmentSlot.OFFHAND))
 		{
 		    int numThemes = DungeonConfig.themeSettings.size();
-		    ItemStack stack = new ItemStack(ItemRegistrar.item_portal_key);
-		    ((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).activateKeyLevel1(world.getServer(), stack, world.getRandom().nextInt(numThemes) + 1);
+		    ItemStack stack = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
+		    ((ItemPortalKey) (ItemRegistrar.ITEM_PORTAL_KEY.get())).activateKeyLevel1(world.getServer(), stack, world.getRandom().nextInt(numThemes) + 1);
 
 		    ((Mob) mob).setItemInHand(InteractionHand.OFF_HAND, stack);
 		    ((Mob) mob).setDropChance(EquipmentSlot.OFFHAND, 1.0f);
@@ -775,14 +778,14 @@ public class DungeonPlacement
 	}
     }
 
-    private static void fillChestBelow(BlockPos pos, ResourceLocation lootTable, LevelAccessor world, Random rand)
+    private static void fillChestBelow(BlockPos pos, ResourceLocation lootTable, LevelAccessor world, RandomSource rand)
     {
 	world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 	RandomizableContainerBlockEntity.setLootTable(world, rand, pos.below(), lootTable);
     }
 
     // I was originally thinking that this would contain direct hints about the dungeon, but that would involve a post generation step
-    private static ItemStack generateLuckyMessage(Random rand, DungeonType type)
+    private static ItemStack generateLuckyMessage(RandomSource rand, DungeonType type)
     {
 	ItemStack stack = new ItemStack(Items.WRITTEN_BOOK);
 	stack.setTag(new CompoundTag());
@@ -800,29 +803,29 @@ public class DungeonPlacement
 
 	if (bookType == 0)
 	{
-	    title = new TranslatableComponent("book.dimdungeons.title_1").getString();
-	    body = new TranslatableComponent("book.dimdungeons.fun_message_" + messageVariation).getString();
+	    title = Component.translatable("book.dimdungeons.title_1").getString();
+	    body = Component.translatable("book.dimdungeons.fun_message_" + messageVariation).getString();
 
 	}
 	else if (bookType == 1)
 	{
-	    title = new TranslatableComponent("book.dimdungeons.title_2").getString();
-	    body = new TranslatableComponent("book.dimdungeons.helpful_message_" + messageVariation).getString();
+	    title = Component.translatable("book.dimdungeons.title_2").getString();
+	    body = Component.translatable("book.dimdungeons.helpful_message_" + messageVariation).getString();
 	}
 	else if (bookType == 2)
 	{
-	    title = new TranslatableComponent("book.dimdungeons.title_3").getString();
-	    body = new TranslatableComponent("book.dimdungeons.dangerous_message_" + messageVariation).getString();
+	    title = Component.translatable("book.dimdungeons.title_3").getString();
+	    body = Component.translatable("book.dimdungeons.dangerous_message_" + messageVariation).getString();
 	}
 	else if (bookType == 3)
 	{
-	    title = new TranslatableComponent("book.dimdungeons.title_4").getString();
-	    body = new TranslatableComponent("book.dimdungeons.advanced_message_" + messageVariation).getString();
+	    title = Component.translatable("book.dimdungeons.title_4").getString();
+	    body = Component.translatable("book.dimdungeons.advanced_message_" + messageVariation).getString();
 	}
 
 	// create the complicated NBT tag list for the list of pages in the book
 	ListTag pages = new ListTag();
-	Component text = new TranslatableComponent(body);
+	Component text = Component.translatable(body);
 	String json = Component.Serializer.toJson(text);
 	pages.add(0, StringTag.valueOf(json)); // 1.15
 
@@ -831,7 +834,7 @@ public class DungeonPlacement
 	stack.getTag().putInt("generation", 0);
 	stack.getTag().put("pages", pages);
 	stack.getTag().putString("title", title);
-	stack.getTag().putString("author", new TranslatableComponent("book.dimdungeons.author").getString());
+	stack.getTag().putString("author", Component.translatable("book.dimdungeons.author").getString());
 	return stack;
     }
 

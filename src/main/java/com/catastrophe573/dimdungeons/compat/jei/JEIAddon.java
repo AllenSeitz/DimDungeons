@@ -1,5 +1,6 @@
 package com.catastrophe573.dimdungeons.compat.jei;
 
+/*
 import java.util.List;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
@@ -18,7 +19,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
+*/
 
+/*
 @JeiPlugin
 public class JEIAddon implements IModPlugin
 {
@@ -40,9 +43,9 @@ public class JEIAddon implements IModPlugin
 	List<ActivateKeyJeiRecipe> allRecipes = Lists.newArrayList();
 
 	// this type of 'recipe' is not in json or configurable in any way
-	ItemStack blank_key = new ItemStack(ItemRegistrar.item_portal_key);
+	ItemStack blank_key = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
 	ItemStack end_frame = new ItemStack(Items.END_PORTAL_FRAME);
-	ItemStack key_charger = new ItemStack(BlockRegistrar.block_key_charger);
+	ItemStack key_charger = new ItemStack(BlockRegistrar.BLOCK_CHARGER_FULL.get());
 
 	allRecipes.add(new ActivateKeyJeiRecipe(blank_key, end_frame, DungeonUtils.getExampleKey()));
 	allRecipes.add(new ActivateKeyJeiRecipe(blank_key, key_charger, DungeonUtils.getExampleKey()));
@@ -70,3 +73,4 @@ public class JEIAddon implements IModPlugin
 	//registration.addRecipeCatalyst(new ItemStack(Items.END_PORTAL_FRAME), getActivateKeyRecipeType());
     }
 }
+*/

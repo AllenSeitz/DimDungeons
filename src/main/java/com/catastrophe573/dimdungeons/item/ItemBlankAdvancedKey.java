@@ -38,7 +38,7 @@ public class ItemBlankAdvancedKey extends BaseItemKey
 	    itemstack.shrink(1);
 	    
 	    // generate the blank key and try to insert it into the player's inventory multiple ways as a fail-safe
-	    ItemStack newkey = new ItemStack(ItemRegistrar.item_portal_key);
+	    ItemStack newkey = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
 	    activateKeyLevel2(worldIn.getServer(), newkey);
 
 	    if ( !player.getInventory().add(slot, newkey) )

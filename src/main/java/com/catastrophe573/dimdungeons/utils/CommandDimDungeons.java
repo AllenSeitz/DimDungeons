@@ -20,8 +20,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.network.chat.BaseComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 // TODO: this class should be registering one command, not two. Split this into a separate class for each command.
 public class CommandDimDungeons
@@ -57,27 +57,27 @@ public class CommandDimDungeons
 
     private static int giveKey(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> targets, String type, int theme) throws CommandSyntaxException
     {
-	BaseComponent keyName = new TranslatableComponent("item.dimdungeons.item_portal_key"); // for use with the logging at the end of the function
+	MutableComponent keyName = Component.translatable("item.dimdungeons.item_portal_key"); // for use with the logging at the end of the function
 
 	for (ServerPlayer serverplayerentity : targets)
 	{
 	    // make a new and different key for each player
-	    ItemStack stack = new ItemStack(ItemRegistrar.item_portal_key);
+	    ItemStack stack = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
 
 	    // which type of key was requested
 	    if ("blank".equals(type))
 	    {
-		keyName = new TranslatableComponent("item.dimdungeons.item_portal_key");
+		keyName = Component.translatable("item.dimdungeons.item_portal_key");
 	    }
 	    else if ("basic".equals(type))
 	    {
-		((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).activateKeyLevel1(cmd.getSource().getServer(), stack, theme);
-		keyName = new TranslatableComponent("item.dimdungeons.item_portal_key_basic");
+		((ItemPortalKey) (ItemRegistrar.ITEM_PORTAL_KEY.get())).activateKeyLevel1(cmd.getSource().getServer(), stack, theme);
+		keyName = Component.translatable("item.dimdungeons.item_portal_key_basic");
 	    }
 	    else if ("advanced".equals(type))
 	    {
-		((ItemPortalKey) (ItemRegistrar.item_portal_key.asItem())).activateKeyLevel2(cmd.getSource().getServer(), stack);
-		keyName = new TranslatableComponent("item.dimdungeons.item_portal_key_advanced");
+		((ItemPortalKey) (ItemRegistrar.ITEM_PORTAL_KEY.get())).activateKeyLevel2(cmd.getSource().getServer(), stack);
+		keyName = Component.translatable("item.dimdungeons.item_portal_key_advanced");
 	    }
 	    else
 	    {
@@ -115,11 +115,11 @@ public class CommandDimDungeons
 	// print either "Gave one [key] to Dev" or "Gave one [key] to X players"
 	if (targets.size() == 1)
 	{
-	    cmd.getSource().sendSuccess(new TranslatableComponent("commands.give.success.single", 1, keyName, targets.iterator().next().getDisplayName()), true);
+	    cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, targets.iterator().next().getDisplayName()), true);
 	}
 	else
 	{
-	    cmd.getSource().sendSuccess(new TranslatableComponent("commands.give.success.single", 1, keyName, targets.size()), true);
+	    cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, targets.size()), true);
 	}
 
 	return targets.size();

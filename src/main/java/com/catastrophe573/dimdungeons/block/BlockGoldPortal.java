@@ -31,7 +31,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
@@ -205,7 +204,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		    te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
 		}
 
-		if (destDim.getRegistryName().getPath().equals(DimDungeons.dungeon_dimension_regname))
+		if (destDim.location().getPath().equals(DimDungeons.dungeon_dimension_regname))
 		{
 		    // implement hardcore mode
 		    if (DungeonConfig.hardcoreMode)
@@ -248,7 +247,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	//float destPitch = player.getRotationVector().x; // for reference
 	//float destPitch = player.getRotationVector().y;
 	float destPitch = 0;
-	float destYaw = yaw;	
+	float destYaw = yaw;
 
 	// if the player just entered a dungeon then force them to face north
 	if (DungeonUtils.isDimensionDungeon(dim))
@@ -391,7 +390,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	for (int i = 0; i < 2; i++)
 	{
 	    BlockState keyhole = worldIn.getBlockState(p);
-	    if (keyhole.getBlock() == BlockRegistrar.block_portal_keyhole)
+	    if (keyhole.getBlock() == BlockRegistrar.BLOCK_PORTAL_KEYHOLE.get())
 	    {
 		return (TileEntityPortalKeyhole) worldIn.getBlockEntity(p);
 	    }
@@ -429,7 +428,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	    }
 	}
 
-	if (blocks.get(9).getBlock() != BlockRegistrar.block_gilded_portal || blocks.get(10).getBlock() != BlockRegistrar.block_gilded_portal)
+	if (blocks.get(9).getBlock() != BlockRegistrar.BLOCK_GILDED_PORTAL.get() || blocks.get(10).getBlock() != BlockRegistrar.BLOCK_GILDED_PORTAL.get())
 	{
 	    return false;
 	}
@@ -510,7 +509,7 @@ public class BlockGoldPortal extends BaseEntityBlock
     private boolean checkPortalFrameLevel2WestEast(LevelAccessor worldIn, BlockPos keyhole)
     {
 	// main portal body - check for added crowns
-	if (worldIn.getBlockState(keyhole.west(1)).getBlock() != BlockRegistrar.block_portal_crown || worldIn.getBlockState(keyhole.east(1)).getBlock() != BlockRegistrar.block_portal_crown)
+	if (worldIn.getBlockState(keyhole.west(1)).getBlock() != BlockRegistrar.BLOCK_PORTAL_CROWN.get() || worldIn.getBlockState(keyhole.east(1)).getBlock() != BlockRegistrar.BLOCK_PORTAL_CROWN.get())
 	{
 	    return false;
 	}
@@ -538,7 +537,7 @@ public class BlockGoldPortal extends BaseEntityBlock
     private boolean checkPortalFrameLevel2NorthSouth(LevelAccessor worldIn, BlockPos keyhole)
     {
 	// main portal body - check for added crowns
-	if (worldIn.getBlockState(keyhole.north(1)).getBlock() != BlockRegistrar.block_portal_crown || worldIn.getBlockState(keyhole.south(1)).getBlock() != BlockRegistrar.block_portal_crown)
+	if (worldIn.getBlockState(keyhole.north(1)).getBlock() != BlockRegistrar.BLOCK_PORTAL_CROWN.get() || worldIn.getBlockState(keyhole.south(1)).getBlock() != BlockRegistrar.BLOCK_PORTAL_CROWN.get())
 	{
 	    return false;
 	}
@@ -593,20 +592,6 @@ public class BlockGoldPortal extends BaseEntityBlock
 	    double zspeed = rand.nextFloat() * (rand.nextInt(3) - 1) / 9;
 	    worldIn.addParticle(ParticleTypes.END_ROD, d0, d1, d2, xspeed, 0.0D, zspeed);
 	}
-    }
-
-    // copy/pasted from BannerPattern.byHash() because it was needed for a 1.15 workaround
-    public static BannerPattern getBannerForHash(String hash)
-    {
-	for (BannerPattern bannerpattern : BannerPattern.values())
-	{
-	    if (bannerpattern.getHashname().equals(hash))
-	    {
-		return bannerpattern;
-	    }
-	}
-
-	return null;
     }
 
     @Override

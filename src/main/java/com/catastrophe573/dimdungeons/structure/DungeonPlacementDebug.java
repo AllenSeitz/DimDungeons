@@ -19,7 +19,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.server.level.ServerLevel;
 
 // unlike the regular DungeonPlacement class, this class builds the entire dungeon in one tick
@@ -148,7 +148,7 @@ public class DungeonPlacementDebug extends DungeonPlacement
     {
 	ChunkPos cpos = new ChunkPos((int) x, (int) z);
 	MinecraftServer minecraftserver = ((Level) world).getServer();
-	StructureManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
+	StructureTemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
 	StructureTemplate template = templatemanager.getOrCreate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "basic_template"));
 	StructurePlaceSettings placementsettings = (new StructurePlaceSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false);
@@ -165,7 +165,7 @@ public class DungeonPlacementDebug extends DungeonPlacement
     public static boolean putRoomHere(ChunkPos cpos, ServerLevel world, DungeonRoom room, DungeonGenData genData)
     {
 	MinecraftServer minecraftserver = ((Level) world).getServer();
-	StructureManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
+	StructureTemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
 	StructureTemplate template = templatemanager.getOrCreate(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + room.structure));
 	StructurePlaceSettings placementsettings = (new StructurePlaceSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false);

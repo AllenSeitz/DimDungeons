@@ -112,6 +112,7 @@ public class PlayerDungeonEvents
     {
     }
 
+    @SuppressWarnings("deprecation")
     @SubscribeEvent
     public void explosionModify(ExplosionEvent.Detonate event)
     {
@@ -126,15 +127,15 @@ public class PlayerDungeonEvents
 
 	for (int i = 0; i < event.getAffectedBlocks().size(); i++)
 	{
-	    if (event.getWorld().getBlockState(event.getAffectedBlocks().get(i)).getBlock().getRegistryName().getPath().equals("cracked_stone_bricks"))
+	    if (event.getWorld().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().location().getPath().equals("cracked_stone_bricks"))
 	    {
 		crackedBricks.add(event.getAffectedBlocks().get(i));
 	    }
-	    if (event.getWorld().getBlockState(event.getAffectedBlocks().get(i)).getBlock().getRegistryName().getPath().equals("trapped_chest"))
+	    if (event.getWorld().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().location().getPath().equals("trapped_chest"))
 	    {
 		crackedBricks.add(event.getAffectedBlocks().get(i));
 	    }
-	    if (event.getWorld().getBlockState(event.getAffectedBlocks().get(i)).getBlock().getRegistryName().getPath().equals("tnt"))
+	    if (event.getWorld().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().location().getPath().equals("tnt"))
 	    {
 		crackedBricks.add(event.getAffectedBlocks().get(i));
 	    }
@@ -181,6 +182,7 @@ public class PlayerDungeonEvents
 	event.setCanceled(true);
     }
 
+    @SuppressWarnings("deprecation")
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void blockPlace(BlockEvent.EntityPlaceEvent event)
     {
@@ -207,8 +209,8 @@ public class PlayerDungeonEvents
 	}
 
 	// assume this is frost walker and allow it?
-	String whatBlock = event.getPlacedBlock().getBlock().getRegistryName().getPath();
-	String whyBlock = event.getBlockSnapshot().getReplacedBlock().getBlock().getRegistryName().getPath();
+	String whatBlock = event.getPlacedBlock().getBlock().builtInRegistryHolder().key().location().getPath();
+	String whyBlock = event.getBlockSnapshot().getReplacedBlock().getBlock().builtInRegistryHolder().key().location().getPath();
 	if ("water".equals(whatBlock) && "water".equals(whyBlock))
 	{
 	    return; // not sure why the block isn't frosted_ice though?

@@ -1,5 +1,6 @@
 package com.catastrophe573.dimdungeons.compat.jei;
 
+/*
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
@@ -11,9 +12,10 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+*/
 
+/*
 public class ActivateKeyJeiRecipeCategory implements IRecipeCategory<ActivateKeyJeiRecipe>
 {
     private static final ResourceLocation texture = new ResourceLocation(DimDungeons.MOD_ID, "textures/gui/jei/jei_activate_key.png");
@@ -66,3 +68,4 @@ public class ActivateKeyJeiRecipeCategory implements IRecipeCategory<ActivateKey
 	builder.addSlot(RecipeIngredientRole.OUTPUT, 90+1, 28+1).addItemStack(recipe.getOutput());
     }
 }
+*/
