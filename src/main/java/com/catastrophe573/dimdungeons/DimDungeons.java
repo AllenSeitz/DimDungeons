@@ -75,11 +75,13 @@ public class DimDungeons
 	Registry.register(Registry.CHUNK_GENERATOR, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.myCodec);
     }
 
+    @SuppressWarnings("removal")
     private void doClientStuff(final FMLClientSetupEvent event)
     {
 	// this needs enqueueWork() because of the DeferredRegister
 	event.enqueueWork(() ->
 	{
+	    // TODO: set the render type in the model json instead of doing it here
 	    ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_GOLD_PORTAL.get(), RenderType.translucent());
 	    ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get(), RenderType.translucent());
 

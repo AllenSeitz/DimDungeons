@@ -17,8 +17,9 @@ plugins {
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
+//apply from: 'https://raw.githubusercontent.com/SizableShrimp/ForgeUpdatesRemapper/main/remapper.gradle'
 
-version = '164'
+version = '165'
 group = 'com.catastrophe573.dimdungeons' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'dimdungeons'
 
@@ -157,7 +158,7 @@ dependencies {
     // Specify the version of Minecraft to use. If this is any group other than 'net.minecraft', it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.19-41.0.17'
+    minecraft 'net.minecraftforge:forge:1.19-41.0.98'
 
     // Real mod deobf dependency examples - these get remapped to your current mappings
 	//compileOnly fg.deobf("mezz.jei:jei-1.18.2:9.5.5.174:api")

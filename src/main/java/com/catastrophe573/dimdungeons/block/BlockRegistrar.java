@@ -16,7 +16,7 @@ public class BlockRegistrar
     public static String REG_NAME_CHARGER_DAMAGED = "block_key_charger_damaged";
 
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, DimDungeons.MOD_ID);
-    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, DimDungeons.MOD_ID);
+    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, DimDungeons.MOD_ID);
 
     // these DeferredRegister objects replace the old registry events
     public static final RegistryObject<Block> BLOCK_GILDED_PORTAL = BLOCKS.register(BlockGildedPortal.REG_NAME, () -> new BlockGildedPortal());
