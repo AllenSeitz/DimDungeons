@@ -32,7 +32,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -60,8 +59,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty FILLED = BooleanProperty.create("filled");
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
-    public static final IntegerProperty BUILD_STEP = IntegerProperty.create("build_step", 0, 651);
-    public static final BooleanProperty BUILD_PARTICLE = BooleanProperty.create("build_particle");
+    public static final BooleanProperty IS_BUILDING = BooleanProperty.create("is_building");
 
     public static final String REG_NAME = "block_portal_keyhole";
 
@@ -74,7 +72,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     // used by the constructor and I'm not sure where else anymore?
     public BlockState getMyCustomDefaultState()
     {
-	return this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(FILLED, false).setValue(LIT, false).setValue(BUILD_STEP, 0).setValue(BUILD_PARTICLE, false);
+	return this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(FILLED, false).setValue(LIT, false).setValue(IS_BUILDING, false);
     }
 
     @Nullable
@@ -87,7 +85,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	}
 	else
 	{
-	    if (state.getValue(BUILD_STEP) > 0 && type == BlockRegistrar.BE_PORTAL_KEYHOLE.get())
+	    if (state.getValue(IS_BUILDING) && type == BlockRegistrar.BE_PORTAL_KEYHOLE.get())
 	    {
 		return type == BlockRegistrar.BE_PORTAL_KEYHOLE.get() ? TileEntityPortalKeyhole::tick : null;
 	    }
@@ -137,7 +135,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	}
 
 	// this happens on ticks when the keyhole places a structure
-	if (stateIn.getValue(BUILD_PARTICLE) || stateIn.getValue(BUILD_STEP) > 0)
+	if (stateIn.getValue(IS_BUILDING))
 	{
 	    if (DungeonConfig.playPortalSounds)
 	    {
@@ -198,7 +196,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		if (!playerItem.isEmpty())
 		{
 		    // DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
-		    int buildStep = 0;
+		    boolean is_building = false;
 
 		    myEntity.setContents(playerItem.copy());
 
@@ -229,11 +227,11 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			    // it's slow, but run through the build steps regardless of if the dungeon already exists
 			    // this will catch dungeons that are partially built and finish them
 			    // dungeon rooms will never be overwritten or built twice
-			    buildStep = 1;
+			    is_building = true;
 			}
 			else
 			{
-			    buildStep = 650;
+			    is_building = true;
 			}
 		    }
 		    else if (playerItem.getItem() instanceof ItemBuildKey && !worldIn.isClientSide && isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
@@ -258,12 +256,12 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			}
 
 			// buildStep must ALWAYS be 0 when using an ItemBuildKey, or else the keyhole might start ticking
-			buildStep = 0;
+			is_building = false;
 			DungeonUtils.openPortalAfterBuild(worldIn, pos, genData, myEntity);
 		    }
 
 		    // recalculate the block states
-		    BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(BUILD_STEP, buildStep);
+		    BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(IS_BUILDING, is_building);
 		    worldIn.setBlockAndUpdate(pos, newBlockState);
 
 		    playerItem.shrink(1);
@@ -287,7 +285,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		myEntity.removeContents();
 
 		// recalculate the boolean block states
-		BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(BUILD_STEP, 0);
+		BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(IS_BUILDING, false);
 		worldIn.setBlock(pos, newBlockState, 3);
 
 		return InteractionResult.SUCCESS;
@@ -454,7 +452,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     @Override
     public int getAnalogOutputSignal(BlockState blockState, Level worldIn, BlockPos pos)
     {
-	if (blockState.getValue(BUILD_STEP) > 0)
+	if (blockState.getValue(IS_BUILDING))
 	{
 	    return 3;
 	}
@@ -496,7 +494,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
-	builder.add(FACING, FILLED, LIT, BUILD_STEP, BUILD_PARTICLE);
+	builder.add(FACING, FILLED, LIT, IS_BUILDING);
     }
 
     public int predictPortalError(Level worldIn, Player playerIn)
@@ -650,7 +648,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	{
 	    // this version of the error message expects a block name to be concatenated
 	    String blockName = problemBlock.getBlock().getName().getString();
-	    text1 = Component.literal(Component.translatable("error.dimdungeons.portal_error_" + problemID).getString() + blockName  + ".");
+	    text1 = Component.literal(Component.translatable("error.dimdungeons.portal_error_" + problemID).getString() + blockName + ".");
 	}
 	text1.withStyle(text1.getStyle().withItalic(true));
 	text1.withStyle(text1.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));

@@ -45,8 +45,7 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	}
 
 	// where are we in the build process?
-	int buildStep = state.getValue(BlockPortalKeyhole.BUILD_STEP);
-	if (buildStep == 0)
+	if (!state.getValue(BlockPortalKeyhole.IS_BUILDING))
 	{
 	    DimDungeons.logMessageError("DIMDUNGEONS ERROR: Keyhole block ticked when it should not have."); // unreachable code
 	}
@@ -56,14 +55,12 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	    if (!DungeonData.get(DungeonUtils.getDungeonWorld(level.getServer())).hasMoreRoomsToBuild())
 	    {
 		DungeonUtils.openPortalAfterBuild(level, pos, genData, self);
-		buildStep = 0;
+
+		// stop building
+		BlockState newBlockState = state.setValue(BlockPortalKeyhole.FACING, state.getValue(BlockPortalKeyhole.FACING)).setValue(BlockPortalKeyhole.FILLED, self.isFilled()).setValue(BlockPortalKeyhole.LIT, self.isActivated()).setValue(BlockPortalKeyhole.IS_BUILDING, false);
+		level.setBlockAndUpdate(pos, newBlockState);
 	    }
 	}
-
-	// save the new buildStep
-	BlockState newBlockState = state.setValue(BlockPortalKeyhole.BUILD_STEP, buildStep);
-	newBlockState = newBlockState.setValue(BlockPortalKeyhole.BUILD_PARTICLE, buildStep == 1);
-	level.setBlockAndUpdate(pos, newBlockState);
     }
 
     protected static int nextBuildStep(int currentStep, DungeonBuildSpeed speed)
