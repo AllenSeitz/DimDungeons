@@ -23,13 +23,18 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
-// TODO: this class should be registering one command, not two. Split this into a separate class for each command.
 public class CommandDimDungeons
 {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher)
     {
+	// register all commands "under" a single cheat "/dimdungeons". This is a more polite way of doing things. (/givekey interferes with /give anyway)
+	
+	// the current cheat structures are:
+	// /dimdungeons givekey [player] [string type] [int theme, optional]
+	// /dimdungeons getpersonal [player]
+	
 	// the first half of the /givekey cheat
-	LiteralArgumentBuilder<CommandSourceStack> givekeyArgumentBuilder = Commands.literal("givekey").requires((cmd) ->
+	LiteralArgumentBuilder<CommandSourceStack> argumentBuilder = Commands.literal("dimdungeons").requires((cmd) ->
 	{
 	    return cmd.hasPermission(2);
 	});
@@ -39,7 +44,7 @@ public class CommandDimDungeons
 	for (int i = 0; i < keytypes.length; i++)
 	{
 	    String type = keytypes[i];
-	    givekeyArgumentBuilder.then(Commands.literal(type).executes((cmd) ->
+	    argumentBuilder.then(Commands.literal("givekey").then(Commands.literal(type).executes((cmd) ->
 	    {
 		return giveKey(cmd, Collections.singleton(cmd.getSource().getPlayerOrException()), type, 0);
 	    }).then(Commands.argument("target", EntityArgument.players()).executes((cmd) ->
@@ -48,11 +53,11 @@ public class CommandDimDungeons
 	    }).then(Commands.argument("theme", IntegerArgumentType.integer(0)).executes((cmd) ->
 	    {
 		return giveKey(cmd, EntityArgument.getPlayers(cmd, "target"), type, IntegerArgumentType.getInteger(cmd, "theme"));
-	    }))));
+	    })))));
 	}
 
 	// register the /givekey cheat
-	dispatcher.register(givekeyArgumentBuilder);
+	dispatcher.register(argumentBuilder);
     }
 
     private static int giveKey(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> targets, String type, int theme) throws CommandSyntaxException
