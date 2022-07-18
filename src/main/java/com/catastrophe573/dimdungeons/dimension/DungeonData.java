@@ -152,6 +152,21 @@ public class DungeonData extends SavedData
 	    roomMap.put(pos, room);
 	}
 
+	ListTag newBuilds = tag.getList("remaining_builds", tag.getId()); // the second parameter returns a hardcoded 10, ask vanilla why
+
+	for (net.minecraft.nbt.Tag t : newBuilds)
+	{
+	    CompoundTag roomTag = (CompoundTag) t;
+	    ChunkPos pos = new ChunkPos(roomTag.getInt("x"), roomTag.getInt("z"));
+	    DungeonRoom room = new DungeonRoom();
+	    room.structure = roomTag.getString("structure");
+	    room.rotation = Rotation.valueOf(roomTag.getString("rotation"));
+	    room.roomType = RoomType.valueOf(roomTag.getString("room_type"));
+	    room.dungeonType = DungeonType.valueOf(roomTag.getString("dungeon_type"));
+
+	    remainingBuilds.put(pos, room);
+	}
+
 	// the next thing in allData is the "otherData"
 	CompoundTag totalKeyData = tag.getCompound("total_key_data");
 	numKeysRegistered = totalKeyData.getInt("numKeysActivated");
@@ -174,10 +189,25 @@ public class DungeonData extends SavedData
 	    allRooms.add(roomTag);
 	});
 
+	ListTag buildingRooms = new ListTag();
+	remainingBuilds.forEach((chunkPos, room) ->
+	{
+	    CompoundTag roomTag = new CompoundTag();
+	    roomTag.putInt("x", chunkPos.x);
+	    roomTag.putInt("z", chunkPos.z);
+	    roomTag.putString("structure", room.structure);
+	    roomTag.putString("rotation", room.rotation.toString());
+	    roomTag.putString("room_type", room.roomType.toString());
+	    roomTag.putString("dungeon_type", room.dungeonType.toString());
+	    roomTag.putInt("theme", room.theme);
+	    buildingRooms.add(roomTag);
+	});
+
 	CompoundTag totalKeyData = new CompoundTag();
 	totalKeyData.putInt("numKeysActivated", numKeysRegistered);
 
 	tag.put("room_data", allRooms);
+	tag.put("remaining_builds", buildingRooms);
 	tag.put("total_key_data", totalKeyData);
 	return tag;
     }
