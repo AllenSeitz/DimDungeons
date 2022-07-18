@@ -3,6 +3,7 @@ package com.catastrophe573.dimdungeons.utils;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.catastrophe573.dimdungeons.item.ItemBlankBuildKey;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 import com.mojang.brigadier.CommandDispatcher;
@@ -28,11 +29,11 @@ public class CommandDimDungeons
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher)
     {
 	// register all commands "under" a single cheat "/dimdungeons". This is a more polite way of doing things. (/givekey interferes with /give anyway)
-	
+
 	// the current cheat structures are:
-	// /dimdungeons givekey [player] [string type] [int theme, optional]
-	// /dimdungeons getpersonal [player]
-	
+	// /dimdungeons givekey [player recipient] [string type] [int theme, optional]
+	// /dimdungeons givepersonal [player recipient] [player target, optional]
+
 	// the first half of the /givekey cheat
 	LiteralArgumentBuilder<CommandSourceStack> argumentBuilder = Commands.literal("dimdungeons").requires((cmd) ->
 	{
@@ -47,24 +48,30 @@ public class CommandDimDungeons
 	    argumentBuilder.then(Commands.literal("givekey").then(Commands.literal(type).executes((cmd) ->
 	    {
 		return giveKey(cmd, Collections.singleton(cmd.getSource().getPlayerOrException()), type, 0);
-	    }).then(Commands.argument("target", EntityArgument.players()).executes((cmd) ->
+	    }).then(Commands.argument("recipient", EntityArgument.players()).executes((cmd) ->
 	    {
-		return giveKey(cmd, EntityArgument.getPlayers(cmd, "target"), type, 0);
+		return giveKey(cmd, EntityArgument.getPlayers(cmd, "recipient"), type, 0);
 	    }).then(Commands.argument("theme", IntegerArgumentType.integer(0)).executes((cmd) ->
 	    {
-		return giveKey(cmd, EntityArgument.getPlayers(cmd, "target"), type, IntegerArgumentType.getInteger(cmd, "theme"));
+		return giveKey(cmd, EntityArgument.getPlayers(cmd, "recipient"), type, IntegerArgumentType.getInteger(cmd, "theme"));
 	    })))));
 	}
+
+	// make a cheat for getting a personal dimension key
+	argumentBuilder.then(Commands.literal("givepersonal").then(Commands.argument("recipient", EntityArgument.players()).then(Commands.argument("target_player", EntityArgument.player()).executes((cmd) ->
+	{
+	    return givePersonalKey(cmd, EntityArgument.getPlayers(cmd, "recipient"), EntityArgument.getPlayer(cmd, "target_player"));
+	}))));
 
 	// register the /givekey cheat
 	dispatcher.register(argumentBuilder);
     }
 
-    private static int giveKey(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> targets, String type, int theme) throws CommandSyntaxException
+    private static int giveKey(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> recipients, String type, int theme) throws CommandSyntaxException
     {
 	MutableComponent keyName = Component.translatable("item.dimdungeons.item_portal_key"); // for use with the logging at the end of the function
 
-	for (ServerPlayer serverplayerentity : targets)
+	for (ServerPlayer serverplayerentity : recipients)
 	{
 	    // make a new and different key for each player
 	    ItemStack stack = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
@@ -118,15 +125,66 @@ public class CommandDimDungeons
 	}
 
 	// print either "Gave one [key] to Dev" or "Gave one [key] to X players"
-	if (targets.size() == 1)
+	if (recipients.size() == 1)
 	{
-	    cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, targets.iterator().next().getDisplayName()), true);
+	    cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, recipients.iterator().next().getDisplayName()), true);
 	}
 	else
 	{
-	    cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, targets.size()), true);
+	    cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, recipients.size()), true);
 	}
 
-	return targets.size();
+	return recipients.size();
+    }
+
+    private static int givePersonalKey(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> recipients, ServerPlayer targetPlayer) throws CommandSyntaxException
+    {
+	MutableComponent keyName = Component.translatable("item.dimdungeons.item_build_key"); // for use with the logging at the end of the function
+
+	for (ServerPlayer serverplayerentity : recipients)
+	{
+	    // make a new and different key for each player
+	    ItemStack newkey = new ItemStack(ItemRegistrar.ITEM_BUILD_KEY.get());
+	    ((ItemBlankBuildKey) (ItemRegistrar.ITEM_BLANK_BUILD_KEY.get())).activateBuildKey(cmd.getSource().getServer(), newkey, targetPlayer);
+
+	    // try to give the player the item
+	    boolean flag = serverplayerentity.getInventory().add(newkey);
+
+	    // if that fails then throw it on the ground at the player's feet
+	    if (flag && newkey.isEmpty())
+	    {
+		newkey.setCount(1);
+		ItemEntity itementity = serverplayerentity.drop(newkey, false);
+		if (itementity != null)
+		{
+		    itementity.makeFakeItem();
+		}
+
+		serverplayerentity.level.playSound((Player) null, serverplayerentity.getX(), serverplayerentity.getY(), serverplayerentity.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((serverplayerentity.getRandom().nextFloat() - serverplayerentity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+		serverplayerentity.inventoryMenu.broadcastChanges();
+	    }
+	    else
+	    {
+		// keys don't normally stack, but just in case this block of code gives a stack of keys
+		ItemEntity itementity = serverplayerentity.drop(newkey, false);
+		if (itementity != null)
+		{
+		    itementity.setNoPickUpDelay();
+		    itementity.setOwner(serverplayerentity.getUUID());
+		}
+	    }
+	}
+
+	// print either "Gave one [key] to Dev" or "Gave one [key] to X players"
+	if (recipients.size() == 1)
+	{
+	    cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, recipients.iterator().next().getDisplayName()), true);
+	}
+	else
+	{
+	    cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, recipients.size()), true);
+	}
+
+	return recipients.size();
     }
 }
