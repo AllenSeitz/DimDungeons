@@ -158,7 +158,7 @@ public class PersonalBuildData extends SavedData
 	    allOwners.add(ownerTag);
 	});
 
-	tag.put("room_data", allOwners);
+	tag.put("player_data", allOwners);
 	return tag;
     }
     
