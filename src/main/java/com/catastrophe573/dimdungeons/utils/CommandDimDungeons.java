@@ -3,6 +3,8 @@ package com.catastrophe573.dimdungeons.utils;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.catastrophe573.dimdungeons.dimension.PersonalBuildData;
+import com.catastrophe573.dimdungeons.item.BaseItemKey;
 import com.catastrophe573.dimdungeons.item.ItemBlankBuildKey;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
@@ -15,6 +17,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
@@ -62,6 +66,16 @@ public class CommandDimDungeons
 	{
 	    return givePersonalKey(cmd, EntityArgument.getPlayers(cmd, "recipient"), EntityArgument.getPlayer(cmd, "target_player"));
 	}))));
+
+	// this is a debugging hack that must not ship
+	//argumentBuilder.then(Commands.literal("debugpersonal").then(Commands.argument("recipient", EntityArgument.players()).then(Commands.argument("target_player", EntityArgument.entity()).executes((cmd) ->
+	//{
+	//	return givePersonalKeyForAnyEntity(cmd, EntityArgument.getPlayers(cmd, "recipient"), EntityArgument.getEntity(cmd, "target_player"));
+	//}))));
+	//argumentBuilder.then(Commands.literal("erasepersonalmap").executes((cmd) ->
+	//{
+	//    return erasePersonalMap(cmd);
+	//}));
 
 	// register the /givekey cheat
 	dispatcher.register(argumentBuilder);
@@ -186,5 +200,54 @@ public class CommandDimDungeons
 	}
 
 	return recipients.size();
+    }
+
+    // debug cheat - do not allow keys for non-players
+    @SuppressWarnings("unused")
+    private static int givePersonalKeyForAnyEntity(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> recipients, Entity targetPlayer) throws CommandSyntaxException
+    {
+	String keyName = "Personal Dimension Key"; // set later, used for command output
+
+	if (!(targetPlayer instanceof LivingEntity))
+	{
+	    cmd.getSource().sendFailure(Component.literal("Target entity is not a LivingEntity."));
+	    return 0;
+	}
+
+	for (ServerPlayer serverplayerentity : recipients)
+	{
+	    // make a new and different key for each player
+	    ItemStack newkey = new ItemStack(ItemRegistrar.ITEM_BUILD_KEY.get());
+	    ((ItemBlankBuildKey) (ItemRegistrar.ITEM_BLANK_BUILD_KEY.get())).activateBuildKey(cmd.getSource().getServer(), newkey, (LivingEntity) targetPlayer);
+
+	    // since we're debugging, rename the key with the dest_x and dest_z
+	    int dest_x = newkey.getTag().getInt(BaseItemKey.NBT_KEY_DESTINATION_X);
+	    int dest_z = newkey.getTag().getInt(BaseItemKey.NBT_KEY_DESTINATION_Z);
+	    keyName = "Personal Key: (" + dest_x + ", " + dest_z + ")";
+	    newkey.setHoverName(Component.literal(keyName));
+
+	    serverplayerentity.getInventory().add(newkey);
+	}
+
+	// print either "Gave one [key] to Dev" or "Gave one [key] to X players"
+	if (recipients.size() == 1)
+	{
+	    cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, recipients.iterator().next().getDisplayName()), true);
+	}
+	else
+	{
+	    cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, recipients.size()), true);
+	}
+
+	return recipients.size();
+    }
+
+    // debug cheat - definitely don't do this to anyone's world
+    @SuppressWarnings("unused")
+    private static int erasePersonalMap(CommandContext<CommandSourceStack> cmd) throws CommandSyntaxException
+    {
+	PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(cmd.getSource().getServer())).debugClearKnownOwners();
+	cmd.getSource().sendSuccess(Component.literal("Deleted all known personal key associations."), true);
+	return 0;
     }
 }

@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
+import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.item.ItemBuildKey;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
@@ -14,6 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -73,10 +75,17 @@ public class PersonalBuildData extends SavedData
 
     // returns a new or existing plot for this player
     // note that the return value is not a ChunkPos, but a [dest_x, dest_z] pair that is consistent with other key types
-    public ChunkPos getPosForOwner(Player player)
+    public ChunkPos getPosForOwner(LivingEntity player)
     {
 	Iterator<ChunkPos> iter = ownerMap.keySet().iterator();
 	ChunkPos cpos;
+
+	// sanity check. The parameter to this function should always be a Player except when debugging.
+	if (player == null || (!(player instanceof Player) && !DungeonConfig.enableDebugCheats))
+	{
+	    DimDungeons.logMessageError("DIMENSIONAL DUNGEONS ERROR: registering personal key for a non-player or a null player.");
+	    return null;
+	}
 
 	while (iter.hasNext())
 	{
@@ -112,7 +121,7 @@ public class PersonalBuildData extends SavedData
 	// warning: not actually a ChunkPos, but it is consistent with other keys use of dest_x and dest_z
 	return new ChunkPos(destX, destZ);
     }
-
+    
     // this constructor is called on fresh levels
     public PersonalBuildData()
     {
@@ -151,5 +160,12 @@ public class PersonalBuildData extends SavedData
 
 	tag.put("room_data", allOwners);
 	return tag;
+    }
+    
+    // do not do this on a real world, obviously
+    public void debugClearKnownOwners()
+    {
+	ownerMap.clear();
+	setDirty();
     }
 }
