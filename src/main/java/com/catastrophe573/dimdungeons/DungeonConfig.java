@@ -104,6 +104,8 @@ public class DungeonConfig
     public static List<? extends String> advancedEnemySet2;
     public static double basicEnemyHealthScaling = 1.0f;
     public static double advancedEnemyHealthScaling = 2.0f;
+    public static double basicDamageMultiplier = 1.0f;
+    public static double advancedDamageMultiplier = 1.5f;
     public static int numberOfThemes = DEFAULT_NUMBER_OF_THEMES;
 
     // theme options
@@ -1064,6 +1066,8 @@ public class DungeonConfig
 	public final ForgeConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet2;
 	public final ConfigValue<Double> basicEnemyHealthScaling;
 	public final ConfigValue<Double> advancedEnemyHealthScaling;
+	public final ConfigValue<Double> basicDamageMultiplier;
+	public final ConfigValue<Double> advancedDamageMultiplier;
 	public final ConfigValue<Integer> numberOfThemes;
 
 	public static class ThemeConfigStructure
@@ -1114,6 +1118,8 @@ public class DungeonConfig
 	    advancedEnemySet2 = builder.translation("config.dimdungeons.advancedEnemySet2").define("advancedEnemySet2", defaultAdvancedEnemySet2());
 	    basicEnemyHealthScaling = builder.translation("config.dimdungeons.basicEnemyHealthScaling").define("basicEnemyHealthScaling", 1.0);
 	    advancedEnemyHealthScaling = builder.translation("config.dimdungeons.advancedEnemyHealthScaling").define("advancedEnemyHealthScaling", 2.0);
+	    basicDamageMultiplier = builder.translation("config.dimdungeons.basicDamageMultiplier").define("basicDamageMultiplier", 1.0);
+	    advancedDamageMultiplier = builder.translation("config.dimdungeons.advancedDamageMultiplier").define("advancedDamageMultiplier", 1.5);
 	    numberOfThemes = builder.comment("The number of themes to expect in the common config.").translation("config.dimdungeons.numberOfThemes").define("numberOfThemes", DEFAULT_NUMBER_OF_THEMES);
 	    builder.pop();
 
@@ -1227,6 +1233,8 @@ public class DungeonConfig
 	advancedEnemySet2 = COMMON.advancedEnemySet2.get();
 	basicEnemyHealthScaling = COMMON.basicEnemyHealthScaling.get();
 	advancedEnemyHealthScaling = COMMON.advancedEnemyHealthScaling.get();
+	basicDamageMultiplier = COMMON.basicDamageMultiplier.get();
+	advancedDamageMultiplier = COMMON.advancedDamageMultiplier.get();
 	numberOfThemes = COMMON.numberOfThemes.get();
 
 	// refresh all theme configs

@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.catastrophe573.dimdungeons.dimension.DungeonData;
 import com.catastrophe573.dimdungeons.item.ItemBuildKey;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
+import com.catastrophe573.dimdungeons.structure.DungeonRoom;
 import com.catastrophe573.dimdungeons.utils.CommandDimDungeons;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 import com.google.common.collect.Lists;
@@ -24,6 +26,7 @@ import net.minecraftforge.event.entity.EntityTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingDestroyBlockEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
@@ -61,6 +64,43 @@ public class PlayerDungeonEvents
 	if (DungeonUtils.isDimensionDungeon(event.world))
 	{
 	    DungeonData.get(event.world).tick(event.world);
+	}
+    }
+
+    @SubscribeEvent
+    public void livingDamage(LivingHurtEvent event)
+    {
+	// only apply the damage multiplier server-side
+	if (event.getEntity().getLevel().isClientSide())
+	{
+	    return;
+	}
+
+	// only apply the damage multiplier in the Dungeon Dimension
+	if (!DungeonUtils.isDimensionDungeon((Level) event.getEntityLiving().getLevel()))
+	{
+	    return;
+	}
+
+	// only players suffer the damage multiplier
+	if (event.getEntityLiving() instanceof Player)
+	{
+	    // are they in a basic dungeon or an advanced dungeon?
+	    ChunkPos cpos = event.getEntityLiving().chunkPosition();
+	    DungeonRoom room = DungeonData.get(event.getEntityLiving().getLevel()).getRoomAtPos(cpos);
+
+	    if (room == null)
+	    {
+		return; // this can happen
+	    }
+	    if (room.dungeonType == DungeonType.BASIC || room.dungeonType == DungeonType.THEME_OPEN || room.dungeonType == DungeonType.THEME_REGULAR)
+	    {
+		event.setAmount((float) (event.getAmount() * DungeonConfig.basicDamageMultiplier));
+	    }
+	    if (room.dungeonType == DungeonType.ADVANCED)
+	    {
+		event.setAmount((float) (event.getAmount() * DungeonConfig.advancedDamageMultiplier));
+	    }
 	}
     }
 
