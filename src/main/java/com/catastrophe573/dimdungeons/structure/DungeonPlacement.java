@@ -717,6 +717,10 @@ public class DungeonPlacement
 	EntityType<?> entitytype = EntityType.byString(resourceLocation).orElse(EntityType.CHICKEN);
 
 	Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, MobSpawnType.STRUCTURE, true, true);
+	if ( mob == null )
+	{
+	    return; // this can happen if the mob in question does not exist, such as another mod named "Bad Mobs" preventing minecraft:zombie from spawning
+	}
 	mob.moveTo(pos, 0.0F, 0.0F);
 
 	// append a "2" to the mob name in advanced dungeons
