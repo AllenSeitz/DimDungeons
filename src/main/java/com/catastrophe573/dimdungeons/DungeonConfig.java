@@ -582,7 +582,7 @@ public class DungeonConfig
 	temp.add("dimdungeons:crueltrap_3");
 	tempBasicEnds.add(Lists.newArrayList(temp));
 	temp.clear();
-	temp.add("dimdungeons:beacon_2");
+	temp.add("dimdungeons:beacon_3");
 	temp.add("dimdungeons:library_1");
 	tempBasicEnds.add(Lists.newArrayList(temp));
 	temp.clear();
@@ -901,7 +901,7 @@ public class DungeonConfig
 	temp.add("dimdungeons:honeytrap_4");
 	tempAdvancedEnds.add(Lists.newArrayList(temp));
 	temp.clear();
-	temp.add("dimdungeons:beacon_1");
+	temp.add("dimdungeons:beacon_2");
 	tempAdvancedEnds.add(Lists.newArrayList(temp));
 	temp.clear();
 	temp.add("dimdungeons:slotmachine_2");
