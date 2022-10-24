@@ -1,5 +1,7 @@
 package com.catastrophe573.dimdungeons.utils;
 
+import java.util.ArrayList;
+
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.BlockGoldPortal;
@@ -18,10 +20,13 @@ import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -438,12 +443,12 @@ public class DungeonUtils
 
 	ServerLevel dim = DungeonUtils.getPersonalBuildWorld(entity.getServer());
 	CustomTeleporter tele = new CustomTeleporter(dim);
-	tele.setDestPos(topLeftX-7, 51, topLeftZ+4, 180.0f, 0);
+	tele.setDestPos(topLeftX - 7, 51, topLeftZ + 4, 180.0f, 0);
 	entity.resetFallDistance();
 	entity.changeDimension(dim, tele);
     }
 
-    // THIS MUST ONLY BE USED for the purposes of displaying an activated in a gui
+    // THIS MUST ONLY BE USED for the purposes of displaying an activated key in a gui (such as for the JEI compat)
     // the key returned by this function is not valid
     public static ItemStack getExampleKey()
     {
@@ -459,4 +464,42 @@ public class DungeonUtils
 	icon.setTag(data);
 	return icon;
     }
+
+    public static void giveSecuritySystemPrompt(Player playerIn, String transkey)
+    {
+	TranslatableComponent text1 = new TranslatableComponent(new TranslatableComponent(transkey).getString());
+
+	text1.withStyle(text1.getStyle().withItalic(true));
+	text1.withStyle(text1.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
+	playerIn.displayClientMessage(text1, false);
+    }
+
+    public static void displayGuestList(Player playerIn, ArrayList<String> guestList)
+    {
+	TranslatableComponent text1 = new TranslatableComponent(new TranslatableComponent("security.dimdungeons.use_book").getString());
+
+	for (int i = 0; i < guestList.size(); i++)
+	{
+	    if (i != 0)
+	    {
+		text1.append(", ");
+	    }
+	    text1.append(guestList.get(i));
+	}
+
+	text1.withStyle(text1.getStyle().withItalic(true));
+	text1.withStyle(text1.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
+	playerIn.displayClientMessage(text1, false);
+    }
+
+    // this is related to the build dimension security system
+    public static void notifyGuestListChange(Player playerIn, String transkey, String playerName)
+    {
+	TranslatableComponent text1 = new TranslatableComponent(playerName);
+	text1.append(new TranslatableComponent(transkey).getString());
+
+	text1.withStyle(text1.getStyle().withItalic(true));
+	text1.withStyle(text1.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
+	playerIn.displayClientMessage(text1, false);
+    }    
 }

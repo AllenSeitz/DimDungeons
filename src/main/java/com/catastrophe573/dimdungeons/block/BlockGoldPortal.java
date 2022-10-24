@@ -9,8 +9,10 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
 import com.catastrophe573.dimdungeons.dimension.DungeonData;
+import com.catastrophe573.dimdungeons.dimension.PersonalBuildData;
 import com.catastrophe573.dimdungeons.item.BaseItemKey;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
+import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import com.catastrophe573.dimdungeons.structure.DungeonRoom;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
@@ -28,6 +30,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -205,7 +208,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		    te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
 		}
 
-		if (destDim.getRegistryName().getPath().equals(DimDungeons.dungeon_dimension_regname))
+		if (destDim.location().getPath().equals(DimDungeons.dungeon_dimension_regname))
 		{
 		    // implement hardcore mode
 		    if (DungeonConfig.hardcoreMode)
@@ -216,6 +219,41 @@ public class BlockGoldPortal extends BaseEntityBlock
 			    keyhole.removeContents();
 			    BlockState emptyState = worldIn.getBlockState(keyhole.getBlockPos());
 			    worldIn.setBlockAndUpdate(keyhole.getBlockPos(), emptyState.setValue(BlockPortalKeyhole.FILLED, false).setValue(BlockPortalKeyhole.LIT, false));
+			}
+		    }
+		}
+
+		// implement the whitelist or blacklist for players the try to enter the Personal Build Dimension
+		// this is actually 50% defensive coding against cases that should never happen
+		if (destDim.location().getPath().equals(DimDungeons.build_dimension_regname))
+		{
+		    TileEntityPortalKeyhole keyhole = findKeyholeForThisPortal(state, worldIn, pos);
+		    if (keyhole == null)
+		    {
+			DimDungeons.logMessageError("Unable to check the permissions for a personal build dimension because the keyhole is missing.");
+		    }
+		    else
+		    {
+			ItemStack key = keyhole.getObjectInserted();
+			if (key.getItem() == ItemRegistrar.item_build_key)
+			{
+			    CompoundTag itemData = key.getTag();
+			    ChunkPos cpos = new ChunkPos(itemData.getInt(BaseItemKey.NBT_KEY_DESTINATION_X), itemData.getInt(BaseItemKey.NBT_KEY_DESTINATION_Z));
+
+			    if (!PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(entityIn.getServer())).isPlayerAllowedInPersonalDimension((ServerPlayer) entityIn, cpos))
+			    {
+				te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
+				DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.player_failed_teleport");
+				return;
+			    }
+			    else
+			    {
+				DimDungeons.logMessageInfo("You passed the permissions check!");
+			    }
+			}
+			else
+			{
+			    DimDungeons.logMessageError("Unable to check the permissions for a personal build dimension because the keyhole does not contain a key?");
 			}
 		    }
 		}
@@ -248,7 +286,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	//float destPitch = player.getRotationVector().x; // for reference
 	//float destPitch = player.getRotationVector().y;
 	float destPitch = 0;
-	float destYaw = yaw;	
+	float destYaw = yaw;
 
 	// if the player just entered a dungeon then force them to face north
 	if (DungeonUtils.isDimensionDungeon(dim))

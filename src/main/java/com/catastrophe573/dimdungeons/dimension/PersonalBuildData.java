@@ -1,5 +1,6 @@
 package com.catastrophe573.dimdungeons.dimension;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,6 +14,7 @@ import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,16 +32,26 @@ public class PersonalBuildData extends SavedData
 	UUID uuid;
 	String playerName;
 
+	// this data was added later and might not exist in all worlds
+	ArrayList<String> guestList;
+	boolean isBlacklist;
+
 	OwnerData(Player player)
 	{
 	    uuid = player.getUUID();
 	    playerName = player.getName().getString();
+
+	    guestList = new ArrayList<String>();
+	    isBlacklist = false;
 	}
 
 	OwnerData(UUID id, String name)
 	{
 	    uuid = id;
 	    playerName = name;
+
+	    guestList = new ArrayList<String>();
+	    isBlacklist = false;
 	}
     };
 
@@ -121,7 +133,87 @@ public class PersonalBuildData extends SavedData
 	// warning: not actually a ChunkPos, but it is consistent with other keys use of dest_x and dest_z
 	return new ChunkPos(destX, destZ);
     }
-    
+
+    public void changeBlacklistMode(Player player, boolean isBlacklist)
+    {
+	OwnerData owner = getOwnerAtPos(getPosForOwner(player));
+	owner.isBlacklist = isBlacklist;
+	ownerMap.put(getPosForOwner(player), owner);
+	setDirty();
+    }
+
+    public boolean getBlacklistMode(Player player)
+    {
+	OwnerData owner = getOwnerAtPos(getPosForOwner(player));
+	return owner.isBlacklist;
+    }
+
+    public boolean isNameOnGuestList(Player player, String guestName)
+    {
+	OwnerData owner = getOwnerAtPos(getPosForOwner(player));
+	if (owner.guestList.contains(guestName))
+	{
+	    return true;
+	}
+	return false;
+    }
+
+    // returns true if the name was added, false otherwise
+    public boolean toggleNameOnGuestList(Player player, String guestName)
+    {
+	OwnerData owner = getOwnerAtPos(getPosForOwner(player));
+	if (owner.guestList.contains(guestName))
+	{
+	    owner.guestList.remove(guestName);
+	    ownerMap.put(getPosForOwner(player), owner);
+	    setDirty();
+	    return false;
+	}
+	else
+	{
+	    owner.guestList.add(guestName);
+	    ownerMap.put(getPosForOwner(player), owner);
+	    setDirty();
+	    return true;
+	}
+    }
+
+    public void clearGuestListForPlayer(Player player)
+    {
+	OwnerData owner = getOwnerAtPos(getPosForOwner(player));
+	owner.guestList.clear();
+	ownerMap.put(getPosForOwner(player), owner);
+	setDirty();
+    }
+
+    public ArrayList<String> getGuestListForPlayer(Player player)
+    {
+	OwnerData owner = getOwnerAtPos(getPosForOwner(player));
+	return owner.guestList;
+    }
+
+    // remember that the ChunkPos destination is in "key coordinates" and is not an actual ChunkPos
+    public boolean isPlayerAllowedInPersonalDimension(Player visitor, ChunkPos destination)
+    {
+	OwnerData owner = getOwnerAtPos(destination);
+
+	// creative mode players and the owner themselves are never banned, even if configured otherwise
+	if (visitor.getGameProfile().getName() == owner.playerName || visitor.isCreative() || DungeonConfig.disablePersonalDimSecurity)
+	{
+	    return true;
+	}
+
+	// implement blacklist or whitelist
+	if (owner.isBlacklist)
+	{
+	    return !owner.guestList.contains(visitor.getGameProfile().getName());
+	}
+	else
+	{
+	    return owner.guestList.contains(visitor.getGameProfile().getName());
+	}
+    }
+
     // this constructor is called on fresh levels
     public PersonalBuildData()
     {
@@ -140,6 +232,22 @@ public class PersonalBuildData extends SavedData
 	    String name = ownerTag.getString("name");
 	    OwnerData owner = new OwnerData(id, name);
 
+	    // get optional data about the guest list, which may not exist in all worlds
+	    if (ownerTag.contains("isBlacklist"))
+	    {
+		owner.isBlacklist = ownerTag.getBoolean("isBlacklist");
+	    }
+	    if (ownerTag.contains("guestList"))
+	    {
+		ListTag guests = ownerTag.getList("guestList", 8); // getList() reads my data, but then returns an empty list unless the second parameter is 8?
+
+		for (net.minecraft.nbt.Tag g : guests)
+		{
+		    StringTag guestName = (StringTag) g;
+		    owner.guestList.add(guestName.getAsString());
+		}
+	    }
+
 	    ownerMap.put(pos, owner);
 	}
     }
@@ -155,13 +263,25 @@ public class PersonalBuildData extends SavedData
 	    ownerTag.putInt("z", chunkPos.z);
 	    ownerTag.putString("uuid", owner.uuid.toString());
 	    ownerTag.putString("name", owner.playerName);
+	    ownerTag.putBoolean("isBlacklist", owner.isBlacklist);
+	    if (owner.guestList != null && owner.guestList.size() > 0)
+	    {
+		ListTag guests = new ListTag();
+		owner.guestList.forEach((guest) ->
+		{
+		    StringTag g = StringTag.valueOf(guest);
+		    guests.add(g);
+		});
+		ownerTag.put("guestList", guests);
+	    }
+
 	    allOwners.add(ownerTag);
 	});
 
 	tag.put("player_data", allOwners);
 	return tag;
     }
-    
+
     // do not do this on a real world, obviously
     public void debugClearKnownOwners()
     {
