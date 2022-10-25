@@ -81,7 +81,6 @@ public class ItemBlankBuildKey extends BaseItemKey
 	stack.setHoverName(new TranslatableComponent("npart.dimdungeons.struct_8").append(" " + player.getName().getString()));
 
 	stack.setTag(data);
-	DungeonData.get(DungeonUtils.getDungeonWorld(server)).notifyOfNewKeyActivation();
     }
 
     // EVEN MORE particle effects for this special event!
