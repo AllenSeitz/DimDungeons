@@ -1,0 +1,16 @@
+{
+    "name": "Version 168",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 168,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Implemented a new config option for damage scaling. This option will multiply the damage dealt to players (before armor) from all sources in a basic or advanced dungeon. Defaults to 1.0x and 1.5x. $(li)Implemented a way to limit who can enter your personal dimension. For more information see that section of this book."
+        },
+        {
+            "type": "text",
+            "text": "$(li)Mobs whose names fail to translate will not be nametagged. $(li)Fixed a crash when a vanilla mob fails to spawn. (Such as being prevented by Bad Mobs.) $(li)Removed the lag machines in two infamous rooms. $(li)Fixed a bug that prevented hardcore mode from working in the 1.18 and 1.19 ports."
+		}		
+    ]
+}

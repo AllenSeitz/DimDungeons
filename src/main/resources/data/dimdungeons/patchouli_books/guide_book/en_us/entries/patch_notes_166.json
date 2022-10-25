@@ -1,0 +1,16 @@
+{
+    "name": "Version 166",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 166,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Changed the cheat structure to be \"/dimdungeons <cheats>\" with all of my cheats under one global cheat. $(li)Added a new cheat: /dimdungeons givepersonal [recipient] [whose_key] $(li)Bugfix for dungeons not completely generating if the server is closed during generation."
+        },
+        {
+            "type": "text",
+            "text": "$(li)Bugfix for players occasionally obtaining other player's personal dimension keys. $(li)Bugfix for a rare crash or portal failure that could occur when ticking the keyhole after a dungeon is finished being built."
+        }
+    ]
+}

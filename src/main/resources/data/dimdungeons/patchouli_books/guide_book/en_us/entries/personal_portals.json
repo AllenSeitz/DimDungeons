@@ -1,0 +1,48 @@
+{
+	"name": "Personal Portals",
+	"icon": "dimdungeons:item_key_build",
+	"category": "dimdungeons:portals",
+	"sortnum": 10,
+	"advancement": "dimdungeons:dungeons/enter_personal_space",
+	"pages": [
+		{
+			"type": "text",
+			"text": "Now that you're comfortable in your own personal pocket dimension it is time to learn about setting limits on who can follow you through your portal. Configuring access to your dimension is done from the inside by using one of five items on the gold portal by the entrance. (The items are never consumed.) Those items will be covered on the next five pages."
+		},
+		{
+			"type": "spotlight",
+			"item": "minecraft:book",
+			"text": "Using a Book on your portal will speak to you your current guest list, as well as if that list is currently operating in whitelist mode or blacklist mode."
+		},
+		{
+			"type": "spotlight",
+			"item": "minecraft:white_dye",
+			"text": "Using White Dye on your portal will switch it into whitelist mode. The list of configured names will be treated as friends and no one else will be allowed in."
+		},
+		{
+			"type": "spotlight",
+			"item": "minecraft:black_dye",
+			"text": "Using Black Dye on your portal will switch it into blacklist mode. The list of configured names will be treated as a banlist and everyone EXCEPT the named players will be allowed in."
+		},
+		{
+			"type": "spotlight",
+			"item": "minecraft:paper",
+			"text": "First name the Paper on an Anvil with the name of another player. Then use the paper on your portal to add them to the flexible guest list. Use the Paper again to remove that player's name. The list can be a whitelist or a blacklist."
+		},
+		{
+			"type": "spotlight",
+			"item": "minecraft:grindstone",
+			"text": "Using a Grindstone on your portal will clear all names configured on it."
+		},
+		{
+			"type": "text",
+			"text": "There are several limitations to this security system. First and most importantly it only controls who can enter. There are no build permissions implemented. (Although some servers may implement this separately.) Second, there are a number of ways that players can by bypass the permissions and gain entry regardless of how a portal is configured:"
+		},
+		{
+			"type": "text",
+			"text": "$(li)A dimension's owner is always allowed in. $(li)Players in creative mode are always allowed in. $(li)The server admin can set disablePersonalDimSecurity= true in the server config. $(li)The permissions are only checked by a normal portal with a keyhole. Using other means to teleport within will bypass the checks."
+		}
+	]
+}
+			
+
