@@ -11,31 +11,34 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class BlockRegistrar
 {
-    public static String REG_NAME_CHARGER_FULL = "block_key_charger";
-    public static String REG_NAME_CHARGER_USED = "block_key_charger_used";
-    public static String REG_NAME_CHARGER_DAMAGED = "block_key_charger_damaged";
+	public static String REG_NAME_CHARGER_FULL = "block_key_charger";
+	public static String REG_NAME_CHARGER_USED = "block_key_charger_used";
+	public static String REG_NAME_CHARGER_DAMAGED = "block_key_charger_damaged";
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, DimDungeons.MOD_ID);
-    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, DimDungeons.MOD_ID);
+	private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, DimDungeons.MOD_ID);
+	private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, DimDungeons.MOD_ID);
 
-    // these DeferredRegister objects replace the old registry events
-    public static final RegistryObject<Block> BLOCK_GILDED_PORTAL = BLOCKS.register(BlockGildedPortal.REG_NAME, () -> new BlockGildedPortal());
-    public static final RegistryObject<Block> BLOCK_GOLD_PORTAL = BLOCKS.register(BlockGoldPortal.REG_NAME, () -> new BlockGoldPortal());
-    public static final RegistryObject<Block> BLOCK_LOCAL_TELEPORTER = BLOCKS.register(BlockLocalTeleporter.REG_NAME, () -> new BlockLocalTeleporter());
-    public static final RegistryObject<Block> BLOCK_PORTAL_KEYHOLE = BLOCKS.register(BlockPortalKeyhole.REG_NAME, () -> new BlockPortalKeyhole());
-    public static final RegistryObject<Block> BLOCK_PORTAL_CROWN = BLOCKS.register(BlockPortalCrown.REG_NAME, () -> new BlockPortalCrown());
-    public static final RegistryObject<Block> BLOCK_CHARGER_FULL = BLOCKS.register(REG_NAME_CHARGER_FULL, () -> new BlockKeyCharger());
-    public static final RegistryObject<Block> BLOCK_CHARGER_USED = BLOCKS.register(REG_NAME_CHARGER_USED, () -> new BlockKeyCharger());
-    public static final RegistryObject<Block> BLOCK_CHARGER_DAMAGED = BLOCKS.register(REG_NAME_CHARGER_DAMAGED, () -> new BlockKeyCharger());
+	// these DeferredRegister objects replace the old registry events
+	public static final RegistryObject<Block> BLOCK_GILDED_PORTAL = BLOCKS.register(BlockGildedPortal.REG_NAME, () -> new BlockGildedPortal());
+	public static final RegistryObject<Block> BLOCK_GOLD_PORTAL = BLOCKS.register(BlockGoldPortal.REG_NAME, () -> new BlockGoldPortal());
+	public static final RegistryObject<Block> BLOCK_LOCAL_TELEPORTER = BLOCKS.register(BlockLocalTeleporter.REG_NAME, () -> new BlockLocalTeleporter());
+	public static final RegistryObject<Block> BLOCK_PORTAL_KEYHOLE = BLOCKS.register(BlockPortalKeyhole.REG_NAME, () -> new BlockPortalKeyhole());
+	public static final RegistryObject<Block> BLOCK_PORTAL_CROWN = BLOCKS.register(BlockPortalCrown.REG_NAME, () -> new BlockPortalCrown());
+	public static final RegistryObject<Block> BLOCK_CHARGER_FULL = BLOCKS.register(REG_NAME_CHARGER_FULL, () -> new BlockKeyCharger());
+	public static final RegistryObject<Block> BLOCK_CHARGER_USED = BLOCKS.register(REG_NAME_CHARGER_USED, () -> new BlockKeyCharger());
+	public static final RegistryObject<Block> BLOCK_CHARGER_DAMAGED = BLOCKS.register(REG_NAME_CHARGER_DAMAGED, () -> new BlockKeyCharger());
 
-    // register BlockEntities too
-    public static final RegistryObject<BlockEntityType<?>> BE_PORTAL_KEYHOLE = BLOCK_ENTITIES.register(TileEntityPortalKeyhole.REG_NAME, () -> BlockEntityType.Builder.of(TileEntityPortalKeyhole::new, BLOCK_PORTAL_KEYHOLE.get()).build(null));
-    public static final RegistryObject<BlockEntityType<?>> BE_GOLD_PORTAL = BLOCK_ENTITIES.register(TileEntityGoldPortal.REG_NAME, () -> BlockEntityType.Builder.of(TileEntityGoldPortal::new, BLOCK_GOLD_PORTAL.get()).build(null));
-    public static final RegistryObject<BlockEntityType<?>> BE_LOCAL_TELEPORTER = BLOCK_ENTITIES.register(TileEntityLocalTeleporter.REG_NAME, () -> BlockEntityType.Builder.of(TileEntityLocalTeleporter::new, BLOCK_LOCAL_TELEPORTER.get()).build(null));
+	// register BlockEntities too
+	public static final RegistryObject<BlockEntityType<?>> BE_PORTAL_KEYHOLE = BLOCK_ENTITIES.register(TileEntityPortalKeyhole.REG_NAME,
+	        () -> BlockEntityType.Builder.of(TileEntityPortalKeyhole::new, BLOCK_PORTAL_KEYHOLE.get()).build(null));
+	public static final RegistryObject<BlockEntityType<?>> BE_GOLD_PORTAL = BLOCK_ENTITIES.register(TileEntityGoldPortal.REG_NAME,
+	        () -> BlockEntityType.Builder.of(TileEntityGoldPortal::new, BLOCK_GOLD_PORTAL.get()).build(null));
+	public static final RegistryObject<BlockEntityType<?>> BE_LOCAL_TELEPORTER = BLOCK_ENTITIES.register(TileEntityLocalTeleporter.REG_NAME,
+	        () -> BlockEntityType.Builder.of(TileEntityLocalTeleporter::new, BLOCK_LOCAL_TELEPORTER.get()).build(null));
 
-    public static void register()
-    {
-	BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
-	BLOCK_ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
-    }
+	public static void register()
+	{
+		BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
+		BLOCK_ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
+	}
 }

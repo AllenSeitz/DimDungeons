@@ -34,116 +34,118 @@ import com.catastrophe573.dimdungeons.utils.CommandDimDungeons;
 @Mod("dimdungeons")
 public class DimDungeons
 {
-    // reference a log4j logger
-    private static final Logger LOGGER = LogManager.getLogger();
+	// reference a log4j logger
+	private static final Logger LOGGER = LogManager.getLogger();
 
-    // constants used by other classes
-    public static final String MOD_ID = "dimdungeons"; // this must match mods.toml
-    public static final String RESOURCE_PREFIX = MOD_ID + ":";
+	// constants used by other classes
+	public static final String MOD_ID = "dimdungeons"; // this must match mods.toml
+	public static final String RESOURCE_PREFIX = MOD_ID + ":";
 
-    public static final String dungeon_dimension_regname = "dungeon_dimension";
-    public static final String build_dimension_regname = "build_dimension";
+	public static final String dungeon_dimension_regname = "dungeon_dimension";
+	public static final String build_dimension_regname = "build_dimension";
 
-    public static final ResourceKey<Level> DUNGEON_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(MOD_ID, dungeon_dimension_regname));
-    public static final ResourceKey<Level> BUILD_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(MOD_ID, build_dimension_regname));
+	public static final ResourceKey<Level> DUNGEON_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(MOD_ID, dungeon_dimension_regname));
+	public static final ResourceKey<Level> BUILD_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(MOD_ID, build_dimension_regname));
 
-    public static final PlayerDungeonEvents eventHandler = new PlayerDungeonEvents();
+	public static final PlayerDungeonEvents eventHandler = new PlayerDungeonEvents();
 
-    public DimDungeons()
-    {
-	BlockRegistrar.register();
-	ItemRegistrar.register();
-
-	// register event listeners that don't use the event bus
-	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
-	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
-	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
-	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modConfig);
-
-	// Register ourselves for server, registry and other game events we are interested in
-	MinecraftForge.EVENT_BUS.register(eventHandler);
-	MinecraftForge.EVENT_BUS.addListener(PlayerDungeonEvents::onWorldTick);
-
-	ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, DungeonConfig.SERVER_SPEC);
-	ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, DungeonConfig.CLIENT_SPEC);
-	ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DungeonConfig.COMMON_SPEC, "dimdungeons-common-r152.toml");
-    }
-
-    private void doCommonStuff(final FMLCommonSetupEvent event)
-    {
-	Registry.register(Registry.CHUNK_GENERATOR, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.myCodec);
-    }
-
-    @SuppressWarnings("removal")
-    private void doClientStuff(final FMLClientSetupEvent event)
-    {
-	// this needs enqueueWork() because of the DeferredRegister
-	event.enqueueWork(() ->
+	public DimDungeons()
 	{
-	    // TODO: set the render type in the model json instead of doing it here
-	    ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_GOLD_PORTAL.get(), RenderType.translucent());
-	    ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get(), RenderType.translucent());
+		BlockRegistrar.register();
+		ItemRegistrar.register();
 
-	    // register the custom property for the keys that allows for switching their model
-	    ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), new ResourceLocation(DimDungeons.MOD_ID, "keytype"), (stack, world, entity, number) ->
-	    {
-		return ItemPortalKey.getKeyLevelAsFloat(stack);
-	    });
-	    ItemProperties.register(ItemRegistrar.ITEM_SECRET_BELL.get(), new ResourceLocation(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
-	    {
-		return ItemSecretBell.getUpgradeLevelAsFloat(stack);
-	    });
-	});
-    }
+		// register event listeners that don't use the event bus
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modConfig);
 
-    @SubscribeEvent
-    public void onRegisterCommands(RegisterCommandsEvent event)
-    {
-	CommandDimDungeons.register(event.getDispatcher());
-    }
+		// Register ourselves for server, registry and other game events we are
+		// interested in
+		MinecraftForge.EVENT_BUS.register(eventHandler);
+		MinecraftForge.EVENT_BUS.addListener(PlayerDungeonEvents::onWorldTick);
 
-    private void enqueueIMC(final InterModEnqueueEvent event)
-    {
-	// some example code to dispatch IMC to another mod
-    }
-
-    private void processIMC(final InterModProcessEvent event)
-    {
-	// some example code to receive and process InterModComms from other mods
-    }
-
-    public void modConfig(ModConfigEvent event)
-    {
-	ModConfig config = event.getConfig();
-	if (config.getSpec() == DungeonConfig.CLIENT_SPEC)
-	{
-	    DungeonConfig.refreshClient();
+		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, DungeonConfig.SERVER_SPEC);
+		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, DungeonConfig.CLIENT_SPEC);
+		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DungeonConfig.COMMON_SPEC, "dimdungeons-common-r152.toml");
 	}
-	else if (config.getSpec() == DungeonConfig.SERVER_SPEC)
-	{
-	    DungeonConfig.refreshServer();
-	}
-    }
 
-    public static void logMessageInfo(String message)
-    {
-	if (DungeonConfig.logLevel.equalsIgnoreCase("all") || DungeonConfig.logLevel.equalsIgnoreCase("info"))
+	private void doCommonStuff(final FMLCommonSetupEvent event)
 	{
-	    DimDungeons.LOGGER.info(message);
+		Registry.register(Registry.CHUNK_GENERATOR, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.myCodec);
 	}
-    }
 
-    public static void logMessageWarn(String message)
-    {
-	if (DungeonConfig.logLevel.equalsIgnoreCase("all") || DungeonConfig.logLevel.equalsIgnoreCase("info") || DungeonConfig.logLevel.equalsIgnoreCase("warn"))
+	@SuppressWarnings("removal")
+	private void doClientStuff(final FMLClientSetupEvent event)
 	{
-	    DimDungeons.LOGGER.warn(message);
-	}
-    }
+		// this needs enqueueWork() because of the DeferredRegister
+		event.enqueueWork(() ->
+		{
+			// TODO: set the render type in the model json instead of doing it here
+			ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_GOLD_PORTAL.get(), RenderType.translucent());
+			ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get(), RenderType.translucent());
 
-    public static void logMessageError(String message)
-    {
-	DimDungeons.LOGGER.error(message);
-    }
+			// register the custom property for the keys that allows for switching their
+			// model
+			ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), new ResourceLocation(DimDungeons.MOD_ID, "keytype"), (stack, world, entity, number) ->
+			{
+				return ItemPortalKey.getKeyLevelAsFloat(stack);
+			});
+			ItemProperties.register(ItemRegistrar.ITEM_SECRET_BELL.get(), new ResourceLocation(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
+			{
+				return ItemSecretBell.getUpgradeLevelAsFloat(stack);
+			});
+		});
+	}
+
+	@SubscribeEvent
+	public void onRegisterCommands(RegisterCommandsEvent event)
+	{
+		CommandDimDungeons.register(event.getDispatcher());
+	}
+
+	private void enqueueIMC(final InterModEnqueueEvent event)
+	{
+		// some example code to dispatch IMC to another mod
+	}
+
+	private void processIMC(final InterModProcessEvent event)
+	{
+		// some example code to receive and process InterModComms from other mods
+	}
+
+	public void modConfig(ModConfigEvent event)
+	{
+		ModConfig config = event.getConfig();
+		if (config.getSpec() == DungeonConfig.CLIENT_SPEC)
+		{
+			DungeonConfig.refreshClient();
+		}
+		else if (config.getSpec() == DungeonConfig.SERVER_SPEC)
+		{
+			DungeonConfig.refreshServer();
+		}
+	}
+
+	public static void logMessageInfo(String message)
+	{
+		if (DungeonConfig.logLevel.equalsIgnoreCase("all") || DungeonConfig.logLevel.equalsIgnoreCase("info"))
+		{
+			DimDungeons.LOGGER.info(message);
+		}
+	}
+
+	public static void logMessageWarn(String message)
+	{
+		if (DungeonConfig.logLevel.equalsIgnoreCase("all") || DungeonConfig.logLevel.equalsIgnoreCase("info") || DungeonConfig.logLevel.equalsIgnoreCase("warn"))
+		{
+			DimDungeons.LOGGER.warn(message);
+		}
+	}
+
+	public static void logMessageError(String message)
+	{
+		DimDungeons.LOGGER.error(message);
+	}
 }

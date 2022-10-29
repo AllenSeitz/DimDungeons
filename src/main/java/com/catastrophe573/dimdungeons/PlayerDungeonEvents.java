@@ -34,395 +34,410 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class PlayerDungeonEvents
 {
-    //@SubscribeEvent
-    //public void pickupItem(EntityItemPickupEvent event)
-    //{
-    //}
+	// @SubscribeEvent
+	// public void pickupItem(EntityItemPickupEvent event)
+	// {
+	// }
 
-    @SubscribeEvent
-    public void registerCommands(RegisterCommandsEvent event)
-    {
-	CommandDimDungeons.register(event.getDispatcher());
-    }
-
-    // for some reason this doesn't use SubscribeEvent and is instead registered from the main class
-    public static void onWorldTick(TickEvent.LevelTickEvent event)
-    {
-	if (event.level.isClientSide)
+	@SubscribeEvent
+	public void registerCommands(RegisterCommandsEvent event)
 	{
-	    return;
-	}
-	if (event.phase == TickEvent.Phase.START)
-	{
-	    return;
+		CommandDimDungeons.register(event.getDispatcher());
 	}
 
-	// make sure the tick is for my custom dimension
-	if (DungeonUtils.isDimensionDungeon(event.level))
+	// for some reason this doesn't use SubscribeEvent and is instead registered
+	// from the main class
+	public static void onWorldTick(TickEvent.LevelTickEvent event)
 	{
-	    DungeonData.get(event.level).tick(event.level);
-	}
-    }
-
-    @SubscribeEvent
-    public void livingUpdate(LivingEvent.LivingTickEvent event)
-    {
-	if (event.getEntity().getLevel().isClientSide())
-	{
-	    return;
-	}
-
-	if (event.getEntity() instanceof Player)
-	{
-	    if (((Player) (event.getEntity())).isSpectator())
-	    {
-		return; // ignore spectators, they don't need to be saved from the void
-	    }
-	}
-
-	// handle standing on the void in the build world
-	if (DungeonUtils.isDimensionPersonalBuild(event.getEntity().getLevel()))
-	{
-	    if (!DungeonUtils.isPersonalBuildChunk(event.getEntity().blockPosition()))
-	    {
-		// player is leaving the build area (probably on elytra) and needs a correction
-		ChunkPos chunk = new ChunkPos(event.getEntity().blockPosition());
-
-		int nx = (chunk.x - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
-		int nz = (chunk.z - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
-
-		if (nx < -1 || (nx > 8 && nx < 31) || nz < -1 || (nz > 8 && nz < 31))
+		if (event.level.isClientSide)
 		{
-		    DungeonUtils.sendEntityHomeInBuildWorld(event.getEntity());
-		    return;
+			return;
 		}
-	    }
+		if (event.phase == TickEvent.Phase.START)
+		{
+			return;
+		}
 
-	    // if the player is in the buildable area or just one chunk away then only snap them back to safety if they've fallen below the map
-	    if (event.getEntity().position().y < 1)
-	    {
-		DungeonUtils.sendEntityHomeInBuildWorld(event.getEntity());
-		return;
-	    }
-	}
-    }
-
-    @SubscribeEvent
-    public void explosionStart(ExplosionEvent.Start event)
-    {
-    }
-
-    @SuppressWarnings("deprecation")
-    @SubscribeEvent
-    public void explosionModify(ExplosionEvent.Detonate event)
-    {
-	// I only care about explosions in the Dungeon Dimension
-	if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
-	{
-	    return;
+		// make sure the tick is for my custom dimension
+		if (DungeonUtils.isDimensionDungeon(event.level))
+		{
+			DungeonData.get(event.level).tick(event.level);
+		}
 	}
 
-	// allow only cracked stone bricks to be broken
-	List<BlockPos> crackedBricks = Lists.newArrayList();
-
-	for (int i = 0; i < event.getAffectedBlocks().size(); i++)
+	@SubscribeEvent
+	public void livingUpdate(LivingEvent.LivingTickEvent event)
 	{
-	    if (event.getLevel().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().location().getPath().equals("cracked_stone_bricks"))
-	    {
-		crackedBricks.add(event.getAffectedBlocks().get(i));
-	    }
-	    if (event.getLevel().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().location().getPath().equals("trapped_chest"))
-	    {
-		crackedBricks.add(event.getAffectedBlocks().get(i));
-	    }
-	    if (event.getLevel().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().location().getPath().equals("tnt"))
-	    {
-		crackedBricks.add(event.getAffectedBlocks().get(i));
-	    }
+		if (event.getEntity().getLevel().isClientSide())
+		{
+			return;
+		}
+
+		if (event.getEntity() instanceof Player)
+		{
+			if (((Player) (event.getEntity())).isSpectator())
+			{
+				return; // ignore spectators, they don't need to be saved from the void
+			}
+		}
+
+		// handle standing on the void in the build world
+		if (DungeonUtils.isDimensionPersonalBuild(event.getEntity().getLevel()))
+		{
+			if (!DungeonUtils.isPersonalBuildChunk(event.getEntity().blockPosition()))
+			{
+				// player is leaving the build area (probably on elytra) and needs a correction
+				ChunkPos chunk = new ChunkPos(event.getEntity().blockPosition());
+
+				int nx = (chunk.x - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
+				int nz = (chunk.z - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
+
+				if (nx < -1 || (nx > 8 && nx < 31) || nz < -1 || (nz > 8 && nz < 31))
+				{
+					DungeonUtils.sendEntityHomeInBuildWorld(event.getEntity());
+					return;
+				}
+			}
+
+			// if the player is in the buildable area or just one chunk away then only snap
+			// them back to safety if they've fallen below the map
+			if (event.getEntity().position().y < 1)
+			{
+				DungeonUtils.sendEntityHomeInBuildWorld(event.getEntity());
+				return;
+			}
+		}
 	}
 
-	//DimDungeons.LOGGER.info("EXPLODING BRICKS: " + crackedBricks.size());
-	event.getExplosion().clearToBlow();
-	event.getAffectedBlocks().addAll(crackedBricks);
-    }
-
-    @SubscribeEvent
-    public void blockBreak(BlockEvent.BreakEvent event)
-    {
-	// the build dimension is always block-protected outside of the build space, no matter what
-	if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
+	@SubscribeEvent
+	public void explosionStart(ExplosionEvent.Start event)
 	{
-	    if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
-	    {
+	}
+
+	@SuppressWarnings("deprecation")
+	@SubscribeEvent
+	public void explosionModify(ExplosionEvent.Detonate event)
+	{
+		// I only care about explosions in the Dungeon Dimension
+		if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
+		{
+			return;
+		}
+
+		// allow only cracked stone bricks to be broken
+		List<BlockPos> crackedBricks = Lists.newArrayList();
+
+		for (int i = 0; i < event.getAffectedBlocks().size(); i++)
+		{
+			if (event.getLevel().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().location().getPath().equals("cracked_stone_bricks"))
+			{
+				crackedBricks.add(event.getAffectedBlocks().get(i));
+			}
+			if (event.getLevel().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().location().getPath().equals("trapped_chest"))
+			{
+				crackedBricks.add(event.getAffectedBlocks().get(i));
+			}
+			if (event.getLevel().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().location().getPath().equals("tnt"))
+			{
+				crackedBricks.add(event.getAffectedBlocks().get(i));
+			}
+		}
+
+		// DimDungeons.LOGGER.info("EXPLODING BRICKS: " + crackedBricks.size());
+		event.getExplosion().clearToBlow();
+		event.getAffectedBlocks().addAll(crackedBricks);
+	}
+
+	@SubscribeEvent
+	public void blockBreak(BlockEvent.BreakEvent event)
+	{
+		// the build dimension is always block-protected outside of the build space, no
+		// matter what
+		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
+		{
+			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
+			{
+				event.setCanceled(true);
+				return;
+			}
+		}
+
+		// intentionally check this AFTER the build dimension
+		if (!DungeonConfig.globalBlockProtection)
+		{
+			return; // config disabled
+		}
+
+		// next after the build world, I only care about blocks breaking in the Dungeon
+		// Dimension
+		if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
+		{
+			return;
+		}
+
+		// check for a possible whitelist exception
+		BlockState targetBlock = event.getLevel().getBlockState(event.getPos());
+		if (DungeonConfig.blockBreakWhitelist.contains(targetBlock.getBlock()))
+		{
+			// DimDungeons.LOGGER.info("dimdungeons: the WHITELIST ALLOWED to break: " +
+			// targetBlock.getBlock().getTranslatedName().getString());
+			return;
+		}
+
 		event.setCanceled(true);
-		return;
-	    }
 	}
 
-	// intentionally check this AFTER the build dimension
-	if (!DungeonConfig.globalBlockProtection)
+	@SuppressWarnings("deprecation")
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void blockPlace(BlockEvent.EntityPlaceEvent event)
 	{
-	    return; // config disabled
-	}
+		// the build dimension is always block-protected outside of the build space, no
+		// matter what
+		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
+		{
+			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
+			{
+				event.setCanceled(true);
+				return;
+			}
+		}
 
-	// next after the build world, I only care about blocks breaking in the Dungeon Dimension
-	if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
-	{
-	    return;
-	}
+		// intentionally check this AFTER the build dimension
+		if (!DungeonConfig.globalBlockProtection)
+		{
+			return; // config disabled
+		}
 
-	// check for a possible whitelist exception
-	BlockState targetBlock = event.getLevel().getBlockState(event.getPos());
-	if (DungeonConfig.blockBreakWhitelist.contains(targetBlock.getBlock()))
-	{
-	    //DimDungeons.LOGGER.info("dimdungeons: the WHITELIST ALLOWED to break: " + targetBlock.getBlock().getTranslatedName().getString());
-	    return;
-	}
+		// I only care about placing blocks in the Dungeon Dimension
+		if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
+		{
+			return;
+		}
 
-	event.setCanceled(true);
-    }
+		// assume this is frost walker and allow it?
+		String whatBlock = event.getPlacedBlock().getBlock().builtInRegistryHolder().key().location().getPath();
+		String whyBlock = event.getBlockSnapshot().getReplacedBlock().getBlock().builtInRegistryHolder().key().location().getPath();
+		if ("water".equals(whatBlock) && "water".equals(whyBlock))
+		{
+			return; // not sure why the block isn't frosted_ice though?
+		}
 
-    @SuppressWarnings("deprecation")
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void blockPlace(BlockEvent.EntityPlaceEvent event)
-    {
-	// the build dimension is always block-protected outside of the build space, no matter what
-	if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
-	{
-	    if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
-	    {
 		event.setCanceled(true);
-		return;
-	    }
 	}
 
-	// intentionally check this AFTER the build dimension	
-	if (!DungeonConfig.globalBlockProtection)
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void blockMultiPlace(BlockEvent.EntityMultiPlaceEvent event)
 	{
-	    return; // config disabled
-	}
+		// the build dimension is always block-protected outside of the build space, no
+		// matter what
+		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
+		{
+			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
+			{
+				event.setCanceled(true);
+				return;
+			}
+		}
 
-	// I only care about placing blocks in the Dungeon Dimension
-	if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
-	{
-	    return;
-	}
+		// intentionally check this AFTER the build dimension
+		if (!DungeonConfig.globalBlockProtection)
+		{
+			return; // config disabled
+		}
 
-	// assume this is frost walker and allow it?
-	String whatBlock = event.getPlacedBlock().getBlock().builtInRegistryHolder().key().location().getPath();
-	String whyBlock = event.getBlockSnapshot().getReplacedBlock().getBlock().builtInRegistryHolder().key().location().getPath();
-	if ("water".equals(whatBlock) && "water".equals(whyBlock))
-	{
-	    return; // not sure why the block isn't frosted_ice though?
-	}
+		// I only care about placing blocks in the Dungeon Dimension
+		if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
+		{
+			return;
+		}
 
-	event.setCanceled(true);
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void blockMultiPlace(BlockEvent.EntityMultiPlaceEvent event)
-    {
-	// the build dimension is always block-protected outside of the build space, no matter what
-	if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
-	{
-	    if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
-	    {
 		event.setCanceled(true);
-		return;
-	    }
 	}
 
-	// intentionally check this AFTER the build dimension
-	if (!DungeonConfig.globalBlockProtection)
+	@SubscribeEvent
+	public void fillBucket(FillBucketEvent event)
 	{
-	    return; // config disabled
-	}
+		if (!DungeonConfig.globalBlockProtection)
+		{
+			return; // config disabled
+		}
 
-	// I only care about placing blocks in the Dungeon Dimension
-	if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
-	{
-	    return;
-	}
+		// I only care about taking liquids in the Dungeon Dimension
+		if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
+		{
+			return;
+		}
 
-	event.setCanceled(true);
-    }
-
-    @SubscribeEvent
-    public void fillBucket(FillBucketEvent event)
-    {
-	if (!DungeonConfig.globalBlockProtection)
-	{
-	    return; // config disabled
-	}
-
-	// I only care about taking liquids in the Dungeon Dimension
-	if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
-	{
-	    return;
-	}
-
-	event.setCanceled(true);
-    }
-
-    @SubscribeEvent
-    public void anythingDestroyBlock(LivingDestroyBlockEvent event)
-    {
-	// the build dimension is always block-protected outside of the build space, no matter what
-	if (DungeonUtils.isDimensionPersonalBuild((Level) event.getEntity().getLevel()))
-	{
-	    if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
-	    {
 		event.setCanceled(true);
-		return;
-	    }
 	}
 
-	// intentionally check this AFTER the build dimension	
-	if (!DungeonConfig.globalBlockProtection)
+	@SubscribeEvent
+	public void anythingDestroyBlock(LivingDestroyBlockEvent event)
 	{
-	    return; // config disabled
-	}
+		// the build dimension is always block-protected outside of the build space, no
+		// matter what
+		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getEntity().getLevel()))
+		{
+			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
+			{
+				event.setCanceled(true);
+				return;
+			}
+		}
 
-	// I only care about restricting access in the Dungeon Dimension
-	if (!DungeonUtils.isDimensionDungeon((Level) event.getEntity().getLevel()))
-	{
-	    return;
-	}
+		// intentionally check this AFTER the build dimension
+		if (!DungeonConfig.globalBlockProtection)
+		{
+			return; // config disabled
+		}
 
-	// check for a possible whitelist exception
-	BlockState targetBlock = event.getEntity().getLevel().getBlockState(event.getPos());
-	if (DungeonConfig.blockBreakWhitelist.contains(targetBlock.getBlock()))
-	{
-	    return;
-	}
+		// I only care about restricting access in the Dungeon Dimension
+		if (!DungeonUtils.isDimensionDungeon((Level) event.getEntity().getLevel()))
+		{
+			return;
+		}
 
-	event.setCanceled(true);
-    }
+		// check for a possible whitelist exception
+		BlockState targetBlock = event.getEntity().getLevel().getBlockState(event.getPos());
+		if (DungeonConfig.blockBreakWhitelist.contains(targetBlock.getBlock()))
+		{
+			return;
+		}
 
-    @SubscribeEvent
-    public void leftClickBlock(LeftClickBlock event)
-    {
-	// the build dimension is always block-protected outside of the build space, no matter what
-	if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
-	{
-	    if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
-	    {
 		event.setCanceled(true);
-		return;
-	    }
 	}
 
-	// intentionally check this AFTER the build dimension	
-	if (!DungeonConfig.globalBlockProtection)
+	@SubscribeEvent
+	public void leftClickBlock(LeftClickBlock event)
 	{
-	    return; // config disabled
-	}
+		// the build dimension is always block-protected outside of the build space, no
+		// matter what
+		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
+		{
+			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
+			{
+				event.setCanceled(true);
+				return;
+			}
+		}
 
-	// I only care about restricting access in the Dungeon Dimension
-	if (!DungeonUtils.isDimensionDungeon((Level) event.getEntity().getLevel()))
-	{
-	    return;
-	}
+		// intentionally check this AFTER the build dimension
+		if (!DungeonConfig.globalBlockProtection)
+		{
+			return; // config disabled
+		}
 
-	// check for a possible whitelist exception
-	BlockState targetBlock = event.getEntity().getLevel().getBlockState(event.getPos());
-	if (DungeonConfig.blockBreakWhitelist.contains(targetBlock.getBlock()))
-	{
-	    return;
-	}
+		// I only care about restricting access in the Dungeon Dimension
+		if (!DungeonUtils.isDimensionDungeon((Level) event.getEntity().getLevel()))
+		{
+			return;
+		}
 
-	event.setCanceled(true);
-    }
+		// check for a possible whitelist exception
+		BlockState targetBlock = event.getEntity().getLevel().getBlockState(event.getPos());
+		if (DungeonConfig.blockBreakWhitelist.contains(targetBlock.getBlock()))
+		{
+			return;
+		}
 
-    @SubscribeEvent
-    public void rightClickBlock(RightClickBlock event)
-    {
-	// the build dimension is always block-protected outside of the build space, no matter what
-	if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
-	{
-	    if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
-	    {
 		event.setCanceled(true);
-		return;
-	    }
 	}
 
-	// intentionally check this AFTER the build dimension	
-	if (!DungeonConfig.globalBlockProtection)
+	@SubscribeEvent
+	public void rightClickBlock(RightClickBlock event)
 	{
-	    return; // config disabled
+		// the build dimension is always block-protected outside of the build space, no
+		// matter what
+		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
+		{
+			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
+			{
+				event.setCanceled(true);
+				return;
+			}
+		}
+
+		// intentionally check this AFTER the build dimension
+		if (!DungeonConfig.globalBlockProtection)
+		{
+			return; // config disabled
+		}
+
+		// I only care about restricting access in the Dungeon Dimension
+		if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
+		{
+			return;
+		}
+
+		// now the blacklist needs to be checked
+		BlockState targetBlock = event.getLevel().getBlockState(event.getPos());
+		if (DungeonConfig.blockInteractBlacklist.contains(targetBlock.getBlock()))
+		{
+			// DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() +
+			// " was BLACKLISTED from touching: " +
+			// targetBlock.getBlock().getTranslatedName().getString());
+			event.setCanceled(true);
+			return;
+		}
+
+		// one other thing, if the player's hands aren't empty, then don't let them
+		// place a block? since canceling block placement happens too late?
+		ItemStack itemInHand = event.getItemStack();
+		if (itemInHand != null && !itemInHand.isEmpty())
+		{
+			if (itemInHand.getItem() instanceof BlockItem)
+			{
+				event.setCanceled(true);
+			}
+			return;
+		}
+
+		// DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() +
+		// " just interacted with: " +
+		// targetBlock.getBlock().getTranslatedName().getString());
 	}
 
-	// I only care about restricting access in the Dungeon Dimension
-	if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
+	@SubscribeEvent
+	public void teleportStart(EntityTeleportEvent event)
 	{
-	    return;
+		// restrict player teleports
+		if (event.getEntity() instanceof ServerPlayer)
+		{
+			if (DungeonUtils.isDimensionDungeon(event.getEntity().getCommandSenderWorld()))
+			{
+				// TODO: teleporting over the void? cancelled
+				// TODO: teleporting above y= roof level? cancelled
+			}
+		}
+
+		// restrict enderman/shulker teleports
+		if (event.getEntity() instanceof EnderMan || event.getEntity() instanceof Shulker)
+		{
+			// I only care about restricting teleports within my dimensions
+			if (DungeonUtils.isDimensionDungeon(event.getEntity().getCommandSenderWorld()))
+			{
+				event.setCanceled(true);
+			}
+		}
 	}
 
-	// now the blacklist needs to be checked
-	BlockState targetBlock = event.getLevel().getBlockState(event.getPos());
-	if (DungeonConfig.blockInteractBlacklist.contains(targetBlock.getBlock()))
+	@SubscribeEvent
+	public void onChorusTeleport(EntityTeleportEvent.ChorusFruit event)
 	{
-	    //DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() + " was BLACKLISTED from touching: " + targetBlock.getBlock().getTranslatedName().getString());
-	    event.setCanceled(true);
-	    return;
+		// I only care about restricting teleports within my dimensions
+		if (DungeonUtils.isDimensionDungeon(event.getEntity().getCommandSenderWorld()))
+		{
+			event.setCanceled(true);
+		}
 	}
 
-	// one other thing, if the player's hands aren't empty, then don't let them place a block? since canceling block placement happens too late?
-	ItemStack itemInHand = event.getItemStack();
-	if (itemInHand != null && !itemInHand.isEmpty())
+	@SubscribeEvent
+	public void useItem(LivingEntityUseItemEvent.Start event)
 	{
-	    if (itemInHand.getItem() instanceof BlockItem)
-	    {
-		event.setCanceled(true);
-	    }
-	    return;
+		// do not run this function on non-players
+		if (!(event.getEntity() instanceof ServerPlayer))
+		{
+			return;
+		}
 	}
-
-	//DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() + " just interacted with: " + targetBlock.getBlock().getTranslatedName().getString());
-    }
-
-    @SubscribeEvent
-    public void teleportStart(EntityTeleportEvent event)
-    {
-	// restrict player teleports
-	if (event.getEntity() instanceof ServerPlayer)
-	{
-	    if (DungeonUtils.isDimensionDungeon(event.getEntity().getCommandSenderWorld()))
-	    {
-		// TODO: teleporting over the void? cancelled
-		// TODO: teleporting above y= roof level? cancelled
-	    }
-	}
-
-	// restrict enderman/shulker teleports
-	if (event.getEntity() instanceof EnderMan || event.getEntity() instanceof Shulker)
-	{
-	    // I only care about restricting teleports within my dimensions
-	    if (DungeonUtils.isDimensionDungeon(event.getEntity().getCommandSenderWorld()))
-	    {
-		event.setCanceled(true);
-	    }
-	}
-    }
-
-    @SubscribeEvent
-    public void onChorusTeleport(EntityTeleportEvent.ChorusFruit event)
-    {
-	// I only care about restricting teleports within my dimensions
-	if (DungeonUtils.isDimensionDungeon(event.getEntity().getCommandSenderWorld()))
-	{
-	    event.setCanceled(true);
-	}
-    }
-
-    @SubscribeEvent
-    public void useItem(LivingEntityUseItemEvent.Start event)
-    {
-	// do not run this function on non-players
-	if (!(event.getEntity() instanceof ServerPlayer))
-	{
-	    return;
-	}
-    }
 }
