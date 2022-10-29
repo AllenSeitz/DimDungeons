@@ -9,16 +9,16 @@ import net.minecraft.world.level.material.Material;
 
 public class BlockGildedPortal extends Block
 {
-    public static String REG_NAME = "block_gilded_portal";
+	public static String REG_NAME = "block_gilded_portal";
 
-    public BlockGildedPortal()
-    {
-	super(BlockBehaviour.Properties.of(Material.STONE).strength(2).sound(SoundType.METAL));
-    }
+	public BlockGildedPortal()
+	{
+		super(BlockBehaviour.Properties.of(Material.STONE).strength(2).sound(SoundType.METAL));
+	}
 
-    @Override
-    public RenderShape getRenderShape(BlockState iBlockState)
-    {
-	return RenderShape.MODEL;
-    }
+	@Override
+	public RenderShape getRenderShape(BlockState iBlockState)
+	{
+		return RenderShape.MODEL;
+	}
 }

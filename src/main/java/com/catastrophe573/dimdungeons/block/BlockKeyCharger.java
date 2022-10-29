@@ -14,21 +14,21 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class BlockKeyCharger extends Block
 {
-    protected static final VoxelShape BASE_SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 13.0D, 16.0D);
+	protected static final VoxelShape BASE_SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 13.0D, 16.0D);
 
-    public BlockKeyCharger()
-    {
-	super(BlockBehaviour.Properties.of(Material.STONE).strength(3).sound(SoundType.METAL));
-    }
+	public BlockKeyCharger()
+	{
+		super(BlockBehaviour.Properties.of(Material.STONE).strength(3).sound(SoundType.METAL));
+	}
 
-    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
-    {
-	return BASE_SHAPE;
-    }
+	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
+	{
+		return BASE_SHAPE;
+	}
 
-    @Override
-    public RenderShape getRenderShape(BlockState iBlockState)
-    {
-	return RenderShape.MODEL;
-    }    
+	@Override
+	public RenderShape getRenderShape(BlockState iBlockState)
+	{
+		return RenderShape.MODEL;
+	}
 }

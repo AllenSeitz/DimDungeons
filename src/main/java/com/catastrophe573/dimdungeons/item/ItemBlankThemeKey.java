@@ -21,80 +21,82 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ItemBlankThemeKey extends BaseItemKey
 {
-    public static final String REG_NAME = "item_blank_theme_key";
+	public static final String REG_NAME = "item_blank_theme_key";
 
-    public ItemBlankThemeKey()
-    {
-	super(new Item.Properties().rarity(Rarity.COMMON));
-    }
-
-    public static int getTheme(ItemStack stack)
-    {
-	CompoundTag itemData = stack.getTag();
-	if ( itemData == null )
+	public ItemBlankThemeKey()
 	{
-	    return 0;
-	}
-	return itemData.contains(NBT_THEME) ? itemData.getInt(NBT_THEME) : 0;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public Component getName(ItemStack stack)
-    {
-	int theme = 0;
-	
-	// no NBT data on this item at all? well then return a blank key
-	if (stack.hasTag())
-	{
-	    theme = getTheme(stack);
-
-	    String start = I18n.get("item.dimdungeons.item_blank_theme_key");
-	    String place = I18n.get("npart.dimdungeons.theme_" + theme);
-
-	    return new TextComponent(start + " (" + place + ")");
+		super(new Item.Properties().rarity(Rarity.COMMON));
 	}
 
-	// basically return "Blank Theme Key"
-	return new TranslatableComponent(this.getDescriptionId(stack), new Object[0]);
-    }
-
-    @Override
-    public void performActivationRitual(Player player, ItemStack itemstack, Level worldIn, BlockPos pos)
-    {
-	worldIn.playSound((Player) null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
-
-	if (player == null)
+	public static int getTheme(ItemStack stack)
 	{
-	    DimDungeons.logMessageError("Somehow activated a blank advanced key without a player present. Do not do this.");
-	    return;
-	}
-
-	if (!worldIn.isClientSide)
-	{
-	    // delete this item and replace it with a regular blank key, but first remember which inventory slot it was in
-	    int slot = player.getInventory().findSlotMatchingItem(itemstack);
-	    int theme = ItemBlankThemeKey.getTheme(itemstack);
-	    if (theme < 1)
-	    {
-		// by design, pick a random theme if the NBT isn't set
-		theme = worldIn.getRandom().nextInt(DungeonConfig.themeSettings.size()) + 1;
-	    }
-	    itemstack.shrink(1);
-
-	    // generate the blank key and try to insert it into the player's inventory multiple ways as a fail-safe
-	    ItemStack newkey = new ItemStack(ItemRegistrar.item_portal_key);
-	    activateKeyLevel1(worldIn.getServer(), newkey, theme);
-
-	    if (!player.getInventory().add(slot, newkey))
-	    {
-		if (!player.addItem(newkey))
+		CompoundTag itemData = stack.getTag();
+		if (itemData == null)
 		{
-		    player.drop(newkey, false);
+			return 0;
 		}
-	    }
+		return itemData.contains(NBT_THEME) ? itemData.getInt(NBT_THEME) : 0;
 	}
 
-	createActivationParticleEffects(worldIn, pos);
-    }
+	@OnlyIn(Dist.CLIENT)
+	@Override
+	public Component getName(ItemStack stack)
+	{
+		int theme = 0;
+
+		// no NBT data on this item at all? well then return a blank key
+		if (stack.hasTag())
+		{
+			theme = getTheme(stack);
+
+			String start = I18n.get("item.dimdungeons.item_blank_theme_key");
+			String place = I18n.get("npart.dimdungeons.theme_" + theme);
+
+			return new TextComponent(start + " (" + place + ")");
+		}
+
+		// basically return "Blank Theme Key"
+		return new TranslatableComponent(this.getDescriptionId(stack), new Object[0]);
+	}
+
+	@Override
+	public void performActivationRitual(Player player, ItemStack itemstack, Level worldIn, BlockPos pos)
+	{
+		worldIn.playSound((Player) null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
+
+		if (player == null)
+		{
+			DimDungeons.logMessageError("Somehow activated a blank advanced key without a player present. Do not do this.");
+			return;
+		}
+
+		if (!worldIn.isClientSide)
+		{
+			// delete this item and replace it with a regular blank key, but first remember
+			// which inventory slot it was in
+			int slot = player.getInventory().findSlotMatchingItem(itemstack);
+			int theme = ItemBlankThemeKey.getTheme(itemstack);
+			if (theme < 1)
+			{
+				// by design, pick a random theme if the NBT isn't set
+				theme = worldIn.getRandom().nextInt(DungeonConfig.themeSettings.size()) + 1;
+			}
+			itemstack.shrink(1);
+
+			// generate the blank key and try to insert it into the player's inventory
+			// multiple ways as a fail-safe
+			ItemStack newkey = new ItemStack(ItemRegistrar.item_portal_key);
+			activateKeyLevel1(worldIn.getServer(), newkey, theme);
+
+			if (!player.getInventory().add(slot, newkey))
+			{
+				if (!player.addItem(newkey))
+				{
+					player.drop(newkey, false);
+				}
+			}
+		}
+
+		createActivationParticleEffects(worldIn, pos);
+	}
 }

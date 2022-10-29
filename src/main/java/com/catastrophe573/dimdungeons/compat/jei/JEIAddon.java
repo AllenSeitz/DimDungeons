@@ -22,51 +22,52 @@ import net.minecraftforge.registries.ForgeRegistries;
 @JeiPlugin
 public class JEIAddon implements IModPlugin
 {
-    @Override
-    public ResourceLocation getPluginUid()
-    {
-	return new ResourceLocation(DimDungeons.MOD_ID, "jei");
-    }
-
-    static public RecipeType<ActivateKeyJeiRecipe> getActivateKeyRecipeType()
-    {
-	return new RecipeType<>(ActivateKeyJeiRecipeCategory.UID, ActivateKeyJeiRecipe.class);
-    }
-
-    @Override
-    // this is the new JEI 9.5.0 way of registering things
-    public void registerRecipes(IRecipeRegistration registry)
-    {
-	List<ActivateKeyJeiRecipe> allRecipes = Lists.newArrayList();
-
-	// this type of 'recipe' is not in json or configurable in any way
-	ItemStack blank_key = new ItemStack(ItemRegistrar.item_portal_key);
-	ItemStack end_frame = new ItemStack(Items.END_PORTAL_FRAME);
-	ItemStack key_charger = new ItemStack(BlockRegistrar.block_key_charger);
-
-	allRecipes.add(new ActivateKeyJeiRecipe(blank_key, end_frame, DungeonUtils.getExampleKey()));
-	allRecipes.add(new ActivateKeyJeiRecipe(blank_key, key_charger, DungeonUtils.getExampleKey()));
-
-	// this allows end:remastered portal frames to work too
-	if (DungeonConfig.isModInstalled("endrem"))
+	@Override
+	public ResourceLocation getPluginUid()
 	{
-	    ResourceLocation id = new ResourceLocation("endrem", "ancient_portal_frame");
-	    ItemStack ancient_frame = new ItemStack(ForgeRegistries.BLOCKS.getValue(id));
-	    allRecipes.add(new ActivateKeyJeiRecipe(blank_key, ancient_frame, DungeonUtils.getExampleKey()));
+		return new ResourceLocation(DimDungeons.MOD_ID, "jei");
 	}
 
-	registry.addRecipes(getActivateKeyRecipeType(), allRecipes);
-    }
+	static public RecipeType<ActivateKeyJeiRecipe> getActivateKeyRecipeType()
+	{
+		return new RecipeType<>(ActivateKeyJeiRecipeCategory.UID, ActivateKeyJeiRecipe.class);
+	}
 
-    @Override
-    public void registerCategories(IRecipeCategoryRegistration registry)
-    {
-	registry.addRecipeCategories(new ActivateKeyJeiRecipeCategory(registry.getJeiHelpers().getGuiHelper()));
-    }
+	@Override
+	// this is the new JEI 9.5.0 way of registering things
+	public void registerRecipes(IRecipeRegistration registry)
+	{
+		List<ActivateKeyJeiRecipe> allRecipes = Lists.newArrayList();
 
-    @Override
-    public void registerRecipeCatalysts(IRecipeCatalystRegistration registration)
-    {
-	//registration.addRecipeCatalyst(new ItemStack(Items.END_PORTAL_FRAME), getActivateKeyRecipeType());
-    }
+		// this type of 'recipe' is not in json or configurable in any way
+		ItemStack blank_key = new ItemStack(ItemRegistrar.item_portal_key);
+		ItemStack end_frame = new ItemStack(Items.END_PORTAL_FRAME);
+		ItemStack key_charger = new ItemStack(BlockRegistrar.block_key_charger);
+
+		allRecipes.add(new ActivateKeyJeiRecipe(blank_key, end_frame, DungeonUtils.getExampleKey()));
+		allRecipes.add(new ActivateKeyJeiRecipe(blank_key, key_charger, DungeonUtils.getExampleKey()));
+
+		// this allows end:remastered portal frames to work too
+		if (DungeonConfig.isModInstalled("endrem"))
+		{
+			ResourceLocation id = new ResourceLocation("endrem", "ancient_portal_frame");
+			ItemStack ancient_frame = new ItemStack(ForgeRegistries.BLOCKS.getValue(id));
+			allRecipes.add(new ActivateKeyJeiRecipe(blank_key, ancient_frame, DungeonUtils.getExampleKey()));
+		}
+
+		registry.addRecipes(getActivateKeyRecipeType(), allRecipes);
+	}
+
+	@Override
+	public void registerCategories(IRecipeCategoryRegistration registry)
+	{
+		registry.addRecipeCategories(new ActivateKeyJeiRecipeCategory(registry.getJeiHelpers().getGuiHelper()));
+	}
+
+	@Override
+	public void registerRecipeCatalysts(IRecipeCatalystRegistration registration)
+	{
+		// registration.addRecipeCatalyst(new ItemStack(Items.END_PORTAL_FRAME),
+		// getActivateKeyRecipeType());
+	}
 }

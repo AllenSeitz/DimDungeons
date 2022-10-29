@@ -18,158 +18,164 @@ import net.minecraftforge.registries.ObjectHolder;
 
 public class TileEntityPortalKeyhole extends BlockEntity
 {
-    public static final String REG_NAME = "tileentity_portal_keyhole";
+	public static final String REG_NAME = "tileentity_portal_keyhole";
 
-    @ObjectHolder(DimDungeons.RESOURCE_PREFIX + REG_NAME)
-    public static BlockEntityType<TileEntityPortalKeyhole> TYPE;
+	@ObjectHolder(DimDungeons.RESOURCE_PREFIX + REG_NAME)
+	public static BlockEntityType<TileEntityPortalKeyhole> TYPE;
 
-    public enum DungeonBuildSpeed
-    {
-	STOPPED, SLOW, NORMAL, FASTEST;
-    };
-
-    public TileEntityPortalKeyhole(BlockPos pos, BlockState state)
-    {
-	super(TYPE, pos, state);
-    }
-
-    private ItemStack objectInserted = ItemStack.EMPTY;
-    private static final String ITEM_PROPERTY_KEY = "objectInserted";
-
-    public static void buildTick(Level level, BlockPos pos, BlockState state, TileEntityPortalKeyhole self)
-    {
-	ItemPortalKey key = (ItemPortalKey) self.getObjectInserted().getItem();
-	DungeonGenData genData = DungeonGenData.Create().setKeyItem(self.getObjectInserted()).setDungeonType(key.getDungeonType(self.getObjectInserted())).setTheme(key.getDungeonTheme(self.getObjectInserted())).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(level.dimension()));
-
-	if (!(genData.keyItem.getItem() instanceof ItemPortalKey))
+	public enum DungeonBuildSpeed
 	{
-	    DimDungeons.logMessageError("FATAL ERROR: Using a non-key item to build a dungeon? What happened?");
-	    return;
+		STOPPED, SLOW, NORMAL, FASTEST;
+	};
+
+	public TileEntityPortalKeyhole(BlockPos pos, BlockState state)
+	{
+		super(TYPE, pos, state);
 	}
 
-	// where are we in the build process?
-	if (!state.getValue(BlockPortalKeyhole.IS_BUILDING))
-	{
-	    DimDungeons.logMessageError("DIMDUNGEONS ERROR: Keyhole block ticked when it should not have."); // unreachable code
-	}
-	else
-	{
-	    // wait until all keys on the whole server are done building (this is the easiest way, I don't think this will be a problem)
-	    if (!DungeonData.get(DungeonUtils.getDungeonWorld(level.getServer())).hasMoreRoomsToBuild())
-	    {
-		DungeonUtils.openPortalAfterBuild(level, pos, genData, self);
+	private ItemStack objectInserted = ItemStack.EMPTY;
+	private static final String ITEM_PROPERTY_KEY = "objectInserted";
 
-		// stop building
-		BlockState newBlockState = state.setValue(BlockPortalKeyhole.FACING, state.getValue(BlockPortalKeyhole.FACING)).setValue(BlockPortalKeyhole.FILLED, self.isFilled()).setValue(BlockPortalKeyhole.LIT, self.isActivated()).setValue(BlockPortalKeyhole.IS_BUILDING, false);
-		level.setBlockAndUpdate(pos, newBlockState);
-	    }
-	}
-    }
-
-    protected static int nextBuildStep(int currentStep, DungeonBuildSpeed speed)
-    {
-	// intentionally never finishes
-	if (speed == DungeonBuildSpeed.STOPPED)
+	public static void buildTick(Level level, BlockPos pos, BlockState state, TileEntityPortalKeyhole self)
 	{
-	    return currentStep;
+		ItemPortalKey key = (ItemPortalKey) self.getObjectInserted().getItem();
+		DungeonGenData genData = DungeonGenData.Create().setKeyItem(self.getObjectInserted()).setDungeonType(key.getDungeonType(self.getObjectInserted()))
+		        .setTheme(key.getDungeonTheme(self.getObjectInserted()))
+		        .setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(level.dimension()));
+
+		if (!(genData.keyItem.getItem() instanceof ItemPortalKey))
+		{
+			DimDungeons.logMessageError("FATAL ERROR: Using a non-key item to build a dungeon? What happened?");
+			return;
+		}
+
+		// where are we in the build process?
+		if (!state.getValue(BlockPortalKeyhole.IS_BUILDING))
+		{
+			DimDungeons.logMessageError("DIMDUNGEONS ERROR: Keyhole block ticked when it should not have."); // unreachable code
+		}
+		else
+		{
+			// wait until all keys on the whole server are done building (this is the
+			// easiest way, I don't think this will be a problem)
+			if (!DungeonData.get(DungeonUtils.getDungeonWorld(level.getServer())).hasMoreRoomsToBuild())
+			{
+				DungeonUtils.openPortalAfterBuild(level, pos, genData, self);
+
+				// stop building
+				BlockState newBlockState = state.setValue(BlockPortalKeyhole.FACING, state.getValue(BlockPortalKeyhole.FACING)).setValue(BlockPortalKeyhole.FILLED, self.isFilled())
+				        .setValue(BlockPortalKeyhole.LIT, self.isActivated()).setValue(BlockPortalKeyhole.IS_BUILDING, false);
+				level.setBlockAndUpdate(pos, newBlockState);
+			}
+		}
 	}
 
-	// the slow speed always runs for 650 ticks and therefore attempts to build in 2 chunks per second
-	if (speed == DungeonBuildSpeed.SLOW)
+	protected static int nextBuildStep(int currentStep, DungeonBuildSpeed speed)
 	{
-	    return currentStep >= 650 ? 0 : currentStep + 1;
-	}
+		// intentionally never finishes
+		if (speed == DungeonBuildSpeed.STOPPED)
+		{
+			return currentStep;
+		}
 
-	// the normal speed skips 5 ticks and attempts to build in 10 chunks per second
-	if (speed == DungeonBuildSpeed.NORMAL)
-	{
-	    if (currentStep < 5)
-	    {
-		return 5;
-	    }
-	    if (currentStep >= 650)
-	    {
+		// the slow speed always runs for 650 ticks and therefore attempts to build in 2
+		// chunks per second
+		if (speed == DungeonBuildSpeed.SLOW)
+		{
+			return currentStep >= 650 ? 0 : currentStep + 1;
+		}
+
+		// the normal speed skips 5 ticks and attempts to build in 10 chunks per second
+		if (speed == DungeonBuildSpeed.NORMAL)
+		{
+			if (currentStep < 5)
+			{
+				return 5;
+			}
+			if (currentStep >= 650)
+			{
+				return 0;
+			}
+			return currentStep + 5;
+		}
+
+		// the fastest speed skips 10 ticks and attempts to build in 20 chunks per
+		// second
+		if (speed == DungeonBuildSpeed.FASTEST)
+		{
+			if (currentStep < 10)
+			{
+				return 10;
+			}
+			if (currentStep >= 650)
+			{
+				return 0;
+			}
+			return currentStep + 10;
+		}
+
 		return 0;
-	    }
-	    return currentStep + 5;
 	}
 
-	// the fastest speed skips 10 ticks and attempts to build in 20 chunks per second
-	if (speed == DungeonBuildSpeed.FASTEST)
+	@Override
+	public void load(CompoundTag compound)
 	{
-	    if (currentStep < 10)
-	    {
-		return 10;
-	    }
-	    if (currentStep >= 650)
-	    {
-		return 0;
-	    }
-	    return currentStep + 10;
+		super.load(compound);
+		if (compound.contains(ITEM_PROPERTY_KEY))
+		{
+			setContents(ItemStack.of(compound.getCompound(ITEM_PROPERTY_KEY)));
+		}
 	}
 
-	return 0;
-    }
-
-    @Override
-    public void load(CompoundTag compound)
-    {
-	super.load(compound);
-	if (compound.contains(ITEM_PROPERTY_KEY))
+	@Override
+	protected void saveAdditional(CompoundTag compound)
 	{
-	    setContents(ItemStack.of(compound.getCompound(ITEM_PROPERTY_KEY)));
+		super.saveAdditional(compound);
+
+		// always send this, even if it is empty or air
+		compound.put(ITEM_PROPERTY_KEY, objectInserted.save(new CompoundTag()));
 	}
-    }
 
-    @Override
-    protected void saveAdditional(CompoundTag compound)
-    {
-	super.saveAdditional(compound);
-
-	// always send this, even if it is empty or air
-	compound.put(ITEM_PROPERTY_KEY, objectInserted.save(new CompoundTag()));
-    }
-
-    public boolean isFilled()
-    {
-	return !objectInserted.isEmpty();
-    }
-
-    public boolean isActivated()
-    {
-	ItemStack item = getObjectInserted();
-
-	if (item.isEmpty())
+	public boolean isFilled()
 	{
-	    return false;
+		return !objectInserted.isEmpty();
 	}
-	// awakened keys will open a portal to the dungeon dimension
-	else if (item.getItem() instanceof BaseItemKey)
+
+	public boolean isActivated()
 	{
-	    BaseItemKey key = (BaseItemKey) item.getItem();
-	    return key.isActivated(item);
+		ItemStack item = getObjectInserted();
+
+		if (item.isEmpty())
+		{
+			return false;
+		}
+		// awakened keys will open a portal to the dungeon dimension
+		else if (item.getItem() instanceof BaseItemKey)
+		{
+			BaseItemKey key = (BaseItemKey) item.getItem();
+			return key.isActivated(item);
+		}
+
+		return false;
 	}
 
-	return false;
-    }
+	public ItemStack getObjectInserted()
+	{
+		return this.objectInserted;
+	}
 
-    public ItemStack getObjectInserted()
-    {
-	return this.objectInserted;
-    }
+	// be sure to notify the world of a block update after calling this
+	public void setContents(ItemStack item)
+	{
+		this.objectInserted = item;
+		this.objectInserted.setCount(1);
+		this.setChanged();
+	}
 
-    //  be sure to notify the world of a block update after calling this
-    public void setContents(ItemStack item)
-    {
-	this.objectInserted = item;
-	this.objectInserted.setCount(1);
-	this.setChanged();
-    }
-
-    //  be sure to notify the world of a block update after calling this
-    public void removeContents()
-    {
-	this.objectInserted = ItemStack.EMPTY;
-	this.setChanged();
-    }
+	// be sure to notify the world of a block update after calling this
+	public void removeContents()
+	{
+		this.objectInserted = ItemStack.EMPTY;
+		this.setChanged();
+	}
 }
