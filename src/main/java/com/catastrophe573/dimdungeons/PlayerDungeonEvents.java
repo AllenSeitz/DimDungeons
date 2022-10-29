@@ -1,19 +1,24 @@
 package com.catastrophe573.dimdungeons;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.dimension.DungeonData;
+import com.catastrophe573.dimdungeons.dimension.PersonalBuildData;
 import com.catastrophe573.dimdungeons.item.ItemBuildKey;
 import com.catastrophe573.dimdungeons.utils.CommandDimDungeons;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 import com.google.common.collect.Lists;
 
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
@@ -31,6 +36,7 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 
 public class PlayerDungeonEvents
 {
@@ -346,12 +352,115 @@ public class PlayerDungeonEvents
 	@SubscribeEvent
 	public void rightClickBlock(RightClickBlock event)
 	{
-		// the build dimension is always block-protected outside of the build space, no
-		// matter what
+		BlockState targetBlock = event.getLevel().getBlockState(event.getPos());
+
 		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
 		{
 			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
 			{
+				// prevent the following security system logic from running twice
+				if (event.getSide() == LogicalSide.CLIENT || event.getHand() != InteractionHand.MAIN_HAND)
+				{
+					return;
+				}
+
+				// one weird exception - if the block in question is a Gold Portal Block then configure the security system and still cancel the event
+				if (targetBlock.getBlock() == BlockRegistrar.BLOCK_GOLD_PORTAL.get())
+				{
+					ItemStack itemInHand = event.getItemStack();
+					if (itemInHand == null || itemInHand.isEmpty())
+					{
+						// generic message which suggests to use one of the magic items
+						DungeonUtils.giveSecuritySystemPrompt(event.getEntity(), "security.dimdungeons.help_1");
+					}
+					else
+					{
+						Player player = event.getEntity();
+						// each of the different magic items
+						if (itemInHand.getItem() == Items.PAPER)
+						{
+							if (itemInHand.hasCustomHoverName())
+							{
+								String playerName = itemInHand.getDisplayName().getString();
+								playerName = playerName.substring(1, playerName.length() - 1); // trim the [brackets] from the previous result
+
+								// add or remove a name from the list and print an appropriate message
+								if (PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).getBlacklistMode(player))
+								{
+									boolean wasAdded = PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).toggleNameOnGuestList(player, playerName);
+									if (wasAdded)
+									{
+										DungeonUtils.notifyGuestListChange(event.getEntity(), "security.dimdungeons.player_added_blacklist", playerName);
+									}
+									else
+									{
+										DungeonUtils.notifyGuestListChange(event.getEntity(), "security.dimdungeons.player_removed_blacklist", playerName);
+									}
+								}
+								else
+								{
+									boolean wasAdded = PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).toggleNameOnGuestList(player, playerName);
+									if (wasAdded)
+									{
+										DungeonUtils.notifyGuestListChange(event.getEntity(), "security.dimdungeons.player_added_whitelist", playerName);
+									}
+									else
+									{
+										DungeonUtils.notifyGuestListChange(event.getEntity(), "security.dimdungeons.player_removed_whitelist", playerName);
+									}
+								}
+							}
+							else
+							{
+								// suggest that the player name this piece of paper
+								DungeonUtils.giveSecuritySystemPrompt(event.getEntity(), "security.dimdungeons.use_paper");
+							}
+						}
+						if (itemInHand.getItem() == Items.BOOK)
+						{
+							// list all players and the current mode
+							ArrayList<String> guests = PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).getGuestListForPlayer(player);
+							DungeonUtils.displayGuestList(player, guests);
+
+							// also print whitelist/blacklist mode status right after
+							if (PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).getBlacklistMode(player))
+							{
+								DungeonUtils.giveSecuritySystemPrompt(event.getEntity(), "security.dimdungeons.status_blacklist");
+							}
+							else
+							{
+								DungeonUtils.giveSecuritySystemPrompt(event.getEntity(), "security.dimdungeons.status_whitelist");
+							}
+						}
+						if (itemInHand.getItem() == Items.GRINDSTONE)
+						{
+							// clear all names from the guest list
+							DungeonUtils.giveSecuritySystemPrompt(event.getEntity(), "security.dimdungeons.use_grindstone");
+							PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).clearGuestListForPlayer(player);
+
+							// also print whitelist/blacklist mode status right after
+							if (PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).getBlacklistMode(player))
+							{
+								DungeonUtils.giveSecuritySystemPrompt(event.getEntity(), "security.dimdungeons.status_blacklist");
+							}
+							else
+							{
+								DungeonUtils.giveSecuritySystemPrompt(event.getEntity(), "security.dimdungeons.status_whitelist");
+							}
+						}
+						if (itemInHand.getItem() == Items.WHITE_DYE)
+						{
+							DungeonUtils.giveSecuritySystemPrompt(event.getEntity(), "security.dimdungeons.use_white");
+							PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).changeBlacklistMode(player, false);
+						}
+						if (itemInHand.getItem() == Items.BLACK_DYE)
+						{
+							DungeonUtils.giveSecuritySystemPrompt(event.getEntity(), "security.dimdungeons.use_black");
+							PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).changeBlacklistMode(player, true);
+						}
+					}
+				}
+
 				event.setCanceled(true);
 				return;
 			}
@@ -370,7 +479,6 @@ public class PlayerDungeonEvents
 		}
 
 		// now the blacklist needs to be checked
-		BlockState targetBlock = event.getLevel().getBlockState(event.getPos());
 		if (DungeonConfig.blockInteractBlacklist.contains(targetBlock.getBlock()))
 		{
 			// DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() +

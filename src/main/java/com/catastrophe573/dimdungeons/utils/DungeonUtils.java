@@ -1,5 +1,7 @@
 package com.catastrophe573.dimdungeons.utils;
 
+import java.util.ArrayList;
+
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.BlockGoldPortal;
@@ -18,10 +20,14 @@ import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -148,8 +154,7 @@ public class DungeonUtils
 		return 0;
 	}
 
-	// assume that if a sign was placed in the entrance chunk that the build must be
-	// either started or finished
+	// assume that if a sign was placed in the entrance chunk that the build must be either started or finished
 	public static boolean dungeonAlreadyExistsHere(Level worldIn, long entranceX, long entranceZ)
 	{
 		ChunkPos cpos = new ChunkPos((int) entranceX / 16, (int) entranceZ / 16);
@@ -199,8 +204,7 @@ public class DungeonUtils
 				dungeonExistsHere = DungeonUtils.reprogramExistingExitDoorway(worldIn, (long) entranceX, (long) entranceZ, genData, keyholeFacing);
 			}
 
-			// this function only checks for the air blocks below the keyhole and the
-			// keyhole blockstate
+			// this function only checks for the air blocks below the keyhole and the keyhole blockstate
 			if (BlockPortalKeyhole.isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity) && dungeonExistsHere)
 			{
 				Direction.Axis axis = (keyholeFacing == Direction.NORTH || keyholeFacing == Direction.SOUTH) ? Direction.Axis.X : Direction.Axis.Z;
@@ -218,8 +222,7 @@ public class DungeonUtils
 		}
 	}
 
-	// returns false if this function fails because the dungeon on the other side
-	// was reset
+	// returns false if this function fails because the dungeon on the other side was reset
 	public static boolean reprogramExistingExitDoorway(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing)
 	{
 		Level dim = DungeonUtils.getDungeonWorld(worldIn.getServer());
@@ -228,8 +231,7 @@ public class DungeonUtils
 		return actuallyReprogramGoldPortalBlocks(portalStart, dim, genData, keyholeFacing);
 	}
 
-	// returns false if this function fails because the dungeon on the other side
-	// was reset
+	// returns false if this function fails because the dungeon on the other side was reset
 	public static boolean reprogramPersonalPortal(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing)
 	{
 		Level dim = DungeonUtils.getPersonalBuildWorld(worldIn.getServer());
@@ -243,8 +245,7 @@ public class DungeonUtils
 		return actuallyReprogramGoldPortalBlocks(portalStart, dim, genData, keyholeFacing);
 	}
 
-	// this function creates the gold portal blocks if they do not exist, which the
-	// other similar functions do not!
+	// this function creates the gold portal blocks if they do not exist, which the other similar functions do not!
 	public static boolean reprogramTeleporterHubDoorway(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing)
 	{
 		Level dim = DungeonUtils.getDungeonWorld(worldIn.getServer());
@@ -288,13 +289,11 @@ public class DungeonUtils
 				if (te != null)
 				{
 					te.setDestination(genData.returnPoint.getX(), genData.returnPoint.getY(), genData.returnPoint.getZ(), genData.returnDimension, keyholeFacing);
-					DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + nextBlock.getX() + ", " + nextBlock.getY() + ", " + nextBlock.getZ() + ") in dim "
-					        + dim.dimension().location().getPath());
+					DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + nextBlock.getX() + ", " + nextBlock.getY() + ", " + nextBlock.getZ() + ") in dim " + dim.dimension().location().getPath());
 				}
 				else
 				{
-					DimDungeons.logMessageWarn(
-					        "DIMDUNGEONS WARNING: why is there no exit portal here? (" + nextBlock.getX() + ", " + nextBlock.getY() + ", " + nextBlock.getZ() + ")");
+					DimDungeons.logMessageWarn("DIMDUNGEONS WARNING: why is there no exit portal here? (" + nextBlock.getX() + ", " + nextBlock.getY() + ", " + nextBlock.getZ() + ")");
 				}
 			}
 		}
@@ -302,8 +301,7 @@ public class DungeonUtils
 		return true;
 	}
 
-	// this function only works for "normal" north/south entrances, it does not
-	// handle east/west entrances at all
+	// this function only works for "normal" north/south entrances, it does not handle east/west entrances at all
 	protected static boolean actuallyReprogramGoldPortalBlocks(BlockPos bottomLeft, Level dim, DungeonGenData genData, Direction keyholeFacing)
 	{
 		for (int z = 0; z < 2; z++)
@@ -316,8 +314,7 @@ public class DungeonUtils
 				if (te != null)
 				{
 					te.setDestination(genData.returnPoint.getX(), genData.returnPoint.getY(), genData.returnPoint.getZ(), genData.returnDimension, keyholeFacing);
-					DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ") in dim "
-					        + dim.dimension().location().getPath());
+					DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ") in dim " + dim.dimension().location().getPath());
 				}
 				else
 				{
@@ -334,14 +331,12 @@ public class DungeonUtils
 	// takes the chunkpos of the top left corner
 	public static void buildSuperflatPersonalSpace(long buildX, long buildZ, MinecraftServer server)
 	{
-		BlockState[] layers = { Blocks.GRASS_BLOCK.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(),
-		        Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState() };
+		BlockState[] layers = { Blocks.GRASS_BLOCK.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState() };
 		ServerLevel dim = getPersonalBuildWorld(server);
 		ChunkPos cpos = new ChunkPos(((int) buildX / 16) + 4, ((int) buildZ / 16) + 4); // the +4 offset is for lining up with maps
 		BlockPos bpos = new BlockPos(cpos.getMinBlockX(), 50, cpos.getMinBlockZ());
 
-		// for each layer calculate the 128x1x128 area to be filled with the block from
-		// that layer and do it just like the FillCommand
+		// for each layer calculate the 128x1x128 area to be filled with the block from that layer and do it just like the FillCommand
 		for (int y = 0; y < 8; y++)
 		{
 			BoundingBox pArea = new BoundingBox(bpos.getX(), 50 - y, bpos.getZ(), bpos.getX() + (8 * 16) - 1, 50 - y, bpos.getZ() + (8 * 16) - 1);
@@ -402,8 +397,7 @@ public class DungeonUtils
 		return dimension.location().getNamespace() + ":" + dimension.location().getPath();
 	}
 
-	// returns the limit of the dungeon space not in blocks, but in dungeon widths
-	// (which is BLOCKS_APART_PER_DUNGEON)
+	// returns the limit of the dungeon space not in blocks, but in dungeon widths (which is BLOCKS_APART_PER_DUNGEON)
 	public static long getLimitOfWorldBorder(MinecraftServer server)
 	{
 		ResourceKey<Level> configkey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(DungeonConfig.worldborderToRespect));
@@ -413,8 +407,7 @@ public class DungeonUtils
 		return Math.round(size);
 	}
 
-	// returns the limit of the dungeon space not in blocks, but in dungeon widths
-	// (which is BLOCKS_APART_PER_DUNGEON)
+	// returns the limit of the dungeon space not in blocks, but in dungeon widths (which is BLOCKS_APART_PER_DUNGEON)
 	public static long getLimitOfPersonalBuildDimension(MinecraftServer server)
 	{
 		ServerLevel world = getPersonalBuildWorld(server);
@@ -423,8 +416,7 @@ public class DungeonUtils
 		return Math.round(size);
 	}
 
-	// takes a block pos (not a chunk pos) and returns true if this space is
-	// potentially buildable or false if it is void
+	// takes a block pos (not a chunk pos) and returns true if this space is potentially buildable or false if it is void
 	public static boolean isPersonalBuildChunk(BlockPos pos)
 	{
 		ChunkPos chunk = new ChunkPos(pos);
@@ -441,8 +433,7 @@ public class DungeonUtils
 		return (nx) < 8 && (nz) < 8;
 	}
 
-	// assumes this is called on the server only (and only on entities already in
-	// this dimension)
+	// assumes this is called on the server only (and only on entities already in this dimension)
 	public static void sendEntityHomeInBuildWorld(Entity entity)
 	{
 		// figure out what the x/z of this key would be
@@ -459,8 +450,7 @@ public class DungeonUtils
 		entity.changeDimension(dim, tele);
 	}
 
-	// THIS MUST ONLY BE USED for the purposes of displaying an activated in a gui
-	// the key returned by this function is not valid
+	// THIS MUST ONLY BE USED for the purposes of displaying an activated key in a gui (such as for the JEI compat)
 	public static ItemStack getExampleKey()
 	{
 		ItemStack icon = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
@@ -474,5 +464,43 @@ public class DungeonUtils
 
 		icon.setTag(data);
 		return icon;
+	}
+
+	public static void giveSecuritySystemPrompt(Player playerIn, String transkey)
+	{
+		MutableComponent text1 = Component.translatable(Component.translatable(transkey).getString());
+
+		text1.withStyle(text1.getStyle().withItalic(true));
+		text1.withStyle(text1.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
+		playerIn.displayClientMessage(text1, false);
+	}
+
+	public static void displayGuestList(Player playerIn, ArrayList<String> guestList)
+	{
+		MutableComponent text1 = Component.translatable(Component.translatable("security.dimdungeons.use_book").getString());
+
+		for (int i = 0; i < guestList.size(); i++)
+		{
+			if (i != 0)
+			{
+				text1.append(", ");
+			}
+			text1.append(guestList.get(i));
+		}
+
+		text1.withStyle(text1.getStyle().withItalic(true));
+		text1.withStyle(text1.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
+		playerIn.displayClientMessage(text1, false);
+	}
+
+	// this is related to the build dimension security system
+	public static void notifyGuestListChange(Player playerIn, String transkey, String playerName)
+	{
+		MutableComponent text1 = Component.translatable(playerName);
+		text1.append(Component.translatable(transkey).getString());
+
+		text1.withStyle(text1.getStyle().withItalic(true));
+		text1.withStyle(text1.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
+		playerIn.displayClientMessage(text1, false);
 	}
 }

@@ -67,6 +67,7 @@ public class DungeonConfig
 	public static int configVersion = DEFAULT_CONFIG_VERSION;
 	public static boolean globalBlockProtection = true;
 	public static boolean hardcoreMode = false;
+	public static boolean disablePersonalDimSecurity = false;
 	public static boolean enableDebugCheats = false;
 	public static int portalCooldownTicks = DEFAULT_PORTAL_TICKS;
 	public static int keyEnscriberDowngradeChanceFull = 100;
@@ -130,6 +131,7 @@ public class DungeonConfig
 
 		public final ForgeConfigSpec.BooleanValue globalBlockProtection;
 		public final ForgeConfigSpec.BooleanValue hardcoreMode;
+		public final ForgeConfigSpec.BooleanValue disablePersonalDimSecurity;
 		public final ForgeConfigSpec.BooleanValue enableDebugCheats;
 		public final ConfigValue<Integer> portalCooldownTicks;
 		public final ConfigValue<Integer> keyEnscriberDowngradeChanceFull;
@@ -238,39 +240,24 @@ public class DungeonConfig
 			// list of server options and comments
 			builder.comment("Options for general mod behavior.").push("general");
 
-			configVersion = builder.comment("You shouldn't manually change the version number.").translation("config.dimdungeons.configVersion").define("configVersion",
-			        DEFAULT_CONFIG_VERSION);
+			configVersion = builder.comment("You shouldn't manually change the version number.").translation("config.dimdungeons.configVersion").define("configVersion", DEFAULT_CONFIG_VERSION);
 
-			globalBlockProtection = builder
-			        .comment("If set to FALSE the block protection on the dungeon dimension will be disabled, making the options in the next section useless.")
-			        .translation("config.dimdungeons.globalBlockProtection").define("globalBlockProtection", true);
-			hardcoreMode = builder.comment("If set to TRUE then dungeon keys are consumed whenever a player enters a dungeon portal.")
-			        .translation("config.dimdungeons.hardcoreMode").define("hardcoreMode", false);
+			globalBlockProtection = builder.comment("If set to FALSE the block protection on the dungeon dimension will be disabled, making the options in the next section useless.").translation("config.dimdungeons.globalBlockProtection").define("globalBlockProtection", true);
+			hardcoreMode = builder.comment("If set to TRUE then dungeon keys are consumed whenever a player enters a dungeon portal.").translation("config.dimdungeons.hardcoreMode").define("hardcoreMode", false);
+			disablePersonalDimSecurity = builder.comment("If set to TRUE then the permissions on the personal build dimension are ignored.").translation("config.dimdungeons.hardcoreMode").define("disablePersonalDimSecurity", false);
 			enableDebugCheats = builder.comment("If set to TRUE some cheats are available.").translation("config.dimdungeons.enableDebugCheats").define("enableDebugCheats", false);
-			portalCooldownTicks = builder.comment("How many ticks the portal blocks cooldown for.").translation("config.dimdungeons.portalCooldownTicks")
-			        .define("portalCooldownTicks", DEFAULT_PORTAL_TICKS);
-			keyEnscriberDowngradeChanceFull = builder.comment("The odds of a Key Enscriber taking damage upon use, like an anvil, turning into a Used Key Enscriber. Range 0-100.")
-			        .translation("config.dimdungeons.keyEnscriberDowngradeChanceFull").define("keyEnscriberDowngradeChanceFull", 100);
-			keyEnscriberDowngradeChanceUsed = builder
-			        .comment("The odds of a Used Key Enscriber taking damage upon use, like an anvil, turning into a Damaged Key Enscriber. Range 0-100.")
-			        .translation("config.dimdungeons.keyEnscriberDowngradeChanceUsed").define("keyEnscriberDowngradeChanceUsed", 100);
-			keyEnscriberDowngradeChanceDamaged = builder.comment("The odds of a Damaged Key Enscriber being destroyed upon use, like a damaged anvil. Range 0-100.")
-			        .translation("config.dimdungeons.keyEnscriberDowngradeChanceDamaged").define("keyEnscriberDowngradeChanceDamaged", 100);
-			logLevel = builder.comment("Can be used to limit log spam. Can be set to 'all', 'warn', or 'error'.").translation("config.dimdungeons.logLevel").define("logLevel",
-			        "error");
-			worldborderToRespect = builder.comment("Which dimension's worldborder to consider when activating keys. Using dimdungeons:dungeon_dimension may not work for everyone.")
-			        .translation("config.dimdungeons.worldborderToRespect").define("worldborderToRespect", "dimdungeons:dungeon_dimension");
-			chanceForThemeKeys = builder.comment("The chance for an enemy in a basic dungeon to be carrying a theme key.").translation("config.dimdungeons.chanceForThemeKeys")
-			        .define("chanceForThemeKeys", DEFAULT_CHANCE_FOR_THEME_KEYS);
-			dungeonBuildSpeed = builder.comment("The speed at which to build a dungeon. Value corresponds to the number of ticks skipped between chunks, to avoid lag spikes.")
-			        .translation("config.dimdungeons.dungeonBuildSpeed").define("dungeonBuildSpeed", DEFAULT_BUILD_SPEED);
+			portalCooldownTicks = builder.comment("How many ticks the portal blocks cooldown for.").translation("config.dimdungeons.portalCooldownTicks").define("portalCooldownTicks", DEFAULT_PORTAL_TICKS);
+			keyEnscriberDowngradeChanceFull = builder.comment("The odds of a Key Enscriber taking damage upon use, like an anvil, turning into a Used Key Enscriber. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceFull").define("keyEnscriberDowngradeChanceFull", 100);
+			keyEnscriberDowngradeChanceUsed = builder.comment("The odds of a Used Key Enscriber taking damage upon use, like an anvil, turning into a Damaged Key Enscriber. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceUsed").define("keyEnscriberDowngradeChanceUsed", 100);
+			keyEnscriberDowngradeChanceDamaged = builder.comment("The odds of a Damaged Key Enscriber being destroyed upon use, like a damaged anvil. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceDamaged").define("keyEnscriberDowngradeChanceDamaged", 100);
+			logLevel = builder.comment("Can be used to limit log spam. Can be set to 'all', 'warn', or 'error'.").translation("config.dimdungeons.logLevel").define("logLevel", "error");
+			worldborderToRespect = builder.comment("Which dimension's worldborder to consider when activating keys. Using dimdungeons:dungeon_dimension may not work for everyone.").translation("config.dimdungeons.worldborderToRespect").define("worldborderToRespect", "dimdungeons:dungeon_dimension");
+			chanceForThemeKeys = builder.comment("The chance for an enemy in a basic dungeon to be carrying a theme key.").translation("config.dimdungeons.chanceForThemeKeys").define("chanceForThemeKeys", DEFAULT_CHANCE_FOR_THEME_KEYS);
+			dungeonBuildSpeed = builder.comment("The speed at which to build a dungeon. Value corresponds to the number of ticks skipped between chunks, to avoid lag spikes.").translation("config.dimdungeons.dungeonBuildSpeed").define("dungeonBuildSpeed", DEFAULT_BUILD_SPEED);
 			builder.pop();
 			builder.comment("Options for block behavior in the dungeon dimension.").push("blocks");
-			breakingWhitelist = builder.comment(
-			        "List of blocks which any player should be allowed to break, defying the block protection. (For example, gravestones or death chests.) Default value is empty.")
-			        .translation("config.dimdungeons.breakingWhitelist").defineList("breakingWhitelist", hardcodedDefaultBreakingWhitelist, o -> o instanceof String);
-			interactionBlacklist = builder.comment("List of blocks that players will be unable to interact with. It is strongly recommended to preserve the defaults.")
-			        .translation("config.dimdungeons.interactionBlacklist").defineList("interactionBlacklist", hardcodedDefaultInteractionBlacklist, o -> o instanceof String);
+			breakingWhitelist = builder.comment("List of blocks which any player should be allowed to break, defying the block protection. (For example, gravestones or death chests.) Default value is empty.").translation("config.dimdungeons.breakingWhitelist").defineList("breakingWhitelist", hardcodedDefaultBreakingWhitelist, o -> o instanceof String);
+			interactionBlacklist = builder.comment("List of blocks that players will be unable to interact with. It is strongly recommended to preserve the defaults.").translation("config.dimdungeons.interactionBlacklist").defineList("interactionBlacklist", hardcodedDefaultInteractionBlacklist, o -> o instanceof String);
 			builder.pop();
 		}
 	}
@@ -283,12 +270,10 @@ public class DungeonConfig
 		ClientConfig(ForgeConfigSpec.Builder builder)
 		{
 			builder.comment("Options for client-side rendering.").push("render");
-			showParticles = builder.comment("If set to FALSE, the portal keyhole block will not emit particles.").translation("config.dimdungeons.showParticles")
-			        .define("showParticles", true);
+			showParticles = builder.comment("If set to FALSE, the portal keyhole block will not emit particles.").translation("config.dimdungeons.showParticles").define("showParticles", true);
 			builder.pop();
 			builder.comment("Options for client-side sounds.").push("audio");
-			playPortalSounds = builder.comment("If set to FALSE, the portal keyhole block will not make ambient noises.").translation("config.dimdungeons.playPortalSounds")
-			        .define("playPortalSounds", true);
+			playPortalSounds = builder.comment("If set to FALSE, the portal keyhole block will not make ambient noises.").translation("config.dimdungeons.playPortalSounds").define("playPortalSounds", true);
 			builder.pop();
 		}
 	}
@@ -602,7 +587,7 @@ public class DungeonConfig
 		temp.add("dimdungeons:crueltrap_3");
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
-		temp.add("dimdungeons:beacon_2");
+		temp.add("dimdungeons:beacon_3");
 		temp.add("dimdungeons:library_1");
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
@@ -921,7 +906,7 @@ public class DungeonConfig
 		temp.add("dimdungeons:honeytrap_4");
 		tempAdvancedEnds.add(Lists.newArrayList(temp));
 		temp.clear();
-		temp.add("dimdungeons:beacon_1");
+		temp.add("dimdungeons:beacon_2");
 		tempAdvancedEnds.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:slotmachine_2");
@@ -1142,8 +1127,7 @@ public class DungeonConfig
 			advancedEnemySet2 = builder.translation("config.dimdungeons.advancedEnemySet2").define("advancedEnemySet2", defaultAdvancedEnemySet2());
 			basicEnemyHealthScaling = builder.translation("config.dimdungeons.basicEnemyHealthScaling").define("basicEnemyHealthScaling", 1.0);
 			advancedEnemyHealthScaling = builder.translation("config.dimdungeons.advancedEnemyHealthScaling").define("advancedEnemyHealthScaling", 2.0);
-			numberOfThemes = builder.comment("The number of themes to expect in the common config.").translation("config.dimdungeons.numberOfThemes").define("numberOfThemes",
-			        DEFAULT_NUMBER_OF_THEMES);
+			numberOfThemes = builder.comment("The number of themes to expect in the common config.").translation("config.dimdungeons.numberOfThemes").define("numberOfThemes", DEFAULT_NUMBER_OF_THEMES);
 			builder.pop();
 
 			//
@@ -1155,11 +1139,9 @@ public class DungeonConfig
 			ThemeConfigStructure theme1 = new ThemeConfigStructure();
 			int theme = 1;
 			builder.comment("Settings for Theme " + theme).push("dungeonTheme" + theme);
-			theme1.themeEntrances = builder.translation("config.dimdungeons.themeEntrances" + theme).define("themeEntrances" + theme,
-			        makeDefaultThemeRoomSet(theme, "entrance", 3));
+			theme1.themeEntrances = builder.translation("config.dimdungeons.themeEntrances" + theme).define("themeEntrances" + theme, makeDefaultThemeRoomSet(theme, "entrance", 3));
 			theme1.themeFourways = builder.translation("config.dimdungeons.themeFourways" + theme).define("themeFourways" + theme, makeDefaultThemeRoomSet(theme, "fourway", 6));
-			theme1.themeThreeways = builder.translation("config.dimdungeons.basicThreeways" + theme).define("themeThreeways" + theme,
-			        makeDefaultThemeRoomSet(theme, "threeway", 6));
+			theme1.themeThreeways = builder.translation("config.dimdungeons.basicThreeways" + theme).define("themeThreeways" + theme, makeDefaultThemeRoomSet(theme, "threeway", 6));
 			theme1.themeHallways = builder.translation("config.dimdungeons.basicHallways" + theme).define("themeHallways" + theme, makeDefaultThemeRoomSet(theme, "hallway", 6));
 			theme1.themeCorners = builder.translation("config.dimdungeons.basicCorners" + theme).define("themeCorners" + theme, makeDefaultThemeRoomSet(theme, "corner", 6));
 			theme1.themeEnds = builder.translation("config.dimdungeons.basicEnds" + theme).define("themeEnds" + theme, makeDefaultThemeRoomSet(theme, "end", 6));
@@ -1174,11 +1156,9 @@ public class DungeonConfig
 			ThemeConfigStructure theme2 = new ThemeConfigStructure();
 			theme = 2;
 			builder.comment("Settings for Theme " + theme).push("dungeonTheme" + theme);
-			theme2.themeEntrances = builder.translation("config.dimdungeons.themeEntrances" + theme).define("themeEntrances" + theme,
-			        makeDefaultThemeRoomSet(theme, "entrance", 4));
+			theme2.themeEntrances = builder.translation("config.dimdungeons.themeEntrances" + theme).define("themeEntrances" + theme, makeDefaultThemeRoomSet(theme, "entrance", 4));
 			theme2.themeFourways = builder.translation("config.dimdungeons.themeFourways" + theme).define("themeFourways" + theme, makeDefaultThemeRoomSetAlternate(theme, 31));
-			theme2.themeThreeways = builder.translation("config.dimdungeons.basicThreeways" + theme).define("themeThreeways" + theme,
-			        makeDefaultThemeRoomSet(theme, "threeway", 1));
+			theme2.themeThreeways = builder.translation("config.dimdungeons.basicThreeways" + theme).define("themeThreeways" + theme, makeDefaultThemeRoomSet(theme, "threeway", 1));
 			theme2.themeHallways = builder.translation("config.dimdungeons.basicHallways" + theme).define("themeHallways" + theme, makeDefaultThemeRoomSet(theme, "hallway", 1));
 			theme2.themeCorners = builder.translation("config.dimdungeons.basicCorners" + theme).define("themeCorners" + theme, makeDefaultThemeRoomSet(theme, "corner", 1));
 			theme2.themeEnds = builder.translation("config.dimdungeons.basicEnds" + theme).define("themeEnds" + theme, makeDefaultThemeRoomSet(theme, "end", 1));
@@ -1197,11 +1177,9 @@ public class DungeonConfig
 
 				ThemeConfigStructure temp = new ThemeConfigStructure();
 				builder.comment("Settings for Theme " + i).push("dungeonTheme" + i);
-				temp.themeEntrances = builder.translation("config.dimdungeons.themeEntrances" + i).define("themeEntrances" + i,
-				        makeDefaultThemeRoomSet(i, "entrance", numEntrances));
+				temp.themeEntrances = builder.translation("config.dimdungeons.themeEntrances" + i).define("themeEntrances" + i, makeDefaultThemeRoomSet(i, "entrance", numEntrances));
 				temp.themeFourways = builder.translation("config.dimdungeons.themeFourways" + i).define("themeFourways" + i, makeDefaultThemeRoomSet(i, "fourway", numOtherRooms));
-				temp.themeThreeways = builder.translation("config.dimdungeons.basicThreeways" + i).define("themeThreeways" + i,
-				        makeDefaultThemeRoomSet(i, "threeway", numOtherRooms));
+				temp.themeThreeways = builder.translation("config.dimdungeons.basicThreeways" + i).define("themeThreeways" + i, makeDefaultThemeRoomSet(i, "threeway", numOtherRooms));
 				temp.themeHallways = builder.translation("config.dimdungeons.basicHallways" + i).define("themeHallways" + i, makeDefaultThemeRoomSet(i, "hallway", numOtherRooms));
 				temp.themeCorners = builder.translation("config.dimdungeons.basicCorners" + i).define("themeCorners" + i, makeDefaultThemeRoomSet(i, "corner", numOtherRooms));
 				temp.themeEnds = builder.translation("config.dimdungeons.basicEnds" + i).define("themeEnds" + i, makeDefaultThemeRoomSet(i, "end", numOtherRooms));
@@ -1228,6 +1206,7 @@ public class DungeonConfig
 		configVersion = SERVER.configVersion.get();
 		globalBlockProtection = SERVER.globalBlockProtection.get();
 		hardcoreMode = SERVER.hardcoreMode.get();
+		disablePersonalDimSecurity = SERVER.disablePersonalDimSecurity.get();
 		enableDebugCheats = SERVER.enableDebugCheats.get();
 		portalCooldownTicks = SERVER.portalCooldownTicks.get();
 		keyEnscriberDowngradeChanceFull = SERVER.keyEnscriberDowngradeChanceFull.get();

@@ -112,8 +112,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			// play sound effects randomly
 			if (rand.nextDouble() < 0.1D && DungeonConfig.playPortalSounds)
 			{
-				worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.PORTAL_AMBIENT, SoundSource.BLOCKS, 1.0F, 2.5F,
-				        false);
+				worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.PORTAL_AMBIENT, SoundSource.BLOCKS, 1.0F, 2.5F, false);
 			}
 
 			if (DungeonConfig.showParticles)
@@ -142,8 +141,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			if (DungeonConfig.playPortalSounds)
 			{
 				float randomPitch = worldIn.getRandom().nextFloat() * 2.0f;
-				worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.END_PORTAL_FRAME_FILL, SoundSource.BLOCKS, 0.7F,
-				        randomPitch, false);
+				worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.END_PORTAL_FRAME_FILL, SoundSource.BLOCKS, 0.7F, randomPitch, false);
 			}
 
 			if (DungeonConfig.showParticles)
@@ -216,9 +214,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 
 						// this data structure is used for both building the layout and updating the
 						// exit portal
-						DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setDungeonType(key.getDungeonType(playerItem))
-						        .setTheme(key.getDungeonTheme(playerItem))
-						        .setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
+						DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setDungeonType(key.getDungeonType(playerItem)).setTheme(key.getDungeonTheme(playerItem)).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
 
 						// should the key be marked as used?
 						if (shouldBuildDungeon(playerItem))
@@ -250,8 +246,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 						long buildZ = (long) key.getDungeonTopLeftZ(playerItem);
 
 						// this is used for updating the existing portal
-						DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos),
-						        DungeonUtils.serializeDimensionKey(worldIn.dimension()));
+						DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
 
 						if (key.isActivated(playerItem) && !key.isPlotBuilt(playerItem))
 						{
@@ -271,8 +266,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 					}
 
 					// recalculate the block states
-					BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated())
-					        .setValue(IS_BUILDING, is_building);
+					BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(IS_BUILDING, is_building);
 					worldIn.setBlockAndUpdate(pos, newBlockState);
 
 					playerItem.shrink(1);
@@ -296,8 +290,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 				myEntity.removeContents();
 
 				// recalculate the boolean block states
-				BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated())
-				        .setValue(IS_BUILDING, false);
+				BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(IS_BUILDING, false);
 				worldIn.setBlock(pos, newBlockState, 3);
 
 				return InteractionResult.SUCCESS;
@@ -529,8 +522,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		return 0;
 	}
 
-	public static void checkForProblemsAndLiterallySpeakToPlayer(Level worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole tileEntity, Player player,
-	        boolean dungeonExistsHere)
+	public static void checkForProblemsAndLiterallySpeakToPlayer(Level worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole tileEntity, Player player, boolean dungeonExistsHere)
 	{
 		// only run this function once, either on the client or on the server
 		// this runs on the server now because some errors happen exclusively on the
@@ -654,14 +646,12 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		BlockState rightSpireA = blocks.get(15);
 		BlockState rightSpireB = blocks.get(16);
 
-		if (!(leftSpireA.getBlock() == Blocks.WHITE_WALL_BANNER || leftSpireA.getBlock() == Blocks.PURPLE_WALL_BANNER || leftSpireB.getBlock() == Blocks.WHITE_WALL_BANNER
-		        || leftSpireB.getBlock() == Blocks.PURPLE_WALL_BANNER))
+		if (!(leftSpireA.getBlock() == Blocks.WHITE_WALL_BANNER || leftSpireA.getBlock() == Blocks.PURPLE_WALL_BANNER || leftSpireB.getBlock() == Blocks.WHITE_WALL_BANNER || leftSpireB.getBlock() == Blocks.PURPLE_WALL_BANNER))
 		{
 			speakLiterallyToPlayerAboutProblems(worldIn, player, 9, null);
 			return;
 		}
-		if (!(rightSpireA.getBlock() == Blocks.WHITE_WALL_BANNER || rightSpireA.getBlock() == Blocks.PURPLE_WALL_BANNER || rightSpireB.getBlock() == Blocks.WHITE_WALL_BANNER
-		        || rightSpireB.getBlock() == Blocks.PURPLE_WALL_BANNER))
+		if (!(rightSpireA.getBlock() == Blocks.WHITE_WALL_BANNER || rightSpireA.getBlock() == Blocks.PURPLE_WALL_BANNER || rightSpireB.getBlock() == Blocks.WHITE_WALL_BANNER || rightSpireB.getBlock() == Blocks.PURPLE_WALL_BANNER))
 		{
 			speakLiterallyToPlayerAboutProblems(worldIn, player, 9, null);
 			return;

@@ -655,8 +655,7 @@ public class DungeonPlacement
 
 				// mark this keyhole as filled
 				BlockState state = world.getBlockState(pos.below(2));
-				BlockState newBlockState = state.setValue(BlockPortalKeyhole.FACING, state.getValue(BlockPortalKeyhole.FACING)).setValue(BlockPortalKeyhole.FILLED, true)
-				        .setValue(BlockPortalKeyhole.LIT, false);
+				BlockState newBlockState = state.setValue(BlockPortalKeyhole.FACING, state.getValue(BlockPortalKeyhole.FACING)).setValue(BlockPortalKeyhole.FILLED, true).setValue(BlockPortalKeyhole.LIT, false);
 				world.setBlockAndUpdate(pos.below(2), newBlockState);
 
 			}

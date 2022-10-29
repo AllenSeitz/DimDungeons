@@ -9,8 +9,10 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
 import com.catastrophe573.dimdungeons.dimension.DungeonData;
+import com.catastrophe573.dimdungeons.dimension.PersonalBuildData;
 import com.catastrophe573.dimdungeons.item.BaseItemKey;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
+import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import com.catastrophe573.dimdungeons.structure.DungeonRoom;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
@@ -28,6 +30,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -223,8 +226,42 @@ public class BlockGoldPortal extends BaseEntityBlock
 					}
 				}
 
-				DimDungeons.logMessageInfo(
-				        "Player is using a gold portal to teleport to (" + warpX + " " + warpY + " " + warpZ + ") in dimension " + destDim.location().toString() + ".");
+				// implement the whitelist or blacklist for players the try to enter the Personal Build Dimension
+				// this is actually 50% defensive coding against cases that should never happen
+				if (destDim.location().getPath().equals(DimDungeons.build_dimension_regname))
+				{
+					TileEntityPortalKeyhole keyhole = findKeyholeForThisPortal(state, worldIn, pos);
+					if (keyhole == null)
+					{
+						DimDungeons.logMessageError("Unable to check the permissions for a personal build dimension because the keyhole is missing.");
+					}
+					else
+					{
+						ItemStack key = keyhole.getObjectInserted();
+						if (key.getItem() == ItemRegistrar.ITEM_BLANK_BUILD_KEY.get())
+						{
+							CompoundTag itemData = key.getTag();
+							ChunkPos cpos = new ChunkPos(itemData.getInt(BaseItemKey.NBT_KEY_DESTINATION_X), itemData.getInt(BaseItemKey.NBT_KEY_DESTINATION_Z));
+
+							if (!PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(entityIn.getServer())).isPlayerAllowedInPersonalDimension((ServerPlayer) entityIn, cpos))
+							{
+								te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
+								DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.player_failed_teleport");
+								return;
+							}
+							else
+							{
+								DimDungeons.logMessageInfo("You passed the permissions check!");
+							}
+						}
+						else
+						{
+							DimDungeons.logMessageError("Unable to check the permissions for a personal build dimension because the keyhole does not contain a key?");
+						}
+					}
+				}
+
+				DimDungeons.logMessageInfo("Player is using a gold portal to teleport to (" + warpX + " " + warpY + " " + warpZ + ") in dimension " + destDim.location().toString() + ".");
 				ServerPlayer player = (ServerPlayer) entityIn;
 				actuallyPerformTeleport(player, player.getServer().getLevel(te.getDestinationDimension()), warpX, warpY, warpZ, getReturnYawForDirection(te.getExitDirection()));
 			}
@@ -267,9 +304,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 			{
 				// since the condition is minecraft:impossible, this is the only way to trigger
 				// it
-				player.getAdvancements().award(
-				        dim.getServer().getAdvancements().getAdvancement(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/enter_advanced_dungeon")),
-				        "advanced_dungeon");
+				player.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
 			}
 		}
 		else if (DungeonUtils.isDimensionPersonalBuild(dim) && !DungeonUtils.isPersonalBuildChunk(new BlockPos(x, y, z)))
@@ -526,8 +561,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	private boolean checkPortalFrameLevel2WestEast(LevelAccessor worldIn, BlockPos keyhole)
 	{
 		// main portal body - check for added crowns
-		if (worldIn.getBlockState(keyhole.west(1)).getBlock() != BlockRegistrar.BLOCK_PORTAL_CROWN.get()
-		        || worldIn.getBlockState(keyhole.east(1)).getBlock() != BlockRegistrar.BLOCK_PORTAL_CROWN.get())
+		if (worldIn.getBlockState(keyhole.west(1)).getBlock() != BlockRegistrar.BLOCK_PORTAL_CROWN.get() || worldIn.getBlockState(keyhole.east(1)).getBlock() != BlockRegistrar.BLOCK_PORTAL_CROWN.get())
 		{
 			return false;
 		}
@@ -555,8 +589,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	private boolean checkPortalFrameLevel2NorthSouth(LevelAccessor worldIn, BlockPos keyhole)
 	{
 		// main portal body - check for added crowns
-		if (worldIn.getBlockState(keyhole.north(1)).getBlock() != BlockRegistrar.BLOCK_PORTAL_CROWN.get()
-		        || worldIn.getBlockState(keyhole.south(1)).getBlock() != BlockRegistrar.BLOCK_PORTAL_CROWN.get())
+		if (worldIn.getBlockState(keyhole.north(1)).getBlock() != BlockRegistrar.BLOCK_PORTAL_CROWN.get() || worldIn.getBlockState(keyhole.south(1)).getBlock() != BlockRegistrar.BLOCK_PORTAL_CROWN.get())
 		{
 			return false;
 		}
@@ -596,10 +629,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	}
 
 	/**
-	 * Called periodically client side on blocks near the player to show effects
-	 * (like furnace fire particles). Note that this method is unrelated to
-	 * randomTick and needsRandomTick, and will always be called regardless of
-	 * whether the block can receive random update ticks
+	 * Called periodically client side on blocks near the player to show effects (like furnace fire particles). Note that this method is unrelated to randomTick and needsRandomTick, and will always be called regardless of whether the block can receive random update ticks
 	 */
 	@OnlyIn(Dist.CLIENT)
 	public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, Random rand)
