@@ -270,6 +270,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 					worldIn.setBlockAndUpdate(pos, newBlockState);
 
 					playerItem.shrink(1);
+					worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.TRIPWIRE_CLICK_ON, SoundSource.BLOCKS, 0.7F, 1.2f, false);
 
 					return InteractionResult.SUCCESS;
 				}
@@ -289,6 +290,8 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 
 				myEntity.removeContents();
 
+				worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.TRIPWIRE_CLICK_OFF, SoundSource.BLOCKS, 0.7F, 0.8f, false);				
+				
 				// recalculate the boolean block states
 				BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(IS_BUILDING, false);
 				worldIn.setBlock(pos, newBlockState, 3);
