@@ -160,9 +160,11 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.19-41.0.98'
 
-    // Real mod deobf dependency examples - these get remapped to your current mappings
-	//compileOnly fg.deobf("mezz.jei:jei-1.18.2:9.5.5.174:api")
-    //runtimeOnly fg.deobf("mezz.jei:jei-1.18.2:9.5.5.174")
+	// compile against the JEI API but do not include it at runtime
+	compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
+	compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}"))
+	// at runtime, use the full JEI jar for Forge
+	runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}"))
 
     // Examples using mod jars from ./libs
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")

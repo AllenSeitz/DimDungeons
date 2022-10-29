@@ -466,6 +466,31 @@ public class DungeonUtils
 		return icon;
 	}
 
+	// THIS MUST ONLY BE USED for the purposes of displaying an activated key in a gui (such as for the JEI compat)
+	public static ItemStack getExampleBuildKey()
+	{
+		ItemStack icon = new ItemStack(ItemRegistrar.ITEM_BUILD_KEY.get());
+		CompoundTag data = new CompoundTag();
+		data.putBoolean(ItemPortalKey.NBT_KEY_ACTIVATED, true);
+
+		icon.setTag(data);
+		return icon;
+	}
+
+	// THIS MUST ONLY BE USED for the purposes of displaying an activated key in a gui (such as for the JEI compat)
+	public static ItemStack getExampleTeleporterHubKey()
+	{
+		ItemStack icon = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
+		CompoundTag data = new CompoundTag();
+		data.putBoolean(ItemPortalKey.NBT_KEY_ACTIVATED, true);
+		data.putString(ItemPortalKey.NBT_DUNGEON_TYPE, DungeonType.TELEPORTER_HUB.toString());
+		data.putInt(ItemPortalKey.NBT_NAME_TYPE, 4); // teleporter hub format
+		data.putInt(ItemPortalKey.NBT_NAME_PART_1, 0);
+		
+		icon.setTag(data);
+		return icon;
+	}
+
 	public static void giveSecuritySystemPrompt(Player playerIn, String transkey)
 	{
 		MutableComponent text1 = Component.translatable(Component.translatable(transkey).getString());
