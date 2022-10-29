@@ -1,7 +1,6 @@
 package com.catastrophe573.dimdungeons.item;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
-import com.catastrophe573.dimdungeons.dimension.DungeonData;
 import com.catastrophe573.dimdungeons.dimension.PersonalBuildData;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
@@ -82,7 +81,6 @@ public class ItemBlankBuildKey extends BaseItemKey
 		stack.setHoverName(Component.translatable("npart.dimdungeons.struct_8", " ", player.getName().getString()));
 
 		stack.setTag(data);
-		DungeonData.get(DungeonUtils.getDungeonWorld(server)).notifyOfNewKeyActivation();
 	}
 
 	// EVEN MORE particle effects for this special event!
