@@ -239,7 +239,7 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 
 		// worldIn.playSound((Player) null, pos,
 		// NoteBlockInstrument.BELL.getSoundEvent(), SoundSource.PLAYERS, 3.0F, pitch);
-		worldIn.playLocalSound(x, y, z, NoteBlockInstrument.BELL.getSoundEvent(), SoundSource.PLAYERS, note, pitch, false);
+		worldIn.playLocalSound(x, y, z, NoteBlockInstrument.BELL.getSoundEvent().get(), SoundSource.PLAYERS, note, pitch, false);
 
 		if (DungeonConfig.showParticles)
 		{
@@ -251,9 +251,7 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 	}
 
 	/**
-	 * Called when the player Left Clicks (attacks) an entity. Processed before
-	 * damage is done, if return value is true further processing is canceled and
-	 * the entity is not attacked.
+	 * Called when the player Left Clicks (attacks) an entity. Processed before damage is done, if return value is true further processing is canceled and the entity is not attacked.
 	 *
 	 * @param stack  The Item being used
 	 * @param player The player that is attacking

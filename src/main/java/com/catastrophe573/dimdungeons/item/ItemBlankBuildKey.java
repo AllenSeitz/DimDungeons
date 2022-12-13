@@ -27,7 +27,7 @@ public class ItemBlankBuildKey extends BaseItemKey
 
 	public ItemBlankBuildKey()
 	{
-		super(new Item.Properties().rarity(Rarity.COMMON).tab(ItemRegistrar.CREATIVE_TAB));
+		super(new Item.Properties().rarity(Rarity.COMMON));
 	}
 
 	@Override

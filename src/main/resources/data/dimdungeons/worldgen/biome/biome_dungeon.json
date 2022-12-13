@@ -1,31 +1,18 @@
 {
-  "scale": 1,
+  "temperature": 0.5,
+  "downfall": 0.5,
+  "precipitation": "none",
+  "temperature_modifier": "none",
+  "creature_spawn_probability": 0,
   "effects": {
     "sky_color": 8103167,
     "fog_color": 12638463,
-    "water_color": 6776679,
-    "grass_color_modifier": "dark_forest",
-    "water_fog_color": 329011
+    "water_color": 4622448,
+    "water_fog_color": 329011,
+    "grass_color_modifier": "dark_forest"
   },
-  "surface_builder": "minecraft:nope",
-  "carvers": {},
-  "features": [ [], [], [], [], [], [], [], [], [], [] ],
-  "starts": [],
-  "spawners": {
-    "monster": [],
-    "creature": [],
-    "ambient": [],
-    "water_creature": [],
-    "water_ambient": [],
-    "misc": []
-  },
+  "spawners": {},
   "spawn_costs": {},
-  "creature_spawn_probability": 0,
-  "player_spawn_friendly": false,
-  "precipitation": "none",
-  "temperature": 0.5,
-  "temperature_modifier": "none",
-  "downfall": 0.5,
-  "category": "none",
-  "depth": 0.1
+  "carvers": {},
+  "features": []
 }

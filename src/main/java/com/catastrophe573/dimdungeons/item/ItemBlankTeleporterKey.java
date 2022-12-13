@@ -18,7 +18,7 @@ public class ItemBlankTeleporterKey extends BaseItemKey
 
 	public ItemBlankTeleporterKey()
 	{
-		super(new Item.Properties().rarity(Rarity.COMMON).tab(ItemRegistrar.CREATIVE_TAB));
+		super(new Item.Properties().rarity(Rarity.COMMON));
 	}
 
 	@Override

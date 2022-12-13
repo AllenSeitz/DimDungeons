@@ -3,17 +3,9 @@
     "type": "dimdungeons:dimdungeons_chunkgen",
     "settings": {
 	  "biome": "dimdungeons:biome_dungeon",
-      "layers": [],
-	  "features": false,
-	  "lakes": false,
-      "structures": {
-        "stronghold": {
-			"distance": 99999999,
-			"count": 0,
-			"spread": 42
-		},
-        "structures": {}
-      }
+      "lakes": false,
+      "features": false,
+      "layers": []
     }
   },
   "type": "dimdungeons:build_dimension"

@@ -20,6 +20,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
 import net.minecraft.world.level.levelgen.GenerationStep.Carving;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
@@ -36,23 +37,22 @@ import net.minecraft.world.level.biome.FixedBiomeSource;
 public final class DungeonChunkGenerator extends ChunkGenerator
 {
 	// copied from FlatLevelSource
-	public static final Codec<FlatLevelSource> myCodec = RecordCodecBuilder.create((p_204551_) ->
+	public static final Codec<FlatLevelSource> CODEC = RecordCodecBuilder.create((p_255577_) ->
 	{
-		return commonCodec(p_204551_).and(FlatLevelGeneratorSettings.CODEC.fieldOf("settings").forGetter(FlatLevelSource::settings)).apply(p_204551_,
-		        p_204551_.stable(FlatLevelSource::new));
+		return p_255577_.group(FlatLevelGeneratorSettings.CODEC.fieldOf("settings").forGetter(FlatLevelSource::settings)).apply(p_255577_, p_255577_.stable(FlatLevelSource::new));
 	});
 
 	private final FlatLevelGeneratorSettings settings;
 
 	public DungeonChunkGenerator(Registry<StructureSet> p_209099_, FlatLevelGeneratorSettings p_209100_)
 	{
-		super(p_209099_, p_209100_.structureOverrides(), new FixedBiomeSource(p_209100_.getBiome()));
+		super(new FixedBiomeSource(p_209100_.getBiome()));
 		this.settings = p_209100_;
 	}
 
-	protected Codec<? extends ChunkGenerator> codec()
+	public Codec<? extends ChunkGenerator> codec()
 	{
-		return myCodec;
+		return CODEC;
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -154,8 +154,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	}
 
 	@Override
-	public void createStructures(RegistryAccess p_223165_, RandomState p_223166_, StructureManager p_223167_, ChunkAccess p_223168_, StructureTemplateManager p_223169_,
-	        long p_223170_)
+	public void createStructures(RegistryAccess p_255835_, ChunkGeneratorStructureState p_256505_, StructureManager p_255934_, ChunkAccess p_255767_, StructureTemplateManager p_255832_)
 	{
 		// intentionally do nothing!
 	}
@@ -185,8 +184,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	}
 
 	@Override
-	public void applyCarvers(WorldGenRegion p_223043_, long p_223044_, RandomState p_223045_, BiomeManager p_223046_, net.minecraft.world.level.StructureManager p_223047_,
-	        ChunkAccess p_223048_, Carving p_223049_)
+	public void applyCarvers(WorldGenRegion p_223043_, long p_223044_, RandomState p_223045_, BiomeManager p_223046_, net.minecraft.world.level.StructureManager p_223047_, ChunkAccess p_223048_, Carving p_223049_)
 	{
 		// intentionally do nothing!
 	}
@@ -198,8 +196,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	}
 
 	@Override
-	public CompletableFuture<ChunkAccess> fillFromNoise(Executor p_223209_, Blender p_223210_, RandomState p_223211_, net.minecraft.world.level.StructureManager p_223212_,
-	        ChunkAccess p_223213_)
+	public CompletableFuture<ChunkAccess> fillFromNoise(Executor p_223209_, Blender p_223210_, RandomState p_223211_, net.minecraft.world.level.StructureManager p_223212_, ChunkAccess p_223213_)
 	{
 		// I don't know why this function isn't being called, but it doesn't really
 		// matter

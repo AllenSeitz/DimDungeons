@@ -18,7 +18,7 @@ public class ItemPortalKey extends BaseItemKey
 
 	public ItemPortalKey()
 	{
-		super(new Item.Properties().tab(ItemRegistrar.CREATIVE_TAB));
+		super(new Item.Properties());
 	}
 
 	// used in the item model json to change the graphic based on the

@@ -23,7 +23,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -400,7 +400,7 @@ public class DungeonUtils
 	// returns the limit of the dungeon space not in blocks, but in dungeon widths (which is BLOCKS_APART_PER_DUNGEON)
 	public static long getLimitOfWorldBorder(MinecraftServer server)
 	{
-		ResourceKey<Level> configkey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(DungeonConfig.worldborderToRespect));
+		ResourceKey<Level> configkey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(DungeonConfig.worldborderToRespect));
 		ServerLevel world = server.getLevel(configkey);
 		double size = world.getWorldBorder().getSize() / 2;
 
