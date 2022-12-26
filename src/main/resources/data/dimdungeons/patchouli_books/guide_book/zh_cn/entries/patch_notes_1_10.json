@@ -1,0 +1,16 @@
+{
+    "name": "版本1.10",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 100,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)末影者和潜影贝不能在地牢内传送了。$(li)玩家不能再使用紫颂果在地牢内传送。$(li)增加了一个秘密的新物品，可以帮助揭示其他秘密!它可以在箱子里找到."
+        },
+        {
+            "type": "text",
+            "text": "$(li)新的/givekey作弊指令,接受多个参数。$(li)增加和修改了许多新的房间，$(li)基础和高级地下城现在有更多独特的区别."
+		}
+    ]
+}

@@ -1,0 +1,43 @@
+{
+	"name": "基础传送门框架",
+	"icon": "dimdungeons:block_gilded_portal",
+	"category": "dimdungeons:portals",
+	"sortnum": 2,
+	"pages": [
+		{
+			"type": "text",
+			"text": "首先，这里有一个最少的原料清单:$(li)9个石砖$(里)3个錾制石砖$(li)24个金锭$(里)1个陷阱箱$(li)1个末影之眼$(br)你也可以使用裂纹或苔藓石砖$(br2)记住你还需要制作和激活钥匙。构建传送门框架只是第一步."
+		},
+		{
+			"type": "crafting",
+			"recipe": "dimdungeons:recipe_block_gilded_portal",
+			"text": "首先制作三个镀金传送门方块"
+		},
+		{
+			"type": "crafting",
+			"recipe": "dimdungeons:recipe_block_portal_keyhole",
+			"text": "然后用一个来制作一个传送门基石块"
+		},
+		{
+			"type": "multiblock",
+			"multiblock": {
+				"pattern": [
+					[" "," "," ","K"," "," "," "],
+					["G"," ","B"," ","B"," ","G"],
+					["B"," ","B","0","B"," ","B"],
+					["B"," "," ","B"," "," ","B"]
+				],
+				"mapping": {
+					"K": "dimdungeons:block_portal_keyhole",
+					"G": "dimdungeons:block_gilded_portal",
+					"B": "minecraft:stone_bricks"
+				}
+			},
+			"text": "然后像这样创建一个传送门."
+		},
+		{
+			"type": "text",
+			"text": "强烈装饰装饰传送门!除了中间的两个空气方块，你可以用任何你喜欢的方块填充传送门形态。把传送门往地下埋一个方块，或者在上面建台阶也可能是个好主意."
+		}
+	]
+}
