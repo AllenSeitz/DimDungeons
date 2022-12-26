@@ -1,0 +1,6 @@
+{
+	"name": "Artifacts",
+	"description": "可以在地牢中找到的独特物品.",
+	"icon": "minecraft:enchanted_golden_apple",
+	"sortnum": 40
+}

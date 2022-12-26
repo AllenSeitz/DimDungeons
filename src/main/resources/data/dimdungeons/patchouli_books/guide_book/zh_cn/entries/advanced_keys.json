@@ -1,0 +1,17 @@
+{
+	"name": "高级传送门钥匙",
+	"icon": "dimdungeons:textures/item/item_key_level2.png",
+	"category": "dimdungeons:keys",
+	"sortnum": 3,
+	"advancement": "dimdungeons:dungeons/enter_basic_dungeon",
+	"pages": [
+		{
+			"type": "text",
+			"text": "在探索地牢时，你可能很少会发现$(item)传送门基石方块$()。这些包含$(item)高级传送门钥匙$()，这是找到这些钥匙的唯一方法。这些钥匙打开通往地牢的入口，地牢的规模是普通的两倍，战利品质量也更高!"
+		},
+		{
+			"type": "text",
+			"text": "关于这些特殊的钥匙，有几件事您应该知道。首先，您的传送门在使用之前需要进行升级。其次，里面的怪物会更强大，一些困难的房间可能会出现。你应该为高级地牢做好充分的准备!"
+		}
+	]
+}
