@@ -1,0 +1,35 @@
+{
+	"name": "高级传送门",
+	"icon": "dimdungeons:block_portal_crown",
+	"category": "dimdungeons:portals",
+	"sortnum": 3,
+	"advancement": "dimdungeons:dungeons/enter_basic_dungeon",
+	"pages": [
+		{
+			"type": "text",
+			"text": "在探索地牢时，你可能会发现$(item)传送门基石方块$()。其中包含$(item)高级传送门钥匙$()。要使用这种钥匙，您需要升级传送门。升级结构需要两个$(item)传送门王冠$()方块，这只能在地牢箱子中找到。您还需要两个白色或紫色的旗帜."
+		},		
+		{
+			"type": "multiblock",
+			"multiblock": {
+				"pattern": [
+					["   ","   "," C "," K "," C ","   ","   "],
+					[" GW","   "," B ","   "," B ","   "," GP"],
+					[" BW","   "," B "," 0 "," B ","   "," BP"],
+					[" B ","   ","   "," B ","   ","   "," B "]
+				],
+				"mapping": {
+					"C": "dimdungeons:block_portal_crown",
+					"K": "dimdungeons:block_portal_keyhole",
+					"G": "dimdungeons:block_gilded_portal",
+					"B": "minecraft:stone_bricks",
+					"W": "minecraft:white_wall_banner[facing=south]",
+					"P": "minecraft:purple_wall_banner[facing=south]"
+				}
+			},
+			"text": "然后想这样升级你的传送门."
+		}
+	]
+}
+			
+

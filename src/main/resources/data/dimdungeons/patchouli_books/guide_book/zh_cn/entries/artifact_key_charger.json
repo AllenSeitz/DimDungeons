@@ -1,0 +1,18 @@
+{
+	"name": "钥匙刻写站",
+	"icon": "dimdungeons:block_key_charger",
+	"category": "dimdungeons:artifacts",
+	"sortnum": 20,
+	"advancement": "dimdungeons:dungeons/find_key_charger",
+	"pages": [
+		{
+			"type": "spotlight",
+			"item": "dimdungeons:block_key_charger",
+			"text": "$()该方块将允许您激活空白传送门钥匙,就像末地传送门框架那样。然而,它的用途可能有限,而且可能会受损."
+		},
+		{
+			"type": "text",
+			"text": "钥匙刻写站有3种受损状态,就像铁砧一样。每次使用造成同一级别伤害的几率是可配置的,但默认情况下,几率是100%。因此,一个钥匙刻写站可以使用3次,然后它将损坏."
+		}
+	]
+}
