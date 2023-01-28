@@ -3,6 +3,8 @@
 
 	"biome.dimdungeons.biome_dungeon": "地牢",
 	"dimension.dimdungeons.dimension_dungeon": "地牢维度",
+	
+	"dimdungeons:activate_key": "激活钥匙", // JEI
 
     "block.dimdungeons.block_gilded_portal": "镀金传送门方块",
     "block.dimdungeons.block_gold_portal": "黄金地牢传送门",
@@ -16,11 +18,18 @@
     "item.dimdungeons.item_portal_key": "空白传送门钥匙",
     "item.dimdungeons.item_portal_key_basic": "基础维度密钥",
     "item.dimdungeons.item_portal_key_advanced": "高级维度密钥",
+    "item.dimdungeons.item_blank_advanced_key": "空白高级钥匙",
+    "item.dimdungeons.item_blank_theme_key": "空白主题钥匙",
+    
+    "item.dimdungeons.item_blank_build_key": "空白个人维度钥匙",
+    "item.dimdungeons.item_blank_teleporter_key": "空白传送大厅钥匙",
+    "item.dimdungeons.item_build_key": "个人维度钥匙",
+    "item.dimdungeons.item_teleporter_key": "传送大厅钥匙",
+    
     "item.dimdungeons.item_secret_bell": "秘密之钟",
     "item.dimdungeons.item_homeward_pearl": "归途明珠",
     "item.dimdungeons.item_guidebook": "维度地牢指南",
 
-	// 该奖杯条目已经被弃用，1.14 版本强制它们写入战利品列表中
     "item.dimdungeons.item_trophy_1": "1UP蘑菇",
     "item.dimdungeons.item_trophy_2": "大师剑",
     "item.dimdungeons.item_trophy_3": "伊斯特符文",
@@ -122,10 +131,23 @@
     "npart.dimdungeons.large_10": "<大量的>",
     "npart.dimdungeons.large_11": "<厚重的>",
 
+    "npart.dimdungeons.theme_0": "无主题",
     "npart.dimdungeons.theme_1": "<下界要塞>",
-    "npart.dimdungeons.theme_2": "主题二",
+    "npart.dimdungeons.theme_2": "<沙漠>",
     "npart.dimdungeons.theme_3": "主题三",
     "npart.dimdungeons.theme_4": "主题四",
+    
+    "npart.dimdungeons.struct_8": "传送门钥匙 ",
+
+    "npart.dimdungeons.struct_9": "传送大厅钥匙 ",
+    "npart.dimdungeons.struct_9_0": "传送大厅钥匙 橡木门",
+    "npart.dimdungeons.struct_9_1": "传送大厅钥匙 云杉木门",
+    "npart.dimdungeons.struct_9_2": "传送大厅钥匙 白桦木门",
+    "npart.dimdungeons.struct_9_3": "传送大厅钥匙 金合欢木门",
+    "npart.dimdungeons.struct_9_4": "传送大厅钥匙 丛林木门",
+    "npart.dimdungeons.struct_9_5": "传送大厅钥匙 深色橡木门",
+    "npart.dimdungeons.struct_9_6": "传送大厅钥匙 绯红木门",
+    "npart.dimdungeons.struct_9_7": "传送大厅钥匙 诡异木门",
 
     "book.dimdungeons.title_1": "好消息",
     "book.dimdungeons.title_2": "解谜提示",
@@ -143,7 +165,7 @@
     "book.dimdungeons.fun_message_8": "所有这些房间都只使用纯原版的游戏机制。 没有任何命令方块或模组方块。",
 
     "book.dimdungeons.helpful_message_1": "如果你看到一些红色颗粒从地毯上冒出来，那么试着在房间里跑一圈。",
-    //"book.dimdungeons.helpful_message_1": "通常你能看到的地方都有办法能够到达。 如果您被困住了，请寻找一些特别的能互动的物品。",    
+    "book.dimdungeons.helpful_unused_1": "通常你能看到的地方都有办法能够到达。 如果您被困住了，请寻找一些特别的能互动的物品。",    
     "book.dimdungeons.helpful_message_2": "如果一个熔岩装饰看起来似乎不会意外掉入，那么您可能需要故意跳进去！",
     "book.dimdungeons.helpful_message_3": "一个空的箱子有可能是一个陷阱。 但是，如果您排除了危险的可能，请考虑捐赠它一些物品！",
     "book.dimdungeons.helpful_message_4": "请留意女巫可疑的炼药锅。 谁是这个地方的狱卒？",
@@ -170,6 +192,7 @@
     "book.dimdungeons.advanced_message_7": "您可以安全地重命名地牢钥匙，它们仍会将您传送到同一个地方。",
     "book.dimdungeons.advanced_message_8": "还有更多！ 这不是最后的地牢。",
 
+	// 此处的指南书文段已被弃用
     "book.dimdungeons.guidebook_1": "这份简短的指南将详细说明您需要了解的有关建造传送门、制作钥匙和突袭地下城的所有信息！",
     "book.dimdungeons.guidebook_2": "首先，您的传送门需要 3 个镀金传送门块。 用 8 个金锭围绕一块錾制石砖来制作一个镀金传送门块。",
     "book.dimdungeons.guidebook_3": "其次，您的传送门需要一个传送门基石。 要制作此物品，请使用您的 3 个镀金传送门块之一，并将其​​与一个陷阱箱和一个末影之眼结合起来。",
@@ -184,20 +207,19 @@
     "book.dimdungeons.open_guide_message": "Catastrophe573突然出现了片刻，匆匆写进书里，然后递还给你。",
     "book.dimdungeons.thank_you_message": "感谢您玩维度地牢！ 很抱歉我没有完成指南，但我正在努力工作！",
 
-    "error.dimdungeons.portal_error_1": "此维度密钥未激活。 使用前必须激活空白钥匙。",
+    "error.dimdungeons.portal_error_1": "此维度密钥未激活。",
     "error.dimdungeons.portal_error_2": "传送门钥匙孔下方的两个方块必须空开。",
     "error.dimdungeons.portal_error_3": "传送门框架中缺少了方块。",
     "error.dimdungeons.portal_error_4": "传送门框架应该用石砖建造，而不是 ",
-    "error.dimdungeons.portal_error_5": "传送门的其中一个尖顶中缺少了方块。 它们的距离和高度是否正确？",
+    "error.dimdungeons.portal_error_5": "传送门的其中一个尖顶中缺少了方块。",
     "error.dimdungeons.portal_error_6": "传送门的尖顶应该用石砖建造，而不是 ",
     "error.dimdungeons.portal_error_7": "传送门尖顶顶部需要镀金传送门块，而不是 ",
-    "error.dimdungeons.portal_error_8": "在使用高级钥匙之前，必须将两个传送门皇冠块放在传送门顶部。",
-    "error.dimdungeons.portal_error_9": "在使用高级钥匙之前，必须在尖顶上悬挂白色或紫色横幅。",
-    "error.dimdungeons.portal_error_10": "一个或两个横幅的颜色对于高级钥匙不正确。",
+    "error.dimdungeons.portal_error_8": "传送门框架顶端需要放置两个维度皇冠座。",
+    "error.dimdungeons.portal_error_9": "需要在尖顶上悬挂白色或紫色横幅。",
+    "error.dimdungeons.portal_error_10": "一个或两个横幅的颜色不正确。",
     "error.dimdungeons.portal_error_11": "另一边的地牢被删除了。",
     "error.dimdungeons.portal_error_12": "这把钥匙通向一个可能已经被访问过的地牢。",
 
-	// 进度&成就
 	"advancements.dimdungeons.dungeons.root.title": "维度地牢",
 	"advancements.dimdungeons.dungeons.root.description": "制作传送门基石。",
 	"advancements.dimdungeons.dungeons.activate_basic_key.title": "寻求第一次冒险",
@@ -212,16 +234,21 @@
 	"advancements.dimdungeons.dungeons.enter_advanced_dungeon.description": "两倍的危险，两倍的战利品！",
 	"advancements.dimdungeons.dungeons.all_trophies.title": "收藏家",
 	"advancements.dimdungeons.dungeons.all_trophies.description": "找到所有 8 个独特的奖杯。",	
-
-	// 进度 - 神器
+	
+	"advancements.dimdungeons.dungeons.enter_personal_space.title": "家，安心的家",	
+	"advancements.dimdungeons.dungeons.enter_personal_space.description": "找到个人维度钥匙并进入它！",
+	"advancements.dimdungeons.dungeons.find_teleporter_key.title": "交错世界 交汇之路",
+	"advancements.dimdungeons.dungeons.find_teleporter_key.description": "找到一个传送大厅钥匙！",
+	"advancements.dimdungeons.dungeons.build_recursive_portal.title": "递归传送门？",
+	"advancements.dimdungeons.dungeons.build_recursive_portal.description": "在个人维度空间里建造一个通往个人维度空间的传送门。",
+	
 	"advancements.dimdungeons.dungeons.find_bell_1.title": "秘密之钟",
-	"advancements.dimdungeons.dungeons.find_bell_1.description": "你找到了秘密之钟。",
+	"advancements.dimdungeons.dungeons.find_bell_1.description": "找到秘密之钟。",
 	"advancements.dimdungeons.dungeons.find_bell_2.title": "[已编辑]",
 	"advancements.dimdungeons.dungeons.find_bell_2.description": "在 1.1 版中，您无法在不作弊的情况下获得此物品。",
 	"advancements.dimdungeons.dungeons.find_key_charger.title": "钥匙刻字台",
 	"advancements.dimdungeons.dungeons.find_key_charger.description": "你找到了一个钥匙刻字台。",
 
-	// 服务器配置
 	"config.dimdungeons.configVersion": "配置版本",
 	"config.dimdungeons.globalBlockProtection": "全局方块保护",
 	"config.dimdungeons.hardcoreMode": "硬核模式",
@@ -234,11 +261,9 @@
 	"config.dimdungeons.breakingWhitelist": "方块破坏白名单",
 	"config.dimdungeons.interactionBlacklist": "可交互物品黑名单",
 	
-	// 客户端配置
 	"config.dimdungeons.showParticles": "显示粒子",
 	"config.dimdungeons.playPortalSounds": "播放传送门音效",
 
-	// 常见配置
 	"config.dimdungeons.basicEntrances": "基本入口",
 	"config.dimdungeons.basicFourways": "基础四向通道",
 	"config.dimdungeons.basicThreeways": "基本三向通道",
@@ -258,11 +283,9 @@
 	"config.dimdungeons.basicEnemyHealthScaling": "基础敌人血量缩放",
 	"config.dimdungeons.advancedEnemyHealthScaling": "高级敌人血量缩放",
 
-	// 指令
 	"commands.gendungeon.success": "建造了%s的地牢。",
 	"commands.gendungeon.failed": "在这里创建地牢失败，可能是因为它已经存在或坐标超出范围。",
 
-	// 敌人名字
     "enemy.dimdungeons.minecraft:enderman": "末影人",
     "enemy.dimdungeons.minecraft:guardian": "守卫者",
     "enemy.dimdungeons.minecraft:witch": "女巫",
@@ -279,6 +302,8 @@
     "enemy.dimdungeons.minecraft:hoglin": "疣猪兽",
     "enemy.dimdungeons.minecraft:piglin": "猪灵",
     "enemy.dimdungeons.minecraft:piglin_brute": "猪灵蛮兵",
+    "enemy.dimdungeons.minecraft:phantom": "幻翼",
+    "enemy.dimdungeons.minecraft:magma_cube": "岩浆怪",
     
     "enemy.dimdungeons.minecraft:enderman2": "月球人",
     "enemy.dimdungeons.minecraft:guardian2": "深海猎人",
@@ -292,8 +317,10 @@
     "enemy.dimdungeons.minecraft:spider2": "蛛形纲怪物",
     "enemy.dimdungeons.minecraft:pillager2": "掠夺者",
     "enemy.dimdungeons.minecraft:blaze2": "火之元素",
-    "enemy.dimdungeons.minecraft:vindicator2": "复仇者",
+    "enemy.dimdungeons.minecraft:vindicator2": "征服者",
     "enemy.dimdungeons.minecraft:hoglin2": "下界蛮猪",
     "enemy.dimdungeons.minecraft:piglin2": "猪灵队长",
-    "enemy.dimdungeons.minecraft:piglin_brute2": "堡垒之王"    
+    "enemy.dimdungeons.minecraft:piglin_brute2": "堡垒之王",
+    "enemy.dimdungeons.minecraft:phantom2": "夜魇",
+    "enemy.dimdungeons.minecraft:magma_cube2": "下界史莱姆"  
 }
