@@ -1,0 +1,6 @@
+{
+	"name": "钥匙",
+	"description": "如何制作新地牢的钥匙.",
+	"icon": "dimdungeons:textures/item/item_key_level1.png",
+	"sortnum": 20
+}
