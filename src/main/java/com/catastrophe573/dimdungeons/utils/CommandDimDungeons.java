@@ -3,17 +3,20 @@ package com.catastrophe573.dimdungeons.utils;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.catastrophe573.dimdungeons.dimension.DungeonData;
 import com.catastrophe573.dimdungeons.dimension.PersonalBuildData;
 import com.catastrophe573.dimdungeons.item.BaseItemKey;
 import com.catastrophe573.dimdungeons.item.ItemBlankBuildKey;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
+import com.catastrophe573.dimdungeons.structure.DungeonRoom;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -23,9 +26,11 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 
@@ -39,8 +44,9 @@ public class CommandDimDungeons
 		// the current cheat structures are:
 		// /dimdungeons givekey [player recipient] [string type] [int theme, optional]
 		// /dimdungeons givepersonal [player recipient] [player target, optional]
+		// /dimdungeons getroom [player target]
 
-		// the first half of the /givekey cheat
+		// the first part of the /dimdungeons cheat
 		LiteralArgumentBuilder<CommandSourceStack> argumentBuilder = Commands.literal("dimdungeons").requires((cmd) ->
 		{
 			return cmd.hasPermission(2);
@@ -64,12 +70,17 @@ public class CommandDimDungeons
 		}
 
 		// make a cheat for getting a personal dimension key
-		argumentBuilder.then(Commands.literal("givepersonal")
-		        .then(Commands.argument("recipient", EntityArgument.players()).then(Commands.argument("target_player", EntityArgument.player()).executes((cmd) ->
-		        {
-			        return givePersonalKey(cmd, EntityArgument.getPlayers(cmd, "recipient"), EntityArgument.getPlayer(cmd, "target_player"));
-		        }))));
+		argumentBuilder.then(Commands.literal("givepersonal").then(Commands.argument("recipient", EntityArgument.players()).then(Commands.argument("target_player", EntityArgument.player()).executes((cmd) ->
+		{
+			return givePersonalKey(cmd, EntityArgument.getPlayers(cmd, "recipient"), EntityArgument.getPlayer(cmd, "target_player"));
+		}))));
 
+		// make a chest for getting the current room, for debugging in live environments
+		argumentBuilder.then(Commands.literal("getroom").then(Commands.argument("target_player", EntityArgument.player()).executes((cmd) ->
+		{
+			return printRoomName(cmd, EntityArgument.getPlayer(cmd, "target_player"));
+		})));		
+		
 		// this is a debugging hack that must not ship
 		// argumentBuilder.then(Commands.literal("debugpersonal").then(Commands.argument("recipient",
 		// EntityArgument.players()).then(Commands.argument("target_player",
@@ -83,7 +94,7 @@ public class CommandDimDungeons
 		// return erasePersonalMap(cmd);
 		// }));
 
-		// register the /givekey cheat
+		// register the /dimdungeons cheat
 		dispatcher.register(argumentBuilder);
 	}
 
@@ -129,8 +140,7 @@ public class CommandDimDungeons
 					itementity.makeFakeItem();
 				}
 
-				serverplayerentity.level.playSound((Player) null, serverplayerentity.getX(), serverplayerentity.getY(), serverplayerentity.getZ(), SoundEvents.ITEM_PICKUP,
-				        SoundSource.PLAYERS, 0.2F, ((serverplayerentity.getRandom().nextFloat() - serverplayerentity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+				serverplayerentity.level.playSound((Player) null, serverplayerentity.getX(), serverplayerentity.getY(), serverplayerentity.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((serverplayerentity.getRandom().nextFloat() - serverplayerentity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 				serverplayerentity.inventoryMenu.broadcastChanges();
 			}
 			else
@@ -182,8 +192,7 @@ public class CommandDimDungeons
 					itementity.makeFakeItem();
 				}
 
-				serverplayerentity.level.playSound((Player) null, serverplayerentity.getX(), serverplayerentity.getY(), serverplayerentity.getZ(), SoundEvents.ITEM_PICKUP,
-				        SoundSource.PLAYERS, 0.2F, ((serverplayerentity.getRandom().nextFloat() - serverplayerentity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+				serverplayerentity.level.playSound((Player) null, serverplayerentity.getX(), serverplayerentity.getY(), serverplayerentity.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((serverplayerentity.getRandom().nextFloat() - serverplayerentity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 				serverplayerentity.inventoryMenu.broadcastChanges();
 			}
 			else
@@ -250,6 +259,38 @@ public class CommandDimDungeons
 		}
 
 		return recipients.size();
+	}
+
+	private static int printRoomName(CommandContext<CommandSourceStack> cmd, Entity targetPlayer) throws CommandSyntaxException
+	{
+		if (!(targetPlayer instanceof LivingEntity))
+		{
+			cmd.getSource().sendFailure(new TextComponent("Target entity is not a LivingEntity."));
+			return 0;
+		}
+
+		// do not run this function outside of the dungeon dimension
+		Level dungeonWorld = targetPlayer.getLevel();
+		if (!DungeonUtils.isDimensionDungeon(dungeonWorld))
+		{
+			cmd.getSource().sendFailure(new TextComponent("This command only works in the dungeon dimension."));
+			return 0;
+		}
+
+		// make sure a room exists here (it's possible for this to fail in legacy worlds or in other ways)
+		DungeonRoom room = DungeonData.get(dungeonWorld).getRoomAtPos(targetPlayer.chunkPosition());
+		if (room == null)
+		{
+			cmd.getSource().sendFailure(new TextComponent("No room found at current position."));
+			return 0; // possible
+		}
+
+		TextComponent text = new TextComponent("room: " + room.structure + " rot: " + room.rotation);
+		text.withStyle(text.getStyle().withItalic(true));
+		text.withStyle(text.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
+		cmd.getSource().sendSuccess(text, true);
+
+		return 1;
 	}
 
 	// debug cheat - definitely don't do this to anyone's world
