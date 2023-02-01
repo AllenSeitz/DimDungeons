@@ -298,8 +298,7 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 		int startZ = Math.floorDiv(start.getZ(), 16) * 16;
 		int startY = start.getY() - 8;
 
-		// search the player's current chunk, 8 blocks up and 8 blocks down, for any
-		// inventory
+		// search the player's current chunk, 8 blocks up and 8 blocks down, for any inventory
 		// if that block is tagged then trigger the extended chime
 		for (int x = startX; x < startX + 16; x++)
 		{

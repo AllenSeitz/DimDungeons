@@ -354,8 +354,7 @@ public class PlayerDungeonEvents
 	@SubscribeEvent
 	public void leftClickBlock(LeftClickBlock event)
 	{
-		// the build dimension is always block-protected outside of the build space, no
-		// matter what
+		// the build dimension is always block-protected outside of the build space, no matter what
 		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getWorld()))
 		{
 			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
@@ -426,8 +425,7 @@ public class PlayerDungeonEvents
 								// add or remove a name from the list and print an appropriate message
 								if (PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getWorld().getServer())).getBlacklistMode(player))
 								{
-									boolean wasAdded = PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getWorld().getServer())).toggleNameOnGuestList(player,
-									        playerName);
+									boolean wasAdded = PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getWorld().getServer())).toggleNameOnGuestList(player, playerName);
 									if (wasAdded)
 									{
 										DungeonUtils.notifyGuestListChange(event.getPlayer(), "security.dimdungeons.player_added_blacklist", playerName);
@@ -439,8 +437,7 @@ public class PlayerDungeonEvents
 								}
 								else
 								{
-									boolean wasAdded = PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getWorld().getServer())).toggleNameOnGuestList(player,
-									        playerName);
+									boolean wasAdded = PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getWorld().getServer())).toggleNameOnGuestList(player, playerName);
 									if (wasAdded)
 									{
 										DungeonUtils.notifyGuestListChange(event.getPlayer(), "security.dimdungeons.player_added_whitelist", playerName);
@@ -541,9 +538,7 @@ public class PlayerDungeonEvents
 			return;
 		}
 
-		// DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() +
-		// " just interacted with: " +
-		// targetBlock.getBlock().getTranslatedName().getString());
+		// DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() + " just interacted with: " + targetBlock.getBlock().getTranslatedName().getString());
 	}
 
 	@SubscribeEvent
