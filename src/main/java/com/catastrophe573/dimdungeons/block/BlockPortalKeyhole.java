@@ -212,8 +212,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 						long entranceX = buildX + (8 * 16);
 						long entranceZ = buildZ + (11 * 16);
 
-						// this data structure is used for both building the layout and updating the
-						// exit portal
+						// this data structure is used for both building the layout and updating the exit portal
 						DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setDungeonType(key.getDungeonType(playerItem)).setTheme(key.getDungeonTheme(playerItem)).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
 
 						// should the key be marked as used?
@@ -227,10 +226,8 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 								DungeonPlacement.beginDesignAndBuild(DungeonUtils.getDungeonWorld(worldIn.getServer()), buildX, buildZ, genData);
 							}
 
-							// it's slow, but run through the build steps regardless of if the dungeon
-							// already exists
-							// this will catch dungeons that are partially built and finish them
-							// dungeon rooms will never be overwritten or built twice
+							// it's slow, but run through the build steps regardless of if the dungeon already exists
+							// this will catch dungeons that are partially built and finish them dungeon rooms will never be overwritten or built twice
 							is_building = true;
 						}
 						else
@@ -288,14 +285,35 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 					player.drop(insideItem, false); // whatever drop it on the ground
 				}
 
+				// if a teleporter hub key was removed then remove the door on the other side
+				if (insideItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide)
+				{
+					ItemPortalKey key = (ItemPortalKey) insideItem.getItem();
+					
+					// the reason I ignore this rule for the 'oak' door is because I don't want players getting trapped in there
+					if ( key.getDungeonType(insideItem) == DungeonType.TELEPORTER_HUB && key.getDungeonTheme(insideItem) != 0 )
+					{
+						float entranceX = key.getWarpX(insideItem);
+						float entranceZ = key.getWarpZ(insideItem);
+						DungeonGenData genData = DungeonGenData.Create();
+						genData.setDungeonType(DungeonType.TELEPORTER_HUB);
+						genData.setTheme(key.getDungeonTheme(insideItem));
+						
+						// when calling this function in "delete mode" the genData and Direction paramaters are not important
+						DungeonUtils.reprogramTeleporterHubDoorway(worldIn, (long) entranceX, (long) entranceZ, genData, Direction.NORTH, true);
+					}
+				}				
+				
+				// actually remove the item from the keyhole here
 				myEntity.removeContents();
 
-				worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.TRIPWIRE_CLICK_OFF, SoundSource.BLOCKS, 0.7F, 0.8f, false);				
+				worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.TRIPWIRE_CLICK_OFF, SoundSource.BLOCKS, 0.7F, 0.8f, false);
 				
 				// recalculate the boolean block states
 				BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(IS_BUILDING, false);
-				worldIn.setBlock(pos, newBlockState, 3);
 
+				worldIn.setBlock(pos, newBlockState, 3);				
+				
 				return InteractionResult.SUCCESS;
 			}
 		}

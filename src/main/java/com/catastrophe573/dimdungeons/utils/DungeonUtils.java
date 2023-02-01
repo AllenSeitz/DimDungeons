@@ -197,7 +197,7 @@ public class DungeonUtils
 			}
 			else if (genData.dungeonType == DungeonType.TELEPORTER_HUB)
 			{
-				dungeonExistsHere = DungeonUtils.reprogramTeleporterHubDoorway(worldIn, (long) entranceX, (long) entranceZ, genData, keyholeFacing);
+				dungeonExistsHere = DungeonUtils.reprogramTeleporterHubDoorway(worldIn, (long) entranceX, (long) entranceZ, genData, keyholeFacing, false);
 			}
 			else
 			{
@@ -246,7 +246,8 @@ public class DungeonUtils
 	}
 
 	// this function creates the gold portal blocks if they do not exist, which the other similar functions do not!
-	public static boolean reprogramTeleporterHubDoorway(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing)
+	// the last parameter handles erasing teleporter hub portals when the 'wooden' keys are removed
+	public static boolean reprogramTeleporterHubDoorway(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing, boolean erasePortal)
 	{
 		Level dim = DungeonUtils.getDungeonWorld(worldIn.getServer());
 		BlockPos portalStart = new BlockPos(entranceX, 55, entranceZ);
@@ -263,13 +264,12 @@ public class DungeonUtils
 		portalStart = portalStart.west(undo_x_offset[doornum]).east(x_offset[doornum]);
 		portalStart = portalStart.south(undo_z_offset[doornum]).north(z_offset[doornum]);
 
-		// figure out which direction the player will be facing in the dungeon dimension
-
 		// create the gold portal blocks
 		for (int xz = 0; xz < 2; xz++)
 		{
 			for (int y = 0; y < 3; y++)
 			{
+				// figure out which direction the player will be facing in the dungeon dimension
 				BlockPos nextBlock = portalStart;
 				Direction.Axis face = Direction.Axis.X;
 
@@ -283,8 +283,16 @@ public class DungeonUtils
 					face = Direction.Axis.Z;
 				}
 
-				dim.setBlock(nextBlock, BlockRegistrar.BLOCK_GOLD_PORTAL.get().defaultBlockState().setValue(BlockGoldPortal.AXIS, face), 2);
+				// or at this point, erase them
+				if ( erasePortal )
+				{
+					dim.setBlock(nextBlock, Blocks.AIR.defaultBlockState(), 2);
+					continue;
+				}
 
+				// execution only reaches here if erasePortal is false
+				dim.setBlock(nextBlock, BlockRegistrar.BLOCK_GOLD_PORTAL.get().defaultBlockState().setValue(BlockGoldPortal.AXIS, face), 2);
+				
 				TileEntityGoldPortal te = (TileEntityGoldPortal) dim.getBlockEntity(nextBlock);
 				if (te != null)
 				{
