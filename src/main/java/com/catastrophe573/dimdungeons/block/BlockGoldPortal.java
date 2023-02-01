@@ -227,9 +227,8 @@ public class BlockGoldPortal extends BaseEntityBlock
 					}
 				}
 
-				// implement the whitelist or blacklist for players the try to enter the
-				// Personal Build Dimension
-				// this is actually 50% defensive coding against cases that should never happen
+				// implement the whitelist or blacklist for players that try to enter the Personal Build Dimension
+				// this is about 50% defensive coding against cases that should never happen
 				if (destDim.location().getPath().equals(DimDungeons.build_dimension_regname))
 				{
 					TileEntityPortalKeyhole keyhole = findKeyholeForThisPortal(state, worldIn, pos);
