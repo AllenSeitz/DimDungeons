@@ -67,8 +67,7 @@ public class DungeonPlacement
 	{
 	}
 
-	// step 1 of the dungeon building process: build the dungeon in memory, then
-	// place signs where all the rooms will go
+	// step 1 of the dungeon building process: build the dungeon in memory, then place signs where all the rooms will go
 	public static boolean beginDesignAndBuild(ServerLevel world, long x, long z, DungeonGenData genData)
 	{
 		// calculate and double check the starting point
@@ -123,8 +122,7 @@ public class DungeonPlacement
 		// this is the big call that shuffles the rooms and actually designs the build
 		dbl.calculateDungeonShape(dungeonSize, useLarge);
 
-		// and this function registers all the rooms the in the dimension data so they
-		// can be built later
+		// and this function registers all the rooms the in the dimension data so they can be built later
 		DungeonData.get(world).registerNewRooms(dbl, x, z);
 
 		return true;
@@ -167,8 +165,7 @@ public class DungeonPlacement
 		}
 		else if (nextRoom.roomType == RoomType.LARGE_DUMMY)
 		{
-			// these doors are now closed after placing the large room, to ensure they
-			// aren't overwritten
+			// these doors are now closed after placing the large room, to ensure they aren't overwritten
 		}
 		else if (!putRoomHere(cpos, world, nextRoom))
 		{
@@ -178,8 +175,7 @@ public class DungeonPlacement
 		return true;
 	}
 
-	// checks for the second piece of bedrock under the sign. this is placed during
-	// buildRoomAboveSign()
+	// checks for the second piece of bedrock under the sign. this is placed during buildRoomAboveSign()
 	public static boolean wasRoomBuiltAtChunk(Level world, ChunkPos cpos)
 	{
 		Level dungeonDim = DungeonUtils.getDungeonWorld(world.getServer());
@@ -438,8 +434,7 @@ public class DungeonPlacement
 		}
 	}
 
-	// used by the place() and the slow building logic function to place a single
-	// room
+	// used by the place() and the slow building logic function to place a single room
 	public static boolean putRoomHere(ChunkPos cpos, ServerLevel world, DungeonRoom room)
 	{
 		MinecraftServer minecraftserver = ((Level) world).getServer();
@@ -548,8 +543,7 @@ public class DungeonPlacement
 			TileEntityLocalTeleporter te = (TileEntityLocalTeleporter) world.getBlockEntity(pos);
 			if (te != null)
 			{
-				// this logic is copy/pasted from the HomewardPearl, which was implemented later
-				// than this block
+				// this logic is copy/pasted from the HomewardPearl, which was implemented later than this block
 				double topLeftX = Math.floor(pos.getX() / ItemPortalKey.BLOCKS_APART_PER_DUNGEON);
 				double entranceX = topLeftX * ItemPortalKey.BLOCKS_APART_PER_DUNGEON + ItemPortalKey.ENTRANCE_OFFSET_X;
 				double topLeftZ = Math.floor(pos.getZ() / ItemPortalKey.BLOCKS_APART_PER_DUNGEON);
@@ -656,8 +650,7 @@ public class DungeonPlacement
 
 				// mark this keyhole as filled
 				BlockState state = world.getBlockState(pos.below(2));
-				BlockState newBlockState = state.setValue(BlockPortalKeyhole.FACING, state.getValue(BlockPortalKeyhole.FACING)).setValue(BlockPortalKeyhole.FILLED, true)
-				        .setValue(BlockPortalKeyhole.LIT, false);
+				BlockState newBlockState = state.setValue(BlockPortalKeyhole.FACING, state.getValue(BlockPortalKeyhole.FACING)).setValue(BlockPortalKeyhole.FILLED, true).setValue(BlockPortalKeyhole.LIT, false);
 				world.setBlockAndUpdate(pos.below(2), newBlockState);
 
 			}
@@ -796,8 +789,7 @@ public class DungeonPlacement
 		RandomizableContainerBlockEntity.setLootTable(world, rand, pos.below(), lootTable);
 	}
 
-	// I was originally thinking that this would contain direct hints about the
-	// dungeon, but that would involve a post generation step
+	// I was originally thinking that this would contain direct hints about the dungeon, but that would involve a post generation step
 	private static ItemStack generateLuckyMessage(Random rand, DungeonType type)
 	{
 		ItemStack stack = new ItemStack(Items.WRITTEN_BOOK);

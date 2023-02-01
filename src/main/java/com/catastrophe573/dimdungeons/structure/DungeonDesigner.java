@@ -14,8 +14,7 @@ import net.minecraft.world.level.block.Rotation;
 // this class designs the dungeon layout, the grid of rooms, but leaves the actual construction to the DungeonPlacement class
 public class DungeonDesigner
 {
-	// an enumeration of the six room types, used internally for randomization and
-	// classification
+	// an enumeration of the six room types, used internally for randomization and classification
 	public enum RoomType
 	{
 		ENTRANCE, END, CORNER, HALLWAY, THREEWAY, FOURWAY, LARGE, LARGE_DUMMY, NONE
@@ -53,10 +52,8 @@ public class DungeonDesigner
 	protected int fourwayIndex = 0;
 	protected int largeIndex = 0;
 
-	// this is initialized during the constructor with values from the
-	// ChunkGenerator, to ensure the dungeons use the world seed
-	// or at least that was the intent in 1.14 anyways, but as of 1.16 dungeons are
-	// no longer built insid
+	// this is initialized during the constructor with values from the ChunkGenerator, to ensure the dungeons use the world seed
+	// or at least that was the intent in 1.14 anyways, but as of 1.16 dungeons are no longer built insid
 	protected Random rand;
 
 	public DungeonDesigner(Random randIn, long chunkX, long chunkZ, DungeonType type, int theme)
@@ -105,8 +102,7 @@ public class DungeonDesigner
 				end.add(DungeonConfig.themeSettings.get(theme - 1).themeEnds.get(i).get(index));
 			}
 
-			// basic and theme dungeons don't have large rooms but don't leave the array
-			// empty, for safety
+			// basic and theme dungeons don't have large rooms but don't leave the array empty, for safety
 			for (int i = 0; i < DungeonConfig.advancedLarge.size(); i++)
 			{
 				int poolSize = DungeonConfig.advancedLarge.get(i).size();
@@ -155,8 +151,7 @@ public class DungeonDesigner
 				end.add(DungeonConfig.basicEnds.get(i).get(index));
 			}
 
-			// basic and theme dungeons don't have large rooms but don't leave the array
-			// empty, for safety
+			// basic and theme dungeons don't have large rooms but don't leave the array empty, for safety
 			for (int i = 0; i < DungeonConfig.advancedLarge.size(); i++)
 			{
 				int poolSize = DungeonConfig.advancedLarge.get(i).size();
@@ -248,8 +243,7 @@ public class DungeonDesigner
 		openings.add(new ImmutablePair<Integer, Integer>(5, 7));
 		openings.add(new ImmutablePair<Integer, Integer>(4, 6));
 
-		// step 3: if large rooms are enabled, place one somewhere, and put all those
-		// many doorways coming off it
+		// step 3: if large rooms are enabled, place one somewhere, and put all those many doorways coming off it
 		if (useLarge)
 		{
 			int largeX = rand.nextInt(7); // put the large room in any column, convention uses the top left corner, so use
@@ -259,8 +253,7 @@ public class DungeonDesigner
 			placeRoomShape(largeX, largeZ, large.get(largeIndex), RoomType.LARGE, Rotation.NONE);
 			numRoomsPlaced += 4;
 
-			// for each of the 4 rooms in this large room, add openings for doorways as long
-			// as they don't lead out of bounds
+			// for each of the 4 rooms in this large room, add openings for doorways as long as they don't lead out of bounds
 			for (int xx = 0; xx < 2; xx++)
 			{
 				for (int zz = 0; zz < 2; zz++)
@@ -293,8 +286,7 @@ public class DungeonDesigner
 			}
 		}
 
-		// remaining rooms: for each opening, place a room that fits, and update
-		// openings, until no openings are left
+		// remaining rooms: for each opening, place a room that fits, and update openings, until no openings are left
 		shuffleArray(openings);
 		while (openings.size() > 0)
 		{
@@ -304,11 +296,9 @@ public class DungeonDesigner
 
 			boolean mustPickEndings = false;
 			boolean noEndingsYet = false;
-			// DimDungeons.LOGGER.info("Processing opening " + roomPos.left + ", " +
-			// roomPos.right);
+			// DimDungeons.LOGGER.info("Processing opening " + roomPos.left + ", " + roomPos.right);
 
-			// it can happen that an "opening" is in the list twice due to loops, in which
-			// case skip this loop
+			// it can happen that an "opening" is in the list twice due to loops, in which case skip this loop
 			if (finalLayout[roomPos.left][roomPos.right].hasRoom())
 			{
 				continue;
@@ -326,8 +316,7 @@ public class DungeonDesigner
 			boolean cantConnectWest = hasSolidWall(roomPos.left, roomPos.right, Direction.WEST);
 			boolean cantConnectEast = hasSolidWall(roomPos.left, roomPos.right, Direction.EAST);
 
-			// this puts the dungeon generation into "end it now" mode, where doors will no
-			// longer create more doors
+			// this puts the dungeon generation into "end it now" mode, where doors will no longer create more doors
 			if (numRoomsPlaced + openings.size() >= maxNumRooms)
 			{
 				mustPickEndings = true;
@@ -338,14 +327,11 @@ public class DungeonDesigner
 				noEndingsYet = true;
 			}
 
-			// when mustPickEndings is false this is used to hold the list of valid
-			// possibilities
+			// when mustPickEndings is false this is used to hold the list of valid possibilities
 			ArrayList<ImmutablePair<RoomType, Rotation>> roomPossibilities = new ArrayList<ImmutablePair<RoomType, Rotation>>(0);
 
-			// look at the neighboring doors and pick the room and rotation that connects
-			// them without making new openings
-			// TODO: eliminate the redundant half of this IF statement by using
-			// mustPickEndings to abort the roomPossibilities[] check at the end
+			// look at the neighboring doors and pick the room and rotation that connects them without making new openings
+			// TODO: eliminate the redundant half of this IF statement by using mustPickEndings to abort the roomPossibilities[] check at the end
 			if (mustPickEndings)
 			{
 				// this case should be impossible
@@ -736,8 +722,7 @@ public class DungeonDesigner
 				}
 			}
 
-			// if the previous block of code populated the roomPossibilities array then make
-			// a selection from it and use it instead
+			// if the previous block of code populated the roomPossibilities array then make a selection from it and use it instead
 			// this code path represents more doorways being added and branching paths
 			if (roomPossibilities.size() > 0 && !mustPickEndings)
 			{
@@ -774,8 +759,7 @@ public class DungeonDesigner
 				endIndex = endIndex == end.size() - 1 ? 0 : endIndex + 1;
 			}
 
-			// commit the room to the blueprint and open any potential new doors for the
-			// next loop to work with
+			// commit the room to the blueprint and open any potential new doors for the next loop to work with
 			int roomX = roomPos.left;
 			int roomZ = roomPos.right;
 			placeRoomShape(roomX, roomZ, nextRoom, nextType, nextRot);
@@ -809,8 +793,7 @@ public class DungeonDesigner
 		// System.out.println("END CALC DUNGEON SHAPE");
 	}
 
-	// returns true if another chunk has a door leading into this chunk from the
-	// specified direction
+	// returns true if another chunk has a door leading into this chunk from the specified direction
 	// safe to call with x or y that are out of bounds
 	private boolean hasOpenDoor(int x, int z, Direction direction)
 	{
@@ -837,8 +820,7 @@ public class DungeonDesigner
 		return false;
 	}
 
-	// returns true if the neighbor in this direction has placed a solid wall, and
-	// false if there is a door or no neighbor yet at all
+	// returns true if the neighbor in this direction has placed a solid wall, and false if there is a door or no neighbor yet at all
 	// safe to call with x or y that are out of bounds
 	private boolean hasSolidWall(int x, int z, Direction direction)
 	{
@@ -872,13 +854,10 @@ public class DungeonDesigner
 		finalLayout[x][z].rotation = rot;
 		finalLayout[x][z].dungeonType = dungeonType;
 		finalLayout[x][z].theme = dungeonTheme;
-		// System.out.println("Put a " + type.toString() + " at (" + x + ", " + z + ")
-		// with rotation " + rot.toString() + ".");
-		// DimDungeons.LOGGER.info("Put a " + room + " at (" + x + ", " + z + ") with
-		// rotation " + rot.toString() + ".");
+		// System.out.println("Put a " + type.toString() + " at (" + x + ", " + z + ") with rotation " + rot.toString() + ".");
+		// DimDungeons.LOGGER.info("Put a " + room + " at (" + x + ", " + z + ") with rotation " + rot.toString() + ".");
 
-		// special case for large rooms, place three dummy rooms nearby, with the "real"
-		// large room being the top left corner
+		// special case for large rooms, place three dummy rooms nearby, with the "real" large room being the top left corner
 		if (type == RoomType.LARGE)
 		{
 			finalLayout[x + 1][z].structure = "large_dummy";

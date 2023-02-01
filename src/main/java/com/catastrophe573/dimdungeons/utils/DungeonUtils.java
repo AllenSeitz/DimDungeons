@@ -288,7 +288,7 @@ public class DungeonUtils
 				}
 
 				// or at this point, erase them
-				if ( erasePortal )
+				if (erasePortal)
 				{
 					dim.setBlock(nextBlock, Blocks.AIR.defaultBlockState(), 2);
 					continue;
@@ -299,13 +299,11 @@ public class DungeonUtils
 				if (te != null)
 				{
 					te.setDestination(genData.returnPoint.getX(), genData.returnPoint.getY(), genData.returnPoint.getZ(), genData.returnDimension, keyholeFacing);
-					DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + nextBlock.getX() + ", " + nextBlock.getY() + ", " + nextBlock.getZ() + ") in dim "
-					        + dim.dimension().location().getPath());
+					DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + nextBlock.getX() + ", " + nextBlock.getY() + ", " + nextBlock.getZ() + ") in dim " + dim.dimension().location().getPath());
 				}
 				else
 				{
-					DimDungeons.logMessageWarn(
-					        "DIMDUNGEONS WARNING: why is there no exit portal here? (" + nextBlock.getX() + ", " + nextBlock.getY() + ", " + nextBlock.getZ() + ")");
+					DimDungeons.logMessageWarn("DIMDUNGEONS WARNING: why is there no exit portal here? (" + nextBlock.getX() + ", " + nextBlock.getY() + ", " + nextBlock.getZ() + ")");
 				}
 			}
 		}
@@ -327,8 +325,7 @@ public class DungeonUtils
 				if (te != null)
 				{
 					te.setDestination(genData.returnPoint.getX(), genData.returnPoint.getY(), genData.returnPoint.getZ(), genData.returnDimension, keyholeFacing);
-					DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ") in dim "
-					        + dim.dimension().location().getPath());
+					DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ") in dim " + dim.dimension().location().getPath());
 				}
 				else
 				{
@@ -345,8 +342,7 @@ public class DungeonUtils
 	// takes the chunkpos of the top left corner
 	public static void buildSuperflatPersonalSpace(long buildX, long buildZ, MinecraftServer server)
 	{
-		BlockState[] layers = { Blocks.GRASS_BLOCK.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(),
-        Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState() };
+		BlockState[] layers = { Blocks.GRASS_BLOCK.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState() };
 		ServerLevel dim = getPersonalBuildWorld(server);
 		ChunkPos cpos = new ChunkPos(((int) buildX / 16) + 4, ((int) buildZ / 16) + 4); // the +4 offset is for lining up with maps
 		BlockPos bpos = new BlockPos(cpos.getMinBlockX(), 50, cpos.getMinBlockZ());

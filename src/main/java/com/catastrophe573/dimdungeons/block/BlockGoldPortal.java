@@ -263,8 +263,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 					}
 				}
 
-				DimDungeons.logMessageInfo(
-				        "Player is using a gold portal to teleport to (" + warpX + " " + warpY + " " + warpZ + ") in dimension " + destDim.location().toString() + ".");
+				DimDungeons.logMessageInfo("Player is using a gold portal to teleport to (" + warpX + " " + warpY + " " + warpZ + ") in dimension " + destDim.location().toString() + ".");
 				ServerPlayer player = (ServerPlayer) entityIn;
 				actuallyPerformTeleport(player, player.getServer().getLevel(te.getDestinationDimension()), warpX, warpY, warpZ, getReturnYawForDirection(te.getExitDirection()));
 			}
@@ -307,9 +306,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 			{
 				// since the condition is minecraft:impossible, this is the only way to trigger
 				// it
-				player.getAdvancements().award(
-				        dim.getServer().getAdvancements().getAdvancement(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/enter_advanced_dungeon")),
-				        "advanced_dungeon");
+				player.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
 			}
 		}
 		else if (DungeonUtils.isDimensionPersonalBuild(dim) && !DungeonUtils.isPersonalBuildChunk(new BlockPos(x, y, z)))
@@ -566,8 +563,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	private boolean checkPortalFrameLevel2WestEast(LevelAccessor worldIn, BlockPos keyhole)
 	{
 		// main portal body - check for added crowns
-		if (worldIn.getBlockState(keyhole.west(1)).getBlock() != BlockRegistrar.block_portal_crown
-		        || worldIn.getBlockState(keyhole.east(1)).getBlock() != BlockRegistrar.block_portal_crown)
+		if (worldIn.getBlockState(keyhole.west(1)).getBlock() != BlockRegistrar.block_portal_crown || worldIn.getBlockState(keyhole.east(1)).getBlock() != BlockRegistrar.block_portal_crown)
 		{
 			return false;
 		}
@@ -595,8 +591,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	private boolean checkPortalFrameLevel2NorthSouth(LevelAccessor worldIn, BlockPos keyhole)
 	{
 		// main portal body - check for added crowns
-		if (worldIn.getBlockState(keyhole.north(1)).getBlock() != BlockRegistrar.block_portal_crown
-		        || worldIn.getBlockState(keyhole.south(1)).getBlock() != BlockRegistrar.block_portal_crown)
+		if (worldIn.getBlockState(keyhole.north(1)).getBlock() != BlockRegistrar.block_portal_crown || worldIn.getBlockState(keyhole.south(1)).getBlock() != BlockRegistrar.block_portal_crown)
 		{
 			return false;
 		}
@@ -636,10 +631,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	}
 
 	/**
-	 * Called periodically client side on blocks near the player to show effects
-	 * (like furnace fire particles). Note that this method is unrelated to
-	 * randomTick and needsRandomTick, and will always be called regardless of
-	 * whether the block can receive random update ticks
+	 * Called periodically client side on blocks near the player to show effects (like furnace fire particles). Note that this method is unrelated to randomTick and needsRandomTick, and will always be called regardless of whether the block can receive random update ticks
 	 */
 	@OnlyIn(Dist.CLIENT)
 	public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, Random rand)

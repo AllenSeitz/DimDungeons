@@ -39,9 +39,7 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	public static void buildTick(Level level, BlockPos pos, BlockState state, TileEntityPortalKeyhole self)
 	{
 		ItemPortalKey key = (ItemPortalKey) self.getObjectInserted().getItem();
-		DungeonGenData genData = DungeonGenData.Create().setKeyItem(self.getObjectInserted()).setDungeonType(key.getDungeonType(self.getObjectInserted()))
-		        .setTheme(key.getDungeonTheme(self.getObjectInserted()))
-		        .setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(level.dimension()));
+		DungeonGenData genData = DungeonGenData.Create().setKeyItem(self.getObjectInserted()).setDungeonType(key.getDungeonType(self.getObjectInserted())).setTheme(key.getDungeonTheme(self.getObjectInserted())).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(level.dimension()));
 
 		if (!(genData.keyItem.getItem() instanceof ItemPortalKey))
 		{
@@ -63,8 +61,7 @@ public class TileEntityPortalKeyhole extends BlockEntity
 				DungeonUtils.openPortalAfterBuild(level, pos, genData, self);
 
 				// stop building
-				BlockState newBlockState = state.setValue(BlockPortalKeyhole.FACING, state.getValue(BlockPortalKeyhole.FACING)).setValue(BlockPortalKeyhole.FILLED, self.isFilled())
-				        .setValue(BlockPortalKeyhole.LIT, self.isActivated()).setValue(BlockPortalKeyhole.IS_BUILDING, false);
+				BlockState newBlockState = state.setValue(BlockPortalKeyhole.FACING, state.getValue(BlockPortalKeyhole.FACING)).setValue(BlockPortalKeyhole.FILLED, self.isFilled()).setValue(BlockPortalKeyhole.LIT, self.isActivated()).setValue(BlockPortalKeyhole.IS_BUILDING, false);
 				level.setBlockAndUpdate(pos, newBlockState);
 			}
 		}

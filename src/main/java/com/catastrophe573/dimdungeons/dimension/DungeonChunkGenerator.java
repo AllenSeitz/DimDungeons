@@ -38,8 +38,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	// copied from FlatLevelSource
 	public static final Codec<FlatLevelSource> myCodec = RecordCodecBuilder.create((p_204551_) ->
 	{
-		return commonCodec(p_204551_).and(FlatLevelGeneratorSettings.CODEC.fieldOf("settings").forGetter(FlatLevelSource::settings)).apply(p_204551_,
-		        p_204551_.stable(FlatLevelSource::new));
+		return commonCodec(p_204551_).and(FlatLevelGeneratorSettings.CODEC.fieldOf("settings").forGetter(FlatLevelSource::settings)).apply(p_204551_, p_204551_.stable(FlatLevelSource::new));
 	});
 
 	private final FlatLevelGeneratorSettings settings;
@@ -71,8 +70,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	@Override
 	public CompletableFuture<ChunkAccess> fillFromNoise(Executor p_187748_, Blender p_187749_, StructureFeatureManager p_187750_, ChunkAccess p_187751_)
 	{
-		// I don't know why this function isn't being called, but it doesn't really
-		// matter
+		// I don't know why this function isn't being called, but it doesn't really matter
 		makeBase(p_187751_);
 
 		return CompletableFuture.completedFuture(p_187751_);
@@ -120,8 +118,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 		int x = chunkIn.getPos().x;
 		int z = chunkIn.getPos().z;
 
-		// first generate a superflat world - sandstone where dungeons can appear, and
-		// void otherwise
+		// first generate a superflat world - sandstone where dungeons can appear, and void otherwise
 		if (DungeonPlacement.isDungeonChunk(x, z))
 		{
 			for (int px = 0; px < 16; px++)
@@ -153,8 +150,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 		}
 		else
 		{
-			// add barrier blocks to the void in case the player escapes (although these are
-			// escapable, too)
+			// add barrier blocks to the void in case the player escapes (although these are escapable, too)
 			if (x % 16 == 0 || z % 16 == 0)
 			{
 				for (int px = 0; px < 16; px++)
@@ -179,18 +175,10 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	}
 
 	@Override
-	public void applyCarvers(WorldGenRegion p_187691_, long p_187692_, BiomeManager p_187693_, StructureFeatureManager p_187694_, ChunkAccess p_187695_,
-	        GenerationStep.Carving p_187696_)
+	public void applyCarvers(WorldGenRegion p_187691_, long p_187692_, BiomeManager p_187693_, StructureFeatureManager p_187694_, ChunkAccess p_187695_, GenerationStep.Carving p_187696_)
 	{
 		// intentionally do nothing!
 	}
-
-	// @Override
-	// public void applyBiomeDecoration(WorldGenLevel p_187712_, ChunkAccess
-	// p_187713_, StructureFeatureManager p_187714_)
-	// {
-	// intentionally do nothing!
-	// }
 
 	@Override
 	// I do not know why this isn't being called in 1.18

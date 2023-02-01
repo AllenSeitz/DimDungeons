@@ -29,8 +29,7 @@ public class DungeonPlacementDebug extends DungeonPlacement
 	{
 	}
 
-	// this is something hardcoded and personal, and not meant to be invoked by
-	// players
+	// this is something hardcoded and personal, and not meant to be invoked by players
 	public static boolean place(ServerLevel world, long x, long z, int debugType, DungeonGenData genData)
 	{
 		long entranceChunkX = (x / 16) + 8;
@@ -93,8 +92,7 @@ public class DungeonPlacementDebug extends DungeonPlacement
 			break;
 		}
 
-		// place all 64 rooms (many will be blank), for example the entrance room is at
-		// [4][7] in this array
+		// place all 64 rooms (many will be blank), for example the entrance room is at [4][7] in this array
 		for (int i = 0; i < 8; i++)
 		{
 			for (int j = 0; j < 8; j++)
@@ -107,7 +105,7 @@ public class DungeonPlacementDebug extends DungeonPlacement
 				else
 				{
 					// calculate the chunkpos of the room at 0,0 in the top left of the map
-					// I'm not sure what the +4 is for, but it is needed
+					// the +4 chunk offset is so that dungeons line up with vanilla maps
 					ChunkPos cpos = new ChunkPos(((int) x / 16) + i + 4, ((int) z / 16) + j + 4);
 
 					if (!putRoomHere(cpos, world, nextRoom, genData))
@@ -183,8 +181,7 @@ public class DungeonPlacementDebug extends DungeonPlacement
 			return false;
 		}
 
-		// next if the structure is to be rotated then it must also be offset, because
-		// rotating a structure also moves it
+		// next if the structure is to be rotated then it must also be offset, because rotating a structure also moves it
 		if (room.rotation == Rotation.COUNTERCLOCKWISE_90)
 		{
 			// west: rotate CCW and push +Z

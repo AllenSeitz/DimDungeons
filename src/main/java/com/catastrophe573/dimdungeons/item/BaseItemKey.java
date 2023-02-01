@@ -312,8 +312,7 @@ public class BaseItemKey extends Item
 
 	public boolean isBlockKeyCharger(BlockState state)
 	{
-		if (state.getBlock() == BlockRegistrar.block_key_charger || state.getBlock() == BlockRegistrar.block_key_charger_used
-		        || state.getBlock() == BlockRegistrar.block_key_charger_damaged)
+		if (state.getBlock() == BlockRegistrar.block_key_charger || state.getBlock() == BlockRegistrar.block_key_charger_used || state.getBlock() == BlockRegistrar.block_key_charger_damaged)
 		{
 			return true;
 		}

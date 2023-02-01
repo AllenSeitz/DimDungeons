@@ -51,17 +51,11 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 		super(builderIn);
 
 		// this item isn't really "tierable" I just want it to be a reparable weapon
-		// this.attackDamage = 3; // appropriate for gold tier, but also will be
-		// configurable later
-		// this.attackSpeed = -2.0f; // appropriate for gold tier, but also will be
-		// configurable later
+		// this.attackDamage = 3; // appropriate for gold tier, but also will be configurable later
+		// this.attackSpeed = -2.0f; // appropriate for gold tier, but also will be configurable later
 		// Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-		// builder.put(Attributes.ATTACK_DAMAGE, new
-		// AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", (double)
-		// this.attackDamage, AttributeModifier.Operation.ADDITION));
-		// builder.put(Attributes.ATTACK_SPEED, new
-		// AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", (double)
-		// attackSpeed, AttributeModifier.Operation.ADDITION));
+		// builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", (double) this.attackDamage, AttributeModifier.Operation.ADDITION));
+		// builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", (double) attackSpeed, AttributeModifier.Operation.ADDITION));
 		// this.attributeModifiers = builder.build();
 	}
 
@@ -156,8 +150,7 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 			return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 		}
 
-		// Only the level 2 bell may be used in any dimension. The level 1 bell works
-		// exclusively in the dungeon dimension.
+		// Only the level 2 bell may be used in any dimension. The level 1 bell works exclusively in the dungeon dimension.
 		if (getUpgradeLevel(itemstack) < 2 && !DungeonUtils.isDimensionDungeon((Level) playerIn.getCommandSenderWorld()))
 		{
 			return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
@@ -237,8 +230,7 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 	{
 		float pitch = (float) Math.pow(2.0D, (double) (note - 12) / 12.0D);
 
-		// worldIn.playSound((Player) null, pos,
-		// NoteBlockInstrument.BELL.getSoundEvent(), SoundSource.PLAYERS, 3.0F, pitch);
+		// worldIn.playSound((Player) null, pos, NoteBlockInstrument.BELL.getSoundEvent(), SoundSource.PLAYERS, 3.0F, pitch);
 		worldIn.playLocalSound(x, y, z, NoteBlockInstrument.BELL.getSoundEvent(), SoundSource.PLAYERS, note, pitch, false);
 
 		if (DungeonConfig.showParticles)
@@ -250,26 +242,14 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 		}
 	}
 
-	/**
-	 * Called when the player Left Clicks (attacks) an entity. Processed before
-	 * damage is done, if return value is true further processing is canceled and
-	 * the entity is not attacked.
-	 *
-	 * @param stack  The Item being used
-	 * @param player The player that is attacking
-	 * @param entity The entity being attacked
-	 * @return True to cancel the rest of the interaction.
-	 */
 	@Override
 	public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity)
 	{
-		// I might use this function for something someday, like playing a sound effect
-		// maybe?
+		// I might use this function for something someday, like playing a sound effect maybe?
 		return false;
 	}
 
-	// Current implementations of this method in child classes do not use the entry
-	// argument beside ev. They just raise the damage on the stack.
+	// Current implementations of this method in child classes do not use the entry argument beside ev. They just raise the damage on the stack.
 	public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker)
 	{
 		stack.hurtAndBreak(1, attacker, (entity) ->
@@ -283,10 +263,8 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 		return true;
 	}
 
-	// Called when a Block is destroyed using this Item. Return true to trigger the
-	// "Use Item" statistic.
-	// Players probably shouldn't be breaking things with a bell anyway, but they
-	// can.
+	// Called when a Block is destroyed using this Item. Return true to trigger the "Use Item" statistic.
+	// Players probably shouldn't be breaking things with a bell anyway, but they can.
 	public boolean mineBlock(ItemStack stack, Level worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving)
 	{
 		if (state.getDestroySpeed(worldIn, pos) != 0.0F)
@@ -332,8 +310,7 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 					BlockState bs = worldIn.getBlockState(new BlockPos(x, y, z));
 					if (bs != null && ForgeRegistries.BLOCKS.tags().getTag(tag_secret_chime).contains(bs.getBlock()))
 					{
-						// the bell just rings for any tagged blocks (chests, barrels, etc)
-						// no more checking for loot tables
+						// the bell just rings for any tagged blocks (chests, barrels, etc) no more checking for loot tables
 						return new BlockPos(x, y, z);
 					}
 				}

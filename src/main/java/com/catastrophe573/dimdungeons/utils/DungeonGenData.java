@@ -49,8 +49,7 @@ public class DungeonGenData
 		dungeonTheme = themeNum;
 		if (dungeonTheme > DungeonConfig.themeSettings.size() && dungeonType != DungeonType.TELEPORTER_HUB)
 		{
-			DimDungeons.logMessageError(
-			        "DIMDUNGEONS ERROR: attempting to build a dungeon with a theme number greater than the number of themes defined in the config. The theme will be ignored.");
+			DimDungeons.logMessageError("DIMDUNGEONS ERROR: attempting to build a dungeon with a theme number greater than the number of themes defined in the config. The theme will be ignored.");
 			dungeonTheme = 0;
 		}
 		return this;
