@@ -197,7 +197,7 @@ public class DungeonUtils
 			}
 			else if (genData.dungeonType == DungeonType.TELEPORTER_HUB)
 			{
-				dungeonExistsHere = DungeonUtils.reprogramTeleporterHubDoorway(worldIn, (long) entranceX, (long) entranceZ, genData, keyholeFacing);
+				dungeonExistsHere = DungeonUtils.reprogramTeleporterHubDoorway(worldIn, (long) entranceX, (long) entranceZ, genData, keyholeFacing, false);
 			}
 			else
 			{
@@ -248,9 +248,9 @@ public class DungeonUtils
 		return actuallyReprogramGoldPortalBlocks(portalStart, dim, genData, keyholeFacing);
 	}
 
-	// this function creates the gold portal blocks if they do not exist, which the
-	// other similar functions do not!
-	public static boolean reprogramTeleporterHubDoorway(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing)
+	// this function creates the gold portal blocks if they do not exist, which the other similar functions do not!
+	// the last parameter handles erasing teleporter hub portals when the 'wooden' keys are removed
+	public static boolean reprogramTeleporterHubDoorway(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing, boolean erasePortal)
 	{
 		Level dim = DungeonUtils.getDungeonWorld(worldIn.getServer());
 		BlockPos portalStart = new BlockPos(entranceX, 55, entranceZ);
@@ -287,6 +287,12 @@ public class DungeonUtils
 					face = Direction.Axis.Z;
 				}
 
+				// or at this point, erase them
+				if ( erasePortal )
+				{
+					dim.setBlock(nextBlock, Blocks.AIR.defaultBlockState(), 2);
+					continue;
+				}
 				dim.setBlock(nextBlock, BlockRegistrar.block_gold_portal.defaultBlockState().setValue(BlockGoldPortal.AXIS, face), 2);
 
 				TileEntityGoldPortal te = (TileEntityGoldPortal) dim.getBlockEntity(nextBlock);
@@ -340,7 +346,7 @@ public class DungeonUtils
 	public static void buildSuperflatPersonalSpace(long buildX, long buildZ, MinecraftServer server)
 	{
 		BlockState[] layers = { Blocks.GRASS_BLOCK.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(), Blocks.DIRT.defaultBlockState(),
-		        Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState() };
+        Blocks.STONE.defaultBlockState(), Blocks.STONE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState(), Blocks.DEEPSLATE.defaultBlockState() };
 		ServerLevel dim = getPersonalBuildWorld(server);
 		ChunkPos cpos = new ChunkPos(((int) buildX / 16) + 4, ((int) buildZ / 16) + 4); // the +4 offset is for lining up with maps
 		BlockPos bpos = new BlockPos(cpos.getMinBlockX(), 50, cpos.getMinBlockZ());
