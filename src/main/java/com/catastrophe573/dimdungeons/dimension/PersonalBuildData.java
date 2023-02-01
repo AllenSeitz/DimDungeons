@@ -201,9 +201,14 @@ public class PersonalBuildData extends SavedData
 	public boolean isPlayerAllowedInPersonalDimension(Player visitor, ChunkPos destination)
 	{
 		OwnerData owner = getOwnerAtPos(destination);
+		
+		String visitorName = visitor.getGameProfile().getName();
+		visitorName = visitorName.replace("[", "");
+		visitorName = visitorName.replace("]", "");		
+		visitorName = visitorName.replace(" ", ""); // thanks Apotheosis
 
 		// creative mode players and the owner themselves are never banned, even if configured otherwise
-		if (visitor.getGameProfile().getName() == owner.playerName || visitor.isCreative() || DungeonConfig.disablePersonalDimSecurity)
+		if (visitorName.contentEquals(owner.playerName) || visitor.isCreative() || DungeonConfig.disablePersonalDimSecurity)
 		{
 			return true;
 		}
@@ -211,11 +216,11 @@ public class PersonalBuildData extends SavedData
 		// implement blacklist or whitelist
 		if (owner.isBlacklist)
 		{
-			return !owner.guestList.contains(visitor.getGameProfile().getName());
+			return !owner.guestList.contains(visitorName);
 		}
 		else
 		{
-			return owner.guestList.contains(visitor.getGameProfile().getName());
+			return owner.guestList.contains(visitorName);
 		}
 	}
 

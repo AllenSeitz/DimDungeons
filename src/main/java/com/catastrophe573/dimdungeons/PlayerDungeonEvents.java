@@ -382,7 +382,9 @@ public class PlayerDungeonEvents
 							if (itemInHand.hasCustomHoverName())
 							{
 								String playerName = itemInHand.getDisplayName().getString();
-								playerName = playerName.substring(1, playerName.length() - 1); // trim the [brackets] from the previous result
+								playerName = playerName.replace("[", "");
+								playerName = playerName.replace("]", "");
+								playerName = playerName.replace(" ", ""); // thanks Apotheosis
 
 								// add or remove a name from the list and print an appropriate message
 								if (PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).getBlacklistMode(player))
