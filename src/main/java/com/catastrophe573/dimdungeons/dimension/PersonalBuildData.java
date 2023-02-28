@@ -202,12 +202,18 @@ public class PersonalBuildData extends SavedData
 	{
 		OwnerData owner = getOwnerAtPos(destination);
 		
+		if ( owner == null )
+		{
+			return true; // shouldn't happen, but it happened to one person so this check is here now
+		}
+		
 		String visitorName = visitor.getGameProfile().getName();
 		visitorName = visitorName.replace("[", "");
 		visitorName = visitorName.replace("]", "");		
 		visitorName = visitorName.replace(" ", ""); // thanks Apotheosis
 
 		// creative mode players and the owner themselves are never banned, even if configured otherwise
+		//if (owner.uuid == visitor.getUUID() || visitor.isCreative() || DungeonConfig.disablePersonalDimSecurity)
 		if (visitorName.contentEquals(owner.playerName) || visitor.isCreative() || DungeonConfig.disablePersonalDimSecurity)
 		{
 			return true;
