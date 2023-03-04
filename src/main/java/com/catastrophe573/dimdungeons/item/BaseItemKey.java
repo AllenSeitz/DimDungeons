@@ -370,6 +370,7 @@ public class BaseItemKey extends Item
 							else
 							{
 								performActivationRitual(player, itemstack, worldIn, pos);
+								return InteractionResult.SUCCESS;
 							}
 						}
 					}
@@ -416,6 +417,7 @@ public class BaseItemKey extends Item
 				else if (blockid.equals("end_creator") || blockid.equals("end_creator_activated") || blockid.equals("ancient_portal_frame"))
 				{
 					performActivationRitual(player, itemstack, worldIn, pos);
+					return InteractionResult.SUCCESS;
 				}
 			}
 			else if (isBlockKeyCharger(worldIn.getBlockState(pos)))
@@ -474,6 +476,7 @@ public class BaseItemKey extends Item
 									worldIn.playSound((Player) null, pos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
 								}
 							}
+							return InteractionResult.SUCCESS;
 						}
 					}
 				}
