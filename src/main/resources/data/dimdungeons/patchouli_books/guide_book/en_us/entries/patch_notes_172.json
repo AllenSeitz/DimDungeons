@@ -1,0 +1,16 @@
+{
+    "name": "Version 172",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 172,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Updated the Chinese translation thanks to Nageih and Dolosaber. $(li)Added a new Russian translation from George-bruh. $(li)Portals to Teleporter Hubs now close on both sides when removing the key. (This only applies to portals 2-8. The first/Oak portal is permanent to prevent anyone from becoming trapped.)"
+        },
+        {
+            "type": "text",
+            "text": "$(li)Added a new /dimdungeons getroom cheat to print the name of the room you are in. $(li)Fixed a bug that would cause the friendlist/banlist to fail if another mod used mixins to alter the player's name. (Specifically, Apotheosis.) $(li)Activating keys now correctly returns SUCCESS instead of PASS. This should fix the last of the bugs with keys staying permanently blank."
+		}		
+    ]
+}
