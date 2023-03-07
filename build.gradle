@@ -19,7 +19,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 //apply from: 'https://raw.githubusercontent.com/SizableShrimp/ForgeUpdatesRemapper/main/remapper.gradle'
 
-version = '169'
+version = '172'
 group = 'com.catastrophe573.dimdungeons' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'dimdungeons'
 
