@@ -61,8 +61,10 @@ public class ItemRegistrar
 	}
 	
 	public static void registerCreativeTab(CreativeModeTabEvent.Register event)
-	{
-		event.registerCreativeModeTab(new ResourceLocation(DimDungeons.MOD_ID, "creative_tab"), builder -> builder.icon(() -> DungeonUtils.getExampleKey()).displayItems((featureFlags, output, hasOp) ->
+	{		
+		event.registerCreativeModeTab(new ResourceLocation(DimDungeons.MOD_ID, "creative_tab"), builder -> 
+		
+		builder.icon(() -> DungeonUtils.getExampleKey()).displayItems((params, output) ->
 		{
 			output.accept(ItemRegistrar.ITEM_GILDED_PORTAL.get());
 			output.accept(ItemRegistrar.ITEM_PORTAL_KEYHOLE.get());

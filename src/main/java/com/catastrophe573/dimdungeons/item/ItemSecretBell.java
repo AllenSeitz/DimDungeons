@@ -204,7 +204,7 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 		// assume that worlds won't go beyond -10000, even in the upcoming 1.17
 		if (getSecretY(stack) > -10000)
 		{
-			BlockPos secretPos = new BlockPos(getSecretX(stack), getSecretY(stack) + 1.0d, getSecretZ(stack));
+			BlockPos secretPos = BlockPos.m_274561_(getSecretX(stack), getSecretY(stack) + 1.0d, getSecretZ(stack));
 			if (time == BELL_COOLDOWN_TICKS - 6)
 			{
 				playSoundAtPosition(worldIn, entityIn.getX(), entityIn.getY() + 1.0d, entityIn.getZ(), 9);

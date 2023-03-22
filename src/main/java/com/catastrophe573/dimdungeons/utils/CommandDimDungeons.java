@@ -144,13 +144,12 @@ public class CommandDimDungeons
 			}
 			else
 			{
-				// keys don't normally stack, but just in case this block of code gives a stack
-				// of keys
+				// keys don't normally stack, but just in case this block of code gives a stack of keys
 				ItemEntity itementity = serverplayerentity.drop(stack, false);
 				if (itementity != null)
 				{
 					itementity.setNoPickUpDelay();
-					itementity.setOwner(serverplayerentity.getUUID());
+					//itementity.setOwner(serverplayerentity.getUUID());
 				}
 			}
 		}
@@ -202,7 +201,7 @@ public class CommandDimDungeons
 				if (itementity != null)
 				{
 					itementity.setNoPickUpDelay();
-					itementity.setOwner(serverplayerentity.getUUID());
+					//itementity.setOwner(serverplayerentity.getUUID());
 				}
 			}
 		}
