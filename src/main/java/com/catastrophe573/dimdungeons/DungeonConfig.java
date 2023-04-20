@@ -20,12 +20,12 @@ import java.util.stream.Collectors;
 // thank you gigaherz for showing me an example of a Forge config
 public class DungeonConfig
 {
-	public static final int DEFAULT_CONFIG_VERSION = 5;
+	public static final int DEFAULT_CONFIG_VERSION = 6;
 
 	public static final int DEFAULT_BASIC_DUNGEON_SIZE = 25;
 	public static final int DEFAULT_ADVANCED_DUNGEON_SIZE = 46;
 
-	public static final int DEFAULT_NUMBER_OF_THEMES = 2;
+	public static final int DEFAULT_NUMBER_OF_THEMES = 3;
 	public static final int MAXIMUM_NUMBER_OF_THEMES = 99;
 	public static final int DEFAULT_THEME_DUNGEON_SIZE = 14;
 	public static final int DEFAULT_CHANCE_FOR_THEME_KEYS = 4;
@@ -1035,6 +1035,24 @@ public class DungeonConfig
 		return defaultBasicEnemySet2();
 	}
 
+	public static List<? extends String> defaultSewersEnemySet1()
+	{
+		List<String> temp = Lists.newArrayList();
+		temp.add("minecraft:zombie");
+		temp.add("minecraft:husk");
+		temp.add("minecraft:zombie_villager");
+
+		return temp;
+	}
+
+	public static List<? extends String> defaultSewersEnemySet2()
+	{
+		List<String> temp = Lists.newArrayList();
+		temp.add("minecraft:slime");
+
+		return temp;
+	}	
+	
 	// this function is silly in purpose, but it is similar to the other hardcoded
 	// functions for the tiered dungeons
 	// I just named all the default theme rooms consistently so that this works
@@ -1071,6 +1089,99 @@ public class DungeonConfig
 		return returnList;
 	}
 
+	public static List<? extends List<String>> defaultSewersEntrances()
+	{
+		List<String> temp = Lists.newArrayList();
+		List<List<String>> tempEntrances = Lists.newArrayList();
+		temp.add("dimdungeons:sewers_beginroom_base");
+		tempEntrances.add(Lists.newArrayList(temp));
+		temp.clear();
+
+		return tempEntrances;
+	}
+
+	public static List<? extends List<String>> defaultSewersFourways()
+	{
+		List<String> temp = Lists.newArrayList();
+		List<List<String>> tempFourways = Lists.newArrayList();
+		temp.add("dimdungeons:sewers_cross_01vf");
+		temp.add("dimdungeons:sewers_cross_01vcf");
+		temp.add("dimdungeons:sewers_cross_02vf");
+		temp.add("dimdungeons:sewers_cross_02vcf");
+		temp.add("dimdungeons:sewers_cross_03vf");
+		temp.add("dimdungeons:sewers_cross_03vcf");
+		tempFourways.add(Lists.newArrayList(temp));
+		temp.clear();
+
+		return tempFourways;
+	}
+
+	public static List<? extends List<String>> defaultSewersThreeways()
+	{
+		List<String> temp = Lists.newArrayList();
+		List<List<String>> tempThreeways = Lists.newArrayList();
+		temp.add("dimdungeons:sewers_tsection_01vf");
+		temp.add("dimdungeons:sewers_tsection_01vcf");
+		temp.add("dimdungeons:sewers_tsection_02vf");
+		temp.add("dimdungeons:sewers_tsection_02vcf");
+		temp.add("dimdungeons:sewers_tsection_03vf");
+		temp.add("dimdungeons:sewers_tsection_03vcf");
+		tempThreeways.add(Lists.newArrayList(temp));
+		temp.clear();
+
+		return tempThreeways;
+	}
+	
+	public static List<? extends List<String>> defaultSewersHallways()
+	{
+		List<String> temp = Lists.newArrayList();
+		List<List<String>> tempHallways = Lists.newArrayList();
+		temp.add("dimdungeons:sewers_straight_01vf");
+		temp.add("dimdungeons:sewers_straight_01vcf");
+		temp.add("dimdungeons:sewers_straight_02vf");
+		temp.add("dimdungeons:sewers_straight_02vcf");
+		temp.add("dimdungeons:sewers_straight_03vcf");
+		temp.add("dimdungeons:sewers_straight_03vf");
+		temp.add("dimdungeons:sewers_straight_04vcf");
+		tempHallways.add(Lists.newArrayList(temp));
+		temp.clear();
+
+		return tempHallways;
+	}
+
+	public static List<? extends List<String>> defaultSewersCorners()
+	{
+		List<String> temp = Lists.newArrayList();
+		List<List<String>> tempCorners = Lists.newArrayList();
+		temp.add("dimdungeons:sewers_corner_01vf");
+		temp.add("dimdungeons:sewers_corner_01vcf");
+		temp.add("dimdungeons:sewers_corner_02vf");
+		temp.add("dimdungeons:sewers_corner_02vcf");
+		temp.add("dimdungeons:sewers_corner_03vf");
+		temp.add("dimdungeons:sewers_corner_03vcf");
+		tempCorners.add(Lists.newArrayList(temp));
+		temp.clear();
+
+		return tempCorners;
+	}
+	
+	public static List<? extends List<String>> defaultSewersEnds()
+	{
+		List<String> temp = Lists.newArrayList();
+		List<List<String>> tempEnds = Lists.newArrayList();
+		temp.add("dimdungeons:sewers_bossroom_01");
+		temp.add("dimdungeons:sewers_bossroom_02");
+		temp.add("dimdungeons:sewers_bossroom_03");
+		temp.add("dimdungeons:sewers_finalboss_01vf");
+		temp.add("dimdungeons:sewers_bossroom_04");
+		temp.add("dimdungeons:sewers_bossroom_05");
+		temp.add("dimdungeons:sewers_bossroom_06");
+		tempEnds.add(Lists.newArrayList(temp));
+		temp.clear();
+
+		return tempEnds;
+	}	
+	
 	// any config that has to deal with datapacks
 	public static class CommonConfig
 	{
@@ -1190,8 +1301,25 @@ public class DungeonConfig
 			builder.pop();
 			allThemeConfigs.add(theme - 1, theme2);
 			
+			// room generation for theme3
+			ThemeConfigStructure theme3 = new ThemeConfigStructure();
+			theme = 3;
+			builder.comment("Settings for Theme " + theme).push("dungeonTheme" + theme);
+			theme3.themeEntrances = builder.translation("config.dimdungeons.themeEntrances" + theme).define("themeEntrances" + theme, defaultSewersEntrances());
+			theme3.themeFourways = builder.translation("config.dimdungeons.themeFourways" + theme).define("themeFourways" + theme, defaultSewersFourways());
+			theme3.themeThreeways = builder.translation("config.dimdungeons.basicThreeways" + theme).define("themeThreeways" + theme, defaultSewersThreeways());
+			theme3.themeHallways = builder.translation("config.dimdungeons.basicHallways" + theme).define("themeHallways" + theme, defaultSewersHallways());
+			theme3.themeCorners = builder.translation("config.dimdungeons.basicCorners" + theme).define("themeCorners" + theme, defaultSewersCorners());
+			theme3.themeEnds = builder.translation("config.dimdungeons.basicEnds" + theme).define("themeEnds" + theme, defaultSewersEnds());
+			theme3.themeEnemySet1 = builder.translation("config.dimdungeons.basicEnemySet1_" + theme).define("themeEnemySet1_" + theme, defaultSewersEnemySet1());
+			theme3.themeEnemySet2 = builder.translation("config.dimdungeons.basicEnemySet2_" + theme).define("themeEnemySet2_" + theme, defaultSewersEnemySet2());
+			theme3.themeEnemyHealthScaling = builder.translation("config.dimdungeons.themeEnemyHealthScaling" + theme).define("themeEnemyHealthScaling" + theme, 1.0);
+			theme3.themeDungeonSize = builder.translation("config.dimdungeons.themeDungeonSize" + theme).define("themeDungeonSize" + theme, DEFAULT_THEME_DUNGEON_SIZE);
+			builder.pop();
+			allThemeConfigs.add(theme - 1, theme3);
+			
 			// handle each unused theme with a separate section in a loop
-			for (int i = 3; i <= MAXIMUM_NUMBER_OF_THEMES; i++)
+			for (int i = 4; i <= MAXIMUM_NUMBER_OF_THEMES; i++)
 			{
 				int numEntrances = 0;
 				int numOtherRooms = 0;
