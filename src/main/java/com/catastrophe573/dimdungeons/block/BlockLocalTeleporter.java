@@ -81,7 +81,7 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 			return;
 		}
 
-		if (entityIn.canChangeDimensions())
+		if (!entityIn.isPassenger() && !entityIn.isVehicle() && entityIn.canChangeDimensions())
 		{
 			BlockEntity tile = worldIn.getBlockEntity(pos);
 
