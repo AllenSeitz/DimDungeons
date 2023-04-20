@@ -314,6 +314,7 @@ public class DungeonConfig
 		temp.add("dimdungeons:combat_1");
 		temp.add("dimdungeons:combat_2");
 		temp.add("dimdungeons:combat_3");
+		temp.add("dimdungeons:farmland_puzzle_1");
 		tempBasicFourways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:combat_4");
@@ -352,6 +353,7 @@ public class DungeonConfig
 		List<List<String>> tempBasicThreeways = Lists.newArrayList();
 		temp.add("dimdungeons:threeway_1");
 		temp.add("dimdungeons:threeway_2");
+		temp.add("dimdungeons:pistonwall_3");
 		tempBasicThreeways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:threeway_5");
@@ -399,7 +401,10 @@ public class DungeonConfig
 		List<List<String>> tempBasicHallways = Lists.newArrayList();
 		temp.add("dimdungeons:hallway_1");
 		temp.add("dimdungeons:hallway_2");
+		tempBasicHallways.add(Lists.newArrayList(temp));
+		temp.clear();
 		temp.add("dimdungeons:hallway_4");
+		temp.add("dimdungeons:mossyhall_1");
 		tempBasicHallways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:hallway_5");
@@ -418,6 +423,7 @@ public class DungeonConfig
 		tempBasicHallways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:advice_3");
+		temp.add("dimdungeons:pistonwall_1");
 		tempBasicHallways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:library_2");
@@ -532,6 +538,10 @@ public class DungeonConfig
 		temp.add("dimdungeons:slotmachine_2");
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
+		temp.add("dimdungeons:portal_puzzle_1");
+		temp.add("dimdungeons:portal_puzzle_2");
+		tempBasicEnds.add(Lists.newArrayList(temp));
+		temp.clear();
 		temp.add("dimdungeons:magicpuzzle_1");
 		temp.add("dimdungeons:magicpuzzle_2");
 		tempBasicEnds.add(Lists.newArrayList(temp));
@@ -550,6 +560,7 @@ public class DungeonConfig
 		temp.add("dimdungeons:shoutout_1");
 		temp.add("dimdungeons:shoutout_2");
 		temp.add("dimdungeons:shoutout_3");
+		temp.add("dimdungeons:shoutout_4");
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:spawner_1");
@@ -642,6 +653,7 @@ public class DungeonConfig
 		temp.add("dimdungeons:combat_1");
 		temp.add("dimdungeons:combat_2");
 		temp.add("dimdungeons:combat_3");
+		temp.add("dimdungeons:farmland_puzzle_1");		
 		tempAdvancedFourways.add(Lists.newArrayList(temp));
 		temp.add("dimdungeons:combat_4");
 		temp.add("dimdungeons:combat_5");
@@ -708,6 +720,7 @@ public class DungeonConfig
 		tempAdvancedThreeways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:slotmachine_1");
+		temp.add("dimdungeons:pistonwall_4");
 		tempAdvancedThreeways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:firepath_6");
@@ -753,6 +766,10 @@ public class DungeonConfig
 		temp.clear();
 		temp.add("dimdungeons:library_2");
 		temp.add("dimdungeons:chesttrap_1");
+		tempAdvancedHallways.add(Lists.newArrayList(temp));
+		temp.clear();
+		temp.add("dimdungeons:mossyhall_1");
+		temp.add("dimdungeons:pistonwall_2");
 		tempAdvancedHallways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:moohall_1");
@@ -907,6 +924,10 @@ public class DungeonConfig
 		tempAdvancedEnds.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:beacon_2");
+		tempAdvancedEnds.add(Lists.newArrayList(temp));
+		temp.clear();
+		temp.add("dimdungeons:portal_puzzle_1");
+		temp.add("dimdungeons:portal_puzzle_2");
 		tempAdvancedEnds.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:slotmachine_2");
@@ -1168,7 +1189,7 @@ public class DungeonConfig
 			theme2.themeDungeonSize = builder.translation("config.dimdungeons.themeDungeonSize" + theme).define("themeDungeonSize" + theme, DEFAULT_THEME_DUNGEON_SIZE);
 			builder.pop();
 			allThemeConfigs.add(theme - 1, theme2);
-
+			
 			// handle each unused theme with a separate section in a loop
 			for (int i = 3; i <= MAXIMUM_NUMBER_OF_THEMES; i++)
 			{
