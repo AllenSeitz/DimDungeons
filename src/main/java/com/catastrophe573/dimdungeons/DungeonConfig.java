@@ -468,6 +468,9 @@ public class DungeonConfig
 		temp.add("dimdungeons:firepath_4");
 		tempBasicHallways.add(Lists.newArrayList(temp));
 		temp.clear();
+		temp.add("dimdungeons:tower_1");
+		tempBasicHallways.add(Lists.newArrayList(temp));
+		temp.clear();
 		temp.add("dimdungeons:tempt_1");
 		temp.add("dimdungeons:tempt_2");
 		temp.add("dimdungeons:tempt_3");
@@ -812,7 +815,10 @@ public class DungeonConfig
 		temp.add("dimdungeons:tempt_1");
 		temp.add("dimdungeons:tempt_2");
 		temp.add("dimdungeons:tempt_3");
-		temp.add("dimdungeons:tempt_4");
+		temp.add("dimdungeons:tempt_4");		
+		tempAdvancedHallways.add(Lists.newArrayList(temp));
+		temp.clear();
+		temp.add("dimdungeons:tower_1");
 		tempAdvancedHallways.add(Lists.newArrayList(temp));
 		temp.clear();
 
