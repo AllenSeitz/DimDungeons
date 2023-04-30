@@ -23,6 +23,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -47,6 +48,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
@@ -560,6 +562,18 @@ public class DungeonPlacement
 		{
 			// do nothing!
 		}
+		else if ("LockWithCode".equals(name))
+		{
+			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+			BlockEntity te = world.getBlockEntity(pos.below());
+
+			if (te instanceof BaseContainerBlockEntity)
+			{
+				CompoundTag tag = ((BaseContainerBlockEntity) te).getUpdateTag();
+				tag.putString("Lock", makeChunkCode(world.getChunkAt(pos).getPos()));
+				te.handleUpdateTag(tag);
+			}
+		}		
 		else if ("FortuneTeller".equals(name))
 		{
 			world.setBlock(pos, Blocks.STONE_BRICKS.defaultBlockState(), 2); // erase this data block
@@ -583,6 +597,11 @@ public class DungeonPlacement
 		{
 			String lootType = room.dungeonType == DungeonType.BASIC ? "basic" : "advanced";
 			String lootTable = "chests/chestloot_" + lootType + "_hard";
+			fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + lootTable), world, rand);
+		}
+		else if ("ChestLootKit".equals(name))
+		{
+			String lootTable = "chests/kit_random";
 			fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + lootTable), world, rand);
 		}
 		else if ("ChestLootLucky".equals(name))
@@ -689,7 +708,7 @@ public class DungeonPlacement
 
 			spawnEnemyHere(pos, mobid, world, room.theme, room.dungeonType);
 		}
-		else if ("SummonEnemy2".equals(name))
+		else if ("SummonEnemy2".equals(name) || "SummonKeyholder".equals(name))
 		{
 			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
 
@@ -706,7 +725,28 @@ public class DungeonPlacement
 				mobid = DungeonConfig.advancedEnemySet2.get(rand.nextInt(poolSize));
 			}
 
-			spawnEnemyHere(pos, mobid, world, room.theme, room.dungeonType);
+			Entity mob = spawnEnemyHere(pos, mobid, world, room.theme, room.dungeonType);
+			
+			// Keyholders are entity 2s with some extra stuff
+			if ( "SummonKeyholder".equals(name) )
+			{
+				if (!((Mob) mob).hasItemInSlot(EquipmentSlot.CHEST))
+				{
+					ItemStack stack = new ItemStack(Items.STICK);
+					stack.setHoverName(new TextComponent(makeChunkCode(world.getChunk(pos).getPos())));
+
+					((Mob) mob).setItemSlot(EquipmentSlot.CHEST, stack);
+					((Mob) mob).setDropChance(EquipmentSlot.CHEST, 1.0f);
+				}
+			}
+
+			// and give it an extra 50% health plus some potion buffs, because
+			AttributeInstance tempHealth = ((Mob) mob).getAttribute(Attributes.MAX_HEALTH);
+			((Mob) mob).getAttribute(Attributes.MAX_HEALTH).setBaseValue(tempHealth.getBaseValue() * 1.5f);
+			((Mob) mob).setHealth((float) ((Mob) mob).getAttribute(Attributes.MAX_HEALTH).getBaseValue());
+
+			((Mob) mob).addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 9999999, 1, false, false));
+			((Mob) mob).addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 9999999, 1, false, false));			
 		}
 		else
 		{
@@ -715,15 +755,15 @@ public class DungeonPlacement
 		}
 	}
 
-	private static void spawnEnemyHere(BlockPos pos, String resourceLocation, ServerLevel world, int theme, DungeonType type)
+	private static Entity spawnEnemyHere(BlockPos pos, String resourceLocation, ServerLevel world, int theme, DungeonType type)
 	{
 		EntityType<?> entitytype = EntityType.byString(resourceLocation).orElse(EntityType.CHICKEN);
 
 		Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, MobSpawnType.STRUCTURE, true, true);
 		if (mob == null)
 		{
-			return; // this can happen if the mob in question does not exist, such as another mod
-			        // named "Bad Mobs" preventing minecraft:zombie from spawning
+			return null; // this can happen if the mob in question does not exist, such as another mod
+			             // named "Bad Mobs" preventing minecraft:zombie from spawning
 		}
 		mob.moveTo(pos, 0.0F, 0.0F);
 
@@ -758,7 +798,12 @@ public class DungeonPlacement
 			((Mob) mob).setHealth((float) ((Mob) mob).getAttribute(Attributes.MAX_HEALTH).getBaseValue());
 
 			// randomly put a themed key into a mob's offhand
-			if (world.getRandom().nextInt(100) < DungeonConfig.chanceForThemeKeys && DungeonConfig.themeSettings.size() > 0 && theme < 1 && type != DungeonType.ADVANCED)
+			int chanceForTheme = DungeonConfig.chanceForThemeKeys;
+			if ( type == DungeonType.ADVANCED )
+			{
+				chanceForTheme /= 2; // because there are so many mobs
+			}
+			if (world.getRandom().nextInt(100) < chanceForTheme && DungeonConfig.themeSettings.size() > 0 && theme < 1)
 			{
 				// if the mob's offhand slot is occupied then just skip it
 				if (!((Mob) mob).hasItemInSlot(EquipmentSlot.OFFHAND))
@@ -781,6 +826,8 @@ public class DungeonPlacement
 				((Mob) mob).addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 9999999, 1, false, false));
 			}
 		}
+		
+		return mob;
 	}
 
 	private static void fillChestBelow(BlockPos pos, ResourceLocation lootTable, LevelAccessor world, Random rand)
@@ -861,5 +908,10 @@ public class DungeonPlacement
 
 		mob.finalizeSpawn((ServerLevelAccessor) world, world.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, (SpawnGroupData) null, (CompoundTag) null);
 		world.addFreshEntity(mob);
+	}
+	
+	private static String makeChunkCode(ChunkPos cpos)
+	{
+		return "ChestKey" + cpos.x + cpos.z;
 	}
 }
