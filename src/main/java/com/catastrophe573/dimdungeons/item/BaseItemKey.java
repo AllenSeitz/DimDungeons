@@ -343,10 +343,8 @@ public class BaseItemKey extends Item
 
 		if (worldIn.getBlockState(pos) != null)
 		{
-			// System.out.println("Used a key on some block: " +
-			// worldIn.getBlockState(pos).getBlock().getRegistryName());
-			// System.out.println("Hit it here: " + hitX + ", " + hitZ + ", facing=" +
-			// facing.getName());
+			// System.out.println("Used a key on some block: " + worldIn.getBlockState(pos).getBlock().getRegistryName());
+			// System.out.println("Hit it here: " + hitX + ", " + hitZ + ", facing=" + facing.getName());
 
 			// did they use the key on an end portal frame?
 			if (worldIn.getBlockState(pos).getBlock() == Blocks.END_PORTAL_FRAME)
