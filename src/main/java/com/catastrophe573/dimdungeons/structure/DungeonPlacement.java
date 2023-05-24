@@ -17,6 +17,7 @@ import com.catastrophe573.dimdungeons.structure.DungeonDesigner.RoomType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -912,6 +913,11 @@ public class DungeonPlacement
 	
 	private static String makeChunkCode(ChunkPos cpos)
 	{
-		return "ChestKey" + cpos.x + cpos.z;
+		int sum = cpos.x + cpos.z;
+		
+		// maybe make this "Chest Key of Wonder and Catastrophe and of the Future and ..."
+		String start = I18n.get("npart.dimdungeons.struct_10");
+		String noun1 = I18n.get("npart.dimdungeons.noun_" + (sum % 32));
+		return start + " " + noun1;
 	}
 }
