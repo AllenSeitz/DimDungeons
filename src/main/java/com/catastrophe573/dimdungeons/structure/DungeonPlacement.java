@@ -22,8 +22,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -739,7 +738,7 @@ public class DungeonPlacement
 				if (!((Mob) mob).hasItemInSlot(EquipmentSlot.CHEST))
 				{
 					ItemStack stack = new ItemStack(Items.STICK);
-					stack.setHoverName(new TextComponent(makeChunkCode(world.getChunk(pos).getPos())));
+					stack.setHoverName(Component.translatable(makeChunkCode(world.getChunk(pos).getPos())));
 
 					((Mob) mob).setItemSlot(EquipmentSlot.CHEST, stack);
 					((Mob) mob).setDropChance(EquipmentSlot.CHEST, 1.0f);
