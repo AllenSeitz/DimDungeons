@@ -3,7 +3,7 @@
 	"landing_text": "Discover challenging and rewarding Dimensional Dungeons.",
 	"model": "dimdungeons:item_guidebook",
 	"version": 0,
-	"subtitle": "v172 March 2023",
+	"subtitle": "v177 June 2023",
 	"show_progress": false,
 	"advancement_namespaces": [ "dimdungeons" ],
 	"creative_tab": "dimdungeons"

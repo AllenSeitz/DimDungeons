@@ -1,0 +1,12 @@
+{
+    "name": "Version 177",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 177,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Added two new tower rooms. $(li)Theme keys now appear in advanced tier dungeons. $(li)New data blocks for custom room builders."
+        }	
+    ]
+}
