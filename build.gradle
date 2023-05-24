@@ -143,7 +143,8 @@ repositories {
     // ForgeGradle automatically adds the Forge maven and Maven Central for you
 
     maven { // JEI
-        url "https://dvs1.progwml6.com/files/maven"
+        //url "https://dvs1.progwml6.com/files/maven" old and broken
+        url "https://maven.blamejared.com/"		
     }
 
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
