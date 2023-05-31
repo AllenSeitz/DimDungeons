@@ -11,7 +11,7 @@
   "coordinate_scale": 1,
   "ambient_light": 0.5,
   "logical_height": 256,
-  "fixed_time": 9000,
+  "fixed_time": 4000,
   "height": 256,
   "min_y": 0,
   "infiniburn": "#minecraft:infiniburn_overworld",

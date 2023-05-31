@@ -299,7 +299,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 
 			// also check for teleporting into an advanced dungeon for the first time
 			//ChunkPos cpos = new ChunkPos(new BlockPos(x, y, z));
-			ChunkPos cpos = new ChunkPos(BlockPos.m_274561_(x, y, z)); // hack for losing the (double, double, double) constructor to a recent mappings mishap
+			ChunkPos cpos = new ChunkPos(new BlockPos((int)x, (int)y, (int)z)); // hack for losing the (double, double, double) constructor to a recent mappings mishap
 			
 			DungeonRoom entrance = DungeonData.get(dim).getRoomAtPos(cpos);
 			if (entrance != null && entrance.dungeonType == DungeonType.ADVANCED)
@@ -309,7 +309,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 				player.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
 			}
 		}
-		else if (DungeonUtils.isDimensionPersonalBuild(dim) && !DungeonUtils.isPersonalBuildChunk(BlockPos.m_274561_(x, y, z)))
+		else if (DungeonUtils.isDimensionPersonalBuild(dim) && !DungeonUtils.isPersonalBuildChunk(new BlockPos((int)x, (int)y, (int)z)))
 		{
 			x += 1.0D; // an additional hack to center on the two block wide portal
 			z += 0.5D;

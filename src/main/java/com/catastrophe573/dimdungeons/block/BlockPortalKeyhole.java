@@ -553,24 +553,22 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			return;
 		}
 
-		// item is not even a key, lol
-		ItemStack item = tileEntity.getObjectInserted();
-		if ( !(item.getItem() instanceof BaseItemKey) )
-		{
-			return;
-		}
-		
 		// error #1: the key is not activated
+		ItemStack item = tileEntity.getObjectInserted();
 		int keyLevel = 0;
-		if (item.getItem() instanceof BaseItemKey)
+		if (item.getItem() instanceof ItemPortalKey)
 		{
-			BaseItemKey key = (BaseItemKey) item.getItem();
+			ItemPortalKey key = (ItemPortalKey) item.getItem();
 			if (!key.isActivated(item))
 			{
 				speakLiterallyToPlayerAboutProblems(worldIn, player, 1, null);
 				return;
 			}
 			keyLevel = key.getKeyLevel(item);
+		}
+		else
+		{
+			return; // item inserted is not even a key!
 		}
 
 		// error #2: no room to spawn portal

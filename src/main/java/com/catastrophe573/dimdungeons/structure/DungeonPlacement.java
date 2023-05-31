@@ -764,12 +764,7 @@ public class DungeonPlacement
 	{
 		EntityType<?> entitytype = EntityType.byString(resourceLocation).orElse(EntityType.CHICKEN);
 
-		// funny thing in 1.19.3 here. The second parameter really should be null.
-		// however, a new alternative version of spawn() was added with nullable 2nd and 3rd parameters as well, causing an ambiguous reference
-		// so instead this forces one of the two to be called, and should have no side effects
-		Entity mob = entitytype.spawn((ServerLevel) world, new CompoundTag(), null, pos, MobSpawnType.STRUCTURE, true, true);
-		// Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, MobSpawnType.STRUCTURE, true, true);
-
+		Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, MobSpawnType.STRUCTURE, true, true);
 		if (mob == null)
 		{
 			return null; // this can happen if the mob in question does not exist, such as another mod

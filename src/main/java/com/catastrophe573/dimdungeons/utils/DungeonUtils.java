@@ -23,7 +23,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -167,7 +167,7 @@ public class DungeonUtils
 		Level buildDim = DungeonUtils.getPersonalBuildWorld(worldIn.getServer());
 
 		ChunkPos cpos = new ChunkPos(((int) entranceX / 16) + 4, ((int) entranceZ / 16) + 4);
-		BlockPos bpos = BlockPos.m_274561_(cpos.getMinBlockX() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_X, 50, cpos.getMinBlockZ() + +ItemBuildKey.PLOT_ENTRANCE_OFFSET_Z);
+		BlockPos bpos = new BlockPos((int)(cpos.getMinBlockX() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_X), 50, (int)(cpos.getMinBlockZ() + +ItemBuildKey.PLOT_ENTRANCE_OFFSET_Z));
 
 		BlockState block = buildDim.getBlockState(bpos);
 		if (block.getBlock() == Blocks.BEDROCK)
@@ -226,7 +226,7 @@ public class DungeonUtils
 	public static boolean reprogramExistingExitDoorway(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing)
 	{
 		Level dim = DungeonUtils.getDungeonWorld(worldIn.getServer());
-		BlockPos portalStart = BlockPos.m_274561_(entranceX, 55, entranceZ + 2); // change this back to "new BlockPos()" once the mappings are fixed
+		BlockPos portalStart = new BlockPos((int)entranceX, 55, (int)(entranceZ + 2)); // change this back to "new BlockPos()" once the mappings are fixed
 
 		return actuallyReprogramGoldPortalBlocks(portalStart, dim, genData, keyholeFacing);
 	}
@@ -235,7 +235,7 @@ public class DungeonUtils
 	public static boolean reprogramPersonalPortal(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing)
 	{
 		Level dim = DungeonUtils.getPersonalBuildWorld(worldIn.getServer());
-		BlockPos portalStart = BlockPos.m_274561_(entranceX + 1, 51, entranceZ + 1);
+		BlockPos portalStart = new BlockPos((int)(entranceX + 1), 51, (int)(entranceZ + 1));
 
 		if (genData.returnDimension.equals(DimDungeons.BUILD_DIMENSION.location().toString()))
 		{
@@ -250,7 +250,7 @@ public class DungeonUtils
 	public static boolean reprogramTeleporterHubDoorway(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing, boolean erasePortal)
 	{
 		Level dim = DungeonUtils.getDungeonWorld(worldIn.getServer());
-		BlockPos portalStart = BlockPos.m_274561_(entranceX, 55, entranceZ); // change this back to "new BlockPos()" once the mappings are fixed
+		BlockPos portalStart = new BlockPos((int)entranceX, 55, (int)entranceZ); // change this back to "new BlockPos()" once the mappings are fixed
 
 		// figure out which of the 8 portals we're using and "move" the "entrance" there
 		// this math is awkward because when we call getWarpX() or Z() on the key, the
@@ -356,7 +356,7 @@ public class DungeonUtils
 		}
 
 		// finally, hand build the portal just outside the center of the south side
-		BlockPos portalStart = BlockPos.m_274561_(cpos.getMinBlockX() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_X, 50, cpos.getMinBlockZ() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_Z);
+		BlockPos portalStart = new BlockPos((int)(cpos.getMinBlockX() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_X), 50, (int)(cpos.getMinBlockZ() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_Z));
 		dim.setBlock(portalStart, Blocks.BEDROCK.defaultBlockState(), 2);
 		dim.setBlock(portalStart.east(), Blocks.BEDROCK.defaultBlockState(), 2);
 		dim.setBlock(portalStart.west(), Blocks.BEDROCK.defaultBlockState(), 2);
@@ -408,7 +408,7 @@ public class DungeonUtils
 	// returns the limit of the dungeon space not in blocks, but in dungeon widths (which is BLOCKS_APART_PER_DUNGEON)
 	public static long getLimitOfWorldBorder(MinecraftServer server)
 	{
-		ResourceKey<Level> configkey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(DungeonConfig.worldborderToRespect));
+		ResourceKey<Level> configkey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(DungeonConfig.worldborderToRespect));
 		ServerLevel world = server.getLevel(configkey);
 		double size = world.getWorldBorder().getSize() / 2;
 

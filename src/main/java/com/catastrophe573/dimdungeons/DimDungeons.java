@@ -5,9 +5,8 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -20,8 +19,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +29,6 @@ import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 import com.catastrophe573.dimdungeons.item.ItemSecretBell;
 import com.catastrophe573.dimdungeons.utils.CommandDimDungeons;
-import com.mojang.serialization.Codec;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("dimdungeons")
@@ -48,11 +44,8 @@ public class DimDungeons
 	public static final String dungeon_dimension_regname = "dungeon_dimension";
 	public static final String build_dimension_regname = "build_dimension";
 
-	public static final ResourceKey<Level> DUNGEON_DIMENSION = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(MOD_ID, dungeon_dimension_regname));
-	public static final ResourceKey<Level> BUILD_DIMENSION = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(MOD_ID, build_dimension_regname));
-
-	private static final DeferredRegister<Codec<? extends ChunkGenerator>> CHUNK_GENERATORS = DeferredRegister.create(Registries.CHUNK_GENERATOR, DimDungeons.MOD_ID);
-	public static final RegistryObject<Codec<? extends ChunkGenerator>> MY_CHUNK_GEN = CHUNK_GENERATORS.register("dimdungeons_chunkgen", () -> DungeonChunkGenerator.CODEC);
+	public static final ResourceKey<Level> DUNGEON_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(MOD_ID, dungeon_dimension_regname));
+	public static final ResourceKey<Level> BUILD_DIMENSION = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(MOD_ID, build_dimension_regname));
 
 	public static final PlayerDungeonEvents eventHandler = new PlayerDungeonEvents();
 
@@ -60,7 +53,6 @@ public class DimDungeons
 	{
 		BlockRegistrar.register();
 		ItemRegistrar.register();
-		CHUNK_GENERATORS.register(FMLJavaModLoadingContext.get().getModEventBus());
 
 		// register event listeners that don't use the event bus
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
@@ -68,9 +60,9 @@ public class DimDungeons
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modConfig);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(ItemRegistrar::registerCreativeTab);
 
-		// Register ourselves for server, registry and other game events we are interested in
+		// Register ourselves for server, registry and other game events we are
+		// interested in
 		MinecraftForge.EVENT_BUS.register(eventHandler);
 		MinecraftForge.EVENT_BUS.addListener(PlayerDungeonEvents::onWorldTick);
 
@@ -81,7 +73,7 @@ public class DimDungeons
 
 	private void doCommonStuff(final FMLCommonSetupEvent event)
 	{
-		// Registries.register(Registries.CHUNK_GENERATOR, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.CODEC);
+		Registry.register(Registry.CHUNK_GENERATOR, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.myCodec);
 	}
 
 	@SuppressWarnings("removal")
@@ -94,7 +86,8 @@ public class DimDungeons
 			ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_GOLD_PORTAL.get(), RenderType.translucent());
 			ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get(), RenderType.translucent());
 
-			// register the custom property for the keys that allows for switching their model
+			// register the custom property for the keys that allows for switching their
+			// model
 			ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), new ResourceLocation(DimDungeons.MOD_ID, "keytype"), (stack, world, entity, number) ->
 			{
 				return ItemPortalKey.getKeyLevelAsFloat(stack);

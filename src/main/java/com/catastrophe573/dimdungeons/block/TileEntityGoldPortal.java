@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.world.level.Level;
 
 public class TileEntityGoldPortal extends BlockEntity
@@ -87,7 +87,7 @@ public class TileEntityGoldPortal extends BlockEntity
 
 	public BlockPos getDestination()
 	{
-		return BlockPos.m_274561_(destX, destY, destZ); // should be "new Blockpos()" but there was a mappings problem
+		return new BlockPos((int)destX, (int)destY, (int)destZ); // should be "new Blockpos()" but there was a mappings problem
 	}
 
 	public int getCooldown()
@@ -97,7 +97,7 @@ public class TileEntityGoldPortal extends BlockEntity
 
 	public ResourceKey<Level> getDestinationDimension()
 	{
-		return ResourceKey.create(Registries.DIMENSION, new ResourceLocation(destDimension));
+		return ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(destDimension));
 	}
 
 	public Direction getExitDirection()
