@@ -139,7 +139,7 @@ public class CommandDimDungeons
 					itementity.makeFakeItem();
 				}
 
-				serverplayerentity.level.playSound((Player) null, serverplayerentity.getX(), serverplayerentity.getY(), serverplayerentity.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((serverplayerentity.getRandom().nextFloat() - serverplayerentity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+				serverplayerentity.level().playSound((Player) null, serverplayerentity.getX(), serverplayerentity.getY(), serverplayerentity.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((serverplayerentity.getRandom().nextFloat() - serverplayerentity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 				serverplayerentity.inventoryMenu.broadcastChanges();
 			}
 			else
@@ -155,13 +155,14 @@ public class CommandDimDungeons
 		}
 
 		// print either "Gave one [key] to Dev" or "Gave one [key] to X players"
+		MutableComponent finalKeyName = Component.literal(keyName.getString());
 		if (recipients.size() == 1)
 		{
-			cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, recipients.iterator().next().getDisplayName()), true);
+			cmd.getSource().sendSuccess(() -> Component.translatable("commands.give.success.single", 1, finalKeyName, recipients.iterator().next().getDisplayName()), true);
 		}
 		else
 		{
-			cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, recipients.size()), true);
+			cmd.getSource().sendSuccess(() -> Component.translatable("commands.give.success.single", 1, finalKeyName, recipients.size()), true);
 		}
 
 		return recipients.size();
@@ -190,7 +191,7 @@ public class CommandDimDungeons
 					itementity.makeFakeItem();
 				}
 
-				serverplayerentity.level.playSound((Player) null, serverplayerentity.getX(), serverplayerentity.getY(), serverplayerentity.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((serverplayerentity.getRandom().nextFloat() - serverplayerentity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+				serverplayerentity.level().playSound((Player) null, serverplayerentity.getX(), serverplayerentity.getY(), serverplayerentity.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((serverplayerentity.getRandom().nextFloat() - serverplayerentity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 				serverplayerentity.inventoryMenu.broadcastChanges();
 			}
 			else
@@ -209,11 +210,11 @@ public class CommandDimDungeons
 		// print either "Gave one [key] to Dev" or "Gave one [key] to X players"
 		if (recipients.size() == 1)
 		{
-			cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, recipients.iterator().next().getDisplayName()), true);
+			cmd.getSource().sendSuccess(() -> Component.translatable("commands.give.success.single", 1, keyName, recipients.iterator().next().getDisplayName()), true);
 		}
 		else
 		{
-			cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, recipients.size()), true);
+			cmd.getSource().sendSuccess(() -> Component.translatable("commands.give.success.single", 1, keyName, recipients.size()), true);
 		}
 
 		return recipients.size();
@@ -247,13 +248,14 @@ public class CommandDimDungeons
 		}
 
 		// print either "Gave one [key] to Dev" or "Gave one [key] to X players"
+		MutableComponent finalKeyName = Component.literal(keyName);
 		if (recipients.size() == 1)
 		{
-			cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, recipients.iterator().next().getDisplayName()), true);
+			cmd.getSource().sendSuccess(() -> Component.translatable("commands.give.success.single", 1, finalKeyName, recipients.iterator().next().getDisplayName()), true);
 		}
 		else
 		{
-			cmd.getSource().sendSuccess(Component.translatable("commands.give.success.single", 1, keyName, recipients.size()), true);
+			cmd.getSource().sendSuccess(() -> Component.translatable("commands.give.success.single", 1, finalKeyName, recipients.size()), true);
 		}
 
 		return recipients.size();
@@ -268,7 +270,7 @@ public class CommandDimDungeons
 		}
 
 		// do not run this function outside of the dungeon dimension
-		Level dungeonWorld = targetPlayer.getLevel();
+		Level dungeonWorld = targetPlayer.level();
 		if (!DungeonUtils.isDimensionDungeon(dungeonWorld))
 		{
 			cmd.getSource().sendFailure(Component.literal("This command only works in the dungeon dimension."));
@@ -286,7 +288,7 @@ public class CommandDimDungeons
 		MutableComponent text = Component.literal("room: " + room.structure + " rot: " + room.rotation);
 		text.withStyle(text.getStyle().withItalic(true));
 		text.withStyle(text.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
-		cmd.getSource().sendSuccess(text, true);
+		cmd.getSource().sendSuccess(() -> text, true);
 
 		return 1;
 	}
@@ -296,7 +298,7 @@ public class CommandDimDungeons
 	private static int erasePersonalMap(CommandContext<CommandSourceStack> cmd) throws CommandSyntaxException
 	{
 		PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(cmd.getSource().getServer())).debugClearKnownOwners();
-		cmd.getSource().sendSuccess(Component.literal("Deleted all known personal key associations."), true);
+		cmd.getSource().sendSuccess(() -> Component.literal("Deleted all known personal key associations."), true);
 		return 0;
 	}
 }

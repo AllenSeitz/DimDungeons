@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.server.level.ServerPlayer;
@@ -64,7 +64,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 
 	public BlockGoldPortal()
 	{
-		super(BlockBehaviour.Properties.of(Material.PORTAL).strength(50).randomTicks().strength(-1.0F).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
+		super(BlockBehaviour.Properties.of().pushReaction(PushReaction.BLOCK).strength(50).randomTicks().strength(-1.0F).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
 		this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X));
 	}
 
@@ -297,25 +297,23 @@ public class BlockGoldPortal extends BaseEntityBlock
 			x -= 0.00;
 			z += 1.0D;
 
-			// also check for teleporting into an advanced dungeon for the first time
-			//ChunkPos cpos = new ChunkPos(new BlockPos(x, y, z));
-			ChunkPos cpos = new ChunkPos(BlockPos.m_274561_(x, y, z)); // hack for losing the (double, double, double) constructor to a recent mappings mishap
+			ChunkPos cpos = new ChunkPos(new BlockPos((int)x, (int)y, (int)z));
 			
+			// also check for teleporting into an advanced dungeon for the first time
 			DungeonRoom entrance = DungeonData.get(dim).getRoomAtPos(cpos);
 			if (entrance != null && entrance.dungeonType == DungeonType.ADVANCED)
 			{
-				// since the condition is minecraft:impossible, this is the only way to trigger
-				// it
+				// since the condition is minecraft:impossible, this is the only way to trigger it
 				player.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
 			}
 		}
-		else if (DungeonUtils.isDimensionPersonalBuild(dim) && !DungeonUtils.isPersonalBuildChunk(BlockPos.m_274561_(x, y, z)))
+		else if (DungeonUtils.isDimensionPersonalBuild(dim) && !DungeonUtils.isPersonalBuildChunk(new BlockPos((int)x, (int)y, (int)z)))
 		{
 			x += 1.0D; // an additional hack to center on the two block wide portal
 			z += 0.5D;
 
 			// try to award a joke advancement
-			if (DungeonUtils.isDimensionPersonalBuild(player.getLevel()) && DungeonUtils.isDimensionPersonalBuild(dim))
+			if (DungeonUtils.isDimensionPersonalBuild(player.level()) && DungeonUtils.isDimensionPersonalBuild(dim))
 			{
 				// player.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new
 				// ResourceLocation(DimDungeons.RESOURCE_PREFIX +

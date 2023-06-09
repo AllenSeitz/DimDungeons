@@ -216,12 +216,12 @@ public class DungeonPlacementDebug extends DungeonPlacement
 		// handle data blocks - this code block is copied from TemplateStructurePiece
 		for (StructureTemplate.StructureBlockInfo template$blockinfo : template.filterBlocks(position, placementsettings, Blocks.STRUCTURE_BLOCK))
 		{
-			if (template$blockinfo.nbt != null)
+			if (template$blockinfo.nbt() != null)
 			{
-				StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt.getString("mode"));
+				StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt().getString("mode"));
 				if (structuremode == StructureMode.DATA)
 				{
-					handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox(), room);
+					handleDataBlock(template$blockinfo.nbt().getString("metadata"), template$blockinfo.pos(), world, world.getRandom(), placementsettings.getBoundingBox(), room);
 				}
 			}
 		}

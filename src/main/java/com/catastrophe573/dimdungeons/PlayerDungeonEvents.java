@@ -74,7 +74,7 @@ public class PlayerDungeonEvents
 	@SubscribeEvent
 	public void livingUpdate(LivingEvent.LivingTickEvent event)
 	{
-		if (event.getEntity().getLevel().isClientSide())
+		if (event.getEntity().level().isClientSide())
 		{
 			return;
 		}
@@ -88,7 +88,7 @@ public class PlayerDungeonEvents
 		}
 
 		// handle standing on the void in the build world
-		if (DungeonUtils.isDimensionPersonalBuild(event.getEntity().getLevel()))
+		if (DungeonUtils.isDimensionPersonalBuild(event.getEntity().level()))
 		{
 			if (!DungeonUtils.isPersonalBuildChunk(event.getEntity().blockPosition()))
 			{
@@ -282,7 +282,7 @@ public class PlayerDungeonEvents
 	{
 		// the build dimension is always block-protected outside of the build space, no
 		// matter what
-		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getEntity().getLevel()))
+		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getEntity().level()))
 		{
 			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
 			{
@@ -298,13 +298,13 @@ public class PlayerDungeonEvents
 		}
 
 		// I only care about restricting access in the Dungeon Dimension
-		if (!DungeonUtils.isDimensionDungeon((Level) event.getEntity().getLevel()))
+		if (!DungeonUtils.isDimensionDungeon((Level) event.getEntity().level()))
 		{
 			return;
 		}
 
 		// check for a possible whitelist exception
-		BlockState targetBlock = event.getEntity().getLevel().getBlockState(event.getPos());
+		BlockState targetBlock = event.getEntity().level().getBlockState(event.getPos());
 		if (DungeonConfig.blockBreakWhitelist.contains(targetBlock.getBlock()))
 		{
 			return;
@@ -334,13 +334,13 @@ public class PlayerDungeonEvents
 		}
 
 		// I only care about restricting access in the Dungeon Dimension
-		if (!DungeonUtils.isDimensionDungeon((Level) event.getEntity().getLevel()))
+		if (!DungeonUtils.isDimensionDungeon((Level) event.getEntity().level()))
 		{
 			return;
 		}
 
 		// check for a possible whitelist exception
-		BlockState targetBlock = event.getEntity().getLevel().getBlockState(event.getPos());
+		BlockState targetBlock = event.getEntity().level().getBlockState(event.getPos());
 		if (DungeonConfig.blockBreakWhitelist.contains(targetBlock.getBlock()))
 		{
 			return;

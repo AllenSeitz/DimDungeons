@@ -68,7 +68,6 @@ public class DimDungeons
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modConfig);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(ItemRegistrar::registerCreativeTab);
 
 		// Register ourselves for server, registry and other game events we are interested in
 		MinecraftForge.EVENT_BUS.register(eventHandler);
@@ -84,7 +83,6 @@ public class DimDungeons
 		// Registries.register(Registries.CHUNK_GENERATOR, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.CODEC);
 	}
 
-	@SuppressWarnings("removal")
 	private void doClientStuff(final FMLClientSetupEvent event)
 	{
 		// this needs enqueueWork() because of the DeferredRegister

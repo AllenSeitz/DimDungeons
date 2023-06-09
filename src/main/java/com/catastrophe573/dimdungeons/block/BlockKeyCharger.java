@@ -3,8 +3,9 @@ package com.catastrophe573.dimdungeons.block;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -18,7 +19,7 @@ public class BlockKeyCharger extends Block
 
 	public BlockKeyCharger()
 	{
-		super(BlockBehaviour.Properties.of(Material.STONE).strength(3).sound(SoundType.METAL));
+		super(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BIT).strength(3).sound(SoundType.METAL));
 	}
 
 	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)

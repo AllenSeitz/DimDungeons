@@ -35,7 +35,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
@@ -274,12 +273,12 @@ public class DungeonPlacement
 		// handle data blocks - this code block is copied from TemplateStructurePiece
 		for (StructureTemplate.StructureBlockInfo template$blockinfo : template.filterBlocks(position, placementsettings, Blocks.STRUCTURE_BLOCK))
 		{
-			if (template$blockinfo.nbt != null)
+			if (template$blockinfo.nbt() != null)
 			{
-				StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt.getString("mode"));
+				StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt().getString("mode"));
 				if (structuremode == StructureMode.DATA)
 				{
-					handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox(), room);
+					handleDataBlock(template$blockinfo.nbt().getString("metadata"), template$blockinfo.pos(), world, world.getRandom(), placementsettings.getBoundingBox(), room);
 				}
 			}
 		}
@@ -492,12 +491,12 @@ public class DungeonPlacement
 		// handle data blocks - this code block is copied from TemplateStructurePiece
 		for (StructureTemplate.StructureBlockInfo template$blockinfo : template.filterBlocks(position, placementsettings, Blocks.STRUCTURE_BLOCK))
 		{
-			if (template$blockinfo.nbt != null)
+			if (template$blockinfo.nbt() != null)
 			{
-				StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt.getString("mode"));
+				StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt().getString("mode"));
 				if (structuremode == StructureMode.DATA)
 				{
-					handleDataBlock(template$blockinfo.nbt.getString("metadata"), template$blockinfo.pos, world, world.getRandom(), placementsettings.getBoundingBox(), room);
+					handleDataBlock(template$blockinfo.nbt().getString("metadata"), template$blockinfo.pos(), world, world.getRandom(), placementsettings.getBoundingBox(), room);
 				}
 			}
 		}
@@ -507,7 +506,7 @@ public class DungeonPlacement
 		{
 			for (StructureBlockInfo info : template.filterBlocks(position, placementsettings, Blocks.RED_CARPET))
 			{
-				world.setBlock(info.pos, Blocks.GREEN_CARPET.defaultBlockState(), 3);
+				world.setBlock(info.pos(), Blocks.GREEN_CARPET.defaultBlockState(), 3);
 			}
 		}
 
@@ -632,7 +631,7 @@ public class DungeonPlacement
 				{
 					if (lucky < 40)
 					{
-						spawnMimicFromArtifactsMod(pos, "mimic", world);
+						spawnEnemyHere(pos, "artifacts:mimic", world, room.theme, room.dungeonType);
 					}
 				}
 
@@ -901,26 +900,6 @@ public class DungeonPlacement
 		return stack;
 	}
 
-	private static void spawnMimicFromArtifactsMod(BlockPos pos, String casualName, LevelAccessor world)
-	{
-		Mob mob = null;
-
-		if (!DungeonConfig.isModInstalled("artifacts"))
-		{
-			return; // fail safe
-		}
-
-		mob = (Mob) EntityType.byString("artifacts:mimic").get().create((Level) world);
-		mob.setPos(pos.getX(), pos.getY(), pos.getZ());
-
-		mob.setCanPickUpLoot(false);
-		mob.moveTo(pos, 0.0F, 0.0F);
-		mob.setPersistenceRequired();
-
-		mob.finalizeSpawn((ServerLevelAccessor) world, world.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, (SpawnGroupData) null, (CompoundTag) null);
-		world.addFreshEntity(mob);
-	}
-	
 	private static String makeChunkCode(ChunkPos cpos)
 	{
 		int sum = cpos.x + cpos.z;

@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,7 +28,7 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 
 	public BlockLocalTeleporter()
 	{
-		super(BlockBehaviour.Properties.of(Material.PORTAL).strength(50).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
+		super(BlockBehaviour.Properties.of().pushReaction(PushReaction.BLOCK).strength(50).randomTicks().strength(50).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));		
 	}
 
 	@Override

@@ -10,10 +10,10 @@ import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.world.item.Item;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -55,29 +55,30 @@ public class ItemRegistrar
 	public static final RegistryObject<Item> ITEM_CHARGER_USED = ItemRegistrar.ITEMS.register(BlockRegistrar.REG_NAME_CHARGER_USED, () -> new BlockItem(BlockRegistrar.BLOCK_CHARGER_USED.get(), new Item.Properties()));
 	public static final RegistryObject<Item> ITEM_CHARGER_DAMAGED = ItemRegistrar.ITEMS.register(BlockRegistrar.REG_NAME_CHARGER_DAMAGED, () -> new BlockItem(BlockRegistrar.BLOCK_CHARGER_DAMAGED.get(), new Item.Properties()));
 
+	public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, DimDungeons.MOD_ID);
+
+	public static final RegistryObject<CreativeModeTab> CREATIVE_TAB = TABS.register("creative_tab", () -> CreativeModeTab.builder()
+			.title(Component.translatable("itemGroup.dimdungeons"))
+			.icon(() -> DungeonUtils.getExampleKey())
+			.displayItems((enabledFeatures, output) -> {
+				output.accept(ItemRegistrar.ITEM_GILDED_PORTAL.get());
+				output.accept(ItemRegistrar.ITEM_PORTAL_KEYHOLE.get());
+				output.accept(ItemRegistrar.ITEM_PORTAL_CROWN.get());
+				output.accept(ItemRegistrar.ITEM_CHARGER_FULL.get());
+
+				output.accept(ItemRegistrar.ITEM_PORTAL_KEY.get());
+				output.accept(ItemRegistrar.ITEM_BLANK_ADVANCED_KEY.get());
+				output.accept(ItemRegistrar.ITEM_BLANK_BUILD_KEY.get());
+				output.accept(ItemRegistrar.ITEM_BLANK_TELEPORTER_KEY.get());
+
+				output.accept(ItemRegistrar.ITEM_SECRET_BELL.get());
+				output.accept(ItemRegistrar.ITEM_HOMEWARD_PEARL.get());
+			})
+			.build());
+	
 	public static void register()
 	{
 		ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
+		TABS.register(FMLJavaModLoadingContext.get().getModEventBus());
 	}
-	
-	public static void registerCreativeTab(CreativeModeTabEvent.Register event)
-	{		
-		event.registerCreativeModeTab(new ResourceLocation(DimDungeons.MOD_ID, "creative_tab"), builder -> 
-		
-		builder.icon(() -> DungeonUtils.getExampleKey()).displayItems((params, output) ->
-		{
-			output.accept(ItemRegistrar.ITEM_GILDED_PORTAL.get());
-			output.accept(ItemRegistrar.ITEM_PORTAL_KEYHOLE.get());
-			output.accept(ItemRegistrar.ITEM_PORTAL_CROWN.get());
-			output.accept(ItemRegistrar.ITEM_CHARGER_FULL.get());
-
-			output.accept(ItemRegistrar.ITEM_PORTAL_KEY.get());
-			output.accept(ItemRegistrar.ITEM_BLANK_ADVANCED_KEY.get());
-			output.accept(ItemRegistrar.ITEM_BLANK_BUILD_KEY.get());
-			output.accept(ItemRegistrar.ITEM_BLANK_TELEPORTER_KEY.get());
-
-			output.accept(ItemRegistrar.ITEM_SECRET_BELL.get());
-			output.accept(ItemRegistrar.ITEM_HOMEWARD_PEARL.get());
-		}).title(Component.translatable("itemGroup.dimdungeons")));
-	}	
 }

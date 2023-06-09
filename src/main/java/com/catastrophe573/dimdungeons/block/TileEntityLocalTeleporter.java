@@ -53,7 +53,7 @@ public class TileEntityLocalTeleporter extends BlockEntity
 
 	public BlockPos getDestination()
 	{
-		return BlockPos.m_274561_(destX, destY, destZ); // change to "new BlockPos()" once the mappings are fixed
+		return new BlockPos((int)destX, (int)destY, (int)destZ); // change to "new BlockPos()" once the mappings are fixed
 	}
 
 	public double getPitch()

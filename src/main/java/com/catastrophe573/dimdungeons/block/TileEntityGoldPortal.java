@@ -87,7 +87,7 @@ public class TileEntityGoldPortal extends BlockEntity
 
 	public BlockPos getDestination()
 	{
-		return BlockPos.m_274561_(destX, destY, destZ); // should be "new Blockpos()" but there was a mappings problem
+		return new BlockPos((int)destX, (int)destY, (int)destZ);
 	}
 
 	public int getCooldown()
