@@ -225,6 +225,14 @@ public class BlockGoldPortal extends BaseEntityBlock
 							worldIn.setBlockAndUpdate(keyhole.getBlockPos(), emptyState.setValue(BlockPortalKeyhole.FILLED, false).setValue(BlockPortalKeyhole.LIT, false));
 						}
 					}
+					
+					// server config to disable this dimension
+					if ( DungeonConfig.disableAllDungeons )
+					{
+						te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
+						DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.disabled_dungeon_dimension");					
+						return;
+					}					
 				}
 
 				// implement the whitelist or blacklist for players that try to enter the Personal Build Dimension
@@ -260,8 +268,16 @@ public class BlockGoldPortal extends BaseEntityBlock
 							DimDungeons.logMessageError("Unable to check the permissions for a personal build dimension because the keyhole does not contain a key?");
 						}
 					}
+					
+					// server config to disable this dimension
+					if ( DungeonConfig.disablePersonalBuildDimension )
+					{
+						te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
+						DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.disabled_build_dimension");					
+						return;
+					}					
 				}
-
+				
 				DimDungeons.logMessageInfo("Player is using a gold portal to teleport to (" + warpX + " " + warpY + " " + warpZ + ") in dimension " + destDim.location().toString() + ".");
 				ServerPlayer player = (ServerPlayer) entityIn;
 				actuallyPerformTeleport(player, player.getServer().getLevel(te.getDestinationDimension()), warpX, warpY, warpZ, getReturnYawForDirection(te.getExitDirection()));
