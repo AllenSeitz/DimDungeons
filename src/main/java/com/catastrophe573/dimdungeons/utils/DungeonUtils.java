@@ -167,7 +167,7 @@ public class DungeonUtils
 		Level buildDim = DungeonUtils.getPersonalBuildWorld(worldIn.getServer());
 
 		ChunkPos cpos = new ChunkPos(((int) entranceX / 16) + 4, ((int) entranceZ / 16) + 4);
-		BlockPos bpos = new BlockPos((int)(cpos.getMinBlockX() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_X), 50, (int)(cpos.getMinBlockZ() + +ItemBuildKey.PLOT_ENTRANCE_OFFSET_Z));
+		BlockPos bpos = new BlockPos((int) (cpos.getMinBlockX() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_X), 50, (int) (cpos.getMinBlockZ() + +ItemBuildKey.PLOT_ENTRANCE_OFFSET_Z));
 
 		BlockState block = buildDim.getBlockState(bpos);
 		if (block.getBlock() == Blocks.BEDROCK)
@@ -226,7 +226,7 @@ public class DungeonUtils
 	public static boolean reprogramExistingExitDoorway(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing)
 	{
 		Level dim = DungeonUtils.getDungeonWorld(worldIn.getServer());
-		BlockPos portalStart = new BlockPos((int)entranceX, 55, (int)(entranceZ + 2)); // change this back to "new BlockPos()" once the mappings are fixed
+		BlockPos portalStart = new BlockPos((int) entranceX, 55, (int) (entranceZ + 2)); // change this back to "new BlockPos()" once the mappings are fixed
 
 		return actuallyReprogramGoldPortalBlocks(portalStart, dim, genData, keyholeFacing);
 	}
@@ -235,7 +235,7 @@ public class DungeonUtils
 	public static boolean reprogramPersonalPortal(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing)
 	{
 		Level dim = DungeonUtils.getPersonalBuildWorld(worldIn.getServer());
-		BlockPos portalStart = new BlockPos((int)(entranceX + 1), 51, (int)(entranceZ + 1));
+		BlockPos portalStart = new BlockPos((int) (entranceX + 1), 51, (int) (entranceZ + 1));
 
 		if (genData.returnDimension.equals(DimDungeons.BUILD_DIMENSION.location().toString()))
 		{
@@ -250,7 +250,7 @@ public class DungeonUtils
 	public static boolean reprogramTeleporterHubDoorway(Level worldIn, long entranceX, long entranceZ, DungeonGenData genData, Direction keyholeFacing, boolean erasePortal)
 	{
 		Level dim = DungeonUtils.getDungeonWorld(worldIn.getServer());
-		BlockPos portalStart = new BlockPos((int)entranceX, 55, (int)entranceZ); // change this back to "new BlockPos()" once the mappings are fixed
+		BlockPos portalStart = new BlockPos((int) entranceX, 55, (int) entranceZ); // change this back to "new BlockPos()" once the mappings are fixed
 
 		// figure out which of the 8 portals we're using and "move" the "entrance" there
 		// this math is awkward because when we call getWarpX() or Z() on the key, the
@@ -284,7 +284,7 @@ public class DungeonUtils
 				}
 
 				// or at this point, erase them
-				if ( erasePortal )
+				if (erasePortal)
 				{
 					dim.setBlock(nextBlock, Blocks.AIR.defaultBlockState(), 2);
 					continue;
@@ -292,7 +292,7 @@ public class DungeonUtils
 
 				// execution only reaches here if erasePortal is false
 				dim.setBlock(nextBlock, BlockRegistrar.BLOCK_GOLD_PORTAL.get().defaultBlockState().setValue(BlockGoldPortal.AXIS, face), 2);
-				
+
 				TileEntityGoldPortal te = (TileEntityGoldPortal) dim.getBlockEntity(nextBlock);
 				if (te != null)
 				{
@@ -356,7 +356,7 @@ public class DungeonUtils
 		}
 
 		// finally, hand build the portal just outside the center of the south side
-		BlockPos portalStart = new BlockPos((int)(cpos.getMinBlockX() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_X), 50, (int)(cpos.getMinBlockZ() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_Z));
+		BlockPos portalStart = new BlockPos((int) (cpos.getMinBlockX() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_X), 50, (int) (cpos.getMinBlockZ() + ItemBuildKey.PLOT_ENTRANCE_OFFSET_Z));
 		dim.setBlock(portalStart, Blocks.BEDROCK.defaultBlockState(), 2);
 		dim.setBlock(portalStart.east(), Blocks.BEDROCK.defaultBlockState(), 2);
 		dim.setBlock(portalStart.west(), Blocks.BEDROCK.defaultBlockState(), 2);
@@ -494,7 +494,7 @@ public class DungeonUtils
 		data.putString(ItemPortalKey.NBT_DUNGEON_TYPE, DungeonType.TELEPORTER_HUB.toString());
 		data.putInt(ItemPortalKey.NBT_NAME_TYPE, 4); // teleporter hub format
 		data.putInt(ItemPortalKey.NBT_NAME_PART_1, 0);
-		
+
 		icon.setTag(data);
 		return icon;
 	}
