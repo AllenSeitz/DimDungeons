@@ -68,6 +68,8 @@ public class DungeonConfig
 	public static boolean globalBlockProtection = true;
 	public static boolean hardcoreMode = false;
 	public static boolean disablePersonalDimSecurity = false;
+	public static boolean disableAllDungeons = false;
+	public static boolean disablePersonalBuildDimension = false;
 	public static boolean enableDebugCheats = false;
 	public static int portalCooldownTicks = DEFAULT_PORTAL_TICKS;
 	public static int keyEnscriberDowngradeChanceFull = 100;
@@ -132,6 +134,8 @@ public class DungeonConfig
 		public final ForgeConfigSpec.BooleanValue globalBlockProtection;
 		public final ForgeConfigSpec.BooleanValue hardcoreMode;
 		public final ForgeConfigSpec.BooleanValue disablePersonalDimSecurity;
+		public final ForgeConfigSpec.BooleanValue disableAllDungeons;
+		public final ForgeConfigSpec.BooleanValue disablePersonalBuildDimension;		
 		public final ForgeConfigSpec.BooleanValue enableDebugCheats;
 		public final ConfigValue<Integer> portalCooldownTicks;
 		public final ConfigValue<Integer> keyEnscriberDowngradeChanceFull;
@@ -245,6 +249,8 @@ public class DungeonConfig
 			globalBlockProtection = builder.comment("If set to FALSE the block protection on the dungeon dimension will be disabled, making the options in the next section useless.").translation("config.dimdungeons.globalBlockProtection").define("globalBlockProtection", true);
 			hardcoreMode = builder.comment("If set to TRUE then dungeon keys are consumed whenever a player enters a dungeon portal.").translation("config.dimdungeons.hardcoreMode").define("hardcoreMode", false);
 			disablePersonalDimSecurity = builder.comment("If set to TRUE then the permissions on the personal build dimension are ignored.").translation("config.dimdungeons.hardcoreMode").define("disablePersonalDimSecurity", false);
+			disableAllDungeons = builder.comment("If set to TRUE then portals leading to the dungeon dimension will never open.").translation("config.dimdungeons.disableAllDungeons").define("disableAllDungeons", false);
+			disablePersonalBuildDimension = builder.comment("If set to TRUE then portals leading to the personal build dimension will never open.").translation("config.dimdungeons.disablePersonalBuildDimension").define("disablePersonalBuildDimension", false);
 			enableDebugCheats = builder.comment("If set to TRUE some cheats are available.").translation("config.dimdungeons.enableDebugCheats").define("enableDebugCheats", false);
 			portalCooldownTicks = builder.comment("How many ticks the portal blocks cooldown for.").translation("config.dimdungeons.portalCooldownTicks").define("portalCooldownTicks", DEFAULT_PORTAL_TICKS);
 			keyEnscriberDowngradeChanceFull = builder.comment("The odds of a Key Enscriber taking damage upon use, like an anvil, turning into a Used Key Enscriber. Range 0-100.").translation("config.dimdungeons.keyEnscriberDowngradeChanceFull").define("keyEnscriberDowngradeChanceFull", 100);
@@ -1364,6 +1370,8 @@ public class DungeonConfig
 		globalBlockProtection = SERVER.globalBlockProtection.get();
 		hardcoreMode = SERVER.hardcoreMode.get();
 		disablePersonalDimSecurity = SERVER.disablePersonalDimSecurity.get();
+		disableAllDungeons = SERVER.disableAllDungeons.get();
+		disablePersonalBuildDimension = SERVER.disablePersonalBuildDimension.get();		
 		enableDebugCheats = SERVER.enableDebugCheats.get();
 		portalCooldownTicks = SERVER.portalCooldownTicks.get();
 		keyEnscriberDowngradeChanceFull = SERVER.keyEnscriberDowngradeChanceFull.get();
