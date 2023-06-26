@@ -238,6 +238,8 @@
 	"security.dimdungeons.player_added_blacklist": " has been added to your banned list.", 
 	"security.dimdungeons.player_removed_blacklist": " has been removed from your banned list.", 
 	"security.dimdungeons.player_failed_teleport": "This player has blocked you from entering their dimension.", 
+	"security.dimdungeons.disabled_dungeon_dimension": "The dungeon dimension has been disabled in the server config.", 
+	"security.dimdungeons.disabled_build_dimension": "The personal build dimension has been disabled in the server config.", 
 
 	"advancements.dimdungeons.dungeons.root.title": "Dimensional Dungeons",
 	"advancements.dimdungeons.dungeons.root.description": "Craft the portal keyhole block.",
