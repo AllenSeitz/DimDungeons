@@ -131,8 +131,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		}
 	}
 
-	// this function seems to be the true 1.14 replacement for updateNeighbors(),
-	// and it cares about block sides now
+	// this function seems to be the true 1.14 replacement for updateNeighbors() and it cares about block sides now
 	@Override
 	public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos)
 	{
@@ -143,8 +142,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		return Blocks.AIR.defaultBlockState(); // destroy this block
 	}
 
-	// called by getItemsToDropCount() to determine what BlockItem or Item to drop
-	// in this case, do not allow the player to obtain this block as an item
+	// called by getItemsToDropCount() to determine what BlockItem or Item to drop in this case, do not allow the player to obtain this block as an item
 	@Override
 	public ItemStack getCloneItemStack(BlockGetter worldIn, BlockPos pos, BlockState state)
 	{
@@ -157,7 +155,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	{
 		return true;
 	}
-
+	
 	// called When an entity collides with the Block
 	@Override
 	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn)
@@ -168,8 +166,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 			return;
 		}
 
-		// only teleport players! items and mobs and who knows what else must stay
-		// behind
+		// only teleport players! items and mobs and who knows what else must stay behind
 		if (!(entityIn instanceof ServerPlayer))
 		{
 			return;
@@ -177,8 +174,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 
 		if (!entityIn.isPassenger() && !entityIn.isVehicle() && entityIn.canChangeDimensions())
 		{
-			// DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just
-			// entered a gold portal.");
+			// DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
 
 			BlockEntity tile = worldIn.getBlockEntity(pos);
 
@@ -351,8 +347,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		return player;
 	}
 
-	// this is now only used a fail safe in case a BlockGoldPortal somehow ends up
-	// 'unassigned' (such as a world being imported from 1.15)
+	// this is now only used a fail safe in case a BlockGoldPortal somehow ends up 'unassigned' (such as a world being imported from 1.15)
 	protected void sendPlayerBackHome(ServerPlayer player)
 	{
 		float lastX = 0;
@@ -379,8 +374,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		actuallyPerformTeleport(player, player.getServer().getLevel(Level.OVERWORLD), lastX, lastY, lastZ, lastYaw);
 	}
 
-	// this function returns boolean and relies on another function to actually
-	// destroy the block
+	// this function returns boolean and relies on another function to actually destroy the block
 	public boolean checkPortalIntegrity(BlockState state, LevelAccessor worldIn, BlockPos pos)
 	{
 		// the return portal in the build dimension must never shatter
@@ -412,8 +406,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 			return false;
 		}
 
-		// step 3: look for the other structure blocks on either the X or Z axis,
-		// depending on how the keyhole is facing
+		// step 3: look for the other structure blocks on either the X or Z axis, depending on how the keyhole is facing
 		BlockState keyholeBlock = worldIn.getBlockState(te.getBlockPos());
 		boolean frameLevel1 = checkPortalFrameLevel1(worldIn, te.getBlockPos());
 		if (!frameLevel1)
@@ -421,8 +414,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 			return false;
 		}
 
-		// step 4: if this is a level 2 key then check additional portal frame
-		// requirements
+		// step 4: if this is a level 2 key then check additional portal frame requirements
 		ItemStack key = te.getObjectInserted();
 		int keyLevel = ((BaseItemKey) key.getItem()).getKeyLevel(key);
 		if (key.getItem() instanceof ItemPortalKey)
@@ -448,8 +440,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		return true;
 	}
 
-	// return the tile entity if it can be found, or NULL otherwise (in which case
-	// this portal block will soon vanish)
+	// return the tile entity if it can be found, or NULL otherwise (in which case this portal block will soon vanish)
 	private TileEntityPortalKeyhole findKeyholeForThisPortal(BlockState state, LevelAccessor worldIn, BlockPos pos)
 	{
 		BlockPos p = pos.above();
@@ -530,8 +521,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		retval.add(worldIn.getBlockState(keyhole.west(1)));
 		retval.add(worldIn.getBlockState(keyhole.east(1)));
 
-		// the next 4 elements are for the banners, if there are any (side doesn't
-		// matter, any two can pass)
+		// the next 4 elements are for the banners, if there are any (side doesn't matter, any two can pass)
 		retval.add(worldIn.getBlockState(keyhole.west(3).below(1).north(1)));
 		retval.add(worldIn.getBlockState(keyhole.west(3).below(1).south(1)));
 		retval.add(worldIn.getBlockState(keyhole.east(3).below(1).north(1)));
@@ -566,8 +556,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		retval.add(worldIn.getBlockState(keyhole.north(1)));
 		retval.add(worldIn.getBlockState(keyhole.south(1)));
 
-		// the next 4 elements are for the banners, if there are any (side doesn't
-		// matter, any two can pass)
+		// the next 4 elements are for the banners, if there are any (side doesn't matter, any two can pass)
 		retval.add(worldIn.getBlockState(keyhole.north(3).below(1).east(1)));
 		retval.add(worldIn.getBlockState(keyhole.north(3).below(1).west(1)));
 		retval.add(worldIn.getBlockState(keyhole.south(3).below(1).east(1)));
@@ -631,8 +620,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		return true;
 	}
 
-	// I had to basically remove this check because all methods relating to
-	// getBannerPattern() were removed in recent versions of both 1.14 and 1.15
+	// I had to basically remove this check because all methods relating to getBannerPattern() were removed in recent versions of both 1.14 and 1.15
 	static public int getBannerLevel(LevelAccessor worldIn, BlockPos pos)
 	{
 		Block banner = worldIn.getBlockState(pos).getBlock();
