@@ -566,18 +566,18 @@ public class DungeonPlacement
 		{
 			// do nothing!
 		}
-		else if ("LockWithCode".equals(name))
-		{
-			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
-			BlockEntity te = world.getBlockEntity(pos.below());
-
-			if (te instanceof BaseContainerBlockEntity)
-			{
-				CompoundTag tag = ((BaseContainerBlockEntity) te).getUpdateTag();
-				tag.putString("Lock", makeChunkCode(world.getChunkAt(pos).getPos()));
-				te.handleUpdateTag(tag);
-			}
-		}		
+//		else if ("LockWithCode".equals(name))
+//		{
+//			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+//			BlockEntity te = world.getBlockEntity(pos.below());
+//
+//			if (te instanceof BaseContainerBlockEntity)
+//			{
+//				CompoundTag tag = ((BaseContainerBlockEntity) te).getUpdateTag();
+//				tag.putString("Lock", makeChunkCode(world.getChunkAt(pos).getPos()));
+//				te.handleUpdateTag(tag);
+//			}
+//		}		
 		else if ("FortuneTeller".equals(name))
 		{
 			world.setBlock(pos, Blocks.STONE_BRICKS.defaultBlockState(), 2); // erase this data block
@@ -712,7 +712,7 @@ public class DungeonPlacement
 
 			spawnEnemyHere(pos, mobid, world, room.theme, room.dungeonType);
 		}
-		else if ("SummonEnemy2".equals(name) || "SummonKeyholder".equals(name))
+		else if ("SummonEnemy2".equals(name))
 		{
 			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
 
@@ -731,18 +731,18 @@ public class DungeonPlacement
 
 			Entity mob = spawnEnemyHere(pos, mobid, world, room.theme, room.dungeonType);
 			
-			// Keyholders are entity 2s with some extra stuff
-			if ( "SummonKeyholder".equals(name) )
-			{
-				if (!((Mob) mob).hasItemInSlot(EquipmentSlot.CHEST))
-				{
-					ItemStack stack = new ItemStack(Items.STICK);
-					stack.setHoverName(Component.translatable(makeChunkCode(world.getChunk(pos).getPos())));
-
-					((Mob) mob).setItemSlot(EquipmentSlot.CHEST, stack);
-					((Mob) mob).setDropChance(EquipmentSlot.CHEST, 1.0f);
-				}
-			}
+//			// Keyholders are entity 2s with some extra stuff
+//			if ( "SummonKeyholder".equals(name) )
+//			{
+//				if (!((Mob) mob).hasItemInSlot(EquipmentSlot.CHEST))
+//				{
+//					ItemStack stack = new ItemStack(Items.STICK);
+//					stack.setHoverName(Component.translatable(makeChunkCode(world.getChunk(pos).getPos())));
+//
+//					((Mob) mob).setItemSlot(EquipmentSlot.CHEST, stack);
+//					((Mob) mob).setDropChance(EquipmentSlot.CHEST, 1.0f);
+//				}
+//			}
 
 			// and give it an extra 50% health plus some potion buffs, because
 			AttributeInstance tempHealth = ((Mob) mob).getAttribute(Attributes.MAX_HEALTH);
@@ -898,15 +898,5 @@ public class DungeonPlacement
 		stack.getTag().putString("title", title);
 		stack.getTag().putString("author", Component.translatable("book.dimdungeons.author").getString());
 		return stack;
-	}
-
-	private static String makeChunkCode(ChunkPos cpos)
-	{
-		int sum = cpos.x + cpos.z;
-		
-		// maybe make this "Chest Key of Wonder and Catastrophe and of the Future and ..."
-		String start = I18n.get("npart.dimdungeons.struct_10");
-		String noun1 = I18n.get("npart.dimdungeons.noun_" + (sum % 32));
-		return start + " " + noun1;
 	}
 }
