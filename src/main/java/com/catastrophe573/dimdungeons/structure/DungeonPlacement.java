@@ -17,7 +17,6 @@ import com.catastrophe573.dimdungeons.structure.DungeonDesigner.RoomType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -49,7 +48,6 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
@@ -565,15 +563,15 @@ public class DungeonPlacement
 		}
 		else if ("LockWithCode".equals(name))
 		{
-			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
-			BlockEntity te = world.getBlockEntity(pos.below());
-
-			if (te instanceof BaseContainerBlockEntity)
-			{
-				CompoundTag tag = ((BaseContainerBlockEntity) te).getUpdateTag();
-				tag.putString("Lock", makeChunkCode(world.getChunkAt(pos).getPos()));
-				te.handleUpdateTag(tag);
-			}
+//			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+//			BlockEntity te = world.getBlockEntity(pos.below());
+//
+//			if (te instanceof BaseContainerBlockEntity)
+//			{
+//				CompoundTag tag = ((BaseContainerBlockEntity) te).getUpdateTag();
+//				tag.putString("Lock", makeChunkCode(world.getChunkAt(pos).getPos()));
+//				te.handleUpdateTag(tag);
+//			}
 		}		
 		else if ("FortuneTeller".equals(name))
 		{
@@ -729,17 +727,17 @@ public class DungeonPlacement
 			Entity mob = spawnEnemyHere(pos, mobid, world, room.theme, room.dungeonType);
 			
 			// Keyholders are entity 2s with some extra stuff
-			if ( "SummonKeyholder".equals(name) )
-			{
-				if (!((Mob) mob).hasItemInSlot(EquipmentSlot.CHEST))
-				{
-					ItemStack stack = new ItemStack(Items.STICK);
-					stack.setHoverName(new TextComponent(makeChunkCode(world.getChunk(pos).getPos())));
-
-					((Mob) mob).setItemSlot(EquipmentSlot.CHEST, stack);
-					((Mob) mob).setDropChance(EquipmentSlot.CHEST, 1.0f);
-				}
-			}
+//			if ( "SummonKeyholder".equals(name) )
+//			{
+//				if (!((Mob) mob).hasItemInSlot(EquipmentSlot.CHEST))
+//				{
+//					ItemStack stack = new ItemStack(Items.STICK);
+//					stack.setHoverName(Component.translatable(makeChunkCode(world.getChunk(pos).getPos())));
+//
+//					((Mob) mob).setItemSlot(EquipmentSlot.CHEST, stack);
+//					((Mob) mob).setDropChance(EquipmentSlot.CHEST, 1.0f);
+//				}
+//			}
 
 			// and give it an extra 50% health plus some potion buffs, because
 			AttributeInstance tempHealth = ((Mob) mob).getAttribute(Attributes.MAX_HEALTH);
@@ -911,13 +909,16 @@ public class DungeonPlacement
 		world.addFreshEntity(mob);
 	}
 	
-	private static String makeChunkCode(ChunkPos cpos)
-	{
-		int sum = cpos.x + cpos.z;
-		
-		// maybe make this "Chest Key of Wonder and Catastrophe and of the Future and ..."
-		String start = I18n.get("npart.dimdungeons.struct_10");
-		String noun1 = I18n.get("npart.dimdungeons.noun_" + (sum % 32));
-		return start + " " + noun1;
-	}
+	//
+	// BIG PROBLEM! THIS IS STUPID TO DO IN A DEDICATED SERVER ENVIRONMENT!
+	//
+//	private static String makeChunkCode(ChunkPos cpos)
+//	{
+//		int sum = cpos.x + cpos.z;
+//		
+//		// maybe make this "Chest Key of Wonder and Catastrophe and of the Future and ..."
+//		String start = I18n.get("npart.dimdungeons.struct_10");
+//		String noun1 = I18n.get("npart.dimdungeons.noun_" + (sum % 32));
+//		return start + " " + noun1;
+//	}
 }
