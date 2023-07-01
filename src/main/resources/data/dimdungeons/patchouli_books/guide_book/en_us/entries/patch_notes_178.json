@@ -1,0 +1,12 @@
+{
+    "name": "Version 178",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 177,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Major room refresh! Functional and aesthetic changes for over 50 rooms! $(li)Added config options to disable each dimension. $(li)Removed the locked chests added in the previous version."
+        }	
+    ]
+}
