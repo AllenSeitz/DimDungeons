@@ -189,6 +189,11 @@ public class PlayerDungeonEvents
 			// targetBlock.getBlock().getTranslatedName().getString());
 			return;
 		}
+		
+		if ( event.getPlayer().isCreative() )
+		{
+			return;
+		}
 
 		event.setCanceled(true);
 	}
@@ -197,8 +202,7 @@ public class PlayerDungeonEvents
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void blockPlace(BlockEvent.EntityPlaceEvent event)
 	{
-		// the build dimension is always block-protected outside of the build space, no
-		// matter what
+		// the build dimension is always block-protected outside of the build space, no matter what
 		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
 		{
 			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
@@ -234,8 +238,7 @@ public class PlayerDungeonEvents
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void blockMultiPlace(BlockEvent.EntityMultiPlaceEvent event)
 	{
-		// the build dimension is always block-protected outside of the build space, no
-		// matter what
+		// the build dimension is always block-protected outside of the build space, no matter what
 		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
 		{
 			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
@@ -279,10 +282,9 @@ public class PlayerDungeonEvents
 
 	@SubscribeEvent
 	public void anythingDestroyBlock(LivingDestroyBlockEvent event)
-	{
-		// the build dimension is always block-protected outside of the build space, no
-		// matter what
-		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getEntity().level()))
+	{		
+		// the build dimension is always block-protected outside of the build space, no matter what
+		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getEntity().getLevel()))
 		{
 			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
 			{
@@ -316,8 +318,7 @@ public class PlayerDungeonEvents
 	@SubscribeEvent
 	public void leftClickBlock(LeftClickBlock event)
 	{
-		// the build dimension is always block-protected outside of the build space, no
-		// matter what
+		// the build dimension is always block-protected outside of the build space, no matter what
 		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
 		{
 			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
@@ -345,7 +346,12 @@ public class PlayerDungeonEvents
 		{
 			return;
 		}
-
+		
+		if ( event.getEntity().isCreative() )
+		{
+			return;
+		}
+		
 		event.setCanceled(true);
 	}
 
