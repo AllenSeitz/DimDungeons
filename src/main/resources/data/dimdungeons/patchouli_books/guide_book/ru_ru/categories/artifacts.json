@@ -1,0 +1,6 @@
+{
+	"name": "Артефакты",
+	"description": "Уникальные предметы, которые можно найти в подземельях.",
+	"icon": "minecraft:enchanted_golden_apple",
+	"sortnum": 40
+}

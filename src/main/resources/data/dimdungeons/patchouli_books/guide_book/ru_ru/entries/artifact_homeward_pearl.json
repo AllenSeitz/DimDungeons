@@ -1,0 +1,19 @@
+{
+	"name": "Жемчужина Возвращения",
+	"icon": "dimdungeons:item_homeward_pearl",
+	"category": "dimdungeons:artifacts",
+	"sortnum": 30,
+	"pages": [
+	  {
+		"type": "spotlight",
+		"item": "dimdungeons:item_homeward_pearl",
+		"text": "Жемчужина Возвращения - удобный инструмент, который телепортирует вас обратно к входу в подземелье. Она ломается после использования."
+	  },
+	  {
+		"type":   "crafting",
+		"recipe": "dimdungeons:recipe_item_homeward_pearl",
+		"text":   "Создание Жемчужин Возвращения - хороший способ использовать ненужные ключи!"
+	  }
+	]
+  }
+  
