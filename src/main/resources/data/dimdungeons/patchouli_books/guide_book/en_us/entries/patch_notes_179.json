@@ -1,0 +1,12 @@
+{
+    "name": "Version 179",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 179,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Creative Mode players now bypass block protection. $(li)Updated the Chinese translation, thank you to DoloC8! $(li)Updated the Russian translation, thank you to George-bruh! $(li)Yet more room bugfixes."
+        }	
+    ]
+}
