@@ -567,7 +567,7 @@ public class DungeonPlacement
 		}
 		else if ("LockWithCode".equals(name))
 		{
-//			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 //			BlockEntity te = world.getBlockEntity(pos.below());
 //
 //			if (te instanceof BaseContainerBlockEntity)
