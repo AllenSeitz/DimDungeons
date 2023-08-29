@@ -15,7 +15,6 @@ import com.catastrophe573.dimdungeons.structure.DungeonDesigner.RoomType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -46,7 +45,6 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
@@ -577,7 +575,7 @@ public class DungeonPlacement
 //				tag.putString("Lock", makeChunkCode(world.getChunkAt(pos).getPos()));
 //				te.handleUpdateTag(tag);
 //			}
-//		}		
+		}
 		else if ("FortuneTeller".equals(name))
 		{
 			world.setBlock(pos, Blocks.STONE_BRICKS.defaultBlockState(), 2); // erase this data block

@@ -284,7 +284,7 @@ public class PlayerDungeonEvents
 	public void anythingDestroyBlock(LivingDestroyBlockEvent event)
 	{		
 		// the build dimension is always block-protected outside of the build space, no matter what
-		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getEntity().getLevel()))
+		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getEntity().level()))
 		{
 			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
 			{
