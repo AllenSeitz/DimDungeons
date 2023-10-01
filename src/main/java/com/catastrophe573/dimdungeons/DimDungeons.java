@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -19,6 +20,9 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,6 +34,8 @@ import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 import com.catastrophe573.dimdungeons.item.ItemSecretBell;
 import com.catastrophe573.dimdungeons.utils.CommandDimDungeons;
+import com.catastrophe573.dimdungeons.utils.LootModifierNoDrops;
+import com.mojang.serialization.Codec;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("dimdungeons")
@@ -50,10 +56,15 @@ public class DimDungeons
 
 	public static final PlayerDungeonEvents eventHandler = new PlayerDungeonEvents();
 
+	// global loot modifiers
+	public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> GLM_REGISTRAR = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MOD_ID);
+	public static final RegistryObject<Codec<LootModifierNoDrops>> NO_DUNGEON_DROPS = GLM_REGISTRAR.register("no_dungeon_drops", LootModifierNoDrops.CODEC);
+
 	public DimDungeons()
 	{
 		BlockRegistrar.register();
 		ItemRegistrar.register();
+		GLM_REGISTRAR.register(FMLJavaModLoadingContext.get().getModEventBus());
 
 		// register event listeners that don't use the event bus
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
@@ -62,8 +73,7 @@ public class DimDungeons
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modConfig);
 
-		// Register ourselves for server, registry and other game events we are
-		// interested in
+		// Register ourselves for server, registry and other game events we are interested in
 		MinecraftForge.EVENT_BUS.register(eventHandler);
 		MinecraftForge.EVENT_BUS.addListener(PlayerDungeonEvents::onWorldTick);
 

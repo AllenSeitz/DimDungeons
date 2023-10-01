@@ -80,6 +80,7 @@ public class DungeonConfig
 	public static int chanceForThemeKeys = DEFAULT_CHANCE_FOR_THEME_KEYS;
 	public static Set<Block> blockBreakWhitelist = Sets.newHashSet();
 	public static Set<Block> blockInteractBlacklist = Sets.newHashSet();
+	public static Set<Block> blockDropBlacklist = Sets.newHashSet();
 	public static int dungeonBuildSpeed = 5;
 
 	// client options
@@ -148,17 +149,15 @@ public class DungeonConfig
 
 		public final ForgeConfigSpec.ConfigValue<List<? extends String>> breakingWhitelist;
 		public final ForgeConfigSpec.ConfigValue<List<? extends String>> interactionBlacklist;
+		public final ForgeConfigSpec.ConfigValue<List<? extends String>> blockDropBlacklist;
 
 		ServerConfig(ForgeConfigSpec.Builder builder)
 		{
-			// these are the blocks that the vanilla design does not want the player to
-			// 'open', right click, or use
+			// these are the blocks that the vanilla design does not want the player to 'open', right click, or use
 			List<String> hardcodedDefaultInteractionBlacklist = Lists.newArrayList();
 
-			// most of these are crafting stations I don't want the player to use inside the
-			// dungeon
-			// dispensers, hoppers, droppers, and redstone are the most urgently blacklisted
-			// blocks, since they define puzzles
+			// most of these are crafting stations I don't want the player to use inside the dungeon
+			// dispensers, hoppers, droppers, and redstone are the most urgently blacklisted blocks, since they define puzzles
 			hardcodedDefaultInteractionBlacklist.add("minecraft:dispenser");
 			hardcodedDefaultInteractionBlacklist.add("minecraft:dropper");
 			hardcodedDefaultInteractionBlacklist.add("minecraft:hopper");
@@ -236,11 +235,14 @@ public class DungeonConfig
 			hardcodedDefaultInteractionBlacklist.add("minecraft:potted_crimson_roots");
 			hardcodedDefaultInteractionBlacklist.add("minecraft:potted_warped_roots");
 
-			// by default nothing should be breakable. but gravestone/death chest-type mods
-			// need this special exception
+			// by default nothing should be breakable. but gravestone/death chest-type mods need this special exception
 			List<String> hardcodedDefaultBreakingWhitelist = Lists.newArrayList();
 			hardcodedDefaultBreakingWhitelist.add("gravestone:gravestone");
 
+			// default "do not drop items" blocks
+			List<String> hardcodedDefaultNoDropsBlacklist = Lists.newArrayList();
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:cracked_stone_bricks");			
+			
 			// list of server options and comments
 			builder.comment("Options for general mod behavior.").push("general");
 
@@ -264,6 +266,7 @@ public class DungeonConfig
 			builder.comment("Options for block behavior in the dungeon dimension.").push("blocks");
 			breakingWhitelist = builder.comment("List of blocks which any player should be allowed to break, defying the block protection. (For example, gravestones or death chests.) Default value is empty.").translation("config.dimdungeons.breakingWhitelist").defineList("breakingWhitelist", hardcodedDefaultBreakingWhitelist, o -> o instanceof String);
 			interactionBlacklist = builder.comment("List of blocks that players will be unable to interact with. It is strongly recommended to preserve the defaults.").translation("config.dimdungeons.interactionBlacklist").defineList("interactionBlacklist", hardcodedDefaultInteractionBlacklist, o -> o instanceof String);
+			blockDropBlacklist = builder.comment("List of blocks that should never drop items if broken by any means in the dungeon dimension.").translation("config.dimdungeons.noDropsBlacklist").defineList("noDropsBlacklist", hardcodedDefaultNoDropsBlacklist, o -> o instanceof String);
 			builder.pop();
 		}
 	}
@@ -1382,6 +1385,7 @@ public class DungeonConfig
 		chanceForThemeKeys = SERVER.chanceForThemeKeys.get();
 		blockBreakWhitelist = SERVER.breakingWhitelist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
 		blockInteractBlacklist = SERVER.interactionBlacklist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
+		blockDropBlacklist = SERVER.blockDropBlacklist.get().stream().map(DungeonConfig::parseBlock).collect(Collectors.toSet());
 		dungeonBuildSpeed = SERVER.dungeonBuildSpeed.get();
 
 		// this is also where the common config is refreshed
