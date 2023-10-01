@@ -34,6 +34,7 @@ import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 import com.catastrophe573.dimdungeons.item.ItemSecretBell;
 import com.catastrophe573.dimdungeons.utils.CommandDimDungeons;
+import com.catastrophe573.dimdungeons.utils.LootModifierNoDrops;
 import com.mojang.serialization.Codec;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -61,11 +62,16 @@ public class DimDungeons
 	// see PlayerDungeonEvents.java
 	public static final PlayerDungeonEvents eventHandler = new PlayerDungeonEvents();
 
+	// global loot modifiers
+	public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> GLM_REGISTRAR = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MOD_ID);
+	public static final RegistryObject<Codec<LootModifierNoDrops>> NO_DUNGEON_DROPS = GLM_REGISTRAR.register("no_dungeon_drops", LootModifierNoDrops.CODEC);
+
 	public DimDungeons()
 	{
 		BlockRegistrar.register();
 		ItemRegistrar.register();
 		CHUNK_GENERATORS.register(FMLJavaModLoadingContext.get().getModEventBus());
+		GLM_REGISTRAR.register(FMLJavaModLoadingContext.get().getModEventBus());
 
 		// register event listeners that don't use the event bus
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);

@@ -1,0 +1,11 @@
+{
+  "type": "dimdungeons:no_dungeon_drops",
+  "conditions": [
+    {
+      "condition": "minecraft:location_check",
+      "predicate": {
+        "dimension": "dimdungeons:dungeon_dimension"
+      }
+    }
+  ]
+}
