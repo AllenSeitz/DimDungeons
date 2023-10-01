@@ -39,6 +39,12 @@ public class ItemPortalKey extends BaseItemKey
 		return 0.0f; // unactivated key
 	}
 
+	public static float getKeyThemeAsFloat(ItemStack stack)
+	{
+		int theme = ((ItemPortalKey) stack.getItem()).getDungeonTheme(stack);
+		return (float)theme / 100.0f;
+	}
+	
 	public boolean isDungeonBuilt(ItemStack stack)
 	{
 		if (stack.hasTag())

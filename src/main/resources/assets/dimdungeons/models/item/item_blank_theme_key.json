@@ -1,6 +1,28 @@
 {
   "parent": "dimdungeons:item/item_portal_key",
+   
     "textures": {
         "layer0": "dimdungeons:item/blank_theme_key"
+    },
+	
+	"overrides": [
+    {
+      "predicate": {
+        "dimdungeons:keytheme": 0.01
+      },
+      "model": "dimdungeons:item/item_theme_blank_01"
+    },
+	{
+      "predicate": {
+        "dimdungeons:keytheme": 0.02
+      },
+      "model": "dimdungeons:item/item_theme_blank_02"
+    },
+	{
+      "predicate": {
+        "dimdungeons:keytheme": 0.03
+      },
+      "model": "dimdungeons:item/item_theme_blank_03"
     }
+  ]	
 }

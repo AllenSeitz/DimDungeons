@@ -29,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.dimension.DungeonChunkGenerator;
+import com.catastrophe573.dimdungeons.item.ItemBlankThemeKey;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 import com.catastrophe573.dimdungeons.item.ItemSecretBell;
@@ -101,6 +102,18 @@ public class DimDungeons
 			ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), new ResourceLocation(DimDungeons.MOD_ID, "keytype"), (stack, world, entity, number) ->
 			{
 				return ItemPortalKey.getKeyLevelAsFloat(stack);
+			});
+			ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), new ResourceLocation(DimDungeons.MOD_ID, "keytheme"), (stack, world, entity, number) ->
+			{
+				return ItemPortalKey.getKeyThemeAsFloat(stack);
+			});
+			ItemProperties.register(ItemRegistrar.ITEM_BLANK_THEME_KEY.get(), new ResourceLocation(DimDungeons.MOD_ID, "keytheme"), (stack, world, entity, number) ->
+			{
+				return ItemBlankThemeKey.getKeyThemeAsFloat(stack);
+			});
+			ItemProperties.register(ItemRegistrar.ITEM_SECRET_BELL.get(), new ResourceLocation(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
+			{
+				return ItemSecretBell.getUpgradeLevelAsFloat(stack);
 			});
 			ItemProperties.register(ItemRegistrar.ITEM_SECRET_BELL.get(), new ResourceLocation(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
 			{

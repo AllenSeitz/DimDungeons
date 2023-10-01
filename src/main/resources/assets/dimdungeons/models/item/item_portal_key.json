@@ -1,10 +1,11 @@
 {
   "parent": "builtin/generated",
+  
     "textures": {
         "layer0": "dimdungeons:item/item_portal_key"
     },
 	
-  "overrides": [
+    "overrides": [
     {
       "predicate": {
         "dimdungeons:keytype": 0.1
@@ -22,6 +23,24 @@
         "dimdungeons:keytype": 0.21
       },
       "model": "dimdungeons:item/item_key_teleporter"
+    },
+    {
+      "predicate": {
+        "dimdungeons:keytheme": 0.01
+      },
+      "model": "dimdungeons:item/item_theme_active_01"
+    },    
+	{
+      "predicate": {
+        "dimdungeons:keytheme": 0.02
+      },
+      "model": "dimdungeons:item/item_theme_active_02"
+    },    
+	{
+      "predicate": {
+        "dimdungeons:keytheme": 0.03
+      },
+      "model": "dimdungeons:item/item_theme_active_03"
     }
   ],	
 	

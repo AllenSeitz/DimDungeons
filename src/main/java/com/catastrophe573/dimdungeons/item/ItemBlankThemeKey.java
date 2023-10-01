@@ -36,6 +36,12 @@ public class ItemBlankThemeKey extends BaseItemKey
 		return itemData.contains(NBT_THEME) ? itemData.getInt(NBT_THEME) : 0;
 	}
 
+	public static float getKeyThemeAsFloat(ItemStack stack)
+	{
+		int theme = ((ItemBlankThemeKey) stack.getItem()).getDungeonTheme(stack);
+		return (float)theme / 100.0f;
+	}
+	
 	@OnlyIn(Dist.CLIENT)
 	@Override
 	public Component getName(ItemStack stack)
