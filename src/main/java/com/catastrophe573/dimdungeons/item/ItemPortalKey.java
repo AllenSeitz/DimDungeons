@@ -21,8 +21,7 @@ public class ItemPortalKey extends BaseItemKey
 		super(new Item.Properties().tab(ItemRegistrar.CREATIVE_TAB));
 	}
 
-	// used in the item model json to change the graphic based on the
-	// dimdungeons:keytype property
+	// used in the item model json to change the graphic based on the dimdungeons:keytype property
 	public static float getKeyLevelAsFloat(ItemStack stack)
 	{
 		if (((ItemPortalKey) stack.getItem()).isActivated(stack))
@@ -40,6 +39,12 @@ public class ItemPortalKey extends BaseItemKey
 		return 0.0f; // unactivated key
 	}
 
+	public static float getKeyThemeAsFloat(ItemStack stack)
+	{
+		int theme = ((ItemPortalKey) stack.getItem()).getDungeonTheme(stack);
+		return (float)theme / 100.0f;
+	}
+	
 	public boolean isDungeonBuilt(ItemStack stack)
 	{
 		if (stack.hasTag())
