@@ -157,8 +157,7 @@ public class PlayerDungeonEvents
 	@SubscribeEvent
 	public void blockBreak(BlockEvent.BreakEvent event)
 	{
-		// the build dimension is always block-protected outside of the build space, no
-		// matter what
+		// the build dimension is always block-protected outside of the build space, no matter what
 		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
 		{
 			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
@@ -174,8 +173,7 @@ public class PlayerDungeonEvents
 			return; // config disabled
 		}
 
-		// next after the build world, I only care about blocks breaking in the Dungeon
-		// Dimension
+		// next after the build world, I only care about blocks breaking in the Dungeon Dimension
 		if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
 		{
 			return;
@@ -185,8 +183,7 @@ public class PlayerDungeonEvents
 		BlockState targetBlock = event.getLevel().getBlockState(event.getPos());
 		if (DungeonConfig.blockBreakWhitelist.contains(targetBlock.getBlock()))
 		{
-			// DimDungeons.LOGGER.info("dimdungeons: the WHITELIST ALLOWED to break: " +
-			// targetBlock.getBlock().getTranslatedName().getString());
+			// DimDungeons.LOGGER.info("dimdungeons: the WHITELIST ALLOWED to break: " + targetBlock.getBlock().getTranslatedName().getString());
 			return;
 		}
 		

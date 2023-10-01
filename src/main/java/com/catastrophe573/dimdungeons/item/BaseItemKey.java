@@ -37,12 +37,9 @@ public class BaseItemKey extends Item
 	public static final String NBT_THEME = "theme";
 	public static final String NBT_DUNGEON_TYPE = "dungeon_type";
 
-	public static final int BLOCKS_APART_PER_DUNGEON = 256; // 16 chunks to try to keep "noise" or other interference from neighbors to a
-	                                                        // minimum (also makes maps work)
-	public static final float ENTRANCE_OFFSET_X = 8.0f + (8 * 16); // applied when the player teleports in, centered on the two-block-wide return
-	                                                               // portal
-	public static final float ENTRANCE_OFFSET_Z = 12.5f + (11 * 16); // applied when the player teleports in, centered on the two-block-wide return
-	                                                                 // portal
+	public static final int BLOCKS_APART_PER_DUNGEON = 256; // 16 chunks to try to keep "noise" or other interference from neighbors to a minimum (also makes maps work)
+	public static final float ENTRANCE_OFFSET_X = 8.0f + (8 * 16); // applied when the player teleports in, centered on the two-block-wide return portal
+	public static final float ENTRANCE_OFFSET_Z = 12.5f + (11 * 16); // applied when the player teleports in, centered on the two-block-wide return portal
 
 	public BaseItemKey(Item.Properties properties)
 	{
@@ -75,8 +72,7 @@ public class BaseItemKey extends Item
 		long dungeonsPerLimit = generation_limit / BLOCKS_APART_PER_DUNGEON;
 		int nextDungeonNumber = DungeonData.get(server.getLevel(DimDungeons.DUNGEON_DIMENSION)).getNumKeysRegistered() + 1;
 
-		// go as far as possible on the z-axis, then the x-axis, staying in the positive
-		// x/z quadrant
+		// go as far as possible on the z-axis, then the x-axis, staying in the positive x/z quadrant
 		long destZ = nextDungeonNumber / dungeonsPerLimit;
 		long destX = nextDungeonNumber % dungeonsPerLimit;
 		data.putInt(NBT_KEY_DESTINATION_X, (int) destX);
@@ -118,8 +114,7 @@ public class BaseItemKey extends Item
 		long dungeonsPerLimit = generation_limit / BLOCKS_APART_PER_DUNGEON;
 		long nextDungeonNumber = DungeonData.get(server.getLevel(DimDungeons.DUNGEON_DIMENSION)).getNumKeysRegistered() + 1;
 
-		// go as far as possible on the z-axis, then the x-axis, staying in the positive
-		// x/z quadrant
+		// go as far as possible on the z-axis, then the x-axis, staying in the positive x/z quadrant
 		long destZ = nextDungeonNumber / dungeonsPerLimit;
 		long destX = nextDungeonNumber % dungeonsPerLimit;
 		data.putInt(NBT_KEY_DESTINATION_X, (int) destX);
@@ -148,8 +143,7 @@ public class BaseItemKey extends Item
 		long dungeonsPerLimit = generation_limit / BLOCKS_APART_PER_DUNGEON;
 		int nextDungeonNumber = DungeonData.get(server.getLevel(DimDungeons.DUNGEON_DIMENSION)).getNumKeysRegistered() + 1;
 
-		// go as far as possible on the z-axis, then the x-axis, staying in the positive
-		// x/z quadrant
+		// go as far as possible on the z-axis, then the x-axis, staying in the positive x/z quadrant
 		long destZ = nextDungeonNumber / dungeonsPerLimit;
 		long destX = nextDungeonNumber % dungeonsPerLimit;
 		data.putInt(NBT_KEY_DESTINATION_X, (int) destX);
@@ -298,8 +292,7 @@ public class BaseItemKey extends Item
 				return DungeonType.valueOf(itemData.getString(NBT_DUNGEON_TYPE));
 			}
 
-			// this is for legacy keys that relied on a -Z coordinate to signal advanced
-			// dungeons
+			// this is for legacy keys that relied on a -Z coordinate to signal advanced dungeons
 			if (getWarpZ(stack) < 0)
 			{
 				return DungeonType.ADVANCED;
@@ -324,8 +317,7 @@ public class BaseItemKey extends Item
 	@Override
 	public InteractionResult useOn(UseOnContext parameters)
 	{
-		// break down the one 1.13 parameter to get the half dozen 1.12 parameters
-		// because I need most of them
+		// break down the one 1.13 parameter to get the half dozen 1.12 parameters because I need most of them
 		Level worldIn = parameters.getLevel();
 		BlockPos pos = parameters.getClickedPos();
 		Direction facing = parameters.getClickedFace();
@@ -337,17 +329,14 @@ public class BaseItemKey extends Item
 		BlockState iblockstate = worldIn.getBlockState(pos);
 		ItemStack itemstack = parameters.getItemInHand();
 
-		// new in 1.13 the hit vector contains world coordinates in the integer part,
-		// and I would like just the decimal part
+		// new in 1.13 the hit vector contains world coordinates in the integer part, and I would like just the decimal part
 		hitX = Math.abs((int) hitX - hitX);
 		hitZ = Math.abs((int) hitZ - hitZ);
 
 		if (worldIn.getBlockState(pos) != null)
 		{
-			// System.out.println("Used a key on some block: " +
-			// worldIn.getBlockState(pos).getBlock().getRegistryName());
-			// System.out.println("Hit it here: " + hitX + ", " + hitZ + ", facing=" +
-			// facing.getName());
+			// System.out.println("Used a key on some block: " + worldIn.getBlockState(pos).getBlock().getRegistryName());
+			// System.out.println("Hit it here: " + hitX + ", " + hitZ + ", facing=" + facing.getName());
 
 			// did they use the key on an end portal frame?
 			if (worldIn.getBlockState(pos).getBlock() == Blocks.END_PORTAL_FRAME)
@@ -379,8 +368,7 @@ public class BaseItemKey extends Item
 						worldIn.setBlock(pos, iblockstate.setValue(EndPortalFrameBlock.HAS_EYE, Boolean.valueOf(false)), 2);
 						worldIn.updateNeighbourForOutputSignal(pos, Blocks.END_PORTAL_FRAME);
 
-						// do this if you want the key to break, too
-						// itemstack.shrink(1);
+						// do this if you want the key to break, too itemstack.shrink(1);
 
 						// dramatic effect for what you just did!
 						worldIn.playSound((Player) null, pos, SoundEvents.ENDER_EYE_DEATH, SoundSource.BLOCKS, 1.5F, 1.0F);
@@ -434,8 +422,7 @@ public class BaseItemKey extends Item
 					{
 						performActivationRitual(player, itemstack, worldIn, pos);
 
-						// handle possible damage to the key activation station, similar to an anvil
-						// running this block of code on the client can cause a flicker
+						// handle possible damage to the key activation station, similar to an anvil running this block of code on the client can cause a flicker
 						if (!worldIn.isClientSide)
 						{
 							String blockid = worldIn.getBlockState(pos).getBlock().builtInRegistryHolder().key().location().getPath();
