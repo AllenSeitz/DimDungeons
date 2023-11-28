@@ -8,20 +8,21 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraft.world.level.levelgen.FlatLevelSource;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
+import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.bus.api.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,12 +49,15 @@ public class DimDungeons
 	public static final String dungeon_dimension_regname = "dungeon_dimension";
 	public static final String build_dimension_regname = "build_dimension";
 
+	// commonly used ResourceLocations for my two dimensions
 	public static final ResourceKey<Level> DUNGEON_DIMENSION = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(MOD_ID, dungeon_dimension_regname));
 	public static final ResourceKey<Level> BUILD_DIMENSION = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(MOD_ID, build_dimension_regname));
 
+	// register my custom ChunkGenerator here instead of in a separate class
 	private static final DeferredRegister<Codec<? extends ChunkGenerator>> CHUNK_GENERATORS = DeferredRegister.create(Registries.CHUNK_GENERATOR, DimDungeons.MOD_ID);
-	public static final RegistryObject<Codec<? extends ChunkGenerator>> MY_CHUNK_GEN = CHUNK_GENERATORS.register("dimdungeons_chunkgen", () -> DungeonChunkGenerator.CODEC);
+	public static final DeferredHolder<Codec<? extends ChunkGenerator>, Codec<FlatLevelSource>> MY_CHUNK_GEN = CHUNK_GENERATORS.register("dimdungeons_chunkgen", () -> DungeonChunkGenerator.CODEC);
 
+	// see PlayerDungeonEvents.java
 	public static final PlayerDungeonEvents eventHandler = new PlayerDungeonEvents();
 
 	public DimDungeons()
@@ -70,8 +74,8 @@ public class DimDungeons
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modConfig);
 
 		// Register ourselves for server, registry and other game events we are interested in
-		MinecraftForge.EVENT_BUS.register(eventHandler);
-		MinecraftForge.EVENT_BUS.addListener(PlayerDungeonEvents::onWorldTick);
+		NeoForge.EVENT_BUS.register(eventHandler);
+		NeoForge.EVENT_BUS.addListener(PlayerDungeonEvents::onWorldTick);
 
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, DungeonConfig.SERVER_SPEC);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, DungeonConfig.CLIENT_SPEC);
@@ -83,6 +87,7 @@ public class DimDungeons
 		// Registries.register(Registries.CHUNK_GENERATOR, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.CODEC);
 	}
 
+	@SuppressWarnings("deprecation")
 	private void doClientStuff(final FMLClientSetupEvent event)
 	{
 		// this needs enqueueWork() because of the DeferredRegister

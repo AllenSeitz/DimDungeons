@@ -56,9 +56,9 @@ public class DungeonData extends SavedData
 		// get the vanilla storage manager from the level
 		DimensionDataStorage storage = ((ServerLevel) level).getDataStorage();
 
-		// get the DungeonData if it already exists for this level, otherwise create a
-		// new one
-		return storage.computeIfAbsent(DungeonData::new, DungeonData::new, MY_DATA);
+		// get the DungeonData if it already exists for this level, otherwise create a new one
+		SavedData.Factory<SavedData> tempFactory = new SavedData.Factory<SavedData>(DungeonData::new, DungeonData::new);
+		return (DungeonData) storage.computeIfAbsent(tempFactory, MY_DATA);
 	}
 
 	// if the chunk is empty then return null (this is expected)
@@ -121,8 +121,7 @@ public class DungeonData extends SavedData
 			ChunkPos cpos = remainingBuilds.keySet().iterator().next();
 			DungeonRoom nextBuild = remainingBuilds.get(cpos);
 
-			// remove it now. just in case it crashes it is better to leave a hole than to
-			// keep crashing on each reboot
+			// remove it now. just in case it crashes it is better to leave a hole than to keep crashing on each reboot
 			remainingBuilds.remove(cpos);
 			setDirty();
 

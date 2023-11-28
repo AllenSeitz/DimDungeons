@@ -6,9 +6,10 @@ import java.util.function.Function;
 import net.minecraft.world.level.portal.PortalInfo;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.util.ITeleporter;
 import net.minecraft.server.level.ServerLevel;
 
-public class CustomTeleporter implements net.minecraftforge.common.util.ITeleporter
+public class CustomTeleporter implements ITeleporter
 {
 	protected final ServerLevel world;
 	protected final Random random;
@@ -48,8 +49,7 @@ public class CustomTeleporter implements net.minecraftforge.common.util.ITelepor
 		return true;
 	}
 
-	// the whole point of this teleporter is that it DOESN'T place obsidian blocks
-	// when I teleport
+	// the whole point of this teleporter is that it DOESN'T place obsidian blocks when I teleport
 	public boolean makePortal(Entity entityIn)
 	{
 		return true;

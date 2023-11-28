@@ -16,11 +16,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.core.BlockPos;
@@ -43,30 +43,15 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 
 	public static final int BELL_COOLDOWN_TICKS = 60;
 
-	public static final TagKey<Block> tag_secret_chime = ForgeRegistries.BLOCKS.tags().createTagKey(new ResourceLocation(DimDungeons.MOD_ID, "secret_chime_blocks"));
+	public static final TagKey<Block> tag_secret_chime = BlockTags.create(new ResourceLocation(DimDungeons.MOD_ID, "secret_chime_blocks"));
 
 	public ItemSecretBell(/* IItemTier tier, */ Item.Properties builderIn)
 	{
 		// super(tier, builderIn);
 		super(builderIn);
-
-		// this item isn't really "tierable" I just want it to be a reparable weapon
-		// this.attackDamage = 3; // appropriate for gold tier, but also will be
-		// configurable later
-		// this.attackSpeed = -2.0f; // appropriate for gold tier, but also will be
-		// configurable later
-		// Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-		// builder.put(Attributes.ATTACK_DAMAGE, new
-		// AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", (double)
-		// this.attackDamage, AttributeModifier.Operation.ADDITION));
-		// builder.put(Attributes.ATTACK_SPEED, new
-		// AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", (double)
-		// attackSpeed, AttributeModifier.Operation.ADDITION));
-		// this.attributeModifiers = builder.build();
 	}
 
-	// used in the item model json to change the graphic based on the
-	// dimdungeons:keytype property
+	// used in the item model json to change the graphic based on the dimdungeons:keytype property
 	public static float getUpgradeLevelAsFloat(ItemStack stack)
 	{
 		if (((ItemSecretBell) stack.getItem()).getUpgradeLevel(stack) == 2)
@@ -156,8 +141,7 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 			return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
 		}
 
-		// Only the level 2 bell may be used in any dimension. The level 1 bell works
-		// exclusively in the dungeon dimension.
+		// Only the level 2 bell may be used in any dimension. The level 1 bell works exclusively in the dungeon dimension.
 		if (getUpgradeLevel(itemstack) < 2 && !DungeonUtils.isDimensionDungeon((Level) playerIn.getCommandSenderWorld()))
 		{
 			return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
@@ -237,9 +221,7 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 	{
 		float pitch = (float) Math.pow(2.0D, (double) (note - 12) / 12.0D);
 
-		// worldIn.playSound((Player) null, pos,
-		// NoteBlockInstrument.BELL.getSoundEvent(), SoundSource.PLAYERS, 3.0F, pitch);
-		worldIn.playLocalSound(x, y, z, NoteBlockInstrument.BELL.getSoundEvent().get(), SoundSource.PLAYERS, note, pitch, false);
+		worldIn.playLocalSound(x, y, z, NoteBlockInstrument.BELL.getSoundEvent().value(), SoundSource.PLAYERS, note, pitch, false);
 
 		if (DungeonConfig.showParticles)
 		{
@@ -261,13 +243,11 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 	@Override
 	public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity)
 	{
-		// I might use this function for something someday, like playing a sound effect
-		// maybe?
+		// I might use this function for something someday, like playing a sound effect maybe?
 		return false;
 	}
 
-	// Current implementations of this method in child classes do not use the entry
-	// argument beside ev. They just raise the damage on the stack.
+	// Current implementations of this method in child classes do not use the entry argument beside ev. They just raise the damage on the stack.
 	public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker)
 	{
 		stack.hurtAndBreak(1, attacker, (entity) ->
@@ -281,10 +261,8 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 		return true;
 	}
 
-	// Called when a Block is destroyed using this Item. Return true to trigger the
-	// "Use Item" statistic.
-	// Players probably shouldn't be breaking things with a bell anyway, but they
-	// can.
+	// Called when a Block is destroyed using this Item. Return true to trigger the "Use Item" statistic.
+	// Players probably shouldn't be breaking things with a bell anyway, but they can.
 	public boolean mineBlock(ItemStack stack, Level worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving)
 	{
 		if (state.getDestroySpeed(worldIn, pos) != 0.0F)
@@ -302,25 +280,14 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 		return false;
 	}
 
-	// Gets a map of item attribute modifiers, used by ItemSword to increase hit
-	// damage.
-	// @SuppressWarnings("deprecation")
-	// public Multimap<Attribute, AttributeModifier>
-	// getAttributeModifiers(EquipmentSlotType equipmentSlot)
-	// {
-	// return equipmentSlot == EquipmentSlotType.MAINHAND ? this.attributeModifiers
-	// : super.getAttributeModifiers(equipmentSlot);
-	// }
-
+	@SuppressWarnings("deprecation")
 	private BlockPos findSecretChestNearby(BlockPos start, Level worldIn)
 	{
 		int startX = Math.floorDiv(start.getX(), 16) * 16;
 		int startZ = Math.floorDiv(start.getZ(), 16) * 16;
 		int startY = start.getY() - 8;
 
-		// search the player's current chunk, 8 blocks up and 8 blocks down, for any
-		// inventory
-		// if that block is tagged then trigger the extended chime
+		// search the player's current chunk, 8 blocks up and 8 blocks down, for any inventory if that block is tagged then trigger the extended chime
 		for (int x = startX; x < startX + 16; x++)
 		{
 			for (int z = startZ; z < startZ + 16; z++)
@@ -328,11 +295,16 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 				for (int y = startY; y < startY + 16; y++)
 				{
 					BlockState bs = worldIn.getBlockState(new BlockPos(x, y, z));
-					if (bs != null && ForgeRegistries.BLOCKS.tags().getTag(tag_secret_chime).contains(bs.getBlock()))
+
+					if (bs != null)
 					{
-						// the bell just rings for any tagged blocks (chests, barrels, etc)
-						// no more checking for loot tables
-						return new BlockPos(x, y, z);
+						boolean tagged = bs.getBlock().builtInRegistryHolder().is(tag_secret_chime);
+
+						if (tagged)
+						{
+							// the bell just rings for any tagged blocks (chests, barrels, etc) no more checking for loot tables
+							return new BlockPos(x, y, z);
+						}
 					}
 				}
 			}

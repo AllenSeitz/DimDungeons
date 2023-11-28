@@ -14,8 +14,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class ItemBlankThemeKey extends BaseItemKey
 {
@@ -70,8 +70,7 @@ public class ItemBlankThemeKey extends BaseItemKey
 
 		if (!worldIn.isClientSide)
 		{
-			// delete this item and replace it with a regular blank key, but first remember
-			// which inventory slot it was in
+			// delete this item and replace it with a regular blank key, but first remember which inventory slot it was in
 			int slot = player.getInventory().findSlotMatchingItem(itemstack);
 			int theme = ItemBlankThemeKey.getTheme(itemstack);
 			if (theme < 1)
@@ -81,8 +80,7 @@ public class ItemBlankThemeKey extends BaseItemKey
 			}
 			itemstack.shrink(1);
 
-			// generate the blank key and try to insert it into the player's inventory
-			// multiple ways as a fail-safe
+			// generate the blank key and try to insert it into the player's inventory multiple ways as a fail-safe
 			ItemStack newkey = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
 			activateKeyLevel1(worldIn.getServer(), newkey, theme);
 

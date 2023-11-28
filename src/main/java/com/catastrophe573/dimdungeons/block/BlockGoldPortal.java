@@ -27,6 +27,7 @@ import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.particles.ParticleTypes;
@@ -47,9 +48,8 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class BlockGoldPortal extends BaseEntityBlock
@@ -60,7 +60,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	protected static final VoxelShape X_AABB = Block.box(0.0D, 0.0D, 6.0D, 16.0D, 16.0D, 10.0D);
 	protected static final VoxelShape Z_AABB = Block.box(6.0D, 0.0D, 0.0D, 10.0D, 16.0D, 16.0D);
 
-	public static final TagKey<Block> tag_portal_frame_blocks = ForgeRegistries.BLOCKS.tags().createTagKey(new ResourceLocation(DimDungeons.MOD_ID, "portal_frame_blocks"));
+	public static final TagKey<Block> tag_portal_frame_blocks = BlockTags.create(new ResourceLocation(DimDungeons.MOD_ID, "portal_frame_blocks"));
 
 	public BlockGoldPortal()
 	{
@@ -111,8 +111,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		builder.add(AXIS);
 	}
 
-	// Called by ItemBlocks after a block is set in the world, to allow post-place
-	// logic
+	// Called by ItemBlocks after a block is set in the world, to allow post-place logic
 	@Override
 	public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
 	{
@@ -131,8 +130,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		}
 	}
 
-	// this function seems to be the true 1.14 replacement for updateNeighbors(),
-	// and it cares about block sides now
+	// this function seems to be the true 1.14 replacement for updateNeighbors(), and it cares about block sides now
 	@Override
 	public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos)
 	{
@@ -143,8 +141,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		return Blocks.AIR.defaultBlockState(); // destroy this block
 	}
 
-	// called by getItemsToDropCount() to determine what BlockItem or Item to drop
-	// in this case, do not allow the player to obtain this block as an item
+	// called by getItemsToDropCount() to determine what BlockItem or Item to drop in this case, do not allow the player to obtain this block as an item
 	@Override
 	public ItemStack getCloneItemStack(BlockGetter worldIn, BlockPos pos, BlockState state)
 	{
@@ -168,8 +165,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 			return;
 		}
 
-		// only teleport players! items and mobs and who knows what else must stay
-		// behind
+		// only teleport players! items and mobs and who knows what else must stay behind
 		if (!(entityIn instanceof ServerPlayer))
 		{
 			return;
@@ -177,8 +173,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 
 		if (!entityIn.isPassenger() && !entityIn.isVehicle() && entityIn.canChangeDimensions())
 		{
-			// DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just
-			// entered a gold portal.");
+			// DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
 
 			BlockEntity tile = worldIn.getBlockEntity(pos);
 
@@ -224,14 +219,14 @@ public class BlockGoldPortal extends BaseEntityBlock
 							worldIn.setBlockAndUpdate(keyhole.getBlockPos(), emptyState.setValue(BlockPortalKeyhole.FILLED, false).setValue(BlockPortalKeyhole.LIT, false));
 						}
 					}
-					
+
 					// server config to disable this dimension
-					if ( DungeonConfig.disableAllDungeons )
+					if (DungeonConfig.disableAllDungeons)
 					{
 						te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
-						DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.disabled_dungeon_dimension");					
+						DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.disabled_dungeon_dimension");
 						return;
-					}					
+					}
 				}
 
 				// implement the whitelist or blacklist for players the try to enter the Personal Build Dimension
@@ -267,16 +262,16 @@ public class BlockGoldPortal extends BaseEntityBlock
 							DimDungeons.logMessageError("Unable to check the permissions for a personal build dimension because the keyhole does not contain a key?");
 						}
 					}
-					
+
 					// server config to disable this dimension
-					if ( DungeonConfig.disablePersonalBuildDimension )
+					if (DungeonConfig.disablePersonalBuildDimension)
 					{
 						te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
-						DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.disabled_build_dimension");					
+						DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.disabled_build_dimension");
 						return;
-					}					
+					}
 				}
-				
+
 				DimDungeons.logMessageInfo("Player is using a gold portal to teleport to (" + warpX + " " + warpY + " " + warpZ + ") in dimension " + destDim.location().toString() + ".");
 				ServerPlayer player = (ServerPlayer) entityIn;
 				actuallyPerformTeleport(player, player.getServer().getLevel(te.getDestinationDimension()), warpX, warpY, warpZ, getReturnYawForDirection(te.getExitDirection()));
@@ -313,17 +308,17 @@ public class BlockGoldPortal extends BaseEntityBlock
 			x -= 0.00;
 			z += 1.0D;
 
-			ChunkPos cpos = new ChunkPos(new BlockPos((int)x, (int)y, (int)z));
-			
+			ChunkPos cpos = new ChunkPos(new BlockPos((int) x, (int) y, (int) z));
+
 			// also check for teleporting into an advanced dungeon for the first time
 			DungeonRoom entrance = DungeonData.get(dim).getRoomAtPos(cpos);
 			if (entrance != null && entrance.dungeonType == DungeonType.ADVANCED)
 			{
 				// since the condition is minecraft:impossible, this is the only way to trigger it
-				player.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
+				player.getAdvancements().award(dim.getServer().getAdvancements().get(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
 			}
 		}
-		else if (DungeonUtils.isDimensionPersonalBuild(dim) && !DungeonUtils.isPersonalBuildChunk(new BlockPos((int)x, (int)y, (int)z)))
+		else if (DungeonUtils.isDimensionPersonalBuild(dim) && !DungeonUtils.isPersonalBuildChunk(new BlockPos((int) x, (int) y, (int) z)))
 		{
 			x += 1.0D; // an additional hack to center on the two block wide portal
 			z += 0.5D;
@@ -331,9 +326,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 			// try to award a joke advancement
 			if (DungeonUtils.isDimensionPersonalBuild(player.level()) && DungeonUtils.isDimensionPersonalBuild(dim))
 			{
-				// player.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new
-				// ResourceLocation(DimDungeons.RESOURCE_PREFIX +
-				// "dungeons/build_recursive_portal")), "build_portal_inside");
+				// player.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/build_recursive_portal")), "build_portal_inside");
 			}
 		}
 		else
@@ -349,8 +342,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		return player;
 	}
 
-	// this is now only used a fail safe in case a BlockGoldPortal somehow ends up
-	// 'unassigned' (such as a world being imported from 1.15)
+	// this is now only used a fail safe in case a BlockGoldPortal somehow ends up 'unassigned' (such as a world being imported from 1.15)
 	protected void sendPlayerBackHome(ServerPlayer player)
 	{
 		float lastX = 0;
@@ -377,8 +369,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		actuallyPerformTeleport(player, player.getServer().getLevel(Level.OVERWORLD), lastX, lastY, lastZ, lastYaw);
 	}
 
-	// this function returns boolean and relies on another function to actually
-	// destroy the block
+	// this function returns boolean and relies on another function to actually destroy the block
 	public boolean checkPortalIntegrity(BlockState state, LevelAccessor worldIn, BlockPos pos)
 	{
 		// the return portal in the build dimension must never shatter
@@ -410,8 +401,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 			return false;
 		}
 
-		// step 3: look for the other structure blocks on either the X or Z axis,
-		// depending on how the keyhole is facing
+		// step 3: look for the other structure blocks on either the X or Z axis, depending on how the keyhole is facing
 		BlockState keyholeBlock = worldIn.getBlockState(te.getBlockPos());
 		boolean frameLevel1 = checkPortalFrameLevel1(worldIn, te.getBlockPos());
 		if (!frameLevel1)
@@ -419,8 +409,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 			return false;
 		}
 
-		// step 4: if this is a level 2 key then check additional portal frame
-		// requirements
+		// step 4: if this is a level 2 key then check additional portal frame requirements
 		ItemStack key = te.getObjectInserted();
 		int keyLevel = ((BaseItemKey) key.getItem()).getKeyLevel(key);
 		if (key.getItem() instanceof ItemPortalKey)
@@ -446,8 +435,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		return true;
 	}
 
-	// return the tile entity if it can be found, or NULL otherwise (in which case
-	// this portal block will soon vanish)
+	// return the tile entity if it can be found, or NULL otherwise (in which case this portal block will soon vanish)
 	private TileEntityPortalKeyhole findKeyholeForThisPortal(BlockState state, LevelAccessor worldIn, BlockPos pos)
 	{
 		BlockPos p = pos.above();
@@ -466,9 +454,10 @@ public class BlockGoldPortal extends BaseEntityBlock
 		return null;
 	}
 
+	@SuppressWarnings("deprecation")
 	static public boolean isValidPortalFrameBlock(Block b)
 	{
-		return ForgeRegistries.BLOCKS.tags().getTag(tag_portal_frame_blocks).contains(b);
+		return b.builtInRegistryHolder().is(tag_portal_frame_blocks);
 	}
 
 	// just get the block states and keep it simple
@@ -528,8 +517,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		retval.add(worldIn.getBlockState(keyhole.west(1)));
 		retval.add(worldIn.getBlockState(keyhole.east(1)));
 
-		// the next 4 elements are for the banners, if there are any (side doesn't
-		// matter, any two can pass)
+		// the next 4 elements are for the banners, if there are any (side doesn't matter, any two can pass)
 		retval.add(worldIn.getBlockState(keyhole.west(3).below(1).north(1)));
 		retval.add(worldIn.getBlockState(keyhole.west(3).below(1).south(1)));
 		retval.add(worldIn.getBlockState(keyhole.east(3).below(1).north(1)));
@@ -564,8 +552,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		retval.add(worldIn.getBlockState(keyhole.north(1)));
 		retval.add(worldIn.getBlockState(keyhole.south(1)));
 
-		// the next 4 elements are for the banners, if there are any (side doesn't
-		// matter, any two can pass)
+		// the next 4 elements are for the banners, if there are any (side doesn't matter, any two can pass)
 		retval.add(worldIn.getBlockState(keyhole.north(3).below(1).east(1)));
 		retval.add(worldIn.getBlockState(keyhole.north(3).below(1).west(1)));
 		retval.add(worldIn.getBlockState(keyhole.south(3).below(1).east(1)));
@@ -629,8 +616,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		return true;
 	}
 
-	// I had to basically remove this check because all methods relating to
-	// getBannerPattern() were removed in recent versions of both 1.14 and 1.15
+	// I had to basically remove this check because all methods relating to getBannerPattern() were removed in recent versions of both 1.14 and 1.15
 	static public int getBannerLevel(LevelAccessor worldIn, BlockPos pos)
 	{
 		Block banner = worldIn.getBlockState(pos).getBlock();

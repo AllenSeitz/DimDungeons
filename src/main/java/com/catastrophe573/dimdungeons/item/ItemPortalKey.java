@@ -9,8 +9,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class ItemPortalKey extends BaseItemKey
 {
@@ -21,8 +21,7 @@ public class ItemPortalKey extends BaseItemKey
 		super(new Item.Properties());
 	}
 
-	// used in the item model json to change the graphic based on the
-	// dimdungeons:keytype property
+	// used in the item model json to change the graphic based on the dimdungeons:keytype property
 	public static float getKeyLevelAsFloat(ItemStack stack)
 	{
 		if (((ItemPortalKey) stack.getItem()).isActivated(stack))
@@ -148,15 +147,12 @@ public class ItemPortalKey extends BaseItemKey
 			}
 		}
 
-		// basically return "Blank Portal Key"
-		// return I18n.format(stack.getTranslationKey());
+		// basically return "Blank Portal Key" return I18n.format(stack.getTranslationKey());
 		return Component.translatable(this.getDescriptionId(stack));
 	}
 
 	/**
-	 * Called when the player Left Clicks (attacks) an entity. Processed before
-	 * damage is done, if return value is true further processing is canceled and
-	 * the entity is not attacked.
+	 * Called when the player Left Clicks (attacks) an entity. Processed before damage is done, if return value is true further processing is canceled and the entity is not attacked.
 	 *
 	 * @param stack  The Item being used
 	 * @param player The player that is attacking

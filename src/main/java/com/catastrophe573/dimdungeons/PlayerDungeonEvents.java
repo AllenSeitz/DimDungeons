@@ -12,6 +12,20 @@ import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 import com.google.common.collect.Lists;
 
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDestroyBlockEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import net.neoforged.neoforge.event.entity.player.FillBucketEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Shulker;
@@ -23,20 +37,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityTeleportEvent;
-import net.minecraftforge.event.entity.living.LivingDestroyBlockEvent;
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.player.FillBucketEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.event.level.ExplosionEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
 
 public class PlayerDungeonEvents
 {
@@ -51,8 +51,7 @@ public class PlayerDungeonEvents
 		CommandDimDungeons.register(event.getDispatcher());
 	}
 
-	// for some reason this doesn't use SubscribeEvent and is instead registered
-	// from the main class
+	// for some reason this doesn't use SubscribeEvent and is instead registered from the main class
 	public static void onWorldTick(TickEvent.LevelTickEvent event)
 	{
 		if (event.level.isClientSide)
@@ -105,8 +104,7 @@ public class PlayerDungeonEvents
 				}
 			}
 
-			// if the player is in the buildable area or just one chunk away then only snap
-			// them back to safety if they've fallen below the map
+			// if the player is in the buildable area or just one chunk away then only snap them back to safety if they've fallen below the map
 			if (event.getEntity().position().y < 1)
 			{
 				DungeonUtils.sendEntityHomeInBuildWorld(event.getEntity());
@@ -157,8 +155,7 @@ public class PlayerDungeonEvents
 	@SubscribeEvent
 	public void blockBreak(BlockEvent.BreakEvent event)
 	{
-		// the build dimension is always block-protected outside of the build space, no
-		// matter what
+		// the build dimension is always block-protected outside of the build space, no matter what
 		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
 		{
 			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
@@ -174,8 +171,7 @@ public class PlayerDungeonEvents
 			return; // config disabled
 		}
 
-		// next after the build world, I only care about blocks breaking in the Dungeon
-		// Dimension
+		// next after the build world, I only care about blocks breaking in the Dungeon Dimension
 		if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
 		{
 			return;
@@ -185,12 +181,11 @@ public class PlayerDungeonEvents
 		BlockState targetBlock = event.getLevel().getBlockState(event.getPos());
 		if (DungeonConfig.blockBreakWhitelist.contains(targetBlock.getBlock()))
 		{
-			// DimDungeons.LOGGER.info("dimdungeons: the WHITELIST ALLOWED to break: " +
-			// targetBlock.getBlock().getTranslatedName().getString());
+			// DimDungeons.LOGGER.info("dimdungeons: the WHITELIST ALLOWED to break: " +targetBlock.getBlock().getTranslatedName().getString());
 			return;
 		}
-		
-		if ( event.getPlayer().isCreative() )
+
+		if (event.getPlayer().isCreative())
 		{
 			return;
 		}
@@ -282,7 +277,7 @@ public class PlayerDungeonEvents
 
 	@SubscribeEvent
 	public void anythingDestroyBlock(LivingDestroyBlockEvent event)
-	{		
+	{
 		// the build dimension is always block-protected outside of the build space, no matter what
 		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getEntity().level()))
 		{
@@ -346,12 +341,12 @@ public class PlayerDungeonEvents
 		{
 			return;
 		}
-		
-		if ( event.getEntity().isCreative() )
+
+		if (event.getEntity().isCreative())
 		{
 			return;
 		}
-		
+
 		event.setCanceled(true);
 	}
 
@@ -489,15 +484,12 @@ public class PlayerDungeonEvents
 		// now the blacklist needs to be checked
 		if (DungeonConfig.blockInteractBlacklist.contains(targetBlock.getBlock()))
 		{
-			// DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() +
-			// " was BLACKLISTED from touching: " +
-			// targetBlock.getBlock().getTranslatedName().getString());
+			// DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() + " was BLACKLISTED from touching: " + targetBlock.getBlock().getTranslatedName().getString());
 			event.setCanceled(true);
 			return;
 		}
 
-		// one other thing, if the player's hands aren't empty, then don't let them
-		// place a block? since canceling block placement happens too late?
+		// one other thing, if the player's hands aren't empty, then don't let them place a block? since canceling block placement happens too late?
 		ItemStack itemInHand = event.getItemStack();
 		if (itemInHand != null && !itemInHand.isEmpty())
 		{
@@ -508,9 +500,7 @@ public class PlayerDungeonEvents
 			return;
 		}
 
-		// DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() +
-		// " just interacted with: " +
-		// targetBlock.getBlock().getTranslatedName().getString());
+		// DimDungeons.LOGGER.info("Entity " + event.getEntity().getName().getString() + " just interacted with: " + targetBlock.getBlock().getTranslatedName().getString());
 	}
 
 	@SubscribeEvent

@@ -51,8 +51,8 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class BlockPortalKeyhole extends BaseEntityBlock
@@ -94,8 +94,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		return null;
 	}
 
-	// based on code from vanilla furnaces, which also play a sound effect and make
-	// particles when their TileEntity is being productive
+	// based on code from vanilla furnaces, which also play a sound effect and make particles when their TileEntity is being productive
 	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, RandomSource rand)
@@ -197,8 +196,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			{
 				if (!playerItem.isEmpty())
 				{
-					// DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString()
-					// + " inside keyhole...");
+					// DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
 					boolean is_building = false;
 
 					myEntity.setContents(playerItem.copy());
@@ -257,8 +255,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 							}
 						}
 
-						// buildStep must ALWAYS be 0 when using an ItemBuildKey, or else the keyhole
-						// might start ticking
+						// buildStep must ALWAYS be 0 when using an ItemBuildKey, or else the keyhole might start ticking
 						is_building = false;
 						DungeonUtils.openPortalAfterBuild(worldIn, pos, genData, myEntity);
 					}
@@ -290,31 +287,31 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 				if (insideItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide)
 				{
 					ItemPortalKey key = (ItemPortalKey) insideItem.getItem();
-					
+
 					// the reason I ignore this rule for the 'oak' door is because I don't want players getting trapped in there
-					if ( key.getDungeonType(insideItem) == DungeonType.TELEPORTER_HUB && key.getDungeonTheme(insideItem) != 0 )
+					if (key.getDungeonType(insideItem) == DungeonType.TELEPORTER_HUB && key.getDungeonTheme(insideItem) != 0)
 					{
 						float entranceX = key.getWarpX(insideItem);
 						float entranceZ = key.getWarpZ(insideItem);
 						DungeonGenData genData = DungeonGenData.Create();
 						genData.setDungeonType(DungeonType.TELEPORTER_HUB);
 						genData.setTheme(key.getDungeonTheme(insideItem));
-						
+
 						// when calling this function in "delete mode" the genData and Direction paramaters are not important
 						DungeonUtils.reprogramTeleporterHubDoorway(worldIn, (long) entranceX, (long) entranceZ, genData, Direction.NORTH, true);
 					}
-				}				
-				
+				}
+
 				// actually remove the item from the keyhole here
 				myEntity.removeContents();
 
 				worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.TRIPWIRE_CLICK_OFF, SoundSource.BLOCKS, 0.7F, 0.8f, false);
-				
+
 				// recalculate the boolean block states
 				BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(IS_BUILDING, false);
 
-				worldIn.setBlock(pos, newBlockState, 3);				
-				
+				worldIn.setBlock(pos, newBlockState, 3);
+
 				return InteractionResult.SUCCESS;
 			}
 		}
@@ -336,8 +333,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 					ItemPortalKey keyItem = (ItemPortalKey) keyStack.getItem();
 					Direction enterFacing = Direction.NORTH;
 
-					// teleporter hubs are currently the only way a player can enter the dungeon
-					// dimension facing not-north
+					// teleporter hubs are currently the only way a player can enter the dungeon dimension facing not-north
 					if (keyItem.getDungeonType(keyStack) == DungeonType.TELEPORTER_HUB)
 					{
 						enterFacing = getTeleporterHubEntranceDirection(keyItem.getDungeonTheme(keyStack));
@@ -427,11 +423,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		return false;
 	}
 
-	// Called by ItemBlocks just before a block is actually set in the world, to
-	// allow for adjustments to the IBlockstate
-	// public IBlockState getStateForPlacement(World worldIn, BlockPos pos,
-	// EnumFacing facing, float hitX, float hitY, float hitZ, int meta,
-	// EntityLivingBase placer)
+	// Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the IBlockstate
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext context)
 	{
@@ -439,30 +431,25 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		return retval.setValue(FACING, context.getHorizontalDirection().getOpposite());
 	}
 
-	// Called by ItemBlocks after a block is set in the world, to allow post-place
-	// logic
+	// Called by ItemBlocks after a block is set in the world, to allow post-place logic
 	@Override
 	public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
 	{
 		worldIn.setBlock(pos, state.setValue(FACING, placer.getDirection().getOpposite()), 2);
 	}
 
-	// Called server side after this block is replaced with another in Chunk, but
-	// before the TileEntity is updated
-	// this function is now in charge of preserving TileEntities across block
-	// updates, too, instead of the former TileEntity->shouldRefresh()
+	// Called server side after this block is replaced with another in Chunk, but before the TileEntity is updated
+	// this function is now in charge of preserving TileEntities across block updates, too, instead of the former TileEntity->shouldRefresh()
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving)
 	{
 		BlockEntity tileentity = worldIn.getBlockEntity(pos);
 
-		// DO NOT call super.onReplaced() unless this block has no TileEntity, or unless
-		// the block was deleted/changed to another block of course
+		// DO NOT call super.onReplaced() unless this block has no TileEntity, or unless the block was deleted/changed to another block of course
 		if (state.getBlock() != newState.getBlock())
 		{
-			// if the block was destroyed and it held an item then spit the item out
-			// somewhere
+			// if the block was destroyed and it held an item then spit the item out somewhere
 			if (tileentity instanceof TileEntityPortalKeyhole)
 			{
 				ItemStack item = ((TileEntityPortalKeyhole) tileentity).getObjectInserted();
@@ -484,8 +471,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		return true;
 	}
 
-	// return 3 if a build is in progress, 2 if a usable key is inside, 1 if the
-	// block is filled with any item stack, and 0 otherwise
+	// return 3 if a build is in progress, 2 if a usable key is inside, 1 if the block is filled with any item stack, and 0 otherwise
 	@Override
 	public int getAnalogOutputSignal(BlockState blockState, Level worldIn, BlockPos pos)
 	{
@@ -500,33 +486,28 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		return blockState.getValue(FILLED) ? 1 : 0;
 	}
 
-	// Returns the blockstate with the given rotation from the passed blockstate. If
-	// inapplicable, returns the passed blockstate.
+	// Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed blockstate.
 	@Override
 	public BlockState rotate(BlockState state, Rotation rot)
 	{
 		return state.setValue(FACING, rot.rotate((Direction) state.getValue(FACING)));
 	}
 
-	// Returns the blockstate with the given mirror of the passed blockstate. If
-	// inapplicable, returns the passed blockstate.
+	// Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed blockstate.
 	@Override
 	public BlockState mirror(BlockState state, Mirror mirrorIn)
 	{
 		return state.setValue(FACING, mirrorIn.mirror(((Direction) state.getValue(FACING))));
 	}
 
-	// returns the ItemStack that represents this block - this has nothing to do
-	// with the item placed inside
+	// returns the ItemStack that represents this block - this has nothing to do with the item placed inside
 	@Override
 	public ItemStack getCloneItemStack(BlockGetter worldIn, BlockPos pos, BlockState state)
 	{
 		return new ItemStack(this);
 	}
 
-	// The type of render function called. MODEL for mixed tesr and static model,
-	// MODELBLOCK_ANIMATED for TESR-only, LIQUID for vanilla liquids, INVISIBLE to
-	// skip all rendering
+	// The type of render function called. MODEL for mixed tesr and static model, MODELBLOCK_ANIMATED for TESR-only, LIQUID for vanilla liquids, INVISIBLE to skip all rendering
 	@Override
 	public RenderShape getRenderShape(BlockState state)
 	{
@@ -546,9 +527,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 
 	public static void checkForProblemsAndLiterallySpeakToPlayer(Level worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole tileEntity, Player player, boolean dungeonExistsHere)
 	{
-		// only run this function once, either on the client or on the server
-		// this runs on the server now because some errors happen exclusively on the
-		// server's side
+		// only run this function once, either on the client or on the server this runs on the server now because some errors happen exclusively on the server's side
 		if (worldIn.isClientSide || player == null)
 		{
 			return;
@@ -556,11 +535,11 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 
 		// item is not even a key, lol
 		ItemStack item = tileEntity.getObjectInserted();
-		if ( !(item.getItem() instanceof BaseItemKey) )
+		if (!(item.getItem() instanceof BaseItemKey))
 		{
 			return;
 		}
-		
+
 		// error #1: the key is not activated
 		int keyLevel = 0;
 		if (item.getItem() instanceof BaseItemKey)

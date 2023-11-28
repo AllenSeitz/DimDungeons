@@ -5,11 +5,11 @@ import com.google.common.collect.Sets;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -34,31 +34,31 @@ public class DungeonConfig
 	public static final int DEFAULT_BUILD_SPEED = 5;
 
 	public static final ServerConfig SERVER;
-	public static final ForgeConfigSpec SERVER_SPEC;
+	public static final ModConfigSpec SERVER_SPEC;
 
 	static
 	{
-		final Pair<ServerConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ServerConfig::new);
+		final Pair<ServerConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(ServerConfig::new);
 		SERVER_SPEC = specPair.getRight();
 		SERVER = specPair.getLeft();
 	}
 
 	public static final ClientConfig CLIENT;
-	public static final ForgeConfigSpec CLIENT_SPEC;
+	public static final ModConfigSpec CLIENT_SPEC;
 
 	static
 	{
-		final Pair<ClientConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
+		final Pair<ClientConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(ClientConfig::new);
 		CLIENT_SPEC = specPair.getRight();
 		CLIENT = specPair.getLeft();
 	}
 
 	public static final CommonConfig COMMON;
-	public static final ForgeConfigSpec COMMON_SPEC;
+	public static final ModConfigSpec COMMON_SPEC;
 
 	static
 	{
-		final Pair<CommonConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
+		final Pair<CommonConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(CommonConfig::new);
 		COMMON_SPEC = specPair.getRight();
 		COMMON = specPair.getLeft();
 	}
@@ -131,12 +131,12 @@ public class DungeonConfig
 	{
 		public final ConfigValue<Integer> configVersion;
 
-		public final ForgeConfigSpec.BooleanValue globalBlockProtection;
-		public final ForgeConfigSpec.BooleanValue hardcoreMode;
-		public final ForgeConfigSpec.BooleanValue disablePersonalDimSecurity;
-		public final ForgeConfigSpec.BooleanValue disableAllDungeons;
-		public final ForgeConfigSpec.BooleanValue disablePersonalBuildDimension;		
-		public final ForgeConfigSpec.BooleanValue enableDebugCheats;
+		public final ModConfigSpec.BooleanValue globalBlockProtection;
+		public final ModConfigSpec.BooleanValue hardcoreMode;
+		public final ModConfigSpec.BooleanValue disablePersonalDimSecurity;
+		public final ModConfigSpec.BooleanValue disableAllDungeons;
+		public final ModConfigSpec.BooleanValue disablePersonalBuildDimension;
+		public final ModConfigSpec.BooleanValue enableDebugCheats;
 		public final ConfigValue<Integer> portalCooldownTicks;
 		public final ConfigValue<Integer> keyEnscriberDowngradeChanceFull;
 		public final ConfigValue<Integer> keyEnscriberDowngradeChanceUsed;
@@ -146,19 +146,16 @@ public class DungeonConfig
 		public final ConfigValue<Integer> chanceForThemeKeys;
 		public final ConfigValue<Integer> dungeonBuildSpeed;
 
-		public final ForgeConfigSpec.ConfigValue<List<? extends String>> breakingWhitelist;
-		public final ForgeConfigSpec.ConfigValue<List<? extends String>> interactionBlacklist;
+		public final ModConfigSpec.ConfigValue<List<? extends String>> breakingWhitelist;
+		public final ModConfigSpec.ConfigValue<List<? extends String>> interactionBlacklist;
 
-		ServerConfig(ForgeConfigSpec.Builder builder)
+		ServerConfig(ModConfigSpec.Builder builder)
 		{
-			// these are the blocks that the vanilla design does not want the player to
-			// 'open', right click, or use
+			// these are the blocks that the vanilla design does not want the player to 'open', right click, or use
 			List<String> hardcodedDefaultInteractionBlacklist = Lists.newArrayList();
 
-			// most of these are crafting stations I don't want the player to use inside the
-			// dungeon
-			// dispensers, hoppers, droppers, and redstone are the most urgently blacklisted
-			// blocks, since they define puzzles
+			// most of these are crafting stations I don't want the player to use inside the dungeon
+			// dispensers, hoppers, droppers, and redstone are the most urgently blacklisted blocks since they define puzzles
 			hardcodedDefaultInteractionBlacklist.add("minecraft:dispenser");
 			hardcodedDefaultInteractionBlacklist.add("minecraft:dropper");
 			hardcodedDefaultInteractionBlacklist.add("minecraft:hopper");
@@ -236,8 +233,7 @@ public class DungeonConfig
 			hardcodedDefaultInteractionBlacklist.add("minecraft:potted_crimson_roots");
 			hardcodedDefaultInteractionBlacklist.add("minecraft:potted_warped_roots");
 
-			// by default nothing should be breakable. but gravestone/death chest-type mods
-			// need this special exception
+			// by default nothing should be breakable. but gravestone/death chest-type mods need this special exception
 			List<String> hardcodedDefaultBreakingWhitelist = Lists.newArrayList();
 			hardcodedDefaultBreakingWhitelist.add("gravestone:gravestone");
 
@@ -270,10 +266,10 @@ public class DungeonConfig
 
 	public static class ClientConfig
 	{
-		public final ForgeConfigSpec.BooleanValue showParticles;
-		public final ForgeConfigSpec.BooleanValue playPortalSounds;
+		public final ModConfigSpec.BooleanValue showParticles;
+		public final ModConfigSpec.BooleanValue playPortalSounds;
 
-		ClientConfig(ForgeConfigSpec.Builder builder)
+		ClientConfig(ModConfigSpec.Builder builder)
 		{
 			builder.comment("Options for client-side rendering.").push("render");
 			showParticles = builder.comment("If set to FALSE, the portal keyhole block will not emit particles.").translation("config.dimdungeons.showParticles").define("showParticles", true);
@@ -663,7 +659,7 @@ public class DungeonConfig
 		temp.add("dimdungeons:combat_1");
 		temp.add("dimdungeons:combat_2");
 		temp.add("dimdungeons:combat_3");
-		temp.add("dimdungeons:farmland_puzzle_1");		
+		temp.add("dimdungeons:farmland_puzzle_1");
 		tempAdvancedFourways.add(Lists.newArrayList(temp));
 		temp.add("dimdungeons:combat_4");
 		temp.add("dimdungeons:combat_5");
@@ -801,7 +797,7 @@ public class DungeonConfig
 		temp.add("dimdungeons:tempt_1");
 		temp.add("dimdungeons:tempt_2");
 		temp.add("dimdungeons:tempt_3");
-		temp.add("dimdungeons:tempt_4");		
+		temp.add("dimdungeons:tempt_4");
 		tempAdvancedHallways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:tower_1");
@@ -1013,10 +1009,8 @@ public class DungeonConfig
 		return temp;
 	}
 
-	// this takes themeNum as a parameter to make the loop where it is used more
-	// readable
-	// I'm trying to hardcode initial values for lists of lists of strings in the
-	// most concise and readable way possible
+	// this takes themeNum as a parameter to make the loop where it is used more readable
+	// I'm trying to hardcode initial values for lists of lists of strings in the most concise and readable way possible
 	public static List<? extends String> defaultThemeEnemySet1(int themeNum)
 	{
 		if (themeNum == 1)
@@ -1031,10 +1025,8 @@ public class DungeonConfig
 		return defaultBasicEnemySet1();
 	}
 
-	// this takes themeNum as a parameter to make the loop where it is used more
-	// readable
-	// I'm trying to hardcode initial values for lists of lists of strings in the
-	// most concise and readable way possible
+	// this takes themeNum as a parameter to make the loop where it is used more readable
+	// I'm trying to hardcode initial values for lists of lists of strings in the most concise and readable way possible
 	public static List<? extends String> defaultThemeEnemySet2(int themeNum)
 	{
 		if (themeNum == 1)
@@ -1065,10 +1057,9 @@ public class DungeonConfig
 		temp.add("minecraft:slime");
 
 		return temp;
-	}	
-	
-	// this function is silly in purpose, but it is similar to the other hardcoded
-	// functions for the tiered dungeons
+	}
+
+	// this function is silly in purpose, but it is similar to the other hardcoded functions for the tiered dungeons
 	// I just named all the default theme rooms consistently so that this works
 	public static List<? extends List<String>> makeDefaultThemeRoomSet(int themeNum, String roomPart, int numRoomsInSet)
 	{
@@ -1086,8 +1077,7 @@ public class DungeonConfig
 	}
 
 	// as an exception to the comment above makeDefaultThemeRoomSet()
-	// this function builds a list of rooms with a different naming convention (used
-	// in theme2)
+	// this function builds a list of rooms with a different naming convention (used in theme2)
 	public static List<? extends List<String>> makeDefaultThemeRoomSetAlternate(int themeNum, int numRoomsInSet)
 	{
 		List<List<String>> returnList = Lists.newArrayList();
@@ -1145,7 +1135,7 @@ public class DungeonConfig
 
 		return tempThreeways;
 	}
-	
+
 	public static List<? extends List<String>> defaultSewersHallways()
 	{
 		List<String> temp = Lists.newArrayList();
@@ -1178,7 +1168,7 @@ public class DungeonConfig
 
 		return tempCorners;
 	}
-	
+
 	public static List<? extends List<String>> defaultSewersEnds()
 	{
 		List<String> temp = Lists.newArrayList();
@@ -1194,47 +1184,47 @@ public class DungeonConfig
 		temp.clear();
 
 		return tempEnds;
-	}	
-	
+	}
+
 	// any config that has to deal with datapacks
 	public static class CommonConfig
 	{
 		// tier 1
-		public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> basicEntrances;
-		public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> basicFourways;
-		public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> basicThreeways;
-		public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> basicHallways;
-		public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> basicCorners;
-		public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> basicEnds;
+		public final ModConfigSpec.ConfigValue<List<? extends List<String>>> basicEntrances;
+		public final ModConfigSpec.ConfigValue<List<? extends List<String>>> basicFourways;
+		public final ModConfigSpec.ConfigValue<List<? extends List<String>>> basicThreeways;
+		public final ModConfigSpec.ConfigValue<List<? extends List<String>>> basicHallways;
+		public final ModConfigSpec.ConfigValue<List<? extends List<String>>> basicCorners;
+		public final ModConfigSpec.ConfigValue<List<? extends List<String>>> basicEnds;
 
 		// tier 2
-		public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedEntrances;
-		public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedFourways;
-		public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedThreeways;
-		public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedHallways;
-		public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedCorners;
-		public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedEnds;
-		public final ForgeConfigSpec.ConfigValue<List<? extends List<String>>> advancedLarge;
+		public final ModConfigSpec.ConfigValue<List<? extends List<String>>> advancedEntrances;
+		public final ModConfigSpec.ConfigValue<List<? extends List<String>>> advancedFourways;
+		public final ModConfigSpec.ConfigValue<List<? extends List<String>>> advancedThreeways;
+		public final ModConfigSpec.ConfigValue<List<? extends List<String>>> advancedHallways;
+		public final ModConfigSpec.ConfigValue<List<? extends List<String>>> advancedCorners;
+		public final ModConfigSpec.ConfigValue<List<? extends List<String>>> advancedEnds;
+		public final ModConfigSpec.ConfigValue<List<? extends List<String>>> advancedLarge;
 
 		// enemy sets
-		public final ForgeConfigSpec.ConfigValue<List<? extends String>> basicEnemySet1;
-		public final ForgeConfigSpec.ConfigValue<List<? extends String>> basicEnemySet2;
-		public final ForgeConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet1;
-		public final ForgeConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet2;
+		public final ModConfigSpec.ConfigValue<List<? extends String>> basicEnemySet1;
+		public final ModConfigSpec.ConfigValue<List<? extends String>> basicEnemySet2;
+		public final ModConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet1;
+		public final ModConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet2;
 		public final ConfigValue<Double> basicEnemyHealthScaling;
 		public final ConfigValue<Double> advancedEnemyHealthScaling;
 		public final ConfigValue<Integer> numberOfThemes;
 
 		public static class ThemeConfigStructure
 		{
-			public ForgeConfigSpec.ConfigValue<List<? extends List<String>>> themeEntrances;
-			public ForgeConfigSpec.ConfigValue<List<? extends List<String>>> themeFourways;
-			public ForgeConfigSpec.ConfigValue<List<? extends List<String>>> themeThreeways;
-			public ForgeConfigSpec.ConfigValue<List<? extends List<String>>> themeHallways;
-			public ForgeConfigSpec.ConfigValue<List<? extends List<String>>> themeCorners;
-			public ForgeConfigSpec.ConfigValue<List<? extends List<String>>> themeEnds;
-			public ForgeConfigSpec.ConfigValue<List<? extends String>> themeEnemySet1;
-			public ForgeConfigSpec.ConfigValue<List<? extends String>> themeEnemySet2;
+			public ModConfigSpec.ConfigValue<List<? extends List<String>>> themeEntrances;
+			public ModConfigSpec.ConfigValue<List<? extends List<String>>> themeFourways;
+			public ModConfigSpec.ConfigValue<List<? extends List<String>>> themeThreeways;
+			public ModConfigSpec.ConfigValue<List<? extends List<String>>> themeHallways;
+			public ModConfigSpec.ConfigValue<List<? extends List<String>>> themeCorners;
+			public ModConfigSpec.ConfigValue<List<? extends List<String>>> themeEnds;
+			public ModConfigSpec.ConfigValue<List<? extends String>> themeEnemySet1;
+			public ModConfigSpec.ConfigValue<List<? extends String>> themeEnemySet2;
 			public ConfigValue<Double> themeEnemyHealthScaling;
 			public ConfigValue<Integer> themeDungeonSize;
 		}
@@ -1242,7 +1232,7 @@ public class DungeonConfig
 		// themes
 		List<ThemeConfigStructure> allThemeConfigs;
 
-		CommonConfig(ForgeConfigSpec.Builder builder)
+		CommonConfig(ModConfigSpec.Builder builder)
 		{
 			// room generation for tier 1 dungeons
 			builder.comment("Room Selections for Basic Dungeons").push("roomsTier1");
@@ -1314,7 +1304,7 @@ public class DungeonConfig
 			theme2.themeDungeonSize = builder.translation("config.dimdungeons.themeDungeonSize" + theme).define("themeDungeonSize" + theme, DEFAULT_THEME_DUNGEON_SIZE);
 			builder.pop();
 			allThemeConfigs.add(theme - 1, theme2);
-			
+
 			// room generation for theme3
 			ThemeConfigStructure theme3 = new ThemeConfigStructure();
 			theme = 3;
@@ -1331,7 +1321,7 @@ public class DungeonConfig
 			theme3.themeDungeonSize = builder.translation("config.dimdungeons.themeDungeonSize" + theme).define("themeDungeonSize" + theme, DEFAULT_THEME_DUNGEON_SIZE);
 			builder.pop();
 			allThemeConfigs.add(theme - 1, theme3);
-			
+
 			// handle each unused theme with a separate section in a loop
 			for (int i = 4; i <= MAXIMUM_NUMBER_OF_THEMES; i++)
 			{
@@ -1371,7 +1361,7 @@ public class DungeonConfig
 		hardcoreMode = SERVER.hardcoreMode.get();
 		disablePersonalDimSecurity = SERVER.disablePersonalDimSecurity.get();
 		disableAllDungeons = SERVER.disableAllDungeons.get();
-		disablePersonalBuildDimension = SERVER.disablePersonalBuildDimension.get();		
+		disablePersonalBuildDimension = SERVER.disablePersonalBuildDimension.get();
 		enableDebugCheats = SERVER.enableDebugCheats.get();
 		portalCooldownTicks = SERVER.portalCooldownTicks.get();
 		keyEnscriberDowngradeChanceFull = SERVER.keyEnscriberDowngradeChanceFull.get();
@@ -1427,11 +1417,10 @@ public class DungeonConfig
 		}
 	}
 
-	// a helper function for translating ResourceLocation strings (such as
-	// minecraft:chest) into blocks
+	// a helper function for translating ResourceLocation strings (such as minecraft:chest) into blocks
 	private static Block parseBlock(String location)
 	{
-		Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(location));
+		Block block = BuiltInRegistries.BLOCK.get(new ResourceLocation(location));
 		if (block == null)
 		{
 			DimDungeons.logMessageWarn("dimdungeons: blacklist/whitelist could not find block " + location);

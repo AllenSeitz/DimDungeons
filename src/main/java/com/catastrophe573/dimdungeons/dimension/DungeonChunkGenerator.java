@@ -16,8 +16,8 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.level.NoiseColumn;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.LevelHeightAccessor;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
@@ -102,8 +102,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 		int x = chunkIn.getPos().x;
 		int z = chunkIn.getPos().z;
 
-		// first generate a superflat world - sandstone where dungeons can appear, and
-		// void otherwise
+		// first generate a superflat world - sandstone where dungeons can appear, and void otherwise
 		if (DungeonPlacement.isDungeonChunk(x, z))
 		{
 			for (int px = 0; px < 16; px++)
@@ -118,8 +117,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 						}
 						else if (py < 50)
 						{
-							// for debugging mostly but it also kind of looks good when you're in creative
-							// mode
+							// for debugging mostly but it also kind of looks good when you're in creative mode
 							if (DungeonPlacement.isEntranceChunk(x, z))
 							{
 								chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BLACKSTONE.defaultBlockState(), false);
@@ -135,8 +133,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 		}
 		else
 		{
-			// add barrier blocks to the void in case the player escapes (although these are
-			// escapable, too)
+			// add barrier blocks to the void in case the player escapes (although these are escapable, too)
 			if (x % 16 == 0 || z % 16 == 0)
 			{
 				for (int px = 0; px < 16; px++)
@@ -198,8 +195,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	@Override
 	public CompletableFuture<ChunkAccess> fillFromNoise(Executor p_223209_, Blender p_223210_, RandomState p_223211_, net.minecraft.world.level.StructureManager p_223212_, ChunkAccess p_223213_)
 	{
-		// I don't know why this function isn't being called, but it doesn't really
-		// matter
+		// I don't know why this function isn't being called, but it doesn't really matter
 		makeBase(p_223213_);
 
 		return CompletableFuture.completedFuture(p_223213_);
@@ -212,8 +208,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	}
 
 	@Override
-	// copied this from FlatLevelSource just to have something that doesn't return
-	// null
+	// copied this from FlatLevelSource just to have something that doesn't return null
 	public NoiseColumn getBaseColumn(int p_223028_, int p_223029_, LevelHeightAccessor p_223030_, RandomState p_223031_)
 	{
 		return new NoiseColumn(p_223030_.getMinBuildHeight(), this.settings.getLayers().stream().limit((long) p_223030_.getHeight()).map((p_204549_) ->
@@ -232,6 +227,6 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 		// DungeonRoom room = DungeonData.get().getRoomAtPos(cpos);
 		// p_223175_.add("Dungeon Room: " + room.structure);
 
-		p_223175_.add("Dungeon Room: " + "TODO maybe print dungeon room here");
+		// p_223175_.add("Dungeon Room: " + "TODO maybe print dungeon room here"); // not possible because this doesn't execute in the same thread as the server
 	}
 }

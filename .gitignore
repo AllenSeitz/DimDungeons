@@ -1,6 +1,7 @@
 # eclipse
 bin
 *.launch
+.settings
 .metadata
 .classpath
 .project
@@ -19,8 +20,8 @@ build
 # other
 eclipse
 run
+runs
+run-data
 
-# Files from Forge MDK
-forge*changelog.txt
-logs
-.settings/org.eclipse.jdt.core.prefs
+repo
+logs/debug.log

@@ -75,9 +75,10 @@ public class PersonalBuildData extends SavedData
 		// get the vanilla storage manager from the level
 		DimensionDataStorage storage = ((ServerLevel) level).getDataStorage();
 
-		// get the DungeonData if it already exists for this level, otherwise create a
-		// new one
-		return storage.computeIfAbsent(PersonalBuildData::new, PersonalBuildData::new, MY_DATA);
+		// get the PersonalBuildData if it already exists for this level, otherwise create a new one
+		//return storage.computeIfAbsent(PersonalBuildData::new, PersonalBuildData::new, MY_DATA); // 1.20.1
+		SavedData.Factory<SavedData> tempFactory = new SavedData.Factory<SavedData>(PersonalBuildData::new, PersonalBuildData::new);
+		return (PersonalBuildData) storage.computeIfAbsent(tempFactory, MY_DATA);
 	}
 
 	// if the chunk is empty then return null (this is expected)
@@ -129,13 +130,11 @@ public class PersonalBuildData extends SavedData
 		long generation_limit = DungeonUtils.getLimitOfPersonalBuildDimension(server);
 		int plotsPerLimit = (int) (generation_limit / ItemBuildKey.BLOCKS_APART_PER_PLOT);
 
-		// go as far as possible on the z-axis, then the x-axis, staying in the positive
-		// x/z quadrant
+		// go as far as possible on the z-axis, then the x-axis, staying in the positive x/z quadrant
 		int destZ = numOtherPlayers / plotsPerLimit;
 		int destX = numOtherPlayers % plotsPerLimit;
 
-		// warning: not actually a ChunkPos, but it is consistent with other keys use of
-		// dest_x and dest_z
+		// warning: not actually a ChunkPos, but it is consistent with other keys use of dest_x and dest_z
 		return new ChunkPos(destX, destZ);
 	}
 
@@ -201,19 +200,19 @@ public class PersonalBuildData extends SavedData
 	public boolean isPlayerAllowedInPersonalDimension(Player visitor, ChunkPos destination)
 	{
 		OwnerData owner = getOwnerAtPos(destination);
-		
-		if ( owner == null )
+
+		if (owner == null)
 		{
 			return true; // shouldn't happen, but it happened to one person so this check is here now
 		}
-		
+
 		String visitorName = visitor.getGameProfile().getName();
 		visitorName = visitorName.replace("[", "");
-		visitorName = visitorName.replace("]", "");		
+		visitorName = visitorName.replace("]", "");
 		visitorName = visitorName.replace(" ", ""); // thanks Apotheosis
 
 		// creative mode players and the owner themselves are never banned, even if configured otherwise
-		//if (owner.uuid == visitor.getUUID() || visitor.isCreative() || DungeonConfig.disablePersonalDimSecurity)
+		// if (owner.uuid == visitor.getUUID() || visitor.isCreative() || DungeonConfig.disablePersonalDimSecurity)
 		if (visitorName.contentEquals(owner.playerName) || visitor.isCreative() || DungeonConfig.disablePersonalDimSecurity)
 		{
 			return true;
