@@ -92,6 +92,7 @@ public class DimDungeons
 		// Registries.register(Registries.CHUNK_GENERATOR, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.CODEC);
 	}
 
+	@SuppressWarnings("deprecation")
 	private void doClientStuff(final FMLClientSetupEvent event)
 	{
 		// this needs enqueueWork() because of the DeferredRegister

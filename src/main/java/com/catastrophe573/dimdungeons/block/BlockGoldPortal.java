@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.server.level.ServerPlayer;
@@ -64,7 +63,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 
 	public BlockGoldPortal()
 	{
-		super(BlockBehaviour.Properties.of(Material.PORTAL).strength(9999).randomTicks().sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
+		super(BlockBehaviour.Properties.of().strength(9999).randomTicks().sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
 		this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X));
 	}
 
