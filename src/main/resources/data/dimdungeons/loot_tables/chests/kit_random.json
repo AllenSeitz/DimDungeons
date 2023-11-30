@@ -31,6 +31,11 @@
 				  "type": "loot_table",
 				  "name": "dimdungeons:chests/kit_wool",
 				  "weight": 1
+				},
+				{
+				  "type": "loot_table",
+				  "name": "dimdungeons:chests/kit_pottery",
+				  "weight": 1
 				}
 			]
 		}

@@ -1,0 +1,113 @@
+{
+	"pools": [
+		{
+			"rolls": {
+				"min": 1,
+				"max": 1
+			},
+			"name": "dimdungeons:kit_sherd",
+			"entries": [
+				{
+					"type": "item",
+					"name": "minecraft:angler_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:archer_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:arms_up_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:blade_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:brewer_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:burn_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:danger_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:explorer_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:friend_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:heart_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:heartbreak_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:howl_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:miner_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:mourner_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:plenty_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:prize_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:sheaf_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:shelter_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:skull_pottery_sherd",
+					"weight": 10,
+				},
+				{
+					"type": "item",
+					"name": "minecraft:snort_pottery_sherd",
+					"weight": 10,
+				}
+			]
+		}
+	]
+}

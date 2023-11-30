@@ -112,14 +112,8 @@
         },
         {
           "type": "item",
-          "name": "minecraft:potion",
-          "entryName":"dimdungeons:potion_strong_healing",
-          "weight": 4,
-          "functions": [
-            {
-              "function": "set_nbt",
-              "tag": "{Potion:\"minecraft:strong_healing\"}"
-            },
+          "name": "minecraft:echo_shard",
+          "weight": 3,
             {
               "function": "set_count",
               "count": {
@@ -151,7 +145,7 @@
         {
           "type": "item",
           "name": "dimdungeons:item_homeward_pearl",
-          "weight": 3,
+          "weight": 4,
           "functions": [
             {
               "function": "set_count",

@@ -1,0 +1,99 @@
+{
+  "pools": [
+    {
+      "rolls": 27,
+  	  "name":"dimdungeons:kit_pottery",
+      "entries": [
+        {
+          "type": "item",
+          "name": "minecraft:brick",
+          "weight": 30,
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 5,
+                "max": 9
+              }            
+			}
+          ]
+        },
+        {
+          "type": "item",
+          "name": "minecraft:clay_ball",
+          "weight": 20,
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 5,
+                "max": 9
+              }            
+			}
+          ]
+        },
+        {
+          "type": "item",
+          "name": "minecraft:clay",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 2,
+                "max": 4
+              }            
+			}
+          ]
+        },
+        {
+          "type": "item",
+          "name": "minecraft:flower_pot",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 5,
+                "max": 9
+              }            
+			}
+          ]
+        },
+        {
+          "type": "item",
+          "name": "minecraft:decorated_pot",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 5,
+                "max": 9
+              }            
+			}
+          ]
+        },
+        {
+          "type": "item",
+          "name": "minecraft:furnace",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "set_count",
+              "count": {
+                "min": 1,
+                "max": 1
+              }            
+			}
+          ]
+        },
+        {
+		  "type": "loot_table",
+		  "name": "dimdungeons:chests/kit_sherd",
+		  "weight": 10
+		}
+      ]
+    }
+  ]
+}
