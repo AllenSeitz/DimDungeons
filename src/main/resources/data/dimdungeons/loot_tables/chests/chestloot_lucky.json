@@ -24,7 +24,7 @@
         },
         {
           "type": "loot_table",
-          "name": "minecraft:chests/nether_bridge",
+          "name": "minecraft:chests/woodland_mansion",
           "weight": 1
         },
         {

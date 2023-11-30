@@ -79,14 +79,14 @@
         },
         {
           "type": "item",
-          "name": "minecraft:dragon_breath",
+          "name": "minecraft:sculk_catalyst",
           "weight": 3,
           "functions": [
             {
               "function": "set_count",
               "count": {
-                "min": 2,
-                "max": 4
+                "min": 1,
+                "max": 3
               }
             }
           ]		  
