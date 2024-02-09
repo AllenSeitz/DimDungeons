@@ -9,7 +9,7 @@
   "has_skylight": false,
   "has_ceiling": false,
   "coordinate_scale": 1,
-  "ambient_light": 0.5,
+  "ambient_light": 0.0,
   "logical_height": 256,
   "fixed_time": 9000,
   "height": 256,
