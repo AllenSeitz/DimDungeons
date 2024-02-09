@@ -138,6 +138,7 @@ public class DungeonConfig
 		public final ModConfigSpec.BooleanValue disableAllDungeons;
 		public final ModConfigSpec.BooleanValue disablePersonalBuildDimension;
 		public final ModConfigSpec.BooleanValue enableDebugCheats;
+
 		public final ConfigValue<Integer> portalCooldownTicks;
 		public final ConfigValue<Integer> keyEnscriberDowngradeChanceFull;
 		public final ConfigValue<Integer> keyEnscriberDowngradeChanceUsed;
@@ -241,8 +242,8 @@ public class DungeonConfig
 
 			// default "do not drop items" blocks
 			List<String> hardcodedDefaultNoDropsBlacklist = Lists.newArrayList();
-			hardcodedDefaultNoDropsBlacklist.add("minecraft:cracked_stone_bricks");			
-			
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:cracked_stone_bricks");
+
 			// list of server options and comments
 			builder.comment("Options for general mod behavior.").push("general");
 
@@ -324,11 +325,13 @@ public class DungeonConfig
 		temp.add("dimdungeons:combat_2");
 		temp.add("dimdungeons:combat_3");
 		temp.add("dimdungeons:farmland_puzzle_1");
+		temp.add("dimdungeons:raft_fourway");
 		tempBasicFourways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:combat_4");
 		temp.add("dimdungeons:combat_5");
 		temp.add("dimdungeons:combat_6");
+		temp.add("dimdungeons:books_2");
 		tempBasicFourways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:disco_1");
@@ -375,6 +378,7 @@ public class DungeonConfig
 		temp.clear();
 		temp.add("dimdungeons:morethree_5");
 		temp.add("dimdungeons:morethree_6");
+		temp.add("dimdungeons:dripthree_1");
 		tempBasicThreeways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:tetris_1");
@@ -384,6 +388,7 @@ public class DungeonConfig
 		temp.clear();
 		temp.add("dimdungeons:redstrap_4");
 		temp.add("dimdungeons:chesttrap_3");
+		temp.add("dimdungeons:books_1");
 		tempBasicThreeways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:advice_2");
@@ -437,6 +442,14 @@ public class DungeonConfig
 		temp.clear();
 		temp.add("dimdungeons:library_2");
 		temp.add("dimdungeons:chesttrap_1");
+		tempBasicHallways.add(Lists.newArrayList(temp));
+		temp.clear();
+		temp.add("dimdungeons:books_3");
+		temp.add("dimdungeons:sand_1");
+		tempBasicHallways.add(Lists.newArrayList(temp));
+		temp.clear();
+		temp.add("dimdungeons:driphall_1");
+		temp.add("dimdungeons:driphall_2");
 		tempBasicHallways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:moohall_1");
@@ -546,9 +559,8 @@ public class DungeonConfig
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:advice_1");
-		tempBasicEnds.add(Lists.newArrayList(temp));
-		temp.clear();
 		temp.add("dimdungeons:slotmachine_2");
+		temp.add("dimdungeons:fightchest_1");
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:portal_puzzle_1");
@@ -626,6 +638,10 @@ public class DungeonConfig
 		temp.add("dimdungeons:honeytrap_4");
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
+		temp.add("dimdungeons:sand_2");
+		temp.add("dimdungeons:sand_3");
+		tempBasicEnds.add(Lists.newArrayList(temp));
+		temp.clear();
 
 		return tempBasicEnds;
 	}
@@ -656,6 +672,7 @@ public class DungeonConfig
 		temp.add("dimdungeons:fourway_4");
 		temp.add("dimdungeons:fourway_5");
 		temp.add("dimdungeons:fourway_6");
+		temp.add("dimdungeons:books_2");
 		tempAdvancedFourways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:fourway_7");
@@ -671,6 +688,7 @@ public class DungeonConfig
 		temp.add("dimdungeons:combat_4");
 		temp.add("dimdungeons:combat_5");
 		temp.add("dimdungeons:combat_6");
+		temp.add("dimdungeons:raft_fourway");
 		tempAdvancedFourways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:disco_1");
@@ -712,10 +730,12 @@ public class DungeonConfig
 		temp.clear();
 		temp.add("dimdungeons:morethree_3");
 		temp.add("dimdungeons:morethree_4");
+		temp.add("dimdungeons:books_1");
 		tempAdvancedThreeways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:morethree_5");
 		temp.add("dimdungeons:morethree_6");
+		temp.add("dimdungeons:dripthree_2");
 		tempAdvancedThreeways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:tetris_1");
@@ -783,6 +803,14 @@ public class DungeonConfig
 		temp.clear();
 		temp.add("dimdungeons:mossyhall_1");
 		temp.add("dimdungeons:pistonwall_2");
+		tempAdvancedHallways.add(Lists.newArrayList(temp));
+		temp.clear();
+		temp.add("dimdungeons:books_3");
+		temp.add("dimdungeons:sand_1");
+		tempAdvancedHallways.add(Lists.newArrayList(temp));
+		temp.clear();
+		temp.add("dimdungeons:driphall_1");
+		temp.add("dimdungeons:driphall_2");
 		tempAdvancedHallways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:moohall_1");
@@ -945,9 +973,12 @@ public class DungeonConfig
 		temp.clear();
 		temp.add("dimdungeons:portal_puzzle_1");
 		temp.add("dimdungeons:portal_puzzle_2");
+		temp.add("dimdungeons:fightchest_1");
 		tempAdvancedEnds.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:slotmachine_2");
+		temp.add("dimdungeons:sand_2");
+		temp.add("dimdungeons:sand_3");
 		tempAdvancedEnds.add(Lists.newArrayList(temp));
 		temp.clear();
 
