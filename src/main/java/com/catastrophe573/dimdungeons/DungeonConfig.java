@@ -136,7 +136,7 @@ public class DungeonConfig
 		public final ForgeConfigSpec.BooleanValue hardcoreMode;
 		public final ForgeConfigSpec.BooleanValue disablePersonalDimSecurity;
 		public final ForgeConfigSpec.BooleanValue disableAllDungeons;
-		public final ForgeConfigSpec.BooleanValue disablePersonalBuildDimension;		
+		public final ForgeConfigSpec.BooleanValue disablePersonalBuildDimension;
 		public final ForgeConfigSpec.BooleanValue enableDebugCheats;
 		public final ConfigValue<Integer> portalCooldownTicks;
 		public final ConfigValue<Integer> keyEnscriberDowngradeChanceFull;
@@ -241,8 +241,8 @@ public class DungeonConfig
 
 			// default "do not drop items" blocks
 			List<String> hardcodedDefaultNoDropsBlacklist = Lists.newArrayList();
-			hardcodedDefaultNoDropsBlacklist.add("minecraft:cracked_stone_bricks");			
-			
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:cracked_stone_bricks");
+
 			// list of server options and comments
 			builder.comment("Options for general mod behavior.").push("general");
 
@@ -324,11 +324,13 @@ public class DungeonConfig
 		temp.add("dimdungeons:combat_2");
 		temp.add("dimdungeons:combat_3");
 		temp.add("dimdungeons:farmland_puzzle_1");
+		temp.add("dimdungeons:raft_fourway");
 		tempBasicFourways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:combat_4");
 		temp.add("dimdungeons:combat_5");
 		temp.add("dimdungeons:combat_6");
+		temp.add("dimdungeons:books_2");
 		tempBasicFourways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:disco_1");
@@ -375,6 +377,7 @@ public class DungeonConfig
 		temp.clear();
 		temp.add("dimdungeons:morethree_5");
 		temp.add("dimdungeons:morethree_6");
+		temp.add("dimdungeons:dripthree_1");
 		tempBasicThreeways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:tetris_1");
@@ -384,6 +387,7 @@ public class DungeonConfig
 		temp.clear();
 		temp.add("dimdungeons:redstrap_4");
 		temp.add("dimdungeons:chesttrap_3");
+		temp.add("dimdungeons:books_1");
 		tempBasicThreeways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:advice_2");
@@ -437,6 +441,14 @@ public class DungeonConfig
 		temp.clear();
 		temp.add("dimdungeons:library_2");
 		temp.add("dimdungeons:chesttrap_1");
+		tempBasicHallways.add(Lists.newArrayList(temp));
+		temp.clear();
+		temp.add("dimdungeons:books_3");
+		temp.add("dimdungeons:sand_1");
+		tempBasicHallways.add(Lists.newArrayList(temp));
+		temp.clear();
+		temp.add("dimdungeons:driphall_1");
+		temp.add("dimdungeons:driphall_2");
 		tempBasicHallways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:moohall_1");
@@ -546,9 +558,8 @@ public class DungeonConfig
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:advice_1");
-		tempBasicEnds.add(Lists.newArrayList(temp));
-		temp.clear();
 		temp.add("dimdungeons:slotmachine_2");
+		temp.add("dimdungeons:fightchest_1");
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:portal_puzzle_1");
@@ -626,6 +637,10 @@ public class DungeonConfig
 		temp.add("dimdungeons:honeytrap_4");
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
+		temp.add("dimdungeons:sand_2");
+		temp.add("dimdungeons:sand_3");
+		tempBasicEnds.add(Lists.newArrayList(temp));
+		temp.clear();
 
 		return tempBasicEnds;
 	}
@@ -656,6 +671,7 @@ public class DungeonConfig
 		temp.add("dimdungeons:fourway_4");
 		temp.add("dimdungeons:fourway_5");
 		temp.add("dimdungeons:fourway_6");
+		temp.add("dimdungeons:books_2");
 		tempAdvancedFourways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:fourway_7");
@@ -666,11 +682,12 @@ public class DungeonConfig
 		temp.add("dimdungeons:combat_1");
 		temp.add("dimdungeons:combat_2");
 		temp.add("dimdungeons:combat_3");
-		temp.add("dimdungeons:farmland_puzzle_1");		
+		temp.add("dimdungeons:farmland_puzzle_1");
 		tempAdvancedFourways.add(Lists.newArrayList(temp));
 		temp.add("dimdungeons:combat_4");
 		temp.add("dimdungeons:combat_5");
 		temp.add("dimdungeons:combat_6");
+		temp.add("dimdungeons:raft_fourway");
 		tempAdvancedFourways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:disco_1");
@@ -712,10 +729,12 @@ public class DungeonConfig
 		temp.clear();
 		temp.add("dimdungeons:morethree_3");
 		temp.add("dimdungeons:morethree_4");
+		temp.add("dimdungeons:books_1");
 		tempAdvancedThreeways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:morethree_5");
 		temp.add("dimdungeons:morethree_6");
+		temp.add("dimdungeons:dripthree_2");
 		tempAdvancedThreeways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:tetris_1");
@@ -785,6 +804,14 @@ public class DungeonConfig
 		temp.add("dimdungeons:pistonwall_2");
 		tempAdvancedHallways.add(Lists.newArrayList(temp));
 		temp.clear();
+		temp.add("dimdungeons:books_3");
+		temp.add("dimdungeons:sand_1");
+		tempAdvancedHallways.add(Lists.newArrayList(temp));
+		temp.clear();
+		temp.add("dimdungeons:driphall_1");
+		temp.add("dimdungeons:driphall_2");
+		tempAdvancedHallways.add(Lists.newArrayList(temp));
+		temp.clear();
 		temp.add("dimdungeons:moohall_1");
 		temp.add("dimdungeons:moohall_2");
 		tempAdvancedHallways.add(Lists.newArrayList(temp));
@@ -804,7 +831,7 @@ public class DungeonConfig
 		temp.add("dimdungeons:tempt_1");
 		temp.add("dimdungeons:tempt_2");
 		temp.add("dimdungeons:tempt_3");
-		temp.add("dimdungeons:tempt_4");		
+		temp.add("dimdungeons:tempt_4");
 		tempAdvancedHallways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:tower_1");
@@ -945,9 +972,12 @@ public class DungeonConfig
 		temp.clear();
 		temp.add("dimdungeons:portal_puzzle_1");
 		temp.add("dimdungeons:portal_puzzle_2");
+		temp.add("dimdungeons:fightchest_1");
 		tempAdvancedEnds.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:slotmachine_2");
+		temp.add("dimdungeons:sand_2");
+		temp.add("dimdungeons:sand_3");
 		tempAdvancedEnds.add(Lists.newArrayList(temp));
 		temp.clear();
 
@@ -1068,8 +1098,8 @@ public class DungeonConfig
 		temp.add("minecraft:slime");
 
 		return temp;
-	}	
-	
+	}
+
 	// this function is silly in purpose, but it is similar to the other hardcoded
 	// functions for the tiered dungeons
 	// I just named all the default theme rooms consistently so that this works
@@ -1148,7 +1178,7 @@ public class DungeonConfig
 
 		return tempThreeways;
 	}
-	
+
 	public static List<? extends List<String>> defaultSewersHallways()
 	{
 		List<String> temp = Lists.newArrayList();
@@ -1181,7 +1211,7 @@ public class DungeonConfig
 
 		return tempCorners;
 	}
-	
+
 	public static List<? extends List<String>> defaultSewersEnds()
 	{
 		List<String> temp = Lists.newArrayList();
@@ -1197,8 +1227,8 @@ public class DungeonConfig
 		temp.clear();
 
 		return tempEnds;
-	}	
-	
+	}
+
 	// any config that has to deal with datapacks
 	public static class CommonConfig
 	{
@@ -1317,7 +1347,7 @@ public class DungeonConfig
 			theme2.themeDungeonSize = builder.translation("config.dimdungeons.themeDungeonSize" + theme).define("themeDungeonSize" + theme, DEFAULT_THEME_DUNGEON_SIZE);
 			builder.pop();
 			allThemeConfigs.add(theme - 1, theme2);
-			
+
 			// room generation for theme3
 			ThemeConfigStructure theme3 = new ThemeConfigStructure();
 			theme = 3;
@@ -1334,7 +1364,7 @@ public class DungeonConfig
 			theme3.themeDungeonSize = builder.translation("config.dimdungeons.themeDungeonSize" + theme).define("themeDungeonSize" + theme, DEFAULT_THEME_DUNGEON_SIZE);
 			builder.pop();
 			allThemeConfigs.add(theme - 1, theme3);
-			
+
 			// handle each unused theme with a separate section in a loop
 			for (int i = 4; i <= MAXIMUM_NUMBER_OF_THEMES; i++)
 			{
@@ -1374,7 +1404,7 @@ public class DungeonConfig
 		hardcoreMode = SERVER.hardcoreMode.get();
 		disablePersonalDimSecurity = SERVER.disablePersonalDimSecurity.get();
 		disableAllDungeons = SERVER.disableAllDungeons.get();
-		disablePersonalBuildDimension = SERVER.disablePersonalBuildDimension.get();		
+		disablePersonalBuildDimension = SERVER.disablePersonalBuildDimension.get();
 		enableDebugCheats = SERVER.enableDebugCheats.get();
 		portalCooldownTicks = SERVER.portalCooldownTicks.get();
 		keyEnscriberDowngradeChanceFull = SERVER.keyEnscriberDowngradeChanceFull.get();
