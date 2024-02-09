@@ -1,0 +1,16 @@
+{
+    "name": "Version 190",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 190,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Loot tables have been updated with popular items. $(li)Each theme now has custom graphics for each key! $(li)Added a config feature to prevent blocks from dropping items. $(li)Added 12 new rooms!"
+        },
+        {
+            "type": "text",
+            "text": "$(li)Added natural skylight to the personal build dimension. $(li)Reverted the ambient light in the dungeon dimension. Rooms will now appear intentionally dark! $(li)Changed the recipe for the personal dimension key."
+        }		
+    ]
+}
