@@ -28,7 +28,7 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 
 	public BlockLocalTeleporter()
 	{
-		super(BlockBehaviour.Properties.of(Material.PORTAL).strength(9999).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
+		super(BlockBehaviour.Properties.of().pushReaction(PushReaction.BLOCK).randomTicks().strength(9999).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
 	}
 
 	@Override

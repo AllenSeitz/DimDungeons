@@ -19,9 +19,11 @@ import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.bus.api.*;
 
 import org.apache.logging.log4j.LogManager;
@@ -63,9 +65,9 @@ public class DimDungeons
 	public static final PlayerDungeonEvents eventHandler = new PlayerDungeonEvents();
 
 	// global loot modifiers
-	public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> GLM_REGISTRAR = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MOD_ID);
-	public static final RegistryObject<Codec<LootModifierNoDrops>> NO_DUNGEON_DROPS = GLM_REGISTRAR.register("no_dungeon_drops", LootModifierNoDrops.CODEC);
-
+	public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> GLM_REGISTRAR = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MOD_ID);
+	public static final DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<LootModifierNoDrops>> NO_DUNGEON_DROPS = GLM_REGISTRAR.register("no_dungeon_drops", LootModifierNoDrops.CODEC);	
+	
 	public DimDungeons()
 	{
 		BlockRegistrar.register();

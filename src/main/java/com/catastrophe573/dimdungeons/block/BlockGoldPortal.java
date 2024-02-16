@@ -64,7 +64,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 
 	public BlockGoldPortal()
 	{
-		super(BlockBehaviour.Properties.of(Material.PORTAL).strength(9999).randomTicks().sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
+		super(BlockBehaviour.Properties.of().pushReaction(PushReaction.BLOCK).randomTicks().strength(9999).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
 		this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X));
 	}
 

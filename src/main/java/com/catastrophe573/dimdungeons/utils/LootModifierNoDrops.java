@@ -15,10 +15,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.common.loot.LootModifier;
+import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 
-public class LootModifierNoDrops extends LootModifier
+public class LootModifierNoDrops extends net.neoforged.neoforge.common.loot.LootModifier
 {
 	// public static final RegistryObject<Codec<LootModifierNoDrops>> CODEC = DimDungeons.GLM_REGISTRAR.register("no_dungeon_drops", () -> RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, LootModifierNoDrops::new)));
 	public static final Supplier<Codec<LootModifierNoDrops>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, LootModifierNoDrops::new)));
