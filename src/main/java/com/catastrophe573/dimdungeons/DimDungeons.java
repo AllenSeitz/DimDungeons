@@ -66,8 +66,8 @@ public class DimDungeons
 
 	// global loot modifiers
 	public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> GLM_REGISTRAR = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MOD_ID);
-	public static final DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<LootModifierNoDrops>> NO_DUNGEON_DROPS = GLM_REGISTRAR.register("no_dungeon_drops", LootModifierNoDrops.CODEC);	
-	
+	public static final DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<LootModifierNoDrops>> NO_DUNGEON_DROPS = GLM_REGISTRAR.register("no_dungeon_drops", LootModifierNoDrops.CODEC);
+
 	public DimDungeons()
 	{
 		BlockRegistrar.register();
