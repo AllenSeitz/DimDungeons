@@ -1,5 +1,5 @@
 {
-	"type": "patchouli:shapeless_book_recipe",
+	"type": "minecraft:crafting_shapeless",
 	"ingredients": [
 		{
 			"item": "minecraft:chiseled_stone_bricks"
@@ -8,5 +8,16 @@
 			"item": "minecraft:book"
 		}
 	],
-	"book": "dimdungeons:guide_book"
+	"conditions": [
+		{
+			"type": "forge:mod_loaded",
+			"modid": "patchouli"
+		}
+	],
+	"result": {
+		"item": "patchouli:guide_book",
+		"nbt": {
+			"patchouli:book": "dimdungeons:guide_book"
+		}
+	}
 }
