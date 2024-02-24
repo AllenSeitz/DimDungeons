@@ -80,7 +80,7 @@ public class PlayerDungeonEvents
 
 		if (event.getEntity() instanceof Player)
 		{
-			if (((Player) (event.getEntity())).isSpectator())
+			if (event.getEntity().isSpectator())
 			{
 				return; // ignore spectators, they don't need to be saved from the void
 			}
@@ -123,7 +123,7 @@ public class PlayerDungeonEvents
 	public void explosionModify(ExplosionEvent.Detonate event)
 	{
 		// I only care about explosions in the Dungeon Dimension
-		if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
+		if (!DungeonUtils.isDimensionDungeon(event.getLevel()))
 		{
 			return;
 		}
@@ -267,7 +267,7 @@ public class PlayerDungeonEvents
 		}
 
 		// I only care about taking liquids in the Dungeon Dimension
-		if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
+		if (!DungeonUtils.isDimensionDungeon(event.getLevel()))
 		{
 			return;
 		}
@@ -279,7 +279,7 @@ public class PlayerDungeonEvents
 	public void anythingDestroyBlock(LivingDestroyBlockEvent event)
 	{
 		// the build dimension is always block-protected outside of the build space, no matter what
-		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getEntity().level()))
+		if (DungeonUtils.isDimensionPersonalBuild(event.getEntity().level()))
 		{
 			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
 			{
@@ -295,7 +295,7 @@ public class PlayerDungeonEvents
 		}
 
 		// I only care about restricting access in the Dungeon Dimension
-		if (!DungeonUtils.isDimensionDungeon((Level) event.getEntity().level()))
+		if (!DungeonUtils.isDimensionDungeon(event.getEntity().level()))
 		{
 			return;
 		}
@@ -314,7 +314,7 @@ public class PlayerDungeonEvents
 	public void leftClickBlock(LeftClickBlock event)
 	{
 		// the build dimension is always block-protected outside of the build space, no matter what
-		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
+		if (DungeonUtils.isDimensionPersonalBuild(event.getLevel()))
 		{
 			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
 			{
@@ -330,7 +330,7 @@ public class PlayerDungeonEvents
 		}
 
 		// I only care about restricting access in the Dungeon Dimension
-		if (!DungeonUtils.isDimensionDungeon((Level) event.getEntity().level()))
+		if (!DungeonUtils.isDimensionDungeon(event.getEntity().level()))
 		{
 			return;
 		}
@@ -355,7 +355,7 @@ public class PlayerDungeonEvents
 	{
 		BlockState targetBlock = event.getLevel().getBlockState(event.getPos());
 
-		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
+		if (DungeonUtils.isDimensionPersonalBuild(event.getLevel()))
 		{
 			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
 			{
@@ -476,7 +476,7 @@ public class PlayerDungeonEvents
 		}
 
 		// I only care about restricting access in the Dungeon Dimension
-		if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
+		if (!DungeonUtils.isDimensionDungeon(event.getLevel()))
 		{
 			return;
 		}
