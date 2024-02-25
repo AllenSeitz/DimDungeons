@@ -17,12 +17,10 @@ import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import com.catastrophe573.dimdungeons.structure.DungeonRoom;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.level.*;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,14 +37,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -54,6 +47,12 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class BlockGoldPortal extends BaseEntityBlock
 {
+	@Override
+	protected MapCodec<? extends BlockGoldPortal> codec()
+	{
+		throw new AssertionError("Implement block codec!");
+	}
+
 	public static String REG_NAME = "block_gold_portal";
 
 	public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
@@ -141,9 +140,8 @@ public class BlockGoldPortal extends BaseEntityBlock
 		return Blocks.AIR.defaultBlockState(); // destroy this block
 	}
 
-	// called by getItemsToDropCount() to determine what BlockItem or Item to drop in this case, do not allow the player to obtain this block as an item
 	@Override
-	public ItemStack getCloneItemStack(BlockGetter worldIn, BlockPos pos, BlockState state)
+	public ItemStack getCloneItemStack(LevelReader pLevel, BlockPos pPos, BlockState pState)
 	{
 		return ItemStack.EMPTY;
 	}

@@ -27,6 +27,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -840,7 +841,7 @@ public class DungeonPlacement
 	private static void fillChestBelow(BlockPos pos, ResourceLocation lootTable, LevelAccessor world, RandomSource rand)
 	{
 		world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
-		RandomizableContainerBlockEntity.setLootTable(world, rand, pos.below(), lootTable);
+		RandomizableContainer.setBlockEntityLootTable(world, rand, pos.below(), lootTable);
 	}
 
 	// I was originally thinking that this would contain direct hints about the

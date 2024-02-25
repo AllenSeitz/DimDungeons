@@ -1,6 +1,7 @@
 package com.catastrophe573.dimdungeons.block;
 
 import java.util.ArrayList;
+import java.util.Properties;
 
 import javax.annotation.Nullable;
 
@@ -14,6 +15,8 @@ import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
@@ -57,6 +60,12 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class BlockPortalKeyhole extends BaseEntityBlock
 {
+	@Override
+	protected MapCodec<? extends BlockPortalKeyhole> codec()
+	{
+		throw new AssertionError("Implement block codec!");
+	}
+
 	public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 	public static final BooleanProperty FILLED = BooleanProperty.create("filled");
 	public static final BooleanProperty LIT = BooleanProperty.create("lit");
@@ -500,9 +509,8 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		return state.setValue(FACING, mirrorIn.mirror(((Direction) state.getValue(FACING))));
 	}
 
-	// returns the ItemStack that represents this block - this has nothing to do with the item placed inside
 	@Override
-	public ItemStack getCloneItemStack(BlockGetter worldIn, BlockPos pos, BlockState state)
+	public ItemStack getCloneItemStack(LevelReader pLevel, BlockPos pPos, BlockState pState)
 	{
 		return new ItemStack(this);
 	}

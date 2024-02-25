@@ -9,6 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
@@ -17,7 +18,6 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -68,19 +68,19 @@ public class DimDungeons
 	public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> GLM_REGISTRAR = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MOD_ID);
 	public static final DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<LootModifierNoDrops>> NO_DUNGEON_DROPS = GLM_REGISTRAR.register("no_dungeon_drops", LootModifierNoDrops.CODEC);
 
-	public DimDungeons()
+	public DimDungeons(IEventBus modEventBus, Dist dist)
 	{
-		BlockRegistrar.register();
-		ItemRegistrar.register();
-		CHUNK_GENERATORS.register(FMLJavaModLoadingContext.get().getModEventBus());
-		GLM_REGISTRAR.register(FMLJavaModLoadingContext.get().getModEventBus());
+		BlockRegistrar.register(modEventBus);
+		ItemRegistrar.register(modEventBus);
+		CHUNK_GENERATORS.register(modEventBus);
+		GLM_REGISTRAR.register(modEventBus);
 
 		// register event listeners that don't use the event bus
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doCommonStuff);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modConfig);
+		modEventBus.addListener(this::enqueueIMC);
+		modEventBus.addListener(this::processIMC);
+		modEventBus.addListener(this::doCommonStuff);
+		modEventBus.addListener(this::doClientStuff);
+		modEventBus.addListener(this::modConfig);
 
 		// Register ourselves for server, registry and other game events we are interested in
 		NeoForge.EVENT_BUS.register(eventHandler);

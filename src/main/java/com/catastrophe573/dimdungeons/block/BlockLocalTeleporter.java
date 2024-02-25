@@ -4,6 +4,8 @@ import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
 
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
@@ -24,6 +26,12 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class BlockLocalTeleporter extends BaseEntityBlock
 {
+	@Override
+	protected MapCodec<? extends BlockLocalTeleporter> codec()
+	{
+		throw new AssertionError("Implement block codec!");
+	}
+
 	public static String REG_NAME = "block_local_teleporter";
 
 	public BlockLocalTeleporter()
@@ -49,10 +57,8 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 	{
 	}
 
-	// called by getItemsToDropCount() to determine what BlockItem or Item to drop
-	// in this case, do not allow the player to obtain this block as an item
 	@Override
-	public ItemStack getCloneItemStack(BlockGetter worldIn, BlockPos pos, BlockState state)
+	public ItemStack getCloneItemStack(LevelReader pLevel, BlockPos pPos, BlockState pState)
 	{
 		return ItemStack.EMPTY;
 	}
