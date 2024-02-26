@@ -1,0 +1,34 @@
+{
+	"name": "Продвинутые Порталы",
+	"icon": "dimdungeons:block_portal_crown",
+	"category": "dimdungeons:portals",
+	"sortnum": 3,
+	"advancement": "dimdungeons:dungeons/enter_basic_dungeon",
+	"pages": [
+	  {
+		"type": "text",
+		"text": "При исследовании подземелий вы можете наткнуться на блоки $(item)дырок для ключей портала$(). В них находятся $(item)продвинутые ключи портала$(). Чтобы использовать такой ключ, вам нужно будет улучшить свой портал. Улучшенное строение требует два блока $(item)корон портала$(), которые можно найти только в сундуках подземелий. Также вам понадобятся два флага цвета либо пурпурного, либо белого цвета."
+	  },
+	  {
+		"type": "multiblock",
+		"multiblock": {
+		  "pattern": [
+			["   ","   "," C "," K "," C ","   ","   "],
+			[" GW","   "," B ","   "," B ","   "," GP"],
+			[" BW","   "," B "," 0 "," B ","   "," BP"],
+			[" B ","   ","   "," B ","   ","   "," B "]
+		  ],
+		  "mapping": {
+			"C": "dimdungeons:block_portal_crown",
+			"K": "dimdungeons:block_portal_keyhole",
+			"G": "dimdungeons:block_gilded_portal",
+			"B": "minecraft:stone_bricks",
+			"W": "minecraft:white_wall_banner[facing=south]",
+			"P": "minecraft:purple_wall_banner[facing=south]"
+		  }
+		},
+		"text": "Затем улучшьте свой портал таким образом."
+	  }
+	]
+  }
+  

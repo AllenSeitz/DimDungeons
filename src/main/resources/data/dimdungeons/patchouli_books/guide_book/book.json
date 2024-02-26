@@ -7,5 +7,5 @@
 	"use_resource_pack": true,
 	"show_progress": false,
 	"advancement_namespaces": [ "dimdungeons" ],
-	"creative_tab": "dimdungeons"
+	"creative_tab": "dimdungeons:creative_tab"
 }
