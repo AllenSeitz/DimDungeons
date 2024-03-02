@@ -34,14 +34,14 @@
 								]
 							],
 							"entity": "this",
-							"replace": "true"
+							"replace": true
 						},
 						{
 							"function": "minecraft:set_name",
 							"name": {
 								"text": "1UP Mushroom",
 								"color": "yellow",
-								"bold": "true"
+								"bold": true
 							}
 						}
 					]
@@ -73,14 +73,14 @@
 								]
 							],
 							"entity": "this",
-							"replace": "true"
+							"replace": true
 						},
 						{
 							"function": "minecraft:set_name",
 							"name": {
 								"text": "Master Sword",
 								"color": "yellow",
-								"bold": "true"
+								"bold": true
 							}
 						}
 					]
@@ -112,14 +112,14 @@
 								]
 							],
 							"entity": "this",
-							"replace": "true"
+							"replace": true
 						},
 						{
 							"function": "minecraft:set_name",
 							"name": {
 								"text": "Ist Rune",
 								"color": "yellow",
-								"bold": "true"
+								"bold": true
 							}
 						}
 					]					
@@ -151,14 +151,14 @@
 								]
 							],
 							"entity": "this",
-							"replace": "true"
+							"replace": true
 						},
 						{
 							"function": "minecraft:set_name",
 							"name": {
 								"text": "The Terrarian",
 								"color": "yellow",
-								"bold": "true"
+								"bold": true
 							}
 						}
 					]					
@@ -190,14 +190,14 @@
 								]
 							],
 							"entity": "this",
-							"replace": "true"
+							"replace": true
 						},
 						{
 							"function": "minecraft:set_name",
 							"name": {
 								"text": "Matter Manipulator",
 								"color": "yellow",
-								"bold": "true"
+								"bold": true
 							}
 						}
 					]					
@@ -229,14 +229,14 @@
 								]
 							],
 							"entity": "this",
-							"replace": "true"
+							"replace": true
 						},
 						{
 							"function": "minecraft:set_name",
 							"name": {
 								"text": "Sunlight Medal",
 								"color": "yellow",
-								"bold": "true"
+								"bold": true
 							}
 						}
 					]					
@@ -268,14 +268,14 @@
 								]
 							],
 							"entity": "this",
-							"replace": "true"
+							"replace": true
 						},
 						{
 							"function": "minecraft:set_name",
 							"name": {
 								"text": "Pink Arrow Panel",
 								"color": "yellow",
-								"bold": "true"
+								"bold": true
 							}
 						}
 					]					
@@ -307,14 +307,14 @@
 								]
 							],
 							"entity": "this",
-							"replace": "true"
+							"replace": true
 						},
 						{
 							"function": "minecraft:set_name",
 							"name": {
 								"text": "Ultros Painting",
 								"color": "yellow",
-								"bold": "true"
+								"bold": true
 							}
 						}
 					]					
