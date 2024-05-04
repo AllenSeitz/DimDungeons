@@ -336,8 +336,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 					ItemPortalKey keyItem = (ItemPortalKey) keyStack.getItem();
 					Direction enterFacing = Direction.NORTH;
 
-					// teleporter hubs are currently the only way a player can enter the dungeon
-					// dimension facing not-north
+					// teleporter hubs are currently the only way a player can enter the dungeon dimension facing not-north
 					if (keyItem.getDungeonType(keyStack) == DungeonType.TELEPORTER_HUB)
 					{
 						enterFacing = getTeleporterHubEntranceDirection(keyItem.getDungeonTheme(keyStack));

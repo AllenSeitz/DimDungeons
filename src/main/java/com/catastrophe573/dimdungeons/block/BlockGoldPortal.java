@@ -110,8 +110,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		builder.add(AXIS);
 	}
 
-	// Called by ItemBlocks after a block is set in the world, to allow post-place
-	// logic
+	// Called by ItemBlocks after a block is set in the world, to allow post-place logic
 	@Override
 	public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
 	{
@@ -130,8 +129,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		}
 	}
 
-	// this function seems to be the true 1.14 replacement for updateNeighbors(),
-	// and it cares about block sides now
+	// this function seems to be the true 1.14 replacement for updateNeighbors() and it cares about block sides now
 	@Override
 	public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos)
 	{
@@ -167,8 +165,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 			return;
 		}
 
-		// only teleport players! items and mobs and who knows what else must stay
-		// behind
+		// only teleport players! items and mobs and who knows what else must stay behind
 		if (!(entityIn instanceof ServerPlayer))
 		{
 			return;
@@ -176,8 +173,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 
 		if (!entityIn.isPassenger() && !entityIn.isVehicle() && entityIn.canChangeDimensions())
 		{
-			// DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just
-			// entered a gold portal.");
+			// DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
 
 			BlockEntity tile = worldIn.getBlockEntity(pos);
 
