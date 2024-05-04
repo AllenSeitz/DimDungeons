@@ -11,9 +11,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -21,9 +23,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EndPortalFrameBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class BaseItemKey extends Item
 {
@@ -37,13 +41,12 @@ public class BaseItemKey extends Item
 	public static final String NBT_THEME = "theme";
 	public static final String NBT_DUNGEON_TYPE = "dungeon_type";
 
-	public static final int BLOCKS_APART_PER_DUNGEON = 256; // 16 chunks to try to keep "noise" or other interference from neighbors to a
-	                                                        // minimum (also makes maps work)
-	public static final float ENTRANCE_OFFSET_X = 8.0f + (8 * 16); // applied when the player teleports in, centered on the two-block-wide return
-	                                                               // portal
-	public static final float ENTRANCE_OFFSET_Z = 12.5f + (11 * 16); // applied when the player teleports in, centered on the two-block-wide return
-	                                                                 // portal
+	public static final int BLOCKS_APART_PER_DUNGEON = 256; // 16 chunks to try to keep "noise" or other interference from neighbors to a minimum (also makes maps work)
+	public static final float ENTRANCE_OFFSET_X = 8.0f + (8 * 16); // applied when the player teleports in, centered on the two-block-wide return portal
+	public static final float ENTRANCE_OFFSET_Z = 12.5f + (11 * 16); // applied when the player teleports in, centered on the two-block-wide return portal
 
+	public static final TagKey<Block> tag_alternate_activation_blocks = ForgeRegistries.BLOCKS.tags().createTagKey(new ResourceLocation(DimDungeons.MOD_ID, "key_activation_blocks"));
+	
 	public BaseItemKey(Item.Properties properties)
 	{
 		super(properties.stacksTo(1));
@@ -420,6 +423,19 @@ public class BaseItemKey extends Item
 					return InteractionResult.SUCCESS;
 				}
 			}
+			else if (isAlternateKeyActivationBlock(worldIn.getBlockState(pos).getBlock()))
+			{
+				// implement the block tag for alternate key chargers
+				if (!isActivated(itemstack))
+				{
+					performActivationRitual(player, itemstack, worldIn, pos);
+					return InteractionResult.SUCCESS;
+				}
+				else
+				{
+					worldIn.playSound((Player) null, pos, SoundEvents.GLASS_HIT, SoundSource.BLOCKS, 1.0F, 1.0F);
+				}
+			}			
 			else if (isBlockKeyCharger(worldIn.getBlockState(pos)))
 			{
 				// did they hit precisely the black area in the middle?
@@ -523,4 +539,9 @@ public class BaseItemKey extends Item
 			worldIn.addParticle(ParticleTypes.FIREWORK, d0, d1, d2, xspeed, yspeed, zspeed);
 		}
 	}
+	
+	static public boolean isAlternateKeyActivationBlock(Block b)
+	{
+		return ForgeRegistries.BLOCKS.tags().getTag(tag_alternate_activation_blocks).contains(b);
+	}	
 }
