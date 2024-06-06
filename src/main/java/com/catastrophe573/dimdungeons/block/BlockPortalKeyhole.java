@@ -187,18 +187,24 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		BlockEntity tileEntity = worldIn.getBlockEntity(pos);
 		TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
 
+		// prevent the dumb glitch where you put your shield in the keyhole, take it out, then put the key in
+		//DimDungeons.logMessageInfo("Hand: " + handIn + ", Item: " + playerItem.getDisplayName());
+		if ( handIn != InteractionHand.MAIN_HAND )
+		{
+			return InteractionResult.PASS;
+		}
+		
 		// insert or remove an item from this block
 		if (myEntity != null)
 		{
 			ItemStack insideItem = myEntity.getObjectInserted();
-
+			
 			// if the keyhole is currently empty
 			if (insideItem.isEmpty())
 			{
 				if (!playerItem.isEmpty())
 				{
-					// DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString()
-					// + " inside keyhole...");
+					// DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
 					boolean is_building = false;
 
 					myEntity.setContents(playerItem.copy());
@@ -257,8 +263,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 							}
 						}
 
-						// buildStep must ALWAYS be 0 when using an ItemBuildKey, or else the keyhole
-						// might start ticking
+						// buildStep must ALWAYS be 0 when using an ItemBuildKey, or else the keyhole might start ticking
 						is_building = false;
 						DungeonUtils.openPortalAfterBuild(worldIn, pos, genData, myEntity);
 					}
