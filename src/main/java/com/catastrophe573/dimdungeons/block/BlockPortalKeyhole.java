@@ -195,11 +195,18 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		BlockEntity tileEntity = worldIn.getBlockEntity(pos);
 		TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
 
+		// prevent the dumb glitch where you put your shield in the keyhole, take it out, then put the key in
+		//DimDungeons.logMessageInfo("Hand: " + handIn + ", Item: " + playerItem.getDisplayName());
+		if ( handIn != InteractionHand.MAIN_HAND )
+		{
+			return InteractionResult.PASS;
+		}
+		
 		// insert or remove an item from this block
 		if (myEntity != null)
 		{
 			ItemStack insideItem = myEntity.getObjectInserted();
-
+			
 			// if the keyhole is currently empty
 			if (insideItem.isEmpty())
 			{
