@@ -1,8 +1,11 @@
 package com.catastrophe573.dimdungeons.block;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.Predicate;
+
 import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
@@ -39,6 +42,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.BlockGetter;
@@ -216,10 +220,10 @@ public class BlockGoldPortal extends BaseEntityBlock
 						{
 							keyhole.removeContents();
 							BlockState emptyState = worldIn.getBlockState(keyhole.getBlockPos());
-							worldIn.setBlockAndUpdate(keyhole.getBlockPos(), emptyState.setValue(BlockPortalKeyhole.FILLED, false).setValue(BlockPortalKeyhole.LIT, false));
+							worldIn.setBlockAndUpdate(keyhole.getBlockPos(), emptyState.setValue(BlockPortalKeyhole.FILLED, false).setValue(BlockPortalKeyhole.LIT, false));							
 						}
 					}
-					
+										
 					// server config to disable this dimension
 					if ( DungeonConfig.disableAllDungeons )
 					{
@@ -302,6 +306,9 @@ public class BlockGoldPortal extends BaseEntityBlock
 		float destPitch = 0;
 		float destYaw = yaw;
 
+		// this is only used when hardcore players teleport into a dungeon, otherwise ignore
+		List<ServerPlayer> multiplayerHardcore = null;
+		
 		// if the player just entered a dungeon then force them to face north
 		if (DungeonUtils.isDimensionDungeon(dim))
 		{
@@ -309,6 +316,15 @@ public class BlockGoldPortal extends BaseEntityBlock
 			z += 1.0D;
 
 			ChunkPos cpos = new ChunkPos(new BlockPos((int)x, (int)y, (int)z));
+
+			// implement hardcore portal radius
+			if (DungeonConfig.hardcoreMode)
+			{
+				// get a list of all nearby players
+				BlockPos pos = player.blockPosition();
+				int range = DungeonConfig.hardcoreMultiplayerRadius;
+				multiplayerHardcore = player.level().getEntitiesOfClass(ServerPlayer.class, new AABB(pos.offset(-range, -range, -range), pos.offset(range + 1, range + 1, range + 1)), getSelector());
+			}
 			
 			// also check for teleporting into an advanced dungeon for the first time
 			DungeonRoom entrance = DungeonData.get(dim).getRoomAtPos(cpos);
@@ -316,6 +332,15 @@ public class BlockGoldPortal extends BaseEntityBlock
 			{
 				// since the condition is minecraft:impossible, this is the only way to trigger it
 				player.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
+				
+				// award the achievement to everyone joining in hardcore mode too
+				if ( multiplayerHardcore != null )
+				{
+					for (ServerPlayer friend : multiplayerHardcore)
+					{
+						friend.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
+					}
+				}
 			}
 		}
 		else if (DungeonUtils.isDimensionPersonalBuild(dim) && !DungeonUtils.isPersonalBuildChunk(new BlockPos((int)x, (int)y, (int)z)))
@@ -340,7 +365,16 @@ public class BlockGoldPortal extends BaseEntityBlock
 		CustomTeleporter tele = new CustomTeleporter(dim);
 		tele.setDestPos(x, y, z, destYaw, destPitch);
 		player.changeDimension(dim, tele);
-		// player.teleport(dim, x, y, z, destYaw, destPitch);
+		
+		// also teleport nearby hardcore players
+		if ( multiplayerHardcore != null )
+		{
+			for (ServerPlayer friend : multiplayerHardcore)
+			{
+				friend.changeDimension(dim, tele);
+			}
+		}
+		
 		return player;
 	}
 
@@ -661,4 +695,10 @@ public class BlockGoldPortal extends BaseEntityBlock
 	{
 		return new TileEntityGoldPortal(pos, state);
 	}
+	
+	// used in the multiplayer radius test
+	public Predicate<Entity> getSelector()
+	{
+		return entity -> entity instanceof ServerPlayer;
+	}	
 }
