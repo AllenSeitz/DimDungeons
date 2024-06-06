@@ -28,6 +28,7 @@ public class TileEntityPortalKeyhole extends BlockEntity
 		super(BlockRegistrar.BE_PORTAL_KEYHOLE.get(), pos, state);
 	}
 
+	// properties that persist
 	private ItemStack objectInserted = ItemStack.EMPTY;
 	private static final String ITEM_PROPERTY_KEY = "objectInserted";
 
@@ -53,8 +54,7 @@ public class TileEntityPortalKeyhole extends BlockEntity
 		}
 		else
 		{
-			// wait until all keys on the whole server are done building (this is the
-			// easiest way, I don't think this will be a problem)
+			// wait until all keys on the whole server are done building (this is the easiest way, I don't think this will be a problem)
 			if (!DungeonData.get(DungeonUtils.getDungeonWorld(level.getServer())).hasMoreRoomsToBuild())
 			{
 				DungeonUtils.openPortalAfterBuild(level, pos, genData, self);
@@ -64,7 +64,7 @@ public class TileEntityPortalKeyhole extends BlockEntity
 				        .setValue(BlockPortalKeyhole.LIT, self.isActivated()).setValue(BlockPortalKeyhole.IS_BUILDING, false);
 				level.setBlockAndUpdate(pos, newBlockState);
 			}
-		}
+		}		
 	}
 
 	protected static int nextBuildStep(int currentStep, DungeonBuildSpeed speed)
@@ -75,8 +75,7 @@ public class TileEntityPortalKeyhole extends BlockEntity
 			return currentStep;
 		}
 
-		// the slow speed always runs for 650 ticks and therefore attempts to build in 2
-		// chunks per second
+		// the slow speed always runs for 650 ticks and therefore attempts to build in 2 chunks per second
 		if (speed == DungeonBuildSpeed.SLOW)
 		{
 			return currentStep >= 650 ? 0 : currentStep + 1;
@@ -96,8 +95,7 @@ public class TileEntityPortalKeyhole extends BlockEntity
 			return currentStep + 5;
 		}
 
-		// the fastest speed skips 10 ticks and attempts to build in 20 chunks per
-		// second
+		// the fastest speed skips 10 ticks and attempts to build in 20 chunks per second
 		if (speed == DungeonBuildSpeed.FASTEST)
 		{
 			if (currentStep < 10)
@@ -174,5 +172,5 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	{
 		this.objectInserted = ItemStack.EMPTY;
 		this.setChanged();
-	}
+	}	
 }

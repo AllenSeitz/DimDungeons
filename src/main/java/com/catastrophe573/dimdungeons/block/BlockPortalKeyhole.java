@@ -193,7 +193,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		{
 			return InteractionResult.PASS;
 		}
-		
+				
 		// insert or remove an item from this block
 		if (myEntity != null)
 		{
@@ -451,22 +451,18 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		worldIn.setBlock(pos, state.setValue(FACING, placer.getDirection().getOpposite()), 2);
 	}
 
-	// Called server side after this block is replaced with another in Chunk, but
-	// before the TileEntity is updated
-	// this function is now in charge of preserving TileEntities across block
-	// updates, too, instead of the former TileEntity->shouldRefresh()
+	// Called server side after this block is replaced with another in Chunk, but before the TileEntity is updated
+	// this function is now in charge of preserving TileEntities across block updates, too, instead of the former TileEntity->shouldRefresh()
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving)
 	{
 		BlockEntity tileentity = worldIn.getBlockEntity(pos);
 
-		// DO NOT call super.onReplaced() unless this block has no TileEntity, or unless
-		// the block was deleted/changed to another block of course
+		// DO NOT call super.onReplaced() unless this block has no TileEntity, or unless the block was deleted/changed to another block of course
 		if (state.getBlock() != newState.getBlock())
 		{
-			// if the block was destroyed and it held an item then spit the item out
-			// somewhere
+			// if the block was destroyed and it held an item then spit the item out somewhere
 			if (tileentity instanceof TileEntityPortalKeyhole)
 			{
 				ItemStack item = ((TileEntityPortalKeyhole) tileentity).getObjectInserted();
