@@ -201,7 +201,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		{
 			return InteractionResult.PASS;
 		}
-		
+				
 		// insert or remove an item from this block
 		if (myEntity != null)
 		{
