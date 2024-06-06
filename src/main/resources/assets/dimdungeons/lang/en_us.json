@@ -153,7 +153,7 @@
     "npart.dimdungeons.struct_9_6": "Key to the Crimson Door",
     "npart.dimdungeons.struct_9_7": "Key to the Warped Door",
 
-    "npart.dimdungeons.struct_10": "Key to the Nearby Chest of Loot and Stuff and Things and",
+    "npart.dimdungeons.struct_10": "Chest Key: ", // THIS IS UNUSED!
 
     "book.dimdungeons.title_1": "Good News",
     "book.dimdungeons.title_2": "Puzzle Hint",

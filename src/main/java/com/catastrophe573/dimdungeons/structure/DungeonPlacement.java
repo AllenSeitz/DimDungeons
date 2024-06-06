@@ -45,6 +45,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
@@ -546,8 +547,7 @@ public class DungeonPlacement
 			TileEntityLocalTeleporter te = (TileEntityLocalTeleporter) world.getBlockEntity(pos);
 			if (te != null)
 			{
-				// this logic is copy/pasted from the HomewardPearl, which was implemented later
-				// than this block
+				// this logic is copy/pasted from the HomewardPearl, which was implemented later than this block
 				double topLeftX = Math.floor(pos.getX() / ItemPortalKey.BLOCKS_APART_PER_DUNGEON);
 				double entranceX = topLeftX * ItemPortalKey.BLOCKS_APART_PER_DUNGEON + ItemPortalKey.ENTRANCE_OFFSET_X;
 				double topLeftZ = Math.floor(pos.getZ() / ItemPortalKey.BLOCKS_APART_PER_DUNGEON);
@@ -567,14 +567,15 @@ public class DungeonPlacement
 		else if ("LockWithCode".equals(name))
 		{
 			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
-//			BlockEntity te = world.getBlockEntity(pos.below());
-//
-//			if (te instanceof BaseContainerBlockEntity)
-//			{
-//				CompoundTag tag = ((BaseContainerBlockEntity) te).getUpdateTag();
-//				tag.putString("Lock", makeChunkCode(world.getChunkAt(pos).getPos()));
-//				te.handleUpdateTag(tag);
-//			}
+			BlockEntity te = world.getBlockEntity(pos.below());
+
+			if (te instanceof BaseContainerBlockEntity)
+			{
+				CompoundTag tag = ((BaseContainerBlockEntity) te).getUpdateTag();
+				String lockName = "Chest Key: "+makeChunkCode(world.getChunk(pos).getPos());
+				tag.putString("Lock", lockName);
+				te.handleUpdateTag(tag);
+			}
 		}
 		else if ("FortuneTeller".equals(name))
 		{
@@ -598,7 +599,7 @@ public class DungeonPlacement
 		else if ("ChestLoot2".equals(name))
 		{
 			String lootType = room.dungeonType == DungeonType.BASIC ? "basic" : "advanced";
-			String lootTable = "chests/chestloot_" + lootType + "_hard";
+			String lootTable = "chests/chestloot_" + lootType + "_hard";			
 			fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + lootTable), world, rand);
 		}
 		else if ("ChestLootKit".equals(name))
@@ -710,7 +711,7 @@ public class DungeonPlacement
 
 			spawnEnemyHere(pos, mobid, world, room.theme, room.dungeonType);
 		}
-		else if ("SummonEnemy2".equals(name))
+		else if ("SummonEnemy2".equals(name) || "SummonKeyholder".equals(name) )
 		{
 			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
 
@@ -729,18 +730,19 @@ public class DungeonPlacement
 
 			Entity mob = spawnEnemyHere(pos, mobid, world, room.theme, room.dungeonType);
 			
-//			// Keyholders are entity 2s with some extra stuff
-//			if ( "SummonKeyholder".equals(name) )
-//			{
-//				if (!((Mob) mob).hasItemInSlot(EquipmentSlot.CHEST))
-//				{
-//					ItemStack stack = new ItemStack(Items.STICK);
-//					stack.setHoverName(Component.translatable(makeChunkCode(world.getChunk(pos).getPos())));
-//
-//					((Mob) mob).setItemSlot(EquipmentSlot.CHEST, stack);
-//					((Mob) mob).setDropChance(EquipmentSlot.CHEST, 1.0f);
-//				}
-//			}
+			// Keyholders are entity 2s with some extra stuff
+			if ( "SummonKeyholder".equals(name) )
+			{
+				if (!((Mob) mob).hasItemInSlot(EquipmentSlot.CHEST))
+				{
+					ItemStack stack = new ItemStack(Items.STICK);
+					String lockName = "Chest Key: "+makeChunkCode(world.getChunk(pos).getPos());
+					stack.setHoverName(Component.translatable(lockName));
+
+					((Mob) mob).setItemSlot(EquipmentSlot.CHEST, stack);
+					((Mob) mob).setDropChance(EquipmentSlot.CHEST, 1.0f);
+				}
+			}
 
 			// and give it an extra 50% health plus some potion buffs, because
 			AttributeInstance tempHealth = ((Mob) mob).getAttribute(Attributes.MAX_HEALTH);
@@ -840,7 +842,7 @@ public class DungeonPlacement
 	private static void fillChestBelow(BlockPos pos, ResourceLocation lootTable, LevelAccessor world, RandomSource rand)
 	{
 		world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
-		RandomizableContainerBlockEntity.setLootTable(world, rand, pos.below(), lootTable);
+		RandomizableContainerBlockEntity.setLootTable(world, rand, pos.below(), lootTable);		
 	}
 
 	// I was originally thinking that this would contain direct hints about the
@@ -897,4 +899,18 @@ public class DungeonPlacement
 		stack.getTag().putString("author", Component.translatable("book.dimdungeons.author").getString());
 		return stack;
 	}
+	
+	public static String makeChunkCode(ChunkPos pos)
+	{
+		int r = pos.x * 2 + pos.z;
+
+		r ^= r << 13;
+		r ^= r >> 17;
+		r ^= r << 5;
+		r %= 9999;
+		
+		String code = String.format("%04d", r);
+		
+		return code;
+	}	
 }
