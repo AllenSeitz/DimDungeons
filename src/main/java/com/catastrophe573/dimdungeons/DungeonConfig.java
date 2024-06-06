@@ -30,6 +30,8 @@ public class DungeonConfig
 	public static final int DEFAULT_THEME_DUNGEON_SIZE = 14;
 	public static final int DEFAULT_CHANCE_FOR_THEME_KEYS = 4;
 
+	public static final int DEFAULT_HARDCORE_RADIUS = 5;
+
 	public static final int DEFAULT_PORTAL_TICKS = 40;
 	public static final int DEFAULT_BUILD_SPEED = 5;
 
@@ -67,6 +69,7 @@ public class DungeonConfig
 	public static int configVersion = DEFAULT_CONFIG_VERSION;
 	public static boolean globalBlockProtection = true;
 	public static boolean hardcoreMode = false;
+	public static int hardcoreMultiplayerRadius = DEFAULT_HARDCORE_RADIUS;
 	public static boolean disablePersonalDimSecurity = false;
 	public static boolean disableAllDungeons = false;
 	public static boolean disablePersonalBuildDimension = false;
@@ -132,13 +135,13 @@ public class DungeonConfig
 	{
 		public final ConfigValue<Integer> configVersion;
 
-		public final ModConfigSpec.BooleanValue globalBlockProtection;
-		public final ModConfigSpec.BooleanValue hardcoreMode;
-		public final ModConfigSpec.BooleanValue disablePersonalDimSecurity;
-		public final ModConfigSpec.BooleanValue disableAllDungeons;
-		public final ModConfigSpec.BooleanValue disablePersonalBuildDimension;
-		public final ModConfigSpec.BooleanValue enableDebugCheats;
-
+		public final ForgeConfigSpec.BooleanValue globalBlockProtection;
+		public final ForgeConfigSpec.BooleanValue hardcoreMode;
+		public final ConfigValue<Integer> hardcoreMultiplayerRadius;
+		public final ForgeConfigSpec.BooleanValue disablePersonalDimSecurity;
+		public final ForgeConfigSpec.BooleanValue disableAllDungeons;
+		public final ForgeConfigSpec.BooleanValue disablePersonalBuildDimension;
+		public final ForgeConfigSpec.BooleanValue enableDebugCheats;
 		public final ConfigValue<Integer> portalCooldownTicks;
 		public final ConfigValue<Integer> keyEnscriberDowngradeChanceFull;
 		public final ConfigValue<Integer> keyEnscriberDowngradeChanceUsed;
@@ -251,6 +254,7 @@ public class DungeonConfig
 
 			globalBlockProtection = builder.comment("If set to FALSE the block protection on the dungeon dimension will be disabled, making the options in the next section useless.").translation("config.dimdungeons.globalBlockProtection").define("globalBlockProtection", true);
 			hardcoreMode = builder.comment("If set to TRUE then dungeon keys are consumed whenever a player enters a dungeon portal.").translation("config.dimdungeons.hardcoreMode").define("hardcoreMode", false);
+			hardcoreMultiplayerRadius = builder.comment("If hardcore mode is enabled then players within this radius will also enter the dungeon when the key is consumed.").translation("config.dimdungeons.hardcoreMultiplayerRadius").define("hardcoreMultiplayerRadius", DEFAULT_HARDCORE_RADIUS);
 			disablePersonalDimSecurity = builder.comment("If set to TRUE then the permissions on the personal build dimension are ignored.").translation("config.dimdungeons.hardcoreMode").define("disablePersonalDimSecurity", false);
 			disableAllDungeons = builder.comment("If set to TRUE then portals leading to the dungeon dimension will never open.").translation("config.dimdungeons.disableAllDungeons").define("disableAllDungeons", false);
 			disablePersonalBuildDimension = builder.comment("If set to TRUE then portals leading to the personal build dimension will never open.").translation("config.dimdungeons.disablePersonalBuildDimension").define("disablePersonalBuildDimension", false);
@@ -1397,6 +1401,7 @@ public class DungeonConfig
 		configVersion = SERVER.configVersion.get();
 		globalBlockProtection = SERVER.globalBlockProtection.get();
 		hardcoreMode = SERVER.hardcoreMode.get();
+		hardcoreMultiplayerRadius = SERVER.hardcoreMultiplayerRadius.get();
 		disablePersonalDimSecurity = SERVER.disablePersonalDimSecurity.get();
 		disableAllDungeons = SERVER.disableAllDungeons.get();
 		disablePersonalBuildDimension = SERVER.disablePersonalBuildDimension.get();
