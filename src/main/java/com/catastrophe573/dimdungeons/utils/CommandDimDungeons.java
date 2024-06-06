@@ -9,6 +9,7 @@ import com.catastrophe573.dimdungeons.item.BaseItemKey;
 import com.catastrophe573.dimdungeons.item.ItemBlankBuildKey;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
+import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
 import com.catastrophe573.dimdungeons.structure.DungeonRoom;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -74,11 +75,11 @@ public class CommandDimDungeons
 			return givePersonalKey(cmd, EntityArgument.getPlayers(cmd, "recipient"), EntityArgument.getPlayer(cmd, "target_player"));
 		}))));
 
-		// make a chest for getting the current room, for debugging in live environments
+		// make a cheat for getting the current room, for debugging in live environments
 		argumentBuilder.then(Commands.literal("getroom").then(Commands.argument("target_player", EntityArgument.player()).executes((cmd) ->
 		{
 			return printRoomName(cmd, EntityArgument.getPlayer(cmd, "target_player"));
-		})));		
+		})));
 		
 		// this is a debugging hack that must not ship
 		// argumentBuilder.then(Commands.literal("debugpersonal").then(Commands.argument("recipient",
@@ -284,8 +285,9 @@ public class CommandDimDungeons
 			cmd.getSource().sendFailure(Component.literal("No room found at current position."));
 			return 0; // possible
 		}
-
+		
 		MutableComponent text = Component.literal("room: " + room.structure + " rot: " + room.rotation);
+		//MutableComponent text = Component.literal("room: " + room.structure + " rot: " + room.rotation + " code: " + DungeonPlacement.makeChunkCode(targetPlayer.chunkPosition()));
 		text.withStyle(text.getStyle().withItalic(true));
 		text.withStyle(text.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
 		cmd.getSource().sendSuccess(() -> text, true);
