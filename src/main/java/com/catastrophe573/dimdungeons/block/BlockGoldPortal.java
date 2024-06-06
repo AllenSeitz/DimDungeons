@@ -42,6 +42,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.server.level.ServerLevel;
@@ -319,9 +320,9 @@ public class BlockGoldPortal extends BaseEntityBlock
 			if (DungeonConfig.hardcoreMode)
 			{
 				// get a list of all nearby players
-				BlockPos pos = player.blockPosition();
+				Vec3 pos = player.getPosition(0);
 				int range = DungeonConfig.hardcoreMultiplayerRadius;
-				multiplayerHardcore = player.level().getEntitiesOfClass(ServerPlayer.class, new AABB(pos.offset(-range, -range, -range), pos.offset(range + 1, range + 1, range + 1)), getSelector());
+				multiplayerHardcore = player.level().getEntitiesOfClass(ServerPlayer.class, new AABB(pos.add(-range, -range, -range), pos.add(range + 1, range + 1, range + 1)), getSelector());
 			}
 			
 			// also check for teleporting into an advanced dungeon for the first time

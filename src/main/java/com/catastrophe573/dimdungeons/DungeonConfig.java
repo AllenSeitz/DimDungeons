@@ -135,13 +135,13 @@ public class DungeonConfig
 	{
 		public final ConfigValue<Integer> configVersion;
 
-		public final ForgeConfigSpec.BooleanValue globalBlockProtection;
-		public final ForgeConfigSpec.BooleanValue hardcoreMode;
+		public final ModConfigSpec.BooleanValue globalBlockProtection;
+		public final ModConfigSpec.BooleanValue hardcoreMode;
 		public final ConfigValue<Integer> hardcoreMultiplayerRadius;
-		public final ForgeConfigSpec.BooleanValue disablePersonalDimSecurity;
-		public final ForgeConfigSpec.BooleanValue disableAllDungeons;
-		public final ForgeConfigSpec.BooleanValue disablePersonalBuildDimension;
-		public final ForgeConfigSpec.BooleanValue enableDebugCheats;
+		public final ModConfigSpec.BooleanValue disablePersonalDimSecurity;
+		public final ModConfigSpec.BooleanValue disableAllDungeons;
+		public final ModConfigSpec.BooleanValue disablePersonalBuildDimension;
+		public final ModConfigSpec.BooleanValue enableDebugCheats;
 		public final ConfigValue<Integer> portalCooldownTicks;
 		public final ConfigValue<Integer> keyEnscriberDowngradeChanceFull;
 		public final ConfigValue<Integer> keyEnscriberDowngradeChanceUsed;
