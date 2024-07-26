@@ -36,6 +36,11 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	{
 		TileEntityPortalKeyhole self = (TileEntityPortalKeyhole) blockEntity;
 
+		if ( self.getObjectInserted().isEmpty() )
+		{
+			return; // prevent a crash in Debug Worlds. (This should never happen normally.)
+		}
+		
 		ItemPortalKey key = (ItemPortalKey) self.getObjectInserted().getItem();
 		DungeonGenData genData = DungeonGenData.Create().setKeyItem(self.getObjectInserted()).setDungeonType(key.getDungeonType(self.getObjectInserted()))
 		        .setTheme(key.getDungeonTheme(self.getObjectInserted()))
