@@ -2,6 +2,7 @@ package com.catastrophe573.dimdungeons.block;
 
 import com.catastrophe573.dimdungeons.DungeonConfig;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -28,9 +29,9 @@ public class TileEntityGoldPortal extends BlockEntity
 	}
 
 	@Override
-	public void load(CompoundTag compound)
+	public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries)
 	{
-		super.load(compound);
+		super.loadAdditional(compound, registries);
 		if (compound.contains("destX") && compound.contains("destY") && compound.contains("destZ"))
 		{
 			this.destX = compound.getDouble("destX");
@@ -66,8 +67,9 @@ public class TileEntityGoldPortal extends BlockEntity
 	}
 
 	@Override
-	protected void saveAdditional(CompoundTag compound)
+	public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries)
 	{
+		super.saveAdditional(compound, registries);
 		compound.putDouble("destX", this.destX);
 		compound.putDouble("destY", this.destY);
 		compound.putDouble("destZ", this.destZ);
@@ -97,7 +99,7 @@ public class TileEntityGoldPortal extends BlockEntity
 
 	public ResourceKey<Level> getDestinationDimension()
 	{
-		return ResourceKey.create(Registries.DIMENSION, new ResourceLocation(destDimension));
+		return ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(destDimension));
 	}
 
 	public Direction getExitDirection()

@@ -1,5 +1,6 @@
 package com.catastrophe573.dimdungeons.item;
 
+import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 
 import net.minecraft.client.resources.language.I18n;
@@ -44,116 +45,133 @@ public class ItemPortalKey extends BaseItemKey
 		int theme = ((ItemPortalKey) stack.getItem()).getDungeonTheme(stack);
 		return (float)theme / 100.0f;
 	}
-	
+
 	public boolean isDungeonBuilt(ItemStack stack)
 	{
-		if (stack.hasTag())
+		if (stack.has(DimDungeons.DUNGEON_KEY_DATA))
 		{
-			if (stack.getTag().contains(NBT_BUILT))
-			{
-				return stack.getTag().getBoolean(NBT_BUILT);
-			}
+			return stack.get(DimDungeons.DUNGEON_KEY_DATA).built();
 		}
 		return false;
 	}
 
-	public void setDungeonBuilt(ItemStack stack)
+	public static void setDungeonBuilt(ItemStack stack)
 	{
-		if (stack.hasTag())
+		if (!stack.has(DimDungeons.DUNGEON_KEY_DATA))
 		{
-			stack.getTag().putBoolean(NBT_BUILT, true);
+			DimDungeons.logMessageError("ERROR: setting isBuilt on a non-key or an object without a dungeon key data component.");
+			return;
 		}
+
+		// records are immutable, so make a new record just to change one field? am I doing this right?
+		// TODO: bope, I'm not doing it right. Make DungeonKeyDataComponentRecord more like the vanilla classes. It doesn't have to be immutable everywhere.
+		DungeonKeyDataComponentRecord data = stack.get(DimDungeons.DUNGEON_KEY_DATA);
+		DungeonKeyDataComponentRecord newData = new DungeonKeyDataComponentRecord(
+				data.key_activated(),
+				true, // built
+				data.dest_x(),
+				data.dest_z(),
+				data.name_type(),
+				data.name_part_1(),
+				data.name_part_2(),
+				data.theme(),
+				data.dungeon_type()
+		);
+
+		stack.set(DimDungeons.DUNGEON_KEY_DATA, newData);
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
 	public Component getName(ItemStack stack)
 	{
-		// no NBT data on this item at all? well then return a blank key
-		if (stack.hasTag())
+		// no NBT data on this item at all? well then return "Blank Portal Key"
+		if (!stack.has(DimDungeons.DUNGEON_KEY_DATA))
 		{
-			CompoundTag itemData = stack.getTag();
-
-			if (itemData.contains(NBT_KEY_ACTIVATED))
-			{
-				int nameType = itemData.contains(NBT_NAME_TYPE) ? itemData.getInt(NBT_NAME_TYPE) : 0;
-				int word_index_1 = itemData.contains(NBT_NAME_PART_1) ? itemData.getInt(NBT_NAME_PART_1) : 2;
-				int word_index_2 = itemData.contains(NBT_NAME_PART_2) ? itemData.getInt(NBT_NAME_PART_2) : 1;
-				int theme = itemData.contains(NBT_THEME) ? itemData.getInt(NBT_THEME) : 0;
-				String retval = "";
-
-				if (nameType == 0)
-				{
-					// some tier 1 keys
-					String start = I18n.get("npart.dimdungeons.struct_1");
-					String preposition = I18n.get("npart.dimdungeons.struct_2");
-					String noun1 = I18n.get("npart.dimdungeons.noun_" + word_index_1);
-					String noun2 = I18n.get("npart.dimdungeons.noun_" + word_index_2);
-					if (word_index_1 == word_index_2)
-					{
-						retval = start + " " + noun1;
-					}
-					else
-					{
-						retval = start + " " + noun1 + " " + preposition + " " + noun2;
-					}
-				}
-				else if (nameType == 1)
-				{
-					// some tier 1 keys
-					String start = I18n.get("npart.dimdungeons.struct_3");
-					String preposition = I18n.get("npart.dimdungeons.struct_4");
-					String noun1 = I18n.get("npart.dimdungeons.noun_" + word_index_1);
-					String noun2 = I18n.get("npart.dimdungeons.noun_" + word_index_2);
-					if (word_index_1 == word_index_2)
-					{
-						retval = start + " " + noun1;
-					}
-					else
-					{
-						retval = start + " " + noun1 + " " + preposition + " " + noun2;
-					}
-				}
-				else if (nameType == 2)
-				{
-					// themes AND some tier 1 keys
-					String start = I18n.get("npart.dimdungeons.struct_5");
-					String preposition = I18n.get("npart.dimdungeons.struct_6");
-					String place = I18n.get("npart.dimdungeons.place_" + word_index_1);
-					if (theme > 0)
-					{
-						place = I18n.get("npart.dimdungeons.theme_" + theme);
-					}
-					String noun = I18n.get("npart.dimdungeons.noun_" + word_index_2);
-					retval = start + " " + place + " " + preposition + " " + noun;
-				}
-				else if (nameType == 3)
-				{
-					// advanced keys
-					String start = I18n.get("npart.dimdungeons.struct_7");
-					String place = I18n.get("npart.dimdungeons.place_" + word_index_1);
-					String largeness = I18n.get("npart.dimdungeons.large_" + word_index_2);
-					retval = start + " " + largeness + " " + place;
-				}
-				else if (nameType == 4)
-				{
-					// teleporter hub - main key
-					String start = I18n.get("npart.dimdungeons.struct_9");
-					String noun1 = I18n.get("npart.dimdungeons.noun_" + word_index_1);
-					retval = start + noun1;
-				}
-				else if (nameType == 5)
-				{
-					// teleporter hub - 7 other keys
-					String start = I18n.get("npart.dimdungeons.struct_9_" + word_index_1);
-					retval = start;
-				}
-
-				return Component.translatable(retval);
-			}
+			return Component.translatable(this.getDescriptionId(stack));
 		}
 
-		// basically return "Blank Portal Key" return I18n.format(stack.getTranslationKey());
+		DungeonKeyDataComponentRecord itemData = stack.get(DimDungeons.DUNGEON_KEY_DATA);
+
+		if (itemData.key_activated())
+		{
+			int nameType = itemData.name_type();
+			int word_index_1 = itemData.name_part_1();
+			int word_index_2 = itemData.name_part_2();
+			int theme = itemData.theme();
+			String retval = "";
+
+			if (nameType == 0)
+			{
+				// some tier 1 keys
+				String start = I18n.get("npart.dimdungeons.struct_1");
+				String preposition = I18n.get("npart.dimdungeons.struct_2");
+				String noun1 = I18n.get("npart.dimdungeons.noun_" + word_index_1);
+				String noun2 = I18n.get("npart.dimdungeons.noun_" + word_index_2);
+				if (word_index_1 == word_index_2)
+				{
+					retval = start + " " + noun1;
+				}
+				else
+				{
+					retval = start + " " + noun1 + " " + preposition + " " + noun2;
+				}
+			}
+			else if (nameType == 1)
+			{
+				// some tier 1 keys
+				String start = I18n.get("npart.dimdungeons.struct_3");
+				String preposition = I18n.get("npart.dimdungeons.struct_4");
+				String noun1 = I18n.get("npart.dimdungeons.noun_" + word_index_1);
+				String noun2 = I18n.get("npart.dimdungeons.noun_" + word_index_2);
+				if (word_index_1 == word_index_2)
+				{
+					retval = start + " " + noun1;
+				}
+				else
+				{
+					retval = start + " " + noun1 + " " + preposition + " " + noun2;
+				}
+			}
+			else if (nameType == 2)
+			{
+				// themes AND some tier 1 keys
+				String start = I18n.get("npart.dimdungeons.struct_5");
+				String preposition = I18n.get("npart.dimdungeons.struct_6");
+				String place = I18n.get("npart.dimdungeons.place_" + word_index_1);
+				if (theme > 0)
+				{
+					place = I18n.get("npart.dimdungeons.theme_" + theme);
+				}
+				String noun = I18n.get("npart.dimdungeons.noun_" + word_index_2);
+				retval = start + " " + place + " " + preposition + " " + noun;
+			}
+			else if (nameType == 3)
+			{
+				// advanced keys
+				String start = I18n.get("npart.dimdungeons.struct_7");
+				String place = I18n.get("npart.dimdungeons.place_" + word_index_1);
+				String largeness = I18n.get("npart.dimdungeons.large_" + word_index_2);
+				retval = start + " " + largeness + " " + place;
+			}
+			else if (nameType == 4)
+			{
+				// teleporter hub - main key
+				String start = I18n.get("npart.dimdungeons.struct_9");
+				String noun1 = I18n.get("npart.dimdungeons.noun_" + word_index_1);
+				retval = start + noun1;
+			}
+			else if (nameType == 5)
+			{
+				// teleporter hub - 7 other keys
+				String start = I18n.get("npart.dimdungeons.struct_9_" + word_index_1);
+				retval = start;
+			}
+
+			return Component.translatable(retval);
+		}
+
+		// basically return "Blank Portal Key"
 		return Component.translatable(this.getDescriptionId(stack));
 	}
 

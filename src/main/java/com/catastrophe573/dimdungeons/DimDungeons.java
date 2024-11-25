@@ -1,8 +1,11 @@
 package com.catastrophe573.dimdungeons;
 
+import com.catastrophe573.dimdungeons.item.*;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.registries.Registries;
@@ -10,6 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
@@ -31,13 +35,11 @@ import org.apache.logging.log4j.Logger;
 
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.dimension.DungeonChunkGenerator;
-import com.catastrophe573.dimdungeons.item.ItemBlankThemeKey;
-import com.catastrophe573.dimdungeons.item.ItemPortalKey;
-import com.catastrophe573.dimdungeons.item.ItemRegistrar;
-import com.catastrophe573.dimdungeons.item.ItemSecretBell;
 import com.catastrophe573.dimdungeons.utils.CommandDimDungeons;
 import com.catastrophe573.dimdungeons.utils.LootModifierNoDrops;
 import com.mojang.serialization.Codec;
+
+import java.util.function.Supplier;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("dimdungeons")
@@ -48,32 +50,41 @@ public class DimDungeons
 
 	// constants used by other classes
 	public static final String MOD_ID = "dimdungeons"; // this must match mods.toml
-	public static final String RESOURCE_PREFIX = MOD_ID + ":";
 
 	public static final String dungeon_dimension_regname = "dungeon_dimension";
 	public static final String build_dimension_regname = "build_dimension";
 
 	// commonly used ResourceLocations for my two dimensions
-	public static final ResourceKey<Level> DUNGEON_DIMENSION = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(MOD_ID, dungeon_dimension_regname));
-	public static final ResourceKey<Level> BUILD_DIMENSION = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(MOD_ID, build_dimension_regname));
+	public static final ResourceKey<Level> DUNGEON_DIMENSION = ResourceKey.create(Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath(MOD_ID, dungeon_dimension_regname));
+	public static final ResourceKey<Level> BUILD_DIMENSION = ResourceKey.create(Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath(MOD_ID, build_dimension_regname));
 
 	// register my custom ChunkGenerator here instead of in a separate class
-	private static final DeferredRegister<Codec<? extends ChunkGenerator>> CHUNK_GENERATORS = DeferredRegister.create(Registries.CHUNK_GENERATOR, DimDungeons.MOD_ID);
-	public static final DeferredHolder<Codec<? extends ChunkGenerator>, Codec<FlatLevelSource>> MY_CHUNK_GEN = CHUNK_GENERATORS.register("dimdungeons_chunkgen", () -> DungeonChunkGenerator.CODEC);
+	private static final DeferredRegister<MapCodec<? extends ChunkGenerator>> CHUNK_GENERATORS = DeferredRegister.create(Registries.CHUNK_GENERATOR.location(), DimDungeons.MOD_ID);
+	public static final DeferredHolder<MapCodec<? extends ChunkGenerator>, MapCodec<FlatLevelSource>> MY_CHUNK_GEN = CHUNK_GENERATORS.register("dimdungeons_chunkgen", () -> DungeonChunkGenerator.CODEC);
 
 	// see PlayerDungeonEvents.java
 	public static final PlayerDungeonEvents eventHandler = new PlayerDungeonEvents();
 
 	// global loot modifiers
-	public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> GLM_REGISTRAR = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, MOD_ID);
-	public static final DeferredHolder<Codec<? extends IGlobalLootModifier>, Codec<LootModifierNoDrops>> NO_DUNGEON_DROPS = GLM_REGISTRAR.register("no_dungeon_drops", LootModifierNoDrops.CODEC);
+	public static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODIFIER_SERIALIZERS = DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, DimDungeons.MOD_ID);
+	public static final Supplier<MapCodec<LootModifierNoDrops>> NO_DUNGEON_DROPS = GLOBAL_LOOT_MODIFIER_SERIALIZERS.register("no_dungeon_drops", () -> LootModifierNoDrops.CODEC);
 
-	public DimDungeons(IEventBus modEventBus, Dist dist)
+	// register custom data components for my classes
+	public static final DeferredRegister.DataComponents DATA_COMP_REGISTRAR = DeferredRegister.createDataComponents(DimDungeons.MOD_ID);
+	public static final Supplier<DataComponentType<DungeonKeyDataComponentRecord>> DUNGEON_KEY_DATA = DATA_COMP_REGISTRAR.registerComponentType(
+			"dungeon_key_data", builder -> builder.persistent(DungeonKeyDataComponent.DUNGEON_KEY_DCR_CODEC)
+	);
+	public static final Supplier<DataComponentType<SecretBellDataComponentRecord>> SECRET_BELL_DATA = DATA_COMP_REGISTRAR.registerComponentType(
+			"secret_bell_data", builder -> builder.persistent(SecretBellDataComponent.SECRET_BELL_DCR_CODEC)
+	);
+
+	public DimDungeons(IEventBus modEventBus, Dist dist, ModContainer container)
 	{
 		BlockRegistrar.register(modEventBus);
 		ItemRegistrar.register(modEventBus);
 		CHUNK_GENERATORS.register(modEventBus);
-		GLM_REGISTRAR.register(modEventBus);
+		GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
+		DATA_COMP_REGISTRAR.register(modEventBus);
 
 		// register event listeners that don't use the event bus
 		modEventBus.addListener(this::enqueueIMC);
@@ -86,14 +97,13 @@ public class DimDungeons
 		NeoForge.EVENT_BUS.register(eventHandler);
 		NeoForge.EVENT_BUS.addListener(PlayerDungeonEvents::onWorldTick);
 
-		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, DungeonConfig.SERVER_SPEC);
-		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, DungeonConfig.CLIENT_SPEC);
-		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DungeonConfig.COMMON_SPEC, "dimdungeons-common-r190.toml");
+		container.registerConfig(ModConfig.Type.SERVER, DungeonConfig.SERVER_SPEC);
+		container.registerConfig(ModConfig.Type.CLIENT, DungeonConfig.CLIENT_SPEC);
+		container.registerConfig(ModConfig.Type.COMMON, DungeonConfig.COMMON_SPEC, "dimdungeons-common-r190.toml");
 	}
 
 	private void doCommonStuff(final FMLCommonSetupEvent event)
 	{
-		// Registries.register(Registries.CHUNK_GENERATOR, "dimdungeons:dimdungeons_chunkgen", DungeonChunkGenerator.CODEC);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -107,23 +117,23 @@ public class DimDungeons
 			ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get(), RenderType.translucent());
 
 			// register the custom property for the keys that allows for switching their model
-			ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), new ResourceLocation(DimDungeons.MOD_ID, "keytype"), (stack, world, entity, number) ->
+			ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "keytype"), (stack, world, entity, number) ->
 			{
 				return ItemPortalKey.getKeyLevelAsFloat(stack);
 			});
-			ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), new ResourceLocation(DimDungeons.MOD_ID, "keytheme"), (stack, world, entity, number) ->
+			ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "keytheme"), (stack, world, entity, number) ->
 			{
 				return ItemPortalKey.getKeyThemeAsFloat(stack);
 			});
-			ItemProperties.register(ItemRegistrar.ITEM_BLANK_THEME_KEY.get(), new ResourceLocation(DimDungeons.MOD_ID, "keytheme"), (stack, world, entity, number) ->
+			ItemProperties.register(ItemRegistrar.ITEM_BLANK_THEME_KEY.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "keytheme"), (stack, world, entity, number) ->
 			{
 				return ItemBlankThemeKey.getKeyThemeAsFloat(stack);
 			});
-			ItemProperties.register(ItemRegistrar.ITEM_SECRET_BELL.get(), new ResourceLocation(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
+			ItemProperties.register(ItemRegistrar.ITEM_SECRET_BELL.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
 			{
 				return ItemSecretBell.getUpgradeLevelAsFloat(stack);
 			});
-			ItemProperties.register(ItemRegistrar.ITEM_SECRET_BELL.get(), new ResourceLocation(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
+			ItemProperties.register(ItemRegistrar.ITEM_SECRET_BELL.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
 			{
 				return ItemSecretBell.getUpgradeLevelAsFloat(stack);
 			});

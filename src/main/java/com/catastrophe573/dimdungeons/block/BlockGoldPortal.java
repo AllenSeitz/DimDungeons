@@ -10,10 +10,10 @@ import javax.annotation.Nullable;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
-import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
 import com.catastrophe573.dimdungeons.dimension.DungeonData;
 import com.catastrophe573.dimdungeons.dimension.PersonalBuildData;
 import com.catastrophe573.dimdungeons.item.BaseItemKey;
+import com.catastrophe573.dimdungeons.item.DungeonKeyDataComponentRecord;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
@@ -32,7 +32,6 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -41,6 +40,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -49,6 +49,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+
+import static net.minecraft.world.level.portal.DimensionTransition.DO_NOTHING;
 
 public class BlockGoldPortal extends BaseEntityBlock
 {
@@ -64,7 +66,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	protected static final VoxelShape X_AABB = Block.box(0.0D, 0.0D, 6.0D, 16.0D, 16.0D, 10.0D);
 	protected static final VoxelShape Z_AABB = Block.box(6.0D, 0.0D, 0.0D, 10.0D, 16.0D, 16.0D);
 
-	public static final TagKey<Block> tag_portal_frame_blocks = BlockTags.create(new ResourceLocation(DimDungeons.MOD_ID, "portal_frame_blocks"));
+	public static final TagKey<Block> tag_portal_frame_blocks = BlockTags.create(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "portal_frame_blocks"));
 
 	public BlockGoldPortal()
 	{
@@ -174,7 +176,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 			return;
 		}
 
-		if (!entityIn.isPassenger() && !entityIn.isVehicle() && entityIn.canChangeDimensions())
+		if (!entityIn.isPassenger() && !entityIn.isVehicle())
 		{
 			// DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
 
@@ -190,6 +192,12 @@ public class BlockGoldPortal extends BaseEntityBlock
 				float warpZ = destination.getZ();
 				ResourceKey<Level> destDim = te.getDestinationDimension();
 				int cooldown = te.getCooldown();
+
+				// ask vanilla for permission
+				if ( !entityIn.canChangeDimensions(worldIn, entityIn.getServer().getLevel(te.getDestinationDimension())) )
+				{
+					return;
+				}
 
 				// implement the cooldown on the portal block itself
 				int currentTick = worldIn.getServer().getTickCount();
@@ -246,8 +254,8 @@ public class BlockGoldPortal extends BaseEntityBlock
 						ItemStack key = keyhole.getObjectInserted();
 						if (key.getItem() == ItemRegistrar.ITEM_BLANK_BUILD_KEY.get())
 						{
-							CompoundTag itemData = key.getTag();
-							ChunkPos cpos = new ChunkPos(itemData.getInt(BaseItemKey.NBT_KEY_DESTINATION_X), itemData.getInt(BaseItemKey.NBT_KEY_DESTINATION_Z));
+							DungeonKeyDataComponentRecord itemData = key.get(DimDungeons.DUNGEON_KEY_DATA);
+							ChunkPos cpos = new ChunkPos((int) itemData.dest_x(), (int) itemData.dest_z());
 
 							if (!PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(entityIn.getServer())).isPlayerAllowedInPersonalDimension((ServerPlayer) entityIn, cpos))
 							{
@@ -330,14 +338,14 @@ public class BlockGoldPortal extends BaseEntityBlock
 			if (entrance != null && entrance.dungeonType == DungeonType.ADVANCED)
 			{
 				// since the condition is minecraft:impossible, this is the only way to trigger it
-				player.getAdvancements().award(dim.getServer().getAdvancements().get(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
+				player.getAdvancements().award(dim.getServer().getAdvancements().get(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
 
 				// award the achievement to everyone joining in hardcore mode too
 				if ( multiplayerHardcore != null )
 				{
 					for (ServerPlayer friend : multiplayerHardcore)
 					{
-						friend.getAdvancements().award(dim.getServer().getAdvancements().get(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
+						friend.getAdvancements().award(dim.getServer().getAdvancements().get(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
 					}
 				}
 			}
@@ -359,16 +367,20 @@ public class BlockGoldPortal extends BaseEntityBlock
 			z += 0.5D;
 		}
 
-		CustomTeleporter tele = new CustomTeleporter(dim);
-		tele.setDestPos(x, y, z, destYaw, destPitch);
-		player.changeDimension(dim, tele);
+		DimensionTransition dt = new DimensionTransition(dim, new Vec3(x,y,z), new Vec3(0,0,0), destYaw, destPitch, false, DO_NOTHING);
+		player.changeDimension(dt);
+
+		// old 1.19 logic for reference. delete this later
+		//CustomTeleporter tele = new CustomTeleporter(dim);
+		//tele.setDestPos(x, y, z, destYaw, destPitch);
+		//player.changeDimension(dim, tele);
 		
 		// also teleport nearby hardcore players
 		if ( multiplayerHardcore != null )
 		{
 			for (ServerPlayer friend : multiplayerHardcore)
 			{
-				friend.changeDimension(dim, tele);
+				friend.changeDimension(dt);
 			}
 		}
 		
@@ -394,9 +406,9 @@ public class BlockGoldPortal extends BaseEntityBlock
 		else
 		{
 			// fallback: send the player to the overworld spawn
-			lastX = player.getServer().getLevel(Level.OVERWORLD).getLevelData().getXSpawn();
-			lastY = player.getServer().getLevel(Level.OVERWORLD).getLevelData().getYSpawn() + 2; // plus 2 to stand on the ground I guess
-			lastZ = player.getServer().getLevel(Level.OVERWORLD).getLevelData().getZSpawn();
+			lastX = player.getServer().getLevel(Level.OVERWORLD).getLevelData().getSpawnPos().getX();
+			lastY = player.getServer().getLevel(Level.OVERWORLD).getLevelData().getSpawnPos().getY() + 2; // plus 2 to stand on the ground I guess
+			lastZ = player.getServer().getLevel(Level.OVERWORLD).getLevelData().getSpawnPos().getZ();
 		}
 
 		actuallyPerformTeleport(player, player.getServer().getLevel(Level.OVERWORLD), lastX, lastY, lastZ, lastYaw);

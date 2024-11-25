@@ -12,6 +12,7 @@ import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.item.ItemBuildKey;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -75,10 +76,13 @@ public class PersonalBuildData extends SavedData
 		// get the vanilla storage manager from the level
 		DimensionDataStorage storage = ((ServerLevel) level).getDataStorage();
 
-		// get the PersonalBuildData if it already exists for this level, otherwise create a new one
+		// old 1.20 logic - remove once the port is complete
 		//return storage.computeIfAbsent(PersonalBuildData::new, PersonalBuildData::new, MY_DATA); // 1.20.1
-		SavedData.Factory<SavedData> tempFactory = new SavedData.Factory<SavedData>(PersonalBuildData::new, PersonalBuildData::new);
-		return (PersonalBuildData) storage.computeIfAbsent(tempFactory, MY_DATA);
+		//SavedData.Factory<SavedData> tempFactory = new SavedData.Factory<SavedData>(PersonalBuildData::new, PersonalBuildData::new);
+		//return (PersonalBuildData) storage.computeIfAbsent(tempFactory, MY_DATA);
+
+		// get the PersonalBuildData if it already exists for this level, otherwise create a new one
+		return storage.computeIfAbsent(new Factory<>(PersonalBuildData::create, PersonalBuildData::load), MY_DATA);
 	}
 
 	// if the chunk is empty then return null (this is expected)
@@ -268,7 +272,7 @@ public class PersonalBuildData extends SavedData
 	}
 
 	@Override
-	public CompoundTag save(CompoundTag tag)
+	public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider)
 	{
 		ListTag allOwners = new ListTag();
 		ownerMap.forEach((chunkPos, owner) ->
@@ -294,6 +298,16 @@ public class PersonalBuildData extends SavedData
 
 		tag.put("player_data", allOwners);
 		return tag;
+	}
+
+	public static PersonalBuildData create()
+	{
+		return new PersonalBuildData();
+	}
+
+	public static PersonalBuildData load(CompoundTag tag, HolderLookup.Provider lookupProvider)
+	{
+		return create();
 	}
 
 	// do not do this on a real world, obviously

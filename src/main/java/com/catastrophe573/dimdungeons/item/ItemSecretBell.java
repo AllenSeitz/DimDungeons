@@ -43,7 +43,7 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 
 	public static final int BELL_COOLDOWN_TICKS = 60;
 
-	public static final TagKey<Block> tag_secret_chime = BlockTags.create(new ResourceLocation(DimDungeons.MOD_ID, "secret_chime_blocks"));
+	public static final TagKey<Block> tag_secret_chime = BlockTags.create(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "secret_chime_blocks"));
 
 	public ItemSecretBell(/* IItemTier tier, */ Item.Properties builderIn)
 	{
@@ -63,70 +63,64 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 
 	public int getUpgradeLevel(ItemStack stack)
 	{
-		if (stack.hasTag())
+		if (stack != null && !stack.isEmpty() && stack.has(DimDungeons.SECRET_BELL_DATA))
 		{
-			if (stack.getTag().contains(NBT_UPGRADE))
-			{
-				return stack.getTag().getInt(NBT_UPGRADE);
-			}
+			return stack.get(DimDungeons.SECRET_BELL_DATA).upgrade();
 		}
 		return 1;
 	}
 
 	public int getSecretX(ItemStack stack)
 	{
-		if (stack.hasTag())
+		if (stack != null && !stack.isEmpty() && stack.has(DimDungeons.SECRET_BELL_DATA))
 		{
-			if (stack.getTag().contains(NBT_SECRET_X))
-			{
-				return stack.getTag().getInt(NBT_SECRET_X);
-			}
+			return stack.get(DimDungeons.SECRET_BELL_DATA).secret_x();
 		}
 		return -1;
 	}
 
 	public int getSecretY(ItemStack stack)
 	{
-		if (stack.hasTag())
+		if (stack != null && !stack.isEmpty() && stack.has(DimDungeons.SECRET_BELL_DATA))
 		{
-			if (stack.getTag().contains(NBT_SECRET_Y))
-			{
-				return stack.getTag().getInt(NBT_SECRET_Y);
-			}
+			return stack.get(DimDungeons.SECRET_BELL_DATA).secret_y();
 		}
 		return -1;
 	}
 
 	public int getSecretZ(ItemStack stack)
 	{
-		if (stack.hasTag())
+		if (stack != null && !stack.isEmpty() && stack.has(DimDungeons.SECRET_BELL_DATA))
 		{
-			if (stack.getTag().contains(NBT_SECRET_Z))
-			{
-				return stack.getTag().getInt(NBT_SECRET_Z);
-			}
+			return stack.get(DimDungeons.SECRET_BELL_DATA).secret_z();
 		}
 		return -1;
 	}
 
 	public void setUpgradeLevel(ItemStack stack, int level)
 	{
-		CompoundTag data = new CompoundTag();
-		data.putInt(NBT_UPGRADE, level);
-		data.putInt(NBT_SECRET_X, getSecretX(stack));
-		data.putInt(NBT_SECRET_Y, getSecretY(stack));
-		data.putInt(NBT_SECRET_Z, getSecretZ(stack));
-		stack.setTag(data);
+		SecretBellDataComponentRecord newData = new SecretBellDataComponentRecord(
+				level,
+				-1,
+				-1,
+				-1
+		);
+
+		stack.set(DimDungeons.SECRET_BELL_DATA, newData);
 	}
 
 	public void setSecretLocation(ItemStack stack, int x, int y, int z)
 	{
-		CompoundTag data = new CompoundTag();
-		data.putInt(NBT_UPGRADE, getUpgradeLevel(stack));
-		data.putInt(NBT_SECRET_X, x);
-		data.putInt(NBT_SECRET_Y, y);
-		data.putInt(NBT_SECRET_Z, z);
-		stack.setTag(data);
+		int upgradeLevel = this.getUpgradeLevel(stack);
+
+		SecretBellDataComponentRecord newData = new SecretBellDataComponentRecord(
+				upgradeLevel,
+				x,
+				y,
+				z
+		);
+
+		stack.set(DimDungeons.SECRET_BELL_DATA, newData);
 	}
 
 	@SuppressWarnings("resource")
@@ -250,28 +244,9 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 	// Current implementations of this method in child classes do not use the entry argument beside ev. They just raise the damage on the stack.
 	public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker)
 	{
-		stack.hurtAndBreak(1, attacker, (entity) ->
-		{
-			entity.broadcastBreakEvent(EquipmentSlot.MAINHAND);
-		});
-
 		// play a loud CLANG because it's funny
 		attacker.getCommandSenderWorld().playSound((Player) null, target.blockPosition(), SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 2.0F, 1.0F);
 
-		return true;
-	}
-
-	// Called when a Block is destroyed using this Item. Return true to trigger the "Use Item" statistic.
-	// Players probably shouldn't be breaking things with a bell anyway, but they can.
-	public boolean mineBlock(ItemStack stack, Level worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving)
-	{
-		if (state.getDestroySpeed(worldIn, pos) != 0.0F)
-		{
-			stack.hurtAndBreak(2, entityLiving, (entity) ->
-			{
-				entity.broadcastBreakEvent(EquipmentSlot.MAINHAND);
-			});
-		}
 		return true;
 	}
 

@@ -3,6 +3,7 @@ package com.catastrophe573.dimdungeons.utils;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.dimension.DungeonData;
 import com.catastrophe573.dimdungeons.dimension.PersonalBuildData;
 import com.catastrophe573.dimdungeons.item.BaseItemKey;
@@ -21,6 +22,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -240,10 +242,10 @@ public class CommandDimDungeons
 			((ItemBlankBuildKey) (ItemRegistrar.ITEM_BLANK_BUILD_KEY.get())).activateBuildKey(cmd.getSource().getServer(), newkey, (LivingEntity) targetPlayer);
 
 			// since we're debugging, rename the key with the dest_x and dest_z
-			int dest_x = newkey.getTag().getInt(BaseItemKey.NBT_KEY_DESTINATION_X);
-			int dest_z = newkey.getTag().getInt(BaseItemKey.NBT_KEY_DESTINATION_Z);
+			long dest_x = newkey.get(DimDungeons.DUNGEON_KEY_DATA).dest_x();
+			long dest_z = newkey.get(DimDungeons.DUNGEON_KEY_DATA).dest_z();
 			keyName = "Personal Key: (" + dest_x + ", " + dest_z + ")";
-			newkey.setHoverName(Component.literal(keyName));
+			newkey.update(DataComponents.CUSTOM_NAME, Component.literal(keyName), component -> component);
 
 			serverplayerentity.getInventory().add(newkey);
 		}

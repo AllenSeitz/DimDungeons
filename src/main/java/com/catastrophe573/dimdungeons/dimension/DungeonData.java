@@ -13,6 +13,7 @@ import com.catastrophe573.dimdungeons.structure.DungeonDesigner.RoomType;
 import com.catastrophe573.dimdungeons.structure.DungeonRoom;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
@@ -39,7 +40,7 @@ public class DungeonData extends SavedData
 	// this is how the config is able to control how many ticks between builds
 	private int ticksBetweenBuilds = 10;
 
-	private static String MY_DATA = "dungeon_data";
+	private static final String MY_DATA = "dungeon_data";
 
 	@Nonnull
 	public static DungeonData get(Level level)
@@ -56,9 +57,12 @@ public class DungeonData extends SavedData
 		// get the vanilla storage manager from the level
 		DimensionDataStorage storage = ((ServerLevel) level).getDataStorage();
 
+		// old 1.20 logic - remove after the port is complete
+		//SavedData.Factory<SavedData> tempFactory = new SavedData.Factory<SavedData>(DungeonData::new, DungeonData::new);
+		//return (DungeonData) storage.computeIfAbsent(tempFactory, MY_DATA);
+
 		// get the DungeonData if it already exists for this level, otherwise create a new one
-		SavedData.Factory<SavedData> tempFactory = new SavedData.Factory<SavedData>(DungeonData::new, DungeonData::new);
-		return (DungeonData) storage.computeIfAbsent(tempFactory, MY_DATA);
+		return storage.computeIfAbsent(new Factory<>(DungeonData::create, DungeonData::load), MY_DATA);
 	}
 
 	// if the chunk is empty then return null (this is expected)
@@ -175,7 +179,7 @@ public class DungeonData extends SavedData
 	}
 
 	@Override
-	public CompoundTag save(CompoundTag tag)
+	public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider)
 	{
 		ListTag allRooms = new ListTag();
 		roomMap.forEach((chunkPos, room) ->
@@ -212,5 +216,15 @@ public class DungeonData extends SavedData
 		tag.put("remaining_builds", buildingRooms);
 		tag.put("total_key_data", totalKeyData);
 		return tag;
+	}
+
+	public static DungeonData create()
+	{
+		return new DungeonData();
+	}
+
+	public static DungeonData load(CompoundTag tag, HolderLookup.Provider lookupProvider)
+	{
+		return create();
 	}
 }

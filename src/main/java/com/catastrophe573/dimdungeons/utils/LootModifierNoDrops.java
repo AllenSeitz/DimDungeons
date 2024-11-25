@@ -2,6 +2,8 @@ package com.catastrophe573.dimdungeons.utils;
 
 import java.util.function.Supplier;
 
+import com.mojang.serialization.MapCodec;
+import net.neoforged.neoforge.common.loot.LootModifier;
 import org.jetbrains.annotations.NotNull;
 
 import com.catastrophe573.dimdungeons.DungeonConfig;
@@ -19,8 +21,9 @@ import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 
 public class LootModifierNoDrops extends net.neoforged.neoforge.common.loot.LootModifier
 {
-	// public static final RegistryObject<Codec<LootModifierNoDrops>> CODEC = DimDungeons.GLM_REGISTRAR.register("no_dungeon_drops", () -> RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, LootModifierNoDrops::new)));
-	public static final Supplier<Codec<LootModifierNoDrops>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, LootModifierNoDrops::new)));
+	public static final MapCodec<LootModifierNoDrops> CODEC = RecordCodecBuilder.mapCodec(inst ->
+		 LootModifier.codecStart(inst).apply(inst, LootModifierNoDrops::new)
+	);
 
 	public LootModifierNoDrops(LootItemCondition[] conditionsIn)
 	{
@@ -50,8 +53,8 @@ public class LootModifierNoDrops extends net.neoforged.neoforge.common.loot.Loot
 	}
 
 	@Override
-	public Codec<? extends IGlobalLootModifier> codec()
+	public MapCodec<? extends IGlobalLootModifier> codec()
 	{
-		return CODEC.get();
+		return CODEC;
 	}
 }

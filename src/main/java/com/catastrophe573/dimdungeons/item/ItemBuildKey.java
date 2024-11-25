@@ -1,5 +1,8 @@
 package com.catastrophe573.dimdungeons.item;
 
+import com.catastrophe573.dimdungeons.DimDungeons;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -7,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.Nullable;
 
 public class ItemBuildKey extends BaseItemKey
 {
@@ -23,35 +27,48 @@ public class ItemBuildKey extends BaseItemKey
 
 	public boolean isPlotBuilt(ItemStack stack)
 	{
-		if (stack.hasTag())
+		if (stack.has(DimDungeons.DUNGEON_KEY_DATA))
 		{
-			if (stack.getTag().contains(NBT_BUILT))
-			{
-				return stack.getTag().getBoolean(NBT_BUILT);
-			}
+			return stack.get(DimDungeons.DUNGEON_KEY_DATA).built();
 		}
 		return false;
 	}
 
 	public void setPlotBuilt(ItemStack stack)
 	{
-		if (stack.hasTag())
+		if (!stack.has(DimDungeons.DUNGEON_KEY_DATA))
 		{
-			stack.getTag().putBoolean(NBT_BUILT, true);
+			DimDungeons.logMessageError("ERROR: setting isBuilt on a non-key or an object without a dungeon key data component.");
+			return;
 		}
+
+		// records are immutable, so make a new record just to change one field? am I doing this right?
+		// TODO: bope, I'm not doing it right. Make DungeonKeyDataComponentRecord more like the vanilla classes. It doesn't have to be immutable everywhere.
+		DungeonKeyDataComponentRecord data = stack.get(DimDungeons.DUNGEON_KEY_DATA);
+		DungeonKeyDataComponentRecord newData = new DungeonKeyDataComponentRecord(
+				data.key_activated(),
+				true, // built
+				data.dest_x(),
+				data.dest_z(),
+				data.name_type(),
+				data.name_part_1(),
+				data.name_part_2(),
+				data.theme(),
+				data.dungeon_type()
+		);
+
+		stack.set(DimDungeons.DUNGEON_KEY_DATA, newData);
 	}
 
 	// personal build plots are further apart than regular dungeons
 	@Override
 	public float getWarpX(ItemStack stack)
 	{
-		if (stack != null && !stack.isEmpty())
+		if (stack != null && !stack.isEmpty() && stack.has(DimDungeons.DUNGEON_KEY_DATA))
 		{
-			CompoundTag itemData = stack.getTag();
-			if (itemData != null && itemData.contains(NBT_KEY_DESTINATION_X))
-			{
-				return (itemData.getInt(NBT_KEY_DESTINATION_X) * BLOCKS_APART_PER_PLOT) + (4 * 16) + PLOT_ENTRANCE_OFFSET_X;
-			}
+			long dest_x = stack.get(DimDungeons.DUNGEON_KEY_DATA).dest_x();
+
+			return (dest_x * BLOCKS_APART_PER_PLOT) + (4 * 16) + PLOT_ENTRANCE_OFFSET_X;
 		}
 		return -1;
 	}
@@ -60,14 +77,11 @@ public class ItemBuildKey extends BaseItemKey
 	@Override
 	public float getWarpZ(ItemStack stack)
 	{
-		if (stack != null && !stack.isEmpty())
+		if (stack != null && !stack.isEmpty() && stack.has(DimDungeons.DUNGEON_KEY_DATA))
 		{
-			CompoundTag itemData = stack.getTag();
-			if (itemData != null && itemData.contains(NBT_KEY_DESTINATION_Z))
-			{
-				float z = (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_PLOT) + (4 * 16) + PLOT_ENTRANCE_OFFSET_Z;
-				return z;
-			}
+			long dest_z = stack.get(DimDungeons.DUNGEON_KEY_DATA).dest_z();
+
+			return (dest_z * BLOCKS_APART_PER_PLOT) + (4 * 16) + PLOT_ENTRANCE_OFFSET_Z;
 		}
 		return -1;
 	}
@@ -76,13 +90,11 @@ public class ItemBuildKey extends BaseItemKey
 	@Override
 	public long getDungeonTopLeftX(ItemStack stack)
 	{
-		if (stack != null && !stack.isEmpty())
+		if (stack != null && !stack.isEmpty() && stack.has(DimDungeons.DUNGEON_KEY_DATA))
 		{
-			CompoundTag itemData = stack.getTag();
-			if (itemData != null && itemData.contains(NBT_KEY_DESTINATION_X))
-			{
-				return (itemData.getInt(NBT_KEY_DESTINATION_X) * BLOCKS_APART_PER_PLOT);
-			}
+			long dest_x = stack.get(DimDungeons.DUNGEON_KEY_DATA).dest_x();
+
+			return (dest_x * BLOCKS_APART_PER_PLOT);
 		}
 		return -1;
 	}
@@ -91,13 +103,11 @@ public class ItemBuildKey extends BaseItemKey
 	@Override
 	public long getDungeonTopLeftZ(ItemStack stack)
 	{
-		if (stack != null && !stack.isEmpty())
+		if (stack != null && !stack.isEmpty() && stack.has(DimDungeons.DUNGEON_KEY_DATA))
 		{
-			CompoundTag itemData = stack.getTag();
-			if (itemData != null && itemData.contains(NBT_KEY_DESTINATION_Z))
-			{
-				return (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_PLOT);
-			}
+			long dest_z = stack.get(DimDungeons.DUNGEON_KEY_DATA).dest_z();
+
+			return (dest_z * BLOCKS_APART_PER_PLOT);
 		}
 		return -1;
 	}

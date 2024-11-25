@@ -1,6 +1,5 @@
 package com.catastrophe573.dimdungeons.item;
 
-import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.world.entity.player.Player;
@@ -11,6 +10,11 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
+
+import static net.minecraft.world.level.portal.DimensionTransition.DO_NOTHING;
 
 public class ItemHomewardPearl extends Item
 {
@@ -21,10 +25,9 @@ public class ItemHomewardPearl extends Item
 		super(builderIn);
 	}
 
-	@SuppressWarnings("resource")
 	@Override
 	// public ActionResultType onItemUse(ItemUseContext parameters)
-	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
+	public @NotNull InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
 	{
 		ItemStack itemstack = playerIn.getItemInHand(handIn);
 
@@ -43,13 +46,18 @@ public class ItemHomewardPearl extends Item
 		// this is the dungeon dimension
 		ServerLevel serverWorld = playerIn.getCommandSenderWorld().getServer().getLevel(playerIn.getCommandSenderWorld().dimension());
 
-		// teleport the player
 		double newx = getHomeX(playerIn.getX());
 		double newy = 55.1D;
 		double newz = getHomeZ(playerIn.getZ());
-		CustomTeleporter tele = new CustomTeleporter(serverWorld);
-		tele.setDestPos(newx, newy, newz, 180.0f, 0.0f);
-		playerIn.changeDimension(serverWorld, tele); // changing within the same dimension, but still teleport safely anyways
+
+		// old 1.20 logic - remove once the port is complete
+		//CustomTeleporter tele = new CustomTeleporter(serverWorld);
+		//tele.setDestPos(newx, newy, newz, 180.0f, 0.0f);
+		//playerIn.changeDimension(serverWorld, tele); // changing within the same dimension, but still teleport safely anyways
+
+		// 1.21 replacement logic
+		DimensionTransition dt = new DimensionTransition(serverWorld, new Vec3(newx, newy, newz), new Vec3(0, 0, 0), 180.0f, 0.0f, false, DO_NOTHING);
+		playerIn.changeDimension(dt);
 
 		// consume one pearl from the stack
 		itemstack.shrink(1);

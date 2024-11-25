@@ -9,14 +9,11 @@ import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.block.TileEntityGoldPortal;
 import com.catastrophe573.dimdungeons.block.TileEntityPortalKeyhole;
-import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
-import com.catastrophe573.dimdungeons.item.BaseItemKey;
-import com.catastrophe573.dimdungeons.item.ItemBuildKey;
-import com.catastrophe573.dimdungeons.item.ItemPortalKey;
-import com.catastrophe573.dimdungeons.item.ItemRegistrar;
+import com.catastrophe573.dimdungeons.item.*;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -37,6 +34,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.phys.Vec3;
+
+import static net.minecraft.world.level.portal.DimensionTransition.DO_NOTHING;
 
 // basically just global functions
 public class DungeonUtils
@@ -85,7 +86,7 @@ public class DungeonUtils
 			return 0;
 		}
 
-		if (genData.keyItem.hasCustomHoverName() && DungeonConfig.enableDebugCheats)
+		if (genData.keyItem.has(DataComponents.CUSTOM_NAME) && DungeonConfig.enableDebugCheats)
 		{
 			String name = genData.keyItem.getHoverName().getString();
 			if (name.contentEquals("DebugOne"))
@@ -408,7 +409,7 @@ public class DungeonUtils
 	// returns the limit of the dungeon space not in blocks, but in dungeon widths (which is BLOCKS_APART_PER_DUNGEON)
 	public static long getLimitOfWorldBorder(MinecraftServer server)
 	{
-		ResourceKey<Level> configkey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(DungeonConfig.worldborderToRespect));
+		ResourceKey<Level> configkey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(DungeonConfig.worldborderToRespect));
 		ServerLevel world = server.getLevel(configkey);
 		double size = world.getWorldBorder().getSize() / 2;
 
@@ -451,26 +452,37 @@ public class DungeonUtils
 		double topLeftZ = Math.floor((entity.position().z) / ItemBuildKey.BLOCKS_APART_PER_PLOT);
 		topLeftZ = (topLeftZ * ItemBuildKey.BLOCKS_APART_PER_PLOT) + ItemBuildKey.ENTRANCE_OFFSET_Z;
 
+		// old 1.20 logic that used a CustomTeleporter class that no longer exists
 		ServerLevel dim = DungeonUtils.getPersonalBuildWorld(entity.getServer());
-		CustomTeleporter tele = new CustomTeleporter(dim);
-		tele.setDestPos(topLeftX - 7, 51, topLeftZ + 4, 180.0f, 0);
-		entity.resetFallDistance();
-		entity.changeDimension(dim, tele);
+		//CustomTeleporter tele = new CustomTeleporter(dim);
+		//tele.setDestPos(topLeftX - 7, 51, topLeftZ + 4, 180.0f, 0);
+		//entity.resetFallDistance();
+		//entity.changeDimension(dim, tele);
+
+		DimensionTransition dt = new DimensionTransition(dim, new Vec3(topLeftX - 7, 51, topLeftZ + 4), new Vec3(0, 0, 0), 180.0f, 0, false, DO_NOTHING);
+		entity.changeDimension(dt);
 	}
 
 	// THIS MUST ONLY BE USED for the purposes of displaying an activated key in a gui (such as for the JEI compat)
 	public static ItemStack getExampleKey()
 	{
 		ItemStack icon = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
-		CompoundTag data = new CompoundTag();
-		data.putBoolean(ItemPortalKey.NBT_KEY_ACTIVATED, true);
-		data.putString(ItemPortalKey.NBT_DUNGEON_TYPE, DungeonType.BASIC.toString());
-		data.putInt(ItemPortalKey.NBT_KEY_DESTINATION_Z, 0);
-		data.putInt(ItemPortalKey.NBT_NAME_TYPE, 2); // key to the
-		data.putInt(ItemPortalKey.NBT_NAME_PART_1, 0); // dungeon of
-		data.putInt(ItemPortalKey.NBT_NAME_PART_2, 17); // catastrophe
 
-		icon.setTag(data);
+		DungeonKeyDataComponentRecord data = icon.get(DimDungeons.DUNGEON_KEY_DATA);
+		DungeonKeyDataComponentRecord newData = new DungeonKeyDataComponentRecord(
+				true, // activated
+				true, // built
+				data.dest_x(),
+				data.dest_z(),
+				2, // key to the
+				0, // dungeon of
+				17, // catastrophe
+				0, // no theme
+				data.dungeon_type()
+		);
+
+		icon.set(DimDungeons.DUNGEON_KEY_DATA, newData);
+
 		return icon;
 	}
 
@@ -478,10 +490,22 @@ public class DungeonUtils
 	public static ItemStack getExampleBuildKey()
 	{
 		ItemStack icon = new ItemStack(ItemRegistrar.ITEM_BUILD_KEY.get());
-		CompoundTag data = new CompoundTag();
-		data.putBoolean(ItemPortalKey.NBT_KEY_ACTIVATED, true);
 
-		icon.setTag(data);
+		DungeonKeyDataComponentRecord data = icon.get(DimDungeons.DUNGEON_KEY_DATA);
+		DungeonKeyDataComponentRecord newData = new DungeonKeyDataComponentRecord(
+				true, // activated
+				true, // built
+				data.dest_x(),
+				data.dest_z(),
+				data.name_type(),
+				data.name_part_1(),
+				data.name_part_2(),
+				0, // no theme
+				data.dungeon_type()
+		);
+
+		icon.set(DimDungeons.DUNGEON_KEY_DATA, newData);
+
 		return icon;
 	}
 
@@ -489,13 +513,22 @@ public class DungeonUtils
 	public static ItemStack getExampleTeleporterHubKey()
 	{
 		ItemStack icon = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
-		CompoundTag data = new CompoundTag();
-		data.putBoolean(ItemPortalKey.NBT_KEY_ACTIVATED, true);
-		data.putString(ItemPortalKey.NBT_DUNGEON_TYPE, DungeonType.TELEPORTER_HUB.toString());
-		data.putInt(ItemPortalKey.NBT_NAME_TYPE, 4); // teleporter hub format
-		data.putInt(ItemPortalKey.NBT_NAME_PART_1, 0);
-		
-		icon.setTag(data);
+
+		DungeonKeyDataComponentRecord data = icon.get(DimDungeons.DUNGEON_KEY_DATA);
+		DungeonKeyDataComponentRecord newData = new DungeonKeyDataComponentRecord(
+				true, // activated
+				true, // built
+				data.dest_x(),
+				data.dest_z(),
+				4, // teleporter hub format
+				0,
+				data.name_part_2(),
+				0, // no theme
+				DungeonType.TELEPORTER_HUB.toString()
+		);
+
+		icon.set(DimDungeons.DUNGEON_KEY_DATA, newData);
+
 		return icon;
 	}
 

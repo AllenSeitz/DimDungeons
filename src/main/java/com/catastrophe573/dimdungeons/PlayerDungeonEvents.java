@@ -11,17 +11,23 @@ import com.catastrophe573.dimdungeons.utils.CommandDimDungeons;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 import com.google.common.collect.Lists;
 
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDestroyBlockEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
-import net.neoforged.neoforge.event.entity.living.LivingEvent;
-import net.neoforged.neoforge.event.entity.player.FillBucketEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -37,13 +43,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 public class PlayerDungeonEvents
 {
-	// @SubscribeEvent
-	// public void pickupItem(EntityItemPickupEvent event)
-	// {
-	// }
+	public static final TagKey<Item> TAG_BUCKETS = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "buckets"));
 
 	@SubscribeEvent
 	public void registerCommands(RegisterCommandsEvent event)
@@ -52,38 +56,31 @@ public class PlayerDungeonEvents
 	}
 
 	// for some reason this doesn't use SubscribeEvent and is instead registered from the main class
-	public static void onWorldTick(TickEvent.LevelTickEvent event)
+	public static void onWorldTick(LevelTickEvent.Pre event)
 	{
-		if (event.level.isClientSide)
-		{
-			return;
-		}
-		if (event.phase == TickEvent.Phase.START)
+		if (event.getLevel().isClientSide)
 		{
 			return;
 		}
 
 		// make sure the tick is for my custom dimension
-		if (DungeonUtils.isDimensionDungeon(event.level))
+		if (DungeonUtils.isDimensionDungeon(event.getLevel()))
 		{
-			DungeonData.get(event.level).tick(event.level);
+			DungeonData.get(event.getLevel()).tick(event.getLevel());
 		}
 	}
 
 	@SubscribeEvent
-	public void livingUpdate(LivingEvent.LivingTickEvent event)
+	public void livingUpdate(PlayerTickEvent.Pre event)
 	{
 		if (event.getEntity().level().isClientSide())
 		{
 			return;
 		}
 
-		if (event.getEntity() instanceof Player)
+		if (event.getEntity().isSpectator())
 		{
-			if (event.getEntity().isSpectator())
-			{
-				return; // ignore spectators, they don't need to be saved from the void
-			}
+			return; // ignore spectators, they don't need to be saved from the void
 		}
 
 		// handle standing on the void in the build world
@@ -128,9 +125,8 @@ public class PlayerDungeonEvents
 			return;
 		}
 
-		// allow only cracked stone bricks to be broken
+		// TODO: move the explosion-breakable blocks to a tag
 		List<BlockPos> crackedBricks = Lists.newArrayList();
-
 		for (int i = 0; i < event.getAffectedBlocks().size(); i++)
 		{
 			if (event.getLevel().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().location().getPath().equals("cracked_stone_bricks"))
@@ -220,9 +216,10 @@ public class PlayerDungeonEvents
 		}
 
 		// assume this is frost walker and allow it?
+		// TODO: this might need to change in 1.21, or it might no longer be important
 		String whatBlock = event.getPlacedBlock().getBlock().builtInRegistryHolder().key().location().getPath();
-		String whyBlock = event.getBlockSnapshot().getReplacedBlock().getBlock().builtInRegistryHolder().key().location().getPath();
-		if ("water".equals(whatBlock) && "water".equals(whyBlock))
+		//String whyBlock = event.getBlockSnapshot().get getReplacedBlock().getBlock().builtInRegistryHolder().key().location().getPath();
+		if ("water".equals(whatBlock) /*&& "water".equals(whyBlock)*/)
 		{
 			return; // not sure why the block isn't frosted_ice though?
 		}
@@ -251,23 +248,6 @@ public class PlayerDungeonEvents
 
 		// I only care about placing blocks in the Dungeon Dimension
 		if (!DungeonUtils.isDimensionDungeon((Level) event.getLevel()))
-		{
-			return;
-		}
-
-		event.setCanceled(true);
-	}
-
-	@SubscribeEvent
-	public void fillBucket(FillBucketEvent event)
-	{
-		if (!DungeonConfig.globalBlockProtection)
-		{
-			return; // config disabled
-		}
-
-		// I only care about taking liquids in the Dungeon Dimension
-		if (!DungeonUtils.isDimensionDungeon(event.getLevel()))
 		{
 			return;
 		}
@@ -351,6 +331,38 @@ public class PlayerDungeonEvents
 	}
 
 	@SubscribeEvent
+	public void rightClickBlock(PlayerInteractEvent.RightClickItem event)
+	{
+		// the build dimension is always block-protected outside of the build space, no matter what
+		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
+		{
+			if (!DungeonUtils.isPersonalBuildChunk(event.getPos()))
+			{
+				event.setCanceled(true);
+				return;
+			}
+		}
+
+		// intentionally check this AFTER the build dimension
+		if (!DungeonConfig.globalBlockProtection)
+		{
+			return; // config disabled
+		}
+
+		// I only care about restricting access in the Dungeon Dimension
+		if (!DungeonUtils.isDimensionDungeon(event.getEntity().level()))
+		{
+			return;
+		}
+
+		// now that we're in the dungeon dimension check for forbidden items
+		if ( event.getItemStack().is(TAG_BUCKETS) )
+		{
+			event.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
 	public void rightClickBlock(RightClickBlock event)
 	{
 		BlockState targetBlock = event.getLevel().getBlockState(event.getPos());
@@ -369,7 +381,7 @@ public class PlayerDungeonEvents
 				if (targetBlock.getBlock() == BlockRegistrar.BLOCK_GOLD_PORTAL.get())
 				{
 					ItemStack itemInHand = event.getItemStack();
-					if (itemInHand == null || itemInHand.isEmpty())
+					if ( itemInHand.isEmpty() )
 					{
 						// generic message which suggests to use one of the magic items
 						DungeonUtils.giveSecuritySystemPrompt(event.getEntity(), "security.dimdungeons.help_1");
@@ -380,7 +392,7 @@ public class PlayerDungeonEvents
 						// each of the different magic items
 						if (itemInHand.getItem() == Items.PAPER)
 						{
-							if (itemInHand.hasCustomHoverName())
+							if (itemInHand.has(DataComponents.CUSTOM_NAME))
 							{
 								String playerName = itemInHand.getDisplayName().getString();
 								playerName = playerName.replace("[", "");
@@ -544,6 +556,18 @@ public class PlayerDungeonEvents
 		if (!(event.getEntity() instanceof ServerPlayer))
 		{
 			return;
+		}
+
+		// do not continue if block protection is disabled - all code after this point is for block protection
+		if (!DungeonConfig.globalBlockProtection)
+		{
+			return;
+		}
+
+		// do not allow picking up or placing liquids with a bucket
+		if ( event.getItem().is(TAG_BUCKETS) )
+		{
+			event.setCanceled(true);
 		}
 	}
 }

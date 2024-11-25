@@ -5,10 +5,14 @@ import com.catastrophe573.dimdungeons.dimension.PersonalBuildData;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -78,9 +82,8 @@ public class ItemBlankBuildKey extends BaseItemKey
 		data.putInt(NBT_KEY_DESTINATION_Z, dest.z);
 
 		// name the key after the player
-		stack.setHoverName(Component.translatable("npart.dimdungeons.struct_8", " ", player.getName().getString()));
-
-		stack.setTag(data);
+		//stack.setHoverName(Component.translatable("npart.dimdungeons.struct_8", " ", player.getName().getString()));
+		stack.update(DataComponents.CUSTOM_NAME, Component.translatable("npart.dimdungeons.struct_8", " ", player.getName().getString()).withStyle(ChatFormatting.DARK_AQUA), component -> component);
 	}
 
 	// EVEN MORE particle effects for this special event!

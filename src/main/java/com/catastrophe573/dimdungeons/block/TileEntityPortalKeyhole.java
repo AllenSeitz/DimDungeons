@@ -7,6 +7,7 @@ import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
@@ -113,22 +114,24 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	}
 
 	@Override
-	public void load(CompoundTag compound)
+	public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries)
 	{
-		super.load(compound);
+		super.loadAdditional(compound, registries);
+
 		if (compound.contains(ITEM_PROPERTY_KEY))
 		{
-			setContents(ItemStack.of(compound.getCompound(ITEM_PROPERTY_KEY)));
+			ItemStack decodedItem = ItemStack.parse(registries, compound.getCompound(ITEM_PROPERTY_KEY)).get();
+			setContents(decodedItem);
 		}
 	}
 
 	@Override
-	protected void saveAdditional(CompoundTag compound)
+	protected void saveAdditional(CompoundTag compound, HolderLookup.Provider registries)
 	{
-		super.saveAdditional(compound);
+		super.saveAdditional(compound, registries);
 
 		// always send this, even if it is empty or air
-		compound.put(ITEM_PROPERTY_KEY, objectInserted.save(new CompoundTag()));
+		compound.put(ITEM_PROPERTY_KEY, objectInserted.save(registries));
 	}
 
 	public boolean isFilled()

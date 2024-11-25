@@ -242,6 +242,7 @@ public class DungeonConfig
 			// by default nothing should be breakable. but gravestone/death chest-type mods need this special exception
 			List<String> hardcodedDefaultBreakingWhitelist = Lists.newArrayList();
 			hardcodedDefaultBreakingWhitelist.add("gravestone:gravestone");
+			hardcodedDefaultBreakingWhitelist.add("minecraft:suspicious_sand");
 
 			// default "do not drop items" blocks
 			List<String> hardcodedDefaultNoDropsBlacklist = Lists.newArrayList();
@@ -1464,7 +1465,7 @@ public class DungeonConfig
 	// a helper function for translating ResourceLocation strings (such as minecraft:chest) into blocks
 	private static Block parseBlock(String location)
 	{
-		Block block = BuiltInRegistries.BLOCK.get(new ResourceLocation(location));
+		Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(location));
 		if (block == null)
 		{
 			DimDungeons.logMessageWarn("dimdungeons: blacklist/whitelist could not find block " + location);

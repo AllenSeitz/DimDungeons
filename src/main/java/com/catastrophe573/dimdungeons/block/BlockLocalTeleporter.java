@@ -2,8 +2,6 @@ package com.catastrophe573.dimdungeons.block;
 
 import javax.annotation.Nullable;
 
-import com.catastrophe573.dimdungeons.dimension.CustomTeleporter;
-
 import com.mojang.serialization.MapCodec;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -18,11 +16,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.phys.Vec3;
+
+import static net.minecraft.world.level.portal.DimensionTransition.DO_NOTHING;
 
 public class BlockLocalTeleporter extends BaseEntityBlock
 {
@@ -87,7 +88,7 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 			return;
 		}
 
-		if (!entityIn.isPassenger() && !entityIn.isVehicle() && entityIn.canChangeDimensions())
+		if (!entityIn.isPassenger() && !entityIn.isVehicle() && entityIn.canUsePortal(false))
 		{
 			BlockEntity tile = worldIn.getBlockEntity(pos);
 
@@ -109,10 +110,14 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 
 	protected Entity actuallyPerformTeleport(ServerPlayer player, ServerLevel dim, double x, double y, double z, float destYaw, float destPitch)
 	{
-		CustomTeleporter tele = new CustomTeleporter(dim);
-		tele.setDestPos(x, y, z, destYaw, destPitch);
-		player.changeDimension(dim, tele); // changing within the same dimension, but still teleport safely anyways
-		// player.teleport(dim, x, y, z, destYaw, destPitch);
+		// old 1.20 logic - remove this once the port is finished
+		//CustomTeleporter tele = new CustomTeleporter(dim);
+		//tele.setDestPos(x, y, z, destYaw, destPitch);
+		//player.changeDimension(dim, tele); // changing within the same dimension, but still teleport safely anyways
+
+		DimensionTransition dt = new DimensionTransition(dim, new Vec3(x, y, z), new Vec3(0, 0, 0), destYaw, destPitch, false, DO_NOTHING);
+		player.changeDimension(dt);
+
 		return player;
 	}
 

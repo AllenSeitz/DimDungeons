@@ -4,13 +4,20 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.dimension.DungeonData;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvents;
@@ -28,9 +35,17 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EndPortalFrameBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class BaseItemKey extends Item
 {
+	// DCR means "DataComponentRecord"
+	public record DCR_KEY_ACTIVATED(int value1, boolean value2, boolean value3, String value4) {}
+	public record DCR_BUILT(int value1, boolean value2) {}
+
+	// NBT means "Named Binary Tag" and refers to Minecraft's old way of storing arbitrary data in an ItemStack
 	public static final String NBT_KEY_ACTIVATED = "key_activated";
 	public static final String NBT_BUILT = "built";
 	public static final String NBT_KEY_DESTINATION_X = "dest_x";
@@ -45,11 +60,11 @@ public class BaseItemKey extends Item
 	public static final float ENTRANCE_OFFSET_X = 8.0f + (8 * 16); // applied when the player teleports in, centered on the two-block-wide return portal
 	public static final float ENTRANCE_OFFSET_Z = 12.5f + (11 * 16); // applied when the player teleports in, centered on the two-block-wide return portal
 
-	public static final TagKey<Block> tag_alternate_activation_blocks = BlockTags.create(new ResourceLocation(DimDungeons.MOD_ID, "key_activation_blocks"));
+	public static final TagKey<Block> tag_alternate_activation_blocks = BlockTags.create(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "key_activation_blocks"));
 
 	public BaseItemKey(Item.Properties properties)
 	{
-		super(properties.stacksTo(1));
+		super(properties.stacksTo(1).component(DimDungeons.DUNGEON_KEY_DATA.get(), new DungeonKeyDataComponentRecord(false, false, -1, -1, 0, 0, 0, 0, String.valueOf(DungeonDesigner.DungeonType.valueOf(String.valueOf(DungeonDesigner.DungeonType.BASIC))))));
 	}
 
 	public int getKeyLevel(ItemStack stack)
@@ -67,11 +82,15 @@ public class BaseItemKey extends Item
 
 	public void activateKeyLevel1(MinecraftServer server, ItemStack stack, int theme)
 	{
-		CompoundTag data = new CompoundTag();
-		data.putBoolean(NBT_KEY_ACTIVATED, true);
-		data.putBoolean(NBT_BUILT, false);
-		data.putInt(NBT_THEME, theme);
-		data.putString(NBT_DUNGEON_TYPE, DungeonType.BASIC.toString());
+
+		boolean activated = true;
+		boolean built = false;
+		long destX = 0;
+		long destZ = 0;
+		int nameType = 0;
+		int namePart1 = 0;
+		int namePart2 = 0;
+		String dungeonType = DungeonType.BASIC.toString();
 
 		// where is this key going?
 		long generation_limit = DungeonUtils.getLimitOfWorldBorder(server);
@@ -79,41 +98,43 @@ public class BaseItemKey extends Item
 		int nextDungeonNumber = DungeonData.get(server.getLevel(DimDungeons.DUNGEON_DIMENSION)).getNumKeysRegistered() + 1;
 
 		// go as far as possible on the z-axis, then the x-axis, staying in the positive x/z quadrant
-		long destZ = nextDungeonNumber / dungeonsPerLimit;
-		long destX = nextDungeonNumber % dungeonsPerLimit;
-		data.putInt(NBT_KEY_DESTINATION_X, (int) destX);
-		data.putInt(NBT_KEY_DESTINATION_Z, (int) destZ);
+		destZ = nextDungeonNumber / dungeonsPerLimit;
+		destX = nextDungeonNumber % dungeonsPerLimit;
 
 		// give it a funny random name
 		RandomSource random = server.overworld().getRandom();
-		int nameType = random.nextInt(3);
+		nameType = random.nextInt(3);
 		if (theme > 0)
 		{
 			nameType = 2;
 		}
-		data.putInt(NBT_NAME_TYPE, nameType);
 		if (nameType == 0 || nameType == 1)
 		{
-			data.putInt(NBT_NAME_PART_1, random.nextInt(32)); // key of noun & noun, key of finding noun in noun
-			data.putInt(NBT_NAME_PART_2, random.nextInt(32));
+			namePart1 = random.nextInt(32); // key of noun & noun, key of finding noun in noun
+			namePart2 = random.nextInt(32);
 		}
 		else
 		{
-			data.putInt(NBT_NAME_PART_1, random.nextInt(20)); // key to the place of noun
-			data.putInt(NBT_NAME_PART_2, random.nextInt(32));
+			namePart1 = random.nextInt(20); // key to the place of noun
+			namePart2 = random.nextInt(32);
 		}
 
-		stack.setTag(data);
+		stack.set(DimDungeons.DUNGEON_KEY_DATA, new DungeonKeyDataComponentRecord(activated, built, destX, destZ, nameType, namePart1, namePart2, theme, dungeonType));
+
 		DungeonData.get(DungeonUtils.getDungeonWorld(server)).notifyOfNewKeyActivation();
 	}
 
 	public void activateKeyLevel2(MinecraftServer server, ItemStack stack)
 	{
-		CompoundTag data = new CompoundTag();
-		data.putBoolean(NBT_KEY_ACTIVATED, true);
-		data.putBoolean(NBT_BUILT, false);
-		data.putInt(NBT_THEME, 0);
-		data.putString(NBT_DUNGEON_TYPE, DungeonType.ADVANCED.toString());
+		boolean activated = true;
+		boolean built = false;
+		long destX = 0;
+		long destZ = 0;
+		int nameType = 3; // advanced key format
+		int namePart1 = 0;
+		int namePart2 = 0;
+		int theme = 0;
+		String dungeonType = DungeonType.ADVANCED.toString();
 
 		// where is this key going?
 		long generation_limit = DungeonUtils.getLimitOfWorldBorder(server);
@@ -121,28 +142,30 @@ public class BaseItemKey extends Item
 		long nextDungeonNumber = DungeonData.get(server.getLevel(DimDungeons.DUNGEON_DIMENSION)).getNumKeysRegistered() + 1;
 
 		// go as far as possible on the z-axis, then the x-axis, staying in the positive x/z quadrant
-		long destZ = nextDungeonNumber / dungeonsPerLimit;
-		long destX = nextDungeonNumber % dungeonsPerLimit;
-		data.putInt(NBT_KEY_DESTINATION_X, (int) destX);
-		data.putInt(NBT_KEY_DESTINATION_Z, (int) destZ);
+		destZ = nextDungeonNumber / dungeonsPerLimit;
+		destX = nextDungeonNumber % dungeonsPerLimit;
 
 		// give it a funny random name like "Key to the [LARGE] [PLACE]"
 		RandomSource random = server.overworld().getRandom();
-		data.putInt(NBT_NAME_TYPE, 3);
-		data.putInt(NBT_NAME_PART_1, random.nextInt(20)); // place
-		data.putInt(NBT_NAME_PART_2, random.nextInt(12)); // largeness
+		namePart1 = random.nextInt(20); // place
+		namePart2 = random.nextInt(12); // largeness
 
-		stack.setTag(data);
+		stack.set(DimDungeons.DUNGEON_KEY_DATA, new DungeonKeyDataComponentRecord(activated, built, destX, destZ, nameType, namePart1, namePart2, theme, dungeonType));
+
 		DungeonData.get(DungeonUtils.getDungeonWorld(server)).notifyOfNewKeyActivation();
 	}
 
 	public void activateKeyForNewTeleporterHub(MinecraftServer server, ItemStack stack)
 	{
-		CompoundTag data = new CompoundTag();
-		data.putBoolean(NBT_KEY_ACTIVATED, true);
-		data.putBoolean(NBT_BUILT, false);
-		data.putInt(NBT_THEME, 0); // the first door
-		data.putString(NBT_DUNGEON_TYPE, DungeonType.TELEPORTER_HUB.toString());
+		boolean activated = true;
+		boolean built = false;
+		long destX = 0;
+		long destZ = 0;
+		int nameType = 4; // teleporter hub format
+		int namePart1 = 0;
+		int namePart2 = 0;
+		int theme = 0; // the first door
+		String dungeonType = DungeonType.TELEPORTER_HUB.toString();
 
 		// where is this key going?
 		long generation_limit = DungeonUtils.getLimitOfWorldBorder(server);
@@ -150,47 +173,37 @@ public class BaseItemKey extends Item
 		int nextDungeonNumber = DungeonData.get(server.getLevel(DimDungeons.DUNGEON_DIMENSION)).getNumKeysRegistered() + 1;
 
 		// go as far as possible on the z-axis, then the x-axis, staying in the positive x/z quadrant
-		long destZ = nextDungeonNumber / dungeonsPerLimit;
-		long destX = nextDungeonNumber % dungeonsPerLimit;
-		data.putInt(NBT_KEY_DESTINATION_X, (int) destX);
-		data.putInt(NBT_KEY_DESTINATION_Z, (int) destZ);
+		destZ = nextDungeonNumber / dungeonsPerLimit;
+		destX = nextDungeonNumber % dungeonsPerLimit;
 
 		// give it a funny random name
 		RandomSource random = server.overworld().getRandom();
-		data.putInt(NBT_NAME_TYPE, 4); // teleporter hub format
-		data.putInt(NBT_NAME_PART_1, random.nextInt(32));
+		namePart1 = random.nextInt(32);
 
-		stack.setTag(data);
+		stack.set(DimDungeons.DUNGEON_KEY_DATA, new DungeonKeyDataComponentRecord(activated, built, destX, destZ, nameType, namePart1, namePart2, theme, dungeonType));
+
 		DungeonData.get(DungeonUtils.getDungeonWorld(server)).notifyOfNewKeyActivation();
 	}
 
 	public static void activateKeyForExistingTeleporterHub(MinecraftServer server, ItemStack stack, int destX, int destZ, int doorIndex)
 	{
-		CompoundTag data = new CompoundTag();
-		data.putBoolean(NBT_KEY_ACTIVATED, true);
-		data.putBoolean(NBT_BUILT, true); // the original key built this space
-		data.putInt(NBT_THEME, doorIndex); // the eight doors are numbered 0-7 clockwise from the entrance
-		data.putString(NBT_DUNGEON_TYPE, DungeonType.TELEPORTER_HUB.toString());
+		boolean activated = true;
+		boolean built = true;
 
-		// re-use the destX and destZ from the original key
-		data.putInt(NBT_KEY_DESTINATION_X, destX);
-		data.putInt(NBT_KEY_DESTINATION_Z, destZ);
+		int nameType = 5;
+		int namePart1 = doorIndex;
+		int namePart2 = 0;
+		int theme = doorIndex;
+		String dungeonType = DungeonType.TELEPORTER_HUB.toString();
 
-		// give it a new name based on its door color
-		data.putInt(NBT_NAME_TYPE, 5);
-		data.putInt(NBT_NAME_PART_1, doorIndex);
-
-		stack.setTag(data);
+		stack.set(DimDungeons.DUNGEON_KEY_DATA, new DungeonKeyDataComponentRecord(activated, built, destX, destZ, nameType, namePart1, namePart2, theme, dungeonType));
 	}
 
 	public boolean isActivated(ItemStack stack)
 	{
-		if (stack.hasTag())
+		if (stack.has(DimDungeons.DUNGEON_KEY_DATA))
 		{
-			if (stack.getTag().contains(NBT_KEY_ACTIVATED))
-			{
-				return true;
-			}
+			return stack.get(DimDungeons.DUNGEON_KEY_DATA).key_activated();
 		}
 		return false;
 	}
@@ -199,23 +212,20 @@ public class BaseItemKey extends Item
 	{
 		if (stack != null && !stack.isEmpty())
 		{
-			CompoundTag itemData = stack.getTag();
-			if (itemData != null && itemData.contains(NBT_KEY_DESTINATION_X))
+			DungeonKeyDataComponentRecord itemData = stack.get(DimDungeons.DUNGEON_KEY_DATA);
+			if (itemData != null)
 			{
 				// teleporter keys make everything weird!
-				if (itemData.contains(NBT_DUNGEON_TYPE))
+				DungeonType dtype = DungeonType.valueOf(itemData.dungeon_type());
+				if (dtype == DungeonType.TELEPORTER_HUB)
 				{
-					DungeonType dtype = DungeonType.valueOf(itemData.getString(NBT_DUNGEON_TYPE));
-					if (dtype == DungeonType.TELEPORTER_HUB)
-					{
-						float tempx = (itemData.getInt(NBT_KEY_DESTINATION_X) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_X;
-						int doornum = itemData.getInt(NBT_THEME);
-						int[] x_offset = { 0, -16, -21, -21, -16, 0, 5, 5 };
-						return tempx + x_offset[doornum];
-					}
+					float tempx = (itemData.dest_x() * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_X;
+					int doornum = itemData.theme();
+					int[] x_offset = { 0, -16, -21, -21, -16, 0, 5, 5 };
+					return tempx + x_offset[doornum];
 				}
 
-				return (itemData.getInt(NBT_KEY_DESTINATION_X) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_X;
+				return (itemData.dest_x() * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_X;
 			}
 		}
 		return -1;
@@ -225,23 +235,20 @@ public class BaseItemKey extends Item
 	{
 		if (stack != null && !stack.isEmpty())
 		{
-			CompoundTag itemData = stack.getTag();
-			if (itemData != null && itemData.contains(NBT_KEY_DESTINATION_Z))
+			DungeonKeyDataComponentRecord itemData = stack.get(DimDungeons.DUNGEON_KEY_DATA);
+			if (itemData != null)
 			{
 				// teleporter keys make everything weird!
-				if (itemData.contains(NBT_DUNGEON_TYPE))
+				DungeonType dtype = DungeonType.valueOf(itemData.dungeon_type());
+				if (dtype == DungeonType.TELEPORTER_HUB)
 				{
-					DungeonType dtype = DungeonType.valueOf(itemData.getString(NBT_DUNGEON_TYPE));
-					if (dtype == DungeonType.TELEPORTER_HUB)
-					{
-						float tempz = (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_Z;
-						int doornum = itemData.getInt(NBT_THEME);
-						int[] z_offset = { 0, 0, -5, -21, -26, -26, -21, -5 };
-						return tempz + z_offset[doornum];
-					}
+					float tempz = (itemData.dest_z() * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_Z;
+					int doornum = itemData.theme();
+					int[] z_offset = { 0, 0, -5, -21, -26, -26, -21, -5 };
+					return tempz + z_offset[doornum];
 				}
 
-				return (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_Z;
+				return (itemData.dest_z() * BLOCKS_APART_PER_DUNGEON) + ENTRANCE_OFFSET_Z;
 			}
 		}
 		return -1;
@@ -251,10 +258,10 @@ public class BaseItemKey extends Item
 	{
 		if (stack != null && !stack.isEmpty())
 		{
-			CompoundTag itemData = stack.getTag();
-			if (itemData != null && itemData.contains(NBT_KEY_DESTINATION_X))
+			DungeonKeyDataComponentRecord itemData = stack.get(DimDungeons.DUNGEON_KEY_DATA);
+			if (itemData != null)
 			{
-				return (itemData.getInt(NBT_KEY_DESTINATION_X) * BLOCKS_APART_PER_DUNGEON);
+				return (long)((long) itemData.dest_x() * BLOCKS_APART_PER_DUNGEON);
 			}
 		}
 		return -1;
@@ -264,10 +271,10 @@ public class BaseItemKey extends Item
 	{
 		if (stack != null && !stack.isEmpty())
 		{
-			CompoundTag itemData = stack.getTag();
-			if (itemData != null && itemData.contains(NBT_KEY_DESTINATION_Z))
+			DungeonKeyDataComponentRecord itemData = stack.get(DimDungeons.DUNGEON_KEY_DATA);
+			if (itemData != null)
 			{
-				return (itemData.getInt(NBT_KEY_DESTINATION_Z) * BLOCKS_APART_PER_DUNGEON);
+				return ((long) itemData.dest_z() * BLOCKS_APART_PER_DUNGEON);
 			}
 		}
 		return -1;
@@ -277,10 +284,10 @@ public class BaseItemKey extends Item
 	{
 		if (stack != null && !stack.isEmpty())
 		{
-			CompoundTag itemData = stack.getTag();
-			if (itemData != null && itemData.contains(NBT_THEME))
+			DungeonKeyDataComponentRecord itemData = stack.get(DimDungeons.DUNGEON_KEY_DATA);
+			if (itemData != null)
 			{
-				return itemData.getInt(NBT_THEME);
+				return itemData.theme();
 			}
 		}
 		return -1;
@@ -290,12 +297,12 @@ public class BaseItemKey extends Item
 	{
 		if (stack != null && !stack.isEmpty())
 		{
-			CompoundTag itemData = stack.getTag();
+			DungeonKeyDataComponentRecord itemData = stack.get(DimDungeons.DUNGEON_KEY_DATA);
 
 			// keys created prior to version 153 will not have this field
-			if (itemData != null && itemData.contains(NBT_DUNGEON_TYPE))
+			if (itemData != null)
 			{
-				return DungeonType.valueOf(itemData.getString(NBT_DUNGEON_TYPE));
+				return DungeonType.valueOf(itemData.dungeon_type());
 			}
 
 			// this is for legacy keys that relied on a -Z coordinate to signal advanced dungeons
@@ -321,7 +328,7 @@ public class BaseItemKey extends Item
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public InteractionResult useOn(UseOnContext parameters)
+	public @NotNull InteractionResult useOn(UseOnContext parameters)
 	{
 		// break down the one 1.13 parameter to get the half dozen 1.12 parameters because I need most of them
 		Level worldIn = parameters.getLevel();

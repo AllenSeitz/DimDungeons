@@ -9,6 +9,8 @@ import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.core.registries.Registries;
@@ -19,6 +21,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 public class ItemRegistrar
 {
@@ -56,6 +60,7 @@ public class ItemRegistrar
 	public static final DeferredItem<BlockItem> ITEM_CHARGER_USED = ItemRegistrar.ITEMS.register(BlockRegistrar.REG_NAME_CHARGER_USED, () -> new BlockItem(BlockRegistrar.BLOCK_CHARGER_USED.get(), new Item.Properties()));
 	public static final DeferredItem<BlockItem> ITEM_CHARGER_DAMAGED = ItemRegistrar.ITEMS.register(BlockRegistrar.REG_NAME_CHARGER_DAMAGED, () -> new BlockItem(BlockRegistrar.BLOCK_CHARGER_DAMAGED.get(), new Item.Properties()));
 
+	// register creative mode tab
 	public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, DimDungeons.MOD_ID);
 	
 	public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_TAB = TABS.register("creative_tab", () -> CreativeModeTab.builder()

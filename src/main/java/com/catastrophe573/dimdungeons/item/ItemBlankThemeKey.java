@@ -28,12 +28,12 @@ public class ItemBlankThemeKey extends BaseItemKey
 
 	public static int getTheme(ItemStack stack)
 	{
-		CompoundTag itemData = stack.getTag();
-		if (itemData == null)
+		if ( !stack.has(DimDungeons.DUNGEON_KEY_DATA) )
 		{
 			return 0;
 		}
-		return itemData.contains(NBT_THEME) ? itemData.getInt(NBT_THEME) : 0;
+
+		return ((ItemPortalKey) stack.getItem()).getDungeonTheme(stack);
 	}
 
 	public static float getKeyThemeAsFloat(ItemStack stack)
@@ -49,18 +49,18 @@ public class ItemBlankThemeKey extends BaseItemKey
 		int theme = 0;
 
 		// no NBT data on this item at all? well then return a blank key
-		if (stack.hasTag())
+		if ( !stack.has(DimDungeons.DUNGEON_KEY_DATA) )
 		{
-			theme = getTheme(stack);
-
-			String start = I18n.get("item.dimdungeons.item_blank_theme_key");
-			String place = I18n.get("npart.dimdungeons.theme_" + theme);
-
-			return Component.translatable(start + " (" + place + ")");
+			return Component.translatable(this.getDescriptionId(stack), new Object[0]);
 		}
 
-		// basically return "Blank Theme Key"
-		return Component.translatable(this.getDescriptionId(stack), new Object[0]);
+
+		theme = getTheme(stack);
+
+		String start = I18n.get("item.dimdungeons.item_blank_theme_key");
+		String place = I18n.get("npart.dimdungeons.theme_" + theme);
+
+		return Component.translatable(start + " (" + place + ")");
 	}
 
 	@Override

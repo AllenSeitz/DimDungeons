@@ -1,5 +1,6 @@
 package com.catastrophe573.dimdungeons.block;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -19,9 +20,9 @@ public class TileEntityLocalTeleporter extends BlockEntity
 	}
 
 	@Override
-	public void load(CompoundTag compound)
+	public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries)
 	{
-		super.load(compound);
+		super.loadAdditional(compound, registries);
 		if (compound.contains("destX") && compound.contains("destY") && compound.contains("destZ") && compound.contains("destPitch") && compound.contains("destYaw"))
 		{
 			this.destX = compound.getDouble("destX");
@@ -33,8 +34,9 @@ public class TileEntityLocalTeleporter extends BlockEntity
 	}
 
 	@Override
-	protected void saveAdditional(CompoundTag compound)
+	protected void saveAdditional(CompoundTag compound, HolderLookup.Provider registries)
 	{
+		super.saveAdditional(compound, registries);
 		compound.putDouble("destX", this.destX);
 		compound.putDouble("destY", this.destY);
 		compound.putDouble("destZ", this.destZ);

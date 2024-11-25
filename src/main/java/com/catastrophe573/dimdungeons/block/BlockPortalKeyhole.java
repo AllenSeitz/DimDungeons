@@ -187,8 +187,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		}
 	}
 
-	// called when the player right clicks this block
-	@Override
+	// called when the player right clicks this block (registered elsewhere?)
 	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit)
 	{
 		ItemStack playerItem = player.getItemInHand(handIn);
@@ -236,7 +235,8 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 							if (!DungeonUtils.dungeonAlreadyExistsHere(worldIn, entranceX, entranceZ))
 							{
 								// DimDungeons.LOGGER.info("BUILDING A NEW DUNGEON!");
-								playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
+								ItemPortalKey.setDungeonBuilt(playerItem);
+								//playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
 								myEntity.setContents(playerItem.copy()); // do this again to solve a bug
 								DungeonPlacement.beginDesignAndBuild(DungeonUtils.getDungeonWorld(worldIn.getServer()), buildX, buildZ, genData);
 							}
@@ -265,7 +265,8 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 							if (!DungeonUtils.personalPortalAlreadyExistsHere(worldIn, buildX, buildZ))
 							{
 								DimDungeons.logMessageInfo("DIMENSIONAL DUNGEONS: building a new personal dimension.");
-								playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
+								ItemPortalKey.setDungeonBuilt(playerItem);
+								//playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
 								myEntity.setContents(playerItem.copy()); // do this again to solve a bug
 								DungeonUtils.buildSuperflatPersonalSpace(buildX, buildZ, player.getServer());
 							}

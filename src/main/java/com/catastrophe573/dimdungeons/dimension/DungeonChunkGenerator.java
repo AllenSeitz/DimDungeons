@@ -2,12 +2,14 @@ package com.catastrophe573.dimdungeons.dimension;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
+import com.catastrophe573.dimdungeons.structure.DungeonRoom;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.core.BlockPos;
@@ -37,7 +39,7 @@ import net.minecraft.world.level.biome.FixedBiomeSource;
 public final class DungeonChunkGenerator extends ChunkGenerator
 {
 	// copied from FlatLevelSource
-	public static final Codec<FlatLevelSource> CODEC = RecordCodecBuilder.create((p_255577_) ->
+	public static final MapCodec<FlatLevelSource> CODEC = RecordCodecBuilder.mapCodec((p_255577_) ->
 	{
 		return p_255577_.group(FlatLevelGeneratorSettings.CODEC.fieldOf("settings").forGetter(FlatLevelSource::settings)).apply(p_255577_, p_255577_.stable(FlatLevelSource::new));
 	});
@@ -50,7 +52,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 		this.settings = p_209100_;
 	}
 
-	public Codec<? extends ChunkGenerator> codec()
+	public MapCodec<? extends ChunkGenerator> codec()
 	{
 		return CODEC;
 	}
@@ -193,12 +195,12 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	}
 
 	@Override
-	public CompletableFuture<ChunkAccess> fillFromNoise(Executor p_223209_, Blender p_223210_, RandomState p_223211_, net.minecraft.world.level.StructureManager p_223212_, ChunkAccess p_223213_)
+	public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk)
 	{
 		// I don't know why this function isn't being called, but it doesn't really matter
-		makeBase(p_223213_);
+		makeBase(chunk);
 
-		return CompletableFuture.completedFuture(p_223213_);
+		return CompletableFuture.completedFuture(chunk);
 	}
 
 	@Override
@@ -223,10 +225,10 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	@Override
 	public void addDebugScreenInfo(List<String> p_223175_, RandomState p_223176_, BlockPos p_223177_)
 	{
-		// ChunkPos cpos = new ChunkPos(p_223177_);
-		// DungeonRoom room = DungeonData.get().getRoomAtPos(cpos);
-		// p_223175_.add("Dungeon Room: " + room.structure);
+		//ChunkPos cpos = new ChunkPos(p_223177_);
+		//DungeonRoom room = DungeonData.get().getRoomAtPos(cpos);
+		//p_223175_.add("Dungeon Room: " + room.structure);
 
-		// p_223175_.add("Dungeon Room: " + "TODO maybe print dungeon room here"); // not possible because this doesn't execute in the same thread as the server
+		//p_223175_.add("Dungeon Room: " + "TODO maybe print dungeon room here"); // not possible because this doesn't execute in the same thread as the server
 	}
 }

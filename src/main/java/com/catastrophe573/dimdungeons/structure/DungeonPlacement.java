@@ -17,14 +17,16 @@ import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.network.Filterable;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.RandomizableContainer;
@@ -39,6 +41,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.WrittenBookContent;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -49,7 +52,6 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
-import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.StructureMode;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -57,6 +59,10 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import net.minecraft.world.level.storage.loot.LootTable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 // this class takes the dungeon layout which is designed by DungeonBuilderLogic and actually places it in the world
 public class DungeonPlacement
@@ -254,7 +260,7 @@ public class DungeonPlacement
 		MinecraftServer minecraftserver = ((Level) world).getServer();
 		StructureTemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
-		StructureTemplate template = templatemanager.getOrCreate(new ResourceLocation(room.structure));
+		StructureTemplate template = templatemanager.getOrCreate(ResourceLocation.parse(room.structure));
 		StructurePlaceSettings placementsettings = (new StructurePlaceSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false);
 		placementsettings.setRotation(Rotation.NONE);
 		placementsettings.setBoundingBox(new BoundingBox(cpos.x * 16, 0, cpos.z * 16, (cpos.x * 16) + 32 - 1, 255, (cpos.z * 16) + 32 - 1));
@@ -445,7 +451,7 @@ public class DungeonPlacement
 		MinecraftServer minecraftserver = ((Level) world).getServer();
 		StructureTemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
-		StructureTemplate template = templatemanager.getOrCreate(new ResourceLocation(room.structure));
+		StructureTemplate template = templatemanager.getOrCreate(ResourceLocation.parse(room.structure));
 		StructurePlaceSettings placementsettings = (new StructurePlaceSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false);
 		placementsettings.setBoundingBox(placementsettings.getBoundingBox());
 
@@ -572,10 +578,10 @@ public class DungeonPlacement
 
 			if (te instanceof BaseContainerBlockEntity)
 			{
-				CompoundTag tag = ((BaseContainerBlockEntity) te).getUpdateTag();
+				CompoundTag tag = ((BaseContainerBlockEntity) te).getUpdateTag(world.getLevel().registryAccess());
 				String lockName = "Chest Key: "+makeChunkCode(world.getChunk(pos).getPos());
 				tag.putString("Lock", lockName);
-				te.handleUpdateTag(tag);
+				te.handleUpdateTag(tag, world.getLevel().registryAccess());
 			}
 		}
 		else if ("FortuneTeller".equals(name))
@@ -588,25 +594,25 @@ public class DungeonPlacement
 			{
 				((DispenserBlockEntity) te).clearContent();
 				ItemStack message = generateLuckyMessage(rand, room.dungeonType);
-				((DispenserBlockEntity) te).addItem(message);
+				((DispenserBlockEntity) te).insertItem(message);
 			}
 		}
 		else if ("ChestLoot1".equals(name) || "SetTrappedLoot".equals(name) || "BarrelLoot1".equals(name))
 		{
 			String lootType = room.dungeonType == DungeonType.BASIC ? "basic" : "advanced";
 			String lootTable = "chests/chestloot_" + lootType + "_easy";
-			fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + lootTable), world, rand);
+			fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, lootTable), world, rand);
 		}
 		else if ("ChestLoot2".equals(name))
 		{
 			String lootType = room.dungeonType == DungeonType.BASIC ? "basic" : "advanced";
 			String lootTable = "chests/chestloot_" + lootType + "_hard";			
-			fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + lootTable), world, rand);
+			fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, lootTable), world, rand);
 		}
 		else if ("ChestLootKit".equals(name))
 		{
 			String lootTable = "chests/kit_random";
-			fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + lootTable), world, rand);
+			fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, lootTable), world, rand);
 		}
 		else if ("ChestLootLucky".equals(name))
 		{
@@ -616,11 +622,11 @@ public class DungeonPlacement
 			{
 				if (room.dungeonType == DungeonType.BASIC)
 				{
-					fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_lucky"), world, rand);
+					fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chests/chestloot_lucky"), world, rand);
 				}
 				else
 				{
-					fillChestBelow(pos, new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "chests/chestloot_crazy"), world, rand);
+					fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chests/chestloot_crazy"), world, rand);
 				}
 			}
 			else
@@ -738,7 +744,8 @@ public class DungeonPlacement
 				{
 					ItemStack stack = new ItemStack(Items.STICK);
 					String lockName = "Chest Key: "+makeChunkCode(world.getChunk(pos).getPos());
-					stack.setHoverName(Component.translatable(lockName));
+					//stack.setHoverName(Component.translatable(lockName));
+					stack.update(DataComponents.CUSTOM_NAME, Component.translatable(lockName), component -> component);
 
 					((Mob) mob).setItemSlot(EquipmentSlot.CHEST, stack);
 					((Mob) mob).setDropChance(EquipmentSlot.CHEST, 1.0f);
@@ -767,7 +774,7 @@ public class DungeonPlacement
 		// funny thing in 1.19.3 here. The second parameter really should be null.
 		// however, a new alternative version of spawn() was added with nullable 2nd and 3rd parameters as well, causing an ambiguous reference
 		// so instead this forces one of the two to be called, and should have no side effects
-		Entity mob = entitytype.spawn((ServerLevel) world, new CompoundTag(), null, pos, MobSpawnType.STRUCTURE, true, true);
+		Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, MobSpawnType.STRUCTURE, true, true);
 		// Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, MobSpawnType.STRUCTURE, true, true);
 
 		if (mob == null)
@@ -843,7 +850,8 @@ public class DungeonPlacement
 	private static void fillChestBelow(BlockPos pos, ResourceLocation lootTable, LevelAccessor world, RandomSource rand)
 	{
 		world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
-		RandomizableContainer.setBlockEntityLootTable(world, rand, pos.below(), lootTable);
+		ResourceKey<LootTable> lootTableKey = ResourceKey.create(Registries.LOOT_TABLE, lootTable);
+		RandomizableContainer.setBlockEntityLootTable(world, rand, pos.below(), lootTableKey);
 	}
 
 	// I was originally thinking that this would contain direct hints about the
@@ -851,7 +859,6 @@ public class DungeonPlacement
 	private static ItemStack generateLuckyMessage(RandomSource rand, DungeonType type)
 	{
 		ItemStack stack = new ItemStack(Items.WRITTEN_BOOK);
-		stack.setTag(new CompoundTag());
 
 		// randomize book contents
 		int bookType = rand.nextInt(3);
@@ -886,18 +893,21 @@ public class DungeonPlacement
 			body = Component.translatable("book.dimdungeons.advanced_message_" + messageVariation).getString();
 		}
 
-		// create the complicated NBT tag list for the list of pages in the book
-		ListTag pages = new ListTag();
-		Component text = Component.translatable(body);
-		String json = Component.Serializer.toJson(text);
-		pages.add(0, StringTag.valueOf(json)); // 1.15
+		// format the title of the book
+		Filterable<String> titleFilter = new Filterable<String>(title, null);
 
-		// actually set all the bookish NBT on the item
-		stack.getTag().putBoolean("resolved", false);
-		stack.getTag().putInt("generation", 0);
-		stack.getTag().put("pages", pages);
-		stack.getTag().putString("title", title);
-		stack.getTag().putString("author", Component.translatable("book.dimdungeons.author").getString());
+		// format the pages in the book
+		List<Filterable<Component>> pages = new ArrayList<Filterable<Component>>();
+		Component text = Component.translatable(body);
+		Filterable<Component> pageText = new Filterable<Component>(text, null);
+		pages.addFirst(pageText);
+
+		String author = Component.translatable("book.dimdungeons.author").getString();
+
+		// actually set all the bookish NBT on the item (title, author, generation, pages, isResolved)
+		WrittenBookContent bookComponent = new WrittenBookContent(titleFilter, author, 0, pages, false);
+		stack.set(DataComponents.WRITTEN_BOOK_CONTENT, bookComponent);
+
 		return stack;
 	}
 
