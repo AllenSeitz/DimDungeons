@@ -23,6 +23,12 @@
         "dimdungeons:keytheme": 0.03
       },
       "model": "dimdungeons:item/item_theme_blank_03"
+    },
+	{
+      "predicate": {
+        "dimdungeons:keytheme": 0.04
+      },
+      "model": "dimdungeons:item/item_theme_blank_00"
     }
   ]	
 }

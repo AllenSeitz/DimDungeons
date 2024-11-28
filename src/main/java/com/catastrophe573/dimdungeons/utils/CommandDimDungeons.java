@@ -6,10 +6,7 @@ import java.util.Collections;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.dimension.DungeonData;
 import com.catastrophe573.dimdungeons.dimension.PersonalBuildData;
-import com.catastrophe573.dimdungeons.item.BaseItemKey;
-import com.catastrophe573.dimdungeons.item.ItemBlankBuildKey;
-import com.catastrophe573.dimdungeons.item.ItemPortalKey;
-import com.catastrophe573.dimdungeons.item.ItemRegistrar;
+import com.catastrophe573.dimdungeons.item.*;
 //import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
 import com.catastrophe573.dimdungeons.structure.DungeonRoom;
 import com.mojang.brigadier.CommandDispatcher;
@@ -55,7 +52,7 @@ public class CommandDimDungeons
 		});
 
 		// make a different cheat for "givekey basic", "givekey advanced", etc
-		String[] keytypes = { "blank", "basic", "advanced" };
+		String[] keytypes = { "blank", "basic", "advanced", "theme" };
 		for (int i = 0; i < keytypes.length; i++)
 		{
 			String type = keytypes[i];
@@ -124,9 +121,11 @@ public class CommandDimDungeons
 				((ItemPortalKey) (ItemRegistrar.ITEM_PORTAL_KEY.get())).activateKeyLevel2(cmd.getSource().getServer(), stack);
 				keyName = Component.translatable("item.dimdungeons.item_portal_key_advanced");
 			}
-			else
+			else if ("theme".equals(type))
 			{
-				// unreachable code as long as register and this else-if chain are kept in sync
+				stack = new ItemStack(ItemRegistrar.ITEM_BLANK_THEME_KEY.get());
+				BaseItemKey.setTheme(stack, theme);
+				keyName = Component.translatable("item.dimdungeons.item_portal_key");
 			}
 
 			// try to give the player the item

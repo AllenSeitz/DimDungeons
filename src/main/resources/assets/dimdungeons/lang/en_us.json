@@ -141,7 +141,7 @@
     "npart.dimdungeons.theme_7": "Theme 7",
     "npart.dimdungeons.theme_8": "Theme 8",
 
-    "npart.dimdungeons.struct_8": "Key to the World of ",
+    "npart.dimdungeons.struct_8": "Key to the World of %1$s",
 
     "npart.dimdungeons.struct_9": "Key to the Crossroads of ",
     "npart.dimdungeons.struct_9_0": "Key to the Oak Door",
@@ -153,7 +153,7 @@
     "npart.dimdungeons.struct_9_6": "Key to the Crimson Door",
     "npart.dimdungeons.struct_9_7": "Key to the Warped Door",
 
-    "npart.dimdungeons.struct_10": "Chest Key: ", // THIS IS UNUSED!
+    "npart.dimdungeons.struct_10": "Chest Key: ",
 
     "book.dimdungeons.title_1": "Good News",
     "book.dimdungeons.title_2": "Puzzle Hint",

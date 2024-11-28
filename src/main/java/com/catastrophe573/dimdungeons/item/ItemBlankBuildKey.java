@@ -72,18 +72,13 @@ public class ItemBlankBuildKey extends BaseItemKey
 
 	public void activateBuildKey(MinecraftServer server, ItemStack stack, LivingEntity player)
 	{
-		CompoundTag data = new CompoundTag();
-		data.putBoolean(NBT_KEY_ACTIVATED, true);
-		data.putBoolean(NBT_BUILT, false);
-		data.putString(NBT_DUNGEON_TYPE, DungeonType.PERSONAL_BUILD.toString());
-
 		ChunkPos dest = PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(server)).getPosForOwner(player);
-		data.putInt(NBT_KEY_DESTINATION_X, dest.x);
-		data.putInt(NBT_KEY_DESTINATION_Z, dest.z);
+
+		// set the component data (activated, built, x, z, name type, name1, name 2, theme, key type)
+		stack.set(DimDungeons.DUNGEON_KEY_DATA, new DungeonKeyDataComponentRecord(true, false, dest.x, dest.z, 8, 0, 0, 0, DungeonType.PERSONAL_BUILD.toString()));
 
 		// name the key after the player
-		//stack.setHoverName(Component.translatable("npart.dimdungeons.struct_8", " ", player.getName().getString()));
-		stack.update(DataComponents.CUSTOM_NAME, Component.translatable("npart.dimdungeons.struct_8", " ", player.getName().getString()).withStyle(ChatFormatting.DARK_AQUA), component -> component);
+		stack.set(DataComponents.CUSTOM_NAME, Component.translatable("npart.dimdungeons.struct_8", Component.literal(player.getName().getString()).withStyle(ChatFormatting.DARK_AQUA)));
 	}
 
 	// EVEN MORE particle effects for this special event!

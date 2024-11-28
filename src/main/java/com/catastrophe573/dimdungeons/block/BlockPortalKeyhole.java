@@ -16,6 +16,7 @@ import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -187,8 +188,41 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		}
 	}
 
-	// called when the player right clicks this block (registered elsewhere?)
-	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit)
+	// called when the player right-clicks this block with an empty hand
+	@Override
+	public InteractionResult useWithoutItem(BlockState state, Level worldIn, BlockPos pos, Player player, BlockHitResult hit)
+	{
+		BlockEntity tileEntity = worldIn.getBlockEntity(pos);
+		TileEntityPortalKeyhole myEntity = (TileEntityPortalKeyhole) tileEntity;
+
+		if (myEntity == null)
+		{
+			DimDungeons.logMessageError("dimdungeons: BlockEntity missing inside of BlockPortalKeyhole::useWithoutItem");
+			return InteractionResult.PASS;
+		}
+
+		ItemStack insideItem = myEntity.getObjectInserted();
+
+		// if the keyhole is currently empty
+		if (insideItem.isEmpty())
+		{
+			// the player didn't have an item and neither did the keyhole
+			return InteractionResult.PASS;
+		}
+		// if the keyhole is currently full
+		else
+		{
+			player.setItemInHand(InteractionHand.MAIN_HAND, insideItem); // hand it to the player
+
+			consequencesForRemovingIternalItem(myEntity, insideItem, worldIn, pos, state);
+
+			return InteractionResult.SUCCESS;
+		}
+	}
+
+	// called when the player right-clicks this block WITH an item in EITHER hand (and called twice if both hands are full)
+	@Override
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hitResult)
 	{
 		ItemStack playerItem = player.getItemInHand(handIn);
 		BlockEntity tileEntity = worldIn.getBlockEntity(pos);
@@ -198,142 +232,153 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		//DimDungeons.logMessageInfo("Hand: " + handIn + ", Item: " + playerItem.getDisplayName());
 		if ( handIn != InteractionHand.MAIN_HAND )
 		{
-			return InteractionResult.PASS;
+			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		}
-				
-		// insert or remove an item from this block
-		if (myEntity != null)
+
+		// sanity check
+		if (myEntity == null)
 		{
-			ItemStack insideItem = myEntity.getObjectInserted();
-			
-			// if the keyhole is currently empty
-			if (insideItem.isEmpty())
+			DimDungeons.logMessageError("dimdungeons: BlockEntity missing inside of BlockPortalKeyhole::useWithoutItem");
+			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		}
+		if (playerItem.isEmpty())
+		{
+			// this apparently happens all the time? why do we have two functions, then? what is useWithoutItem() for?
+			//DimDungeons.logMessageError("dimdungeons: called BlockPortalKeyhole::useItemOn with an empty item stack?");
+			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		}
+
+		ItemStack insideItem = myEntity.getObjectInserted();
+
+		// if the keyhole is currently empty
+		if (insideItem.isEmpty())
+		{
+			// keyhole is empty AND hand is full, then insert an item
+			// DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
+			boolean is_building = false;
+
+			myEntity.setContents(playerItem.copy());
+
+			// should we begin to build the dungeon on the other side?
+			if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide && isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
 			{
-				if (!playerItem.isEmpty())
+				// all this math just to figure out where the coordinates of the dungeon are
+				ItemPortalKey key = (ItemPortalKey) playerItem.getItem();
+				long buildX = (long) key.getDungeonTopLeftX(playerItem);
+				long buildZ = (long) key.getDungeonTopLeftZ(playerItem);
+				long entranceX = buildX + (8 * 16);
+				long entranceZ = buildZ + (11 * 16);
+
+				// this data structure is used for both building the layout and updating the exit portal
+				DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setDungeonType(key.getDungeonType(playerItem)).setTheme(key.getDungeonTheme(playerItem)).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
+
+				// should the key be marked as used?
+				if (shouldBuildDungeon(playerItem))
 				{
-					// DimDungeons.LOGGER.info("Putting " + playerItem.getDisplayName().getString() + " inside keyhole...");
-					boolean is_building = false;
-
-					myEntity.setContents(playerItem.copy());
-
-					// should we begin to build the dungeon on the other side?
-					if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide && isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
+					if (!DungeonUtils.dungeonAlreadyExistsHere(worldIn, entranceX, entranceZ))
 					{
-						// all this math just to figure out where the coordinates of the dungeon are
-						ItemPortalKey key = (ItemPortalKey) playerItem.getItem();
-						long buildX = (long) key.getDungeonTopLeftX(playerItem);
-						long buildZ = (long) key.getDungeonTopLeftZ(playerItem);
-						long entranceX = buildX + (8 * 16);
-						long entranceZ = buildZ + (11 * 16);
-
-						// this data structure is used for both building the layout and updating the exit portal
-						DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setDungeonType(key.getDungeonType(playerItem)).setTheme(key.getDungeonTheme(playerItem)).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
-
-						// should the key be marked as used?
-						if (shouldBuildDungeon(playerItem))
-						{
-							if (!DungeonUtils.dungeonAlreadyExistsHere(worldIn, entranceX, entranceZ))
-							{
-								// DimDungeons.LOGGER.info("BUILDING A NEW DUNGEON!");
-								ItemPortalKey.setDungeonBuilt(playerItem);
-								//playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
-								myEntity.setContents(playerItem.copy()); // do this again to solve a bug
-								DungeonPlacement.beginDesignAndBuild(DungeonUtils.getDungeonWorld(worldIn.getServer()), buildX, buildZ, genData);
-							}
-
-							// it's slow, but run through the build steps regardless of if the dungeon already exists
-							// this will catch dungeons that are partially built and finish them dungeon rooms will never be overwritten or built twice
-							is_building = true;
-						}
-						else
-						{
-							is_building = true;
-						}
-					}
-					else if (playerItem.getItem() instanceof ItemBuildKey && !worldIn.isClientSide && isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
-					{
-						// building a personal build space is different
-						ItemBuildKey key = (ItemBuildKey) playerItem.getItem();
-						long buildX = (long) key.getDungeonTopLeftX(playerItem);
-						long buildZ = (long) key.getDungeonTopLeftZ(playerItem);
-
-						// this is used for updating the existing portal
-						DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
-
-						if (key.isActivated(playerItem) && !key.isPlotBuilt(playerItem))
-						{
-							if (!DungeonUtils.personalPortalAlreadyExistsHere(worldIn, buildX, buildZ))
-							{
-								DimDungeons.logMessageInfo("DIMENSIONAL DUNGEONS: building a new personal dimension.");
-								ItemPortalKey.setDungeonBuilt(playerItem);
-								//playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
-								myEntity.setContents(playerItem.copy()); // do this again to solve a bug
-								DungeonUtils.buildSuperflatPersonalSpace(buildX, buildZ, player.getServer());
-							}
-						}
-
-						// buildStep must ALWAYS be 0 when using an ItemBuildKey, or else the keyhole might start ticking
-						is_building = false;
-						DungeonUtils.openPortalAfterBuild(worldIn, pos, genData, myEntity);
+						// DimDungeons.LOGGER.info("BUILDING A NEW DUNGEON!");
+						ItemPortalKey.setDungeonBuilt(playerItem);
+						//playerItem.getTag().putBoolean(ItemPortalKey.NBT_BUILT, true);
+						myEntity.setContents(playerItem.copy()); // do this again to solve a bug
+						DungeonPlacement.beginDesignAndBuild(DungeonUtils.getDungeonWorld(worldIn.getServer()), buildX, buildZ, genData);
 					}
 
-					// recalculate the block states
-					BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(IS_BUILDING, is_building);
-					worldIn.setBlockAndUpdate(pos, newBlockState);
-
-					playerItem.shrink(1);
-					worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.TRIPWIRE_CLICK_ON, SoundSource.BLOCKS, 0.7F, 1.2f, false);
-
-					return InteractionResult.SUCCESS;
+					// it's slow, but run through the build steps regardless of if the dungeon already exists
+					// this will catch dungeons that are partially built and finish them dungeon rooms will never be overwritten or built twice
+					is_building = true;
+				}
+				else
+				{
+					is_building = true;
 				}
 			}
-			// if the keyhole is currently full
-			else
+			else if (playerItem.getItem() instanceof ItemBuildKey && !worldIn.isClientSide && isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
 			{
-				// DimDungeons.LOGGER.info("Taking thing out of keyhole...");
-				if (playerItem.isEmpty())
-				{
-					player.setItemInHand(handIn, insideItem); // hand it to the player
-				}
-				else if (!player.addItem(insideItem)) // okay put it in their inventory
-				{
-					player.drop(insideItem, false); // whatever drop it on the ground
-				}
+				// building a personal build space is different
+				ItemBuildKey key = (ItemBuildKey) playerItem.getItem();
+				long buildX = (long) key.getDungeonTopLeftX(playerItem);
+				long buildZ = (long) key.getDungeonTopLeftZ(playerItem);
 
-				// if a teleporter hub key was removed then remove the door on the other side
-				if (insideItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide)
-				{
-					ItemPortalKey key = (ItemPortalKey) insideItem.getItem();
+				// this is used for updating the existing portal
+				DungeonGenData genData = DungeonGenData.Create().setKeyItem(playerItem).setReturnPoint(BlockPortalKeyhole.getReturnPoint(state, pos), DungeonUtils.serializeDimensionKey(worldIn.dimension()));
 
-					// the reason I ignore this rule for the 'oak' door is because I don't want players getting trapped in there
-					if (key.getDungeonType(insideItem) == DungeonType.TELEPORTER_HUB && key.getDungeonTheme(insideItem) != 0)
+				if (key.isActivated(playerItem) && !key.isPlotBuilt(playerItem))
+				{
+					if (!DungeonUtils.personalPortalAlreadyExistsHere(worldIn, buildX, buildZ))
 					{
-						float entranceX = key.getWarpX(insideItem);
-						float entranceZ = key.getWarpZ(insideItem);
-						DungeonGenData genData = DungeonGenData.Create();
-						genData.setDungeonType(DungeonType.TELEPORTER_HUB);
-						genData.setTheme(key.getDungeonTheme(insideItem));
-
-						// when calling this function in "delete mode" the genData and Direction paramaters are not important
-						DungeonUtils.reprogramTeleporterHubDoorway(worldIn, (long) entranceX, (long) entranceZ, genData, Direction.NORTH, true);
+						DimDungeons.logMessageInfo("DIMENSIONAL DUNGEONS: building a new personal dimension.");
+						ItemPortalKey.setDungeonBuilt(playerItem);
+						myEntity.setContents(playerItem.copy()); // do this again to solve a bug
+						DungeonUtils.buildSuperflatPersonalSpace(buildX, buildZ, player.getServer());
 					}
 				}
 
-				// actually remove the item from the keyhole here
-				myEntity.removeContents();
+				// buildStep must ALWAYS be 0 when using an ItemBuildKey, or else the keyhole might start ticking
+				is_building = false;
+				DungeonUtils.openPortalAfterBuild(worldIn, pos, genData, myEntity);
+			}
 
-				worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.TRIPWIRE_CLICK_OFF, SoundSource.BLOCKS, 0.7F, 0.8f, false);
+			// recalculate the block states
+			BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(IS_BUILDING, is_building);
+			worldIn.setBlockAndUpdate(pos, newBlockState);
 
-				// recalculate the boolean block states
-				BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(IS_BUILDING, false);
+			// why do I do this instead of ItemInteractionResult.CONSUME? there was a reason
+			playerItem.shrink(1);
+			worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.TRIPWIRE_CLICK_ON, SoundSource.BLOCKS, 0.7F, 1.2f, false);
 
-				worldIn.setBlock(pos, newBlockState, 3);
+			return ItemInteractionResult.SUCCESS;
+		}
+		// if the keyhole is currently full and so is the player's main hand
+		else
+		{
+			// DimDungeons.LOGGER.info("Taking thing out of keyhole...");
+			if (playerItem.isEmpty())
+			{
+				player.setItemInHand(handIn, insideItem); // hand it to the player
+			}
+			else if (!player.addItem(insideItem)) // okay put it in their inventory
+			{
+				player.drop(insideItem, false); // whatever drop it on the ground
+			}
 
-				return InteractionResult.SUCCESS;
+			consequencesForRemovingIternalItem(myEntity, insideItem, worldIn, pos, state);
+
+			return ItemInteractionResult.SUCCESS;
+		}
+	}
+
+	// a narrow helper function for useItemOn() and useWIthoutItem() that prevents copy/pasting a specific code block in both functions
+	private static void consequencesForRemovingIternalItem(TileEntityPortalKeyhole myEntity, ItemStack insideItem, Level worldIn, BlockPos pos, BlockState state)
+	{
+		// if a teleporter hub key was removed then remove the door on the other side
+		if (insideItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide)
+		{
+			ItemPortalKey key = (ItemPortalKey) insideItem.getItem();
+
+			// the reason I ignore this rule for the 'oak' door is because I don't want players getting trapped in there
+			if (key.getDungeonType(insideItem) == DungeonType.TELEPORTER_HUB && key.getDungeonTheme(insideItem) != 0)
+			{
+				float entranceX = key.getWarpX(insideItem);
+				float entranceZ = key.getWarpZ(insideItem);
+				DungeonGenData genData = DungeonGenData.Create();
+				genData.setDungeonType(DungeonType.TELEPORTER_HUB);
+				genData.setTheme(key.getDungeonTheme(insideItem));
+
+				// when calling this function in "delete mode" the genData and Direction paramaters are not important
+				DungeonUtils.reprogramTeleporterHubDoorway(worldIn, (long) entranceX, (long) entranceZ, genData, Direction.NORTH, true);
 			}
 		}
 
-		return InteractionResult.PASS;
+		// actually remove the item from the keyhole here
+		myEntity.removeContents();
+
+		worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.TRIPWIRE_CLICK_OFF, SoundSource.BLOCKS, 0.7F, 0.8f, false);
+
+		// recalculate the boolean block states
+		BlockState newBlockState = state.setValue(FACING, state.getValue(FACING)).setValue(FILLED, myEntity.isFilled()).setValue(LIT, myEntity.isActivated()).setValue(IS_BUILDING, false);
+
+		worldIn.setBlock(pos, newBlockState, 3);
 	}
 
 	public static void addGoldenPortalBlock(Level worldIn, BlockPos pos, ItemStack keyStack, Direction.Axis axis)

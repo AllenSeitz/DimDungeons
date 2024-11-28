@@ -41,7 +41,19 @@
         "dimdungeons:keytheme": 0.03
       },
       "model": "dimdungeons:item/item_theme_active_03"
-    }
+    },   
+	{
+      "predicate": {
+        "dimdungeons:keytheme": 0.04
+      },
+      "model": "dimdungeons:item/item_key_level1"
+    },	
+    {
+      "predicate": {
+        "dimdungeons:keytheme": 0.999
+      },
+      "model": "dimdungeons:item/item_key_teleporter"
+    }	
   ],	
 	
   "display": {

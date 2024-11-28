@@ -82,7 +82,6 @@ public class BaseItemKey extends Item
 
 	public void activateKeyLevel1(MinecraftServer server, ItemStack stack, int theme)
 	{
-
 		boolean activated = true;
 		boolean built = false;
 		long destX = 0;
@@ -197,6 +196,31 @@ public class BaseItemKey extends Item
 		String dungeonType = DungeonType.TELEPORTER_HUB.toString();
 
 		stack.set(DimDungeons.DUNGEON_KEY_DATA, new DungeonKeyDataComponentRecord(activated, built, destX, destZ, nameType, namePart1, namePart2, theme, dungeonType));
+	}
+
+	public static void setTheme(ItemStack stack, int theme)
+	{
+		if (!stack.has(DimDungeons.DUNGEON_KEY_DATA))
+		{
+			return;
+		}
+
+		// records are immutable, so make a new record just to change one field? am I doing this right?
+		// TODO: nope, I'm not doing it right. Make DungeonKeyDataComponentRecord more like the vanilla classes. It doesn't have to be immutable everywhere.
+		DungeonKeyDataComponentRecord data = stack.get(DimDungeons.DUNGEON_KEY_DATA);
+		DungeonKeyDataComponentRecord newData = new DungeonKeyDataComponentRecord(
+				false, // activated
+				false, // built
+				data.dest_x(),
+				data.dest_z(),
+				data.name_type(),
+				data.name_part_1(),
+				data.name_part_2(),
+				theme,
+				data.dungeon_type()
+		);
+
+		stack.set(DimDungeons.DUNGEON_KEY_DATA, newData);
 	}
 
 	public boolean isActivated(ItemStack stack)

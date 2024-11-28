@@ -661,7 +661,7 @@ public class DungeonPlacement
 			int doornum = Integer.valueOf(tempDoornum);
 
 			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
-			TileEntityPortalKeyhole te = (TileEntityPortalKeyhole) world.getBlockEntity(pos.below(2));
+			TileEntityPortalKeyhole te = (TileEntityPortalKeyhole) world.getBlockEntity(pos.below(3));
 			if (te != null)
 			{
 				ItemStack newkey = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
@@ -674,14 +674,12 @@ public class DungeonPlacement
 
 				ItemPortalKey.activateKeyForExistingTeleporterHub(world.getServer(), newkey, destX, destZ, doornum);
 
-				te.removeContents();
 				te.setContents(newkey);
 
 				// mark this keyhole as filled
-				BlockState state = world.getBlockState(pos.below(2));
+				BlockState state = world.getBlockState(pos.below(3));
 				BlockState newBlockState = state.setValue(BlockPortalKeyhole.FACING, state.getValue(BlockPortalKeyhole.FACING)).setValue(BlockPortalKeyhole.FILLED, true).setValue(BlockPortalKeyhole.LIT, false);
-				world.setBlockAndUpdate(pos.below(2), newBlockState);
-
+				world.setBlockAndUpdate(pos.below(3), newBlockState);
 			}
 		}
 		else if ("SummonWitch".equals(name))

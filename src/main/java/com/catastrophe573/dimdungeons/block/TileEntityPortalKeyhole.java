@@ -118,10 +118,15 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	{
 		super.loadAdditional(compound, registries);
 
+		// as for Neoforge 1.21, encoding empty ItemStacks is no longer allowed for some reason?
 		if (compound.contains(ITEM_PROPERTY_KEY))
 		{
 			ItemStack decodedItem = ItemStack.parse(registries, compound.getCompound(ITEM_PROPERTY_KEY)).get();
 			setContents(decodedItem);
+		}
+		else
+		{
+			objectInserted = ItemStack.EMPTY;
 		}
 	}
 
@@ -130,8 +135,15 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	{
 		super.saveAdditional(compound, registries);
 
-		// always send this, even if it is empty or air
-		compound.put(ITEM_PROPERTY_KEY, objectInserted.save(registries));
+		// as for Neoforge 1.21, encoding empty ItemStacks is no longer allowed for some reason?
+		if ( objectInserted.isEmpty() )
+		{
+			compound.remove(ITEM_PROPERTY_KEY);
+		}
+		else
+		{
+			compound.put(ITEM_PROPERTY_KEY, objectInserted.save(registries));
+		}
 	}
 
 	public boolean isFilled()

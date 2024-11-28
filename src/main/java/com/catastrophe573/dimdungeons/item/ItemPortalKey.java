@@ -43,6 +43,12 @@ public class ItemPortalKey extends BaseItemKey
 	public static float getKeyThemeAsFloat(ItemStack stack)
 	{
 		int theme = ((ItemPortalKey) stack.getItem()).getDungeonTheme(stack);
+
+		if (((ItemPortalKey) stack.getItem()).getDungeonType(stack) == DungeonType.TELEPORTER_HUB)
+		{
+			return 0.999f; // teleporter hub
+		}
+
 		return (float)theme / 100.0f;
 	}
 

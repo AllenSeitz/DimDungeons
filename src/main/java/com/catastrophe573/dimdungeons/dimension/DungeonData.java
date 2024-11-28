@@ -141,7 +141,7 @@ public class DungeonData extends SavedData
 	}
 
 	// this constructor is called when data already exists
-	public DungeonData(CompoundTag tag)
+	public DungeonData(CompoundTag tag, HolderLookup.Provider lookupProvider)
 	{
 		ListTag allRooms = tag.getList("room_data", tag.getId()); // the second parameter returns a hardcoded 10, ask vanilla why
 
@@ -225,6 +225,6 @@ public class DungeonData extends SavedData
 
 	public static DungeonData load(CompoundTag tag, HolderLookup.Provider lookupProvider)
 	{
-		return create();
+		return new DungeonData(tag, lookupProvider);
 	}
 }

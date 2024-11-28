@@ -5,7 +5,6 @@ import com.catastrophe573.dimdungeons.DungeonConfig;
 
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -16,6 +15,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemBlankThemeKey extends BaseItemKey
 {
@@ -33,18 +33,23 @@ public class ItemBlankThemeKey extends BaseItemKey
 			return 0;
 		}
 
-		return ((ItemPortalKey) stack.getItem()).getDungeonTheme(stack);
+		DungeonKeyDataComponentRecord itemData = stack.get(DimDungeons.DUNGEON_KEY_DATA);
+		if (itemData != null)
+		{
+			return itemData.theme();
+		}
+		return 0;
 	}
 
 	public static float getKeyThemeAsFloat(ItemStack stack)
 	{
-		int theme = ((ItemBlankThemeKey) stack.getItem()).getDungeonTheme(stack);
+		int theme = getTheme(stack);
 		return (float)theme / 100.0f;
 	}
-	
+
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public Component getName(ItemStack stack)
+	public @NotNull Component getName(ItemStack stack)
 	{
 		int theme = 0;
 
@@ -53,7 +58,6 @@ public class ItemBlankThemeKey extends BaseItemKey
 		{
 			return Component.translatable(this.getDescriptionId(stack), new Object[0]);
 		}
-
 
 		theme = getTheme(stack);
 
@@ -70,7 +74,7 @@ public class ItemBlankThemeKey extends BaseItemKey
 
 		if (player == null)
 		{
-			DimDungeons.logMessageError("Somehow activated a blank advanced key without a player present. Do not do this.");
+			DimDungeons.logMessageError("Somehow activated a blank theme key without a player present. Do not do this.");
 			return;
 		}
 

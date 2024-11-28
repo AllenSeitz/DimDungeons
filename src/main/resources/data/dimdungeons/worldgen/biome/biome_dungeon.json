@@ -1,16 +1,12 @@
 {
   "temperature": 0.5,
   "downfall": 0.5,
-  "precipitation": "none",
-  "has_precipitation": 0,
-  "temperature_modifier": "none",
-  "creature_spawn_probability": 0,
+  "has_precipitation": false,
   "effects": {
     "sky_color": 8103167,
     "fog_color": 12638463,
-    "water_color": 4622448,
-    "water_fog_color": 329011,
-    "grass_color_modifier": "dark_forest"
+    "water_color": 6141935,
+    "water_fog_color": 329011
   },
   "spawners": {},
   "spawn_costs": {},

@@ -239,7 +239,7 @@ public class PersonalBuildData extends SavedData
 	}
 
 	// this constructor is called when data already exists
-	public PersonalBuildData(CompoundTag tag)
+	public PersonalBuildData(CompoundTag tag, HolderLookup.Provider lookupProvider)
 	{
 		ListTag allOwners = tag.getList("player_data", tag.getId()); // the second parameter returns a hardcoded 10, ask vanilla why
 
@@ -307,7 +307,7 @@ public class PersonalBuildData extends SavedData
 
 	public static PersonalBuildData load(CompoundTag tag, HolderLookup.Provider lookupProvider)
 	{
-		return create();
+		return new PersonalBuildData(tag, lookupProvider);
 	}
 
 	// do not do this on a real world, obviously

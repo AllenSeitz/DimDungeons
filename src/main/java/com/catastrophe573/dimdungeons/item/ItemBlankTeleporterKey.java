@@ -26,6 +26,10 @@ public class ItemBlankTeleporterKey extends BaseItemKey
 	{
 		worldIn.playSound((Player) null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
 
+		// in 1.21 do these first, because stack.shrink(1) causes the itemstack to empty (why wasn't this broken in previous versions?)
+		createActivationParticleEffects(worldIn, pos);
+		createActivationParticleEffectsForTeleporterKey(worldIn, pos, itemstack);
+
 		if (!worldIn.isClientSide)
 		{
 			// delete this item and replace it with a regular key, but first remember which
@@ -46,9 +50,6 @@ public class ItemBlankTeleporterKey extends BaseItemKey
 				}
 			}
 		}
-
-		createActivationParticleEffects(worldIn, pos);
-		createActivationParticleEffectsForTeleporterKey(worldIn, pos, itemstack);
 	}
 
 	// EVEN MORE particle effects for this special event!

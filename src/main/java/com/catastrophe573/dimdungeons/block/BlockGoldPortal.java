@@ -21,6 +21,7 @@ import com.catastrophe573.dimdungeons.structure.DungeonRoom;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
@@ -66,7 +67,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	protected static final VoxelShape X_AABB = Block.box(0.0D, 0.0D, 6.0D, 16.0D, 16.0D, 10.0D);
 	protected static final VoxelShape Z_AABB = Block.box(6.0D, 0.0D, 0.0D, 10.0D, 16.0D, 16.0D);
 
-	public static final TagKey<Block> tag_portal_frame_blocks = BlockTags.create(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "portal_frame_blocks"));
+	public static final TagKey<Block> tag_portal_frame_blocks = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "portal_frame_blocks"));
 
 	public BlockGoldPortal()
 	{
