@@ -7,7 +7,7 @@
   ],
   "key": {
     "G": {
-      "tag": "forge:ingots/gold"
+      "tag": "c:ingots/gold"
     },
     "S": {
       "item": "minecraft:chiseled_stone_bricks",
@@ -15,6 +15,6 @@
     }
   },
   "result": {
-    "item": "dimdungeons:block_gilded_portal"
+    "id": "dimdungeons:block_gilded_portal"
   }
 }

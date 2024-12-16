@@ -21,6 +21,6 @@
     }	
   },
   "result": {
-    "item": "dimdungeons:item_blank_build_key"
+    "id": "dimdungeons:item_blank_build_key"
   }
 }

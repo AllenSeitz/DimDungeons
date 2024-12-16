@@ -1,0 +1,373 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "bold": true,
+                "color": "yellow",
+                "translate": "item.dimdungeons.item_trophy_1"
+              },
+              "target": "item_name"
+            },
+            {
+              "entity": "this",
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "color": "aqua",
+                  "translate": "item.dimdungeons.item_trophy_1_line1"
+                },
+                {
+                  "color": "dark_aqua",
+                  "italic": true,
+                  "translate": "item.dimdungeons.item_trophy_1_line2"
+                },
+                {
+                  "extra": [
+                    {
+                      "color": "gold",
+                      "translate": "item.dimdungeons.item_trophy_found_by"
+                    },
+                    {
+                      "color": "light_purple",
+                      "selector": "@s"
+                    }
+                  ],
+                  "text": ""
+                }
+              ],
+              "mode": "append"
+            }
+          ],
+          "name": "dimdungeons:item_trophy_1",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "bold": true,
+                "color": "yellow",
+                "translate": "item.dimdungeons.item_trophy_2"
+              },
+              "target": "item_name"
+            },
+            {
+              "entity": "this",
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "color": "aqua",
+                  "translate": "item.dimdungeons.item_trophy_2_line1"
+                },
+                {
+                  "color": "dark_aqua",
+                  "italic": true,
+                  "translate": "item.dimdungeons.item_trophy_2_line2"
+                },
+                {
+                  "extra": [
+                    {
+                      "color": "gold",
+                      "translate": "item.dimdungeons.item_trophy_found_by"
+                    },
+                    {
+                      "color": "light_purple",
+                      "selector": "@s"
+                    }
+                  ],
+                  "text": ""
+                }
+              ],
+              "mode": "append"
+            }
+          ],
+          "name": "dimdungeons:item_trophy_2",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "bold": true,
+                "color": "yellow",
+                "translate": "item.dimdungeons.item_trophy_3"
+              },
+              "target": "item_name"
+            },
+            {
+              "entity": "this",
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "color": "aqua",
+                  "translate": "item.dimdungeons.item_trophy_3_line1"
+                },
+                {
+                  "color": "dark_aqua",
+                  "italic": true,
+                  "translate": "item.dimdungeons.item_trophy_3_line2"
+                },
+                {
+                  "extra": [
+                    {
+                      "color": "gold",
+                      "translate": "item.dimdungeons.item_trophy_found_by"
+                    },
+                    {
+                      "color": "light_purple",
+                      "selector": "@s"
+                    }
+                  ],
+                  "text": ""
+                }
+              ],
+              "mode": "append"
+            }
+          ],
+          "name": "dimdungeons:item_trophy_3",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "bold": true,
+                "color": "yellow",
+                "translate": "item.dimdungeons.item_trophy_4"
+              },
+              "target": "item_name"
+            },
+            {
+              "entity": "this",
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "color": "aqua",
+                  "translate": "item.dimdungeons.item_trophy_4_line1"
+                },
+                {
+                  "color": "dark_aqua",
+                  "italic": true,
+                  "translate": "item.dimdungeons.item_trophy_4_line2"
+                },
+                {
+                  "extra": [
+                    {
+                      "color": "gold",
+                      "translate": "item.dimdungeons.item_trophy_found_by"
+                    },
+                    {
+                      "color": "light_purple",
+                      "selector": "@s"
+                    }
+                  ],
+                  "text": ""
+                }
+              ],
+              "mode": "append"
+            }
+          ],
+          "name": "dimdungeons:item_trophy_4",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "bold": true,
+                "color": "yellow",
+                "translate": "item.dimdungeons.item_trophy_5"
+              },
+              "target": "item_name"
+            },
+            {
+              "entity": "this",
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "color": "aqua",
+                  "translate": "item.dimdungeons.item_trophy_5_line1"
+                },
+                {
+                  "color": "dark_aqua",
+                  "italic": true,
+                  "translate": "item.dimdungeons.item_trophy_5_line2"
+                },
+                {
+                  "extra": [
+                    {
+                      "color": "gold",
+                      "translate": "item.dimdungeons.item_trophy_found_by"
+                    },
+                    {
+                      "color": "light_purple",
+                      "selector": "@s"
+                    }
+                  ],
+                  "text": ""
+                }
+              ],
+              "mode": "append"
+            }
+          ],
+          "name": "dimdungeons:item_trophy_5",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "bold": true,
+                "color": "yellow",
+                "translate": "item.dimdungeons.item_trophy_6"
+              },
+              "target": "item_name"
+            },
+            {
+              "entity": "this",
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "color": "aqua",
+                  "translate": "item.dimdungeons.item_trophy_6_line1"
+                },
+                {
+                  "color": "dark_aqua",
+                  "italic": true,
+                  "translate": "item.dimdungeons.item_trophy_6_line2"
+                },
+                {
+                  "extra": [
+                    {
+                      "color": "gold",
+                      "translate": "item.dimdungeons.item_trophy_found_by"
+                    },
+                    {
+                      "color": "light_purple",
+                      "selector": "@s"
+                    }
+                  ],
+                  "text": ""
+                }
+              ],
+              "mode": "append"
+            }
+          ],
+          "name": "dimdungeons:item_trophy_6",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "bold": true,
+                "color": "yellow",
+                "translate": "item.dimdungeons.item_trophy_7"
+              },
+              "target": "item_name"
+            },
+            {
+              "entity": "this",
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "color": "aqua",
+                  "translate": "item.dimdungeons.item_trophy_7_line1"
+                },
+                {
+                  "color": "dark_aqua",
+                  "italic": true,
+                  "translate": "item.dimdungeons.item_trophy_7_line2"
+                },
+                {
+                  "extra": [
+                    {
+                      "color": "gold",
+                      "translate": "item.dimdungeons.item_trophy_found_by"
+                    },
+                    {
+                      "color": "light_purple",
+                      "selector": "@s"
+                    }
+                  ],
+                  "text": ""
+                }
+              ],
+              "mode": "append"
+            }
+          ],
+          "name": "dimdungeons:item_trophy_7",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "bold": true,
+                "color": "yellow",
+                "translate": "item.dimdungeons.item_trophy_8"
+              },
+              "target": "item_name"
+            },
+            {
+              "entity": "this",
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "color": "aqua",
+                  "translate": "item.dimdungeons.item_trophy_8_line1"
+                },
+                {
+                  "color": "dark_aqua",
+                  "italic": true,
+                  "translate": "item.dimdungeons.item_trophy_8_line2"
+                },
+                {
+                  "extra": [
+                    {
+                      "color": "gold",
+                      "translate": "item.dimdungeons.item_trophy_found_by"
+                    },
+                    {
+                      "color": "light_purple",
+                      "selector": "@s"
+                    }
+                  ],
+                  "text": ""
+                }
+              ],
+              "mode": "append"
+            }
+          ],
+          "name": "dimdungeons:item_trophy_8",
+          "weight": 10
+        }
+      ],
+      "name": "dimdungeons:trophy_1",
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "dimdungeons:chest/trophy_1"
+}

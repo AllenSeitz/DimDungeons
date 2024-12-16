@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "value": "dimdungeons:chest/chestloot_2"
+        }
+      ],
+      "name": "dimdungeons:chestloot_basic_hard",
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "dimdungeons:chest/chestloot_basic_hard"
+}

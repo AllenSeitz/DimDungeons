@@ -14,7 +14,6 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
@@ -159,6 +158,12 @@ public class DimDungeons
 	public void modConfig(ModConfigEvent event)
 	{
 		ModConfig config = event.getConfig();
+
+		if ( event instanceof  ModConfigEvent.Unloading )
+		{
+			return; // do not call refreshServer() after it has been unloaded (Unloading only happens for the server)
+		}
+
 		if (config.getSpec() == DungeonConfig.CLIENT_SPEC)
 		{
 			DungeonConfig.refreshClient();

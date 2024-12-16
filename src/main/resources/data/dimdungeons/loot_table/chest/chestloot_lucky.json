@@ -1,48 +1,68 @@
 {
+  "type": "minecraft:chest",
   "pools": [
     {
-      "rolls": {
-        "min": 1,
-        "max": 1
-      },
-  	  "name":"dimdungeons:pool_lucky",
+      "bonus_rolls": 0.0,
       "entries": [
         {
-          "type": "loot_table",
-          "name": "minecraft:chests/abandoned_mineshaft",
-          "weight": 1
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/abandoned_mineshaft",
+          "weight": 10
         },
         {
-          "type": "loot_table",
-          "name": "minecraft:chests/desert_pyramid",
-          "weight": 1
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/simple_dungeon",
+          "weight": 10
         },
         {
-          "type": "loot_table",
-          "name": "minecraft:chests/jungle_temple",
-          "weight": 1
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/desert_pyramid",
+          "weight": 10
         },
         {
-          "type": "loot_table",
-          "name": "minecraft:chests/woodland_mansion",
-          "weight": 1
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/jungle_temple",
+          "weight": 10
         },
         {
-          "type": "loot_table",
-          "name": "minecraft:chests/simple_dungeon",
-          "weight": 1
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/woodland_mansion",
+          "weight": 10
         },
         {
-          "type": "loot_table",
-          "name": "minecraft:chests/stronghold_crossing",
-          "weight": 1
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/stronghold_crossing",
+          "weight": 10
         },
         {
-          "type": "loot_table",
-          "name": "minecraft:chests/stronghold_library",
-          "weight": 1
-        }
-      ]
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/stronghold_library",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/ruined_portal",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/trial_chambers/supply",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/pillager_outpost",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/shipwreck_supply",
+          "weight": 10
+        }		
+      ],
+      "name": "dimdungeons:chestloot_lucky",
+      "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "dimdungeons:chest/chestloot_lucky"
 }

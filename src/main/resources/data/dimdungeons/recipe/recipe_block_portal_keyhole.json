@@ -8,10 +8,11 @@
       "item": "minecraft:ender_eye"
     },
     {
-      "tag": "forge:chests/trapped"
+      "tag": "c:chests/trapped"
     }
   ],
   "result": {
-    "item": "dimdungeons:block_portal_keyhole"
+    "count": 1,
+    "id": "dimdungeons:block_portal_keyhole"
   }
 }

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "dimdungeons:block_key_charger_used"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "dimdungeons:blocks/block_key_charger_used"
+}

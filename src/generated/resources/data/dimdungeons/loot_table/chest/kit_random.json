@@ -1,0 +1,43 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "value": "dimdungeons:chest/kit_food",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "dimdungeons:chest/kit_concrete",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "dimdungeons:chest/kit_glass",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "dimdungeons:chest/kit_redstone",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "dimdungeons:chest/kit_wool",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "dimdungeons:chest/kit_pottery",
+          "weight": 10
+        }
+      ],
+      "name": "dimdungeons:kit_random",
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "dimdungeons:chest/kit_random"
+}

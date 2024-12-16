@@ -1,43 +1,48 @@
 {
+  "type": "minecraft:chest",
   "pools": [
     {
-      "rolls": {
-        "min": 1,
-        "max": 2
-      },
-  	  "name":"dimdungeons:pool_super",
+      "bonus_rolls": 0.0,
       "entries": [
         {
-          "type": "loot_table",
-          "name": "minecraft:chests/pillager_outpost",
-          "weight": 1
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/shipwreck_treasure",
+          "weight": 10
         },
         {
-          "type": "loot_table",
-          "name": "minecraft:chests/shipwreck_treasure",
-          "weight": 1
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/end_city_treasure",
+          "weight": 10
         },
         {
-          "type": "loot_table",
-          "name": "minecraft:chests/ancient_city",
-          "weight": 1
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/nether_bridge",
+          "weight": 10
         },
         {
-          "type": "loot_table",
-          "name": "minecraft:chests/end_city_treasure",
-          "weight": 1
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/bastion_treasure",
+          "weight": 5
         },
         {
-          "type": "loot_table",
-          "name": "minecraft:chests/nether_bridge",
-          "weight": 1
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/bastion_other",
+          "weight": 10
         },
         {
-          "type": "loot_table",
-          "name": "minecraft:chests/bastion_other",
-          "weight": 1
-        }
-      ]
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/ancient_city",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/trial_chambers/reward_ominous",
+          "weight": 5
+        }		
+      ],
+      "name": "dimdungeons:chestloot_crazy",
+      "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "dimdungeons:chest/chestloot_crazy"
 }

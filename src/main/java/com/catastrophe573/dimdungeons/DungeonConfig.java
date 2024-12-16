@@ -361,7 +361,6 @@ public class DungeonConfig
 		temp.clear();
 
 		return tempBasicFourways;
-
 	}
 
 	public static List<? extends List<String>> defaultBasicThreeways()

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "dimdungeons:block_portal_crown"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "dimdungeons:blocks/block_portal_crown"
+}
