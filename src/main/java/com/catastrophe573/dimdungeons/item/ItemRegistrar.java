@@ -9,8 +9,6 @@ import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.core.registries.Registries;
@@ -22,8 +20,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import java.util.function.Supplier;
-
+@SuppressWarnings("unused")
 public class ItemRegistrar
 {
 	public static int NUM_TROPHIES = 8;
@@ -31,12 +28,12 @@ public class ItemRegistrar
 	// DeferredRegister objects replace the old registry events
 	private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(DimDungeons.MOD_ID);
 
-	public static final DeferredItem<ItemPortalKey> ITEM_PORTAL_KEY = ITEMS.register(ItemPortalKey.REG_NAME, () -> new ItemPortalKey());
-	public static final DeferredItem<ItemBlankAdvancedKey> ITEM_BLANK_ADVANCED_KEY = ITEMS.register(ItemBlankAdvancedKey.REG_NAME, () -> new ItemBlankAdvancedKey());
-	public static final DeferredItem<ItemBlankThemeKey> ITEM_BLANK_THEME_KEY = ITEMS.register(ItemBlankThemeKey.REG_NAME, () -> new ItemBlankThemeKey());
-	public static final DeferredItem<ItemBlankBuildKey> ITEM_BLANK_BUILD_KEY = ITEMS.register(ItemBlankBuildKey.REG_NAME, () -> new ItemBlankBuildKey());
-	public static final DeferredItem<ItemBuildKey> ITEM_BUILD_KEY = ITEMS.register(ItemBuildKey.REG_NAME, () -> new ItemBuildKey());
-	public static final DeferredItem<ItemBlankTeleporterKey> ITEM_BLANK_TELEPORTER_KEY = ITEMS.register(ItemBlankTeleporterKey.REG_NAME, () -> new ItemBlankTeleporterKey());
+	public static final DeferredItem<ItemPortalKey> ITEM_PORTAL_KEY = ITEMS.register(ItemPortalKey.REG_NAME, ItemPortalKey::new);
+	public static final DeferredItem<ItemBlankAdvancedKey> ITEM_BLANK_ADVANCED_KEY = ITEMS.register(ItemBlankAdvancedKey.REG_NAME, ItemBlankAdvancedKey::new);
+	public static final DeferredItem<ItemBlankThemeKey> ITEM_BLANK_THEME_KEY = ITEMS.register(ItemBlankThemeKey.REG_NAME, ItemBlankThemeKey::new);
+	public static final DeferredItem<ItemBlankBuildKey> ITEM_BLANK_BUILD_KEY = ITEMS.register(ItemBlankBuildKey.REG_NAME, ItemBlankBuildKey::new);
+	public static final DeferredItem<ItemBuildKey> ITEM_BUILD_KEY = ITEMS.register(ItemBuildKey.REG_NAME, ItemBuildKey::new);
+	public static final DeferredItem<ItemBlankTeleporterKey> ITEM_BLANK_TELEPORTER_KEY = ITEMS.register(ItemBlankTeleporterKey.REG_NAME, ItemBlankTeleporterKey::new);
 
 	public static final DeferredItem<ItemSecretBell> ITEM_SECRET_BELL = ITEMS.register(ItemSecretBell.REG_NAME, () -> new ItemSecretBell(new Item.Properties().stacksTo(1)));
 	public static final DeferredItem<ItemHomewardPearl> ITEM_HOMEWARD_PEARL = ITEMS.register(ItemHomewardPearl.REG_NAME, () -> new ItemHomewardPearl(new Item.Properties().stacksTo(16)));
@@ -65,7 +62,7 @@ public class ItemRegistrar
 	
 	public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_TAB = TABS.register("creative_tab", () -> CreativeModeTab.builder()
 			.title(Component.translatable("itemGroup.dimdungeons"))
-			.icon(() -> DungeonUtils.getExampleKey())
+			.icon(DungeonUtils::getExampleKey)
 			.displayItems((enabledFeatures, output) -> {
 				output.accept(ItemRegistrar.ITEM_GILDED_PORTAL.get());
 				output.accept(ItemRegistrar.ITEM_PORTAL_KEYHOLE.get());

@@ -20,6 +20,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
@@ -542,6 +543,10 @@ public class BaseItemKey extends Item
 		if (!worldIn.isClientSide)
 		{
 			activateKeyLevel1(worldIn.getServer(), itemstack, 0);
+
+			// since the condition is minecraft:impossible, this is the only way to trigger it
+			ServerPlayer sp = worldIn.getServer().getPlayerList().getPlayer(player.getUUID());
+			sp.getAdvancements().award(worldIn.getServer().getAdvancements().get(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "dungeons/activate_basic_key")), "getkey");
 		}
 
 		createActivationParticleEffects(worldIn, pos);

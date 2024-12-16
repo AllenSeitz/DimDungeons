@@ -1,7 +1,7 @@
 {
 	"display": {
 		"icon": {
-			"item": "minecraft:item_frame"
+			"id": "minecraft:item_frame"
 		},
 		"title": {
 			"translate": "advancements.dimdungeons.dungeons.all_trophies.title"

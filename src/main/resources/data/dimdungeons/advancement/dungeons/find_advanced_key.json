@@ -4,8 +4,8 @@
 	{
 		"icon" :
 		{
-			"item" : "dimdungeons:item_portal_key",
-			"nbt" : "{key_activated:1,dest_x:1,dest_z:-1}"
+			"id" : "dimdungeons:item_blank_advanced_key",
+			"components" : "{key_activated:1,dest_x:1,dest_z:-1}"
 		},
 		"title" :
 		{
@@ -27,11 +27,14 @@
 			"trigger" : "minecraft:inventory_changed",
 			"conditions" :
 			{
-				"items" : 
-				[ 
+				"items": 
+				[
 					{
-						"item" : "dimdungeons:item_portal_key",
-						"nbt" : "{key_activated:1b,name_type:3}"
+						"items": ["dimdungeons:item_blank_advanced_key"],
+						"count": 
+						{ 
+							"min": 1 
+						}
 					}
 				]
 			}

@@ -4,8 +4,8 @@
 	{
 		"icon":
 		{
-			"item": "dimdungeons:item_portal_key",
-			"nbt": "{key_activated:1,dest_x:1,dest_z:1}"
+			"id": "dimdungeons:item_portal_key",
+			"components": "{key_activated:1,dest_x:1,dest_z:1}"
 		},
 		"title":
 		{
@@ -24,14 +24,33 @@
 	{
 		"getkey":
 		{
-			"trigger": "minecraft:inventory_changed",
-			"conditions":
+			"trigger": "minecraft:impossible",
+			"conditions":			
 			{
-				"items":
+				"items": 
 				[
 					{
 						"items": ["dimdungeons:item_portal_key"],
-						"nbt": "{key_activated:1b}"
+						"count": 
+						{ 
+							"min": 1 
+						},
+						"components_huh
+						":
+						{
+							"dimdungeons:dungeon_key_data":
+							{
+								"key_activated": true,
+								"built": false,
+								"dest_x": 36,
+								"dest_z": 0,
+								"name_type": 0,
+								"name_part_1": 15,
+								"name_part_2": 16,
+								"theme": 0,
+								"dungeon_type": "BASIC"
+							}				
+						}						
 					}
 				]
 			}

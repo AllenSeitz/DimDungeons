@@ -4,7 +4,7 @@
 	{
 		"icon":
 		{
-			"item" : "dimdungeons:item_blank_teleporter_key"
+			"id" : "dimdungeons:item_blank_teleporter_key"
 		},
 		"title":
 		{
@@ -21,7 +21,7 @@
 	},
 	"criteria":
 	{
-		"find_bell_1": 
+		"find_teleporter_key": 
 		{
 			"trigger": "minecraft:inventory_changed",
 			"conditions":
@@ -42,7 +42,7 @@
 	"requirements":
 	[
 		[
-			"find_bell_1"
+			"find_teleporter_key"
 		]
 	]
 }

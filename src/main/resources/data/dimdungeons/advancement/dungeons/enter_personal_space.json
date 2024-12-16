@@ -4,8 +4,8 @@
 	{
 		"icon":
 		{
-			"item": "dimdungeons:item_key_build",
-			"nbt" : "{key_activated:1,dest_x:1,dest_z:1}"			
+			"id": "dimdungeons:item_key_build",
+			"components" : "{key_activated:1,dest_x:1,dest_z:1}"
 		},
 		"title": 
 		{

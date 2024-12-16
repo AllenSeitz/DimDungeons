@@ -4,7 +4,7 @@
 	{
 		"icon":
 		{
-			"item": "dimdungeons:block_gold_portal"
+			"id": "dimdungeons:block_gold_portal"
 		},
 		"title": 
 		{

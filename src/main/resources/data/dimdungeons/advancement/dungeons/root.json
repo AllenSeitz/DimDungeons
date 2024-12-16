@@ -3,7 +3,7 @@
 	{
 		"icon":
 		{
-			"item": "dimdungeons:block_portal_keyhole"
+			"id": "dimdungeons:block_portal_keyhole"
 		},
 		"title":
 		{
