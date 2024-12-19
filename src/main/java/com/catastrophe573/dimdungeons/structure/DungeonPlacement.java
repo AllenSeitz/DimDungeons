@@ -600,18 +600,18 @@ public class DungeonPlacement
 		else if ("ChestLoot1".equals(name) || "SetTrappedLoot".equals(name) || "BarrelLoot1".equals(name))
 		{
 			String lootType = room.dungeonType == DungeonType.BASIC ? "basic" : "advanced";
-			String lootTable = "chests/chestloot_" + lootType + "_easy";
+			String lootTable = "chest/chestloot_" + lootType + "_easy";
 			fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, lootTable), world, rand);
 		}
 		else if ("ChestLoot2".equals(name))
 		{
 			String lootType = room.dungeonType == DungeonType.BASIC ? "basic" : "advanced";
-			String lootTable = "chests/chestloot_" + lootType + "_hard";			
+			String lootTable = "chest/chestloot_" + lootType + "_hard";
 			fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, lootTable), world, rand);
 		}
 		else if ("ChestLootKit".equals(name))
 		{
-			String lootTable = "chests/kit_random";
+			String lootTable = "chest/kit_random";
 			fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, lootTable), world, rand);
 		}
 		else if ("ChestLootLucky".equals(name))
@@ -622,11 +622,11 @@ public class DungeonPlacement
 			{
 				if (room.dungeonType == DungeonType.BASIC)
 				{
-					fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chests/chestloot_lucky"), world, rand);
+					fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_lucky"), world, rand);
 				}
 				else
 				{
-					fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chests/chestloot_crazy"), world, rand);
+					fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_crazy"), world, rand);
 				}
 			}
 			else
@@ -674,12 +674,12 @@ public class DungeonPlacement
 
 				ItemPortalKey.activateKeyForExistingTeleporterHub(world.getServer(), newkey, destX, destZ, doornum);
 
-				te.setContents(newkey);
-
 				// mark this keyhole as filled
 				BlockState state = world.getBlockState(pos.below(3));
 				BlockState newBlockState = state.setValue(BlockPortalKeyhole.FACING, state.getValue(BlockPortalKeyhole.FACING)).setValue(BlockPortalKeyhole.FILLED, true).setValue(BlockPortalKeyhole.LIT, false);
 				world.setBlockAndUpdate(pos.below(3), newBlockState);
+
+				te.setContents(newkey);
 			}
 		}
 		else if ("SummonWitch".equals(name))
