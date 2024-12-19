@@ -2,6 +2,7 @@ package com.catastrophe573.dimdungeons.item;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -17,7 +18,7 @@ public class ItemBlankAdvancedKey extends BaseItemKey
 
 	public ItemBlankAdvancedKey()
 	{
-		super(new Item.Properties().rarity(Rarity.UNCOMMON));
+		super(new Item.Properties().rarity(Rarity.UNCOMMON).stacksTo(1).component(DimDungeons.DUNGEON_KEY_DATA.get(), new DungeonKeyDataComponentRecord(false, false, -1, -1, 0, 0, 0, 0, String.valueOf(DungeonDesigner.DungeonType.valueOf(String.valueOf(DungeonDesigner.DungeonType.BASIC))))));
 	}
 
 	@Override

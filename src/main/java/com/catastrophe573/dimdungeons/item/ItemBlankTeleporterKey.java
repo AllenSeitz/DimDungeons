@@ -1,5 +1,7 @@
 package com.catastrophe573.dimdungeons.item;
 
+import com.catastrophe573.dimdungeons.DimDungeons;
+import com.catastrophe573.dimdungeons.structure.DungeonDesigner;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -18,7 +20,7 @@ public class ItemBlankTeleporterKey extends BaseItemKey
 
 	public ItemBlankTeleporterKey()
 	{
-		super(new Item.Properties().rarity(Rarity.COMMON));
+		super(new Item.Properties().rarity(Rarity.COMMON).stacksTo(1).component(DimDungeons.DUNGEON_KEY_DATA.get(), new DungeonKeyDataComponentRecord(false, false, -1, -1, 0, 0, 0, 0, String.valueOf(DungeonDesigner.DungeonType.valueOf(String.valueOf(DungeonDesigner.DungeonType.BASIC))))));
 	}
 
 	@Override

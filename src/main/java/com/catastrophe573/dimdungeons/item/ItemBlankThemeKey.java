@@ -53,6 +53,11 @@ public class ItemBlankThemeKey extends BaseItemKey
 	{
 		int theme = 0;
 
+		if ( hasLegacyData(stack) )
+		{
+			return Component.translatable("item.dimdungeons.item_legacy_key_name");
+		}
+
 		// no NBT data on this item at all? well then return a blank key
 		if ( !stack.has(DimDungeons.DUNGEON_KEY_DATA) )
 		{

@@ -8,7 +8,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -91,6 +90,11 @@ public class ItemPortalKey extends BaseItemKey
 	@Override
 	public Component getName(ItemStack stack)
 	{
+		if ( hasLegacyData(stack) )
+		{
+			return Component.translatable("item.dimdungeons.item_legacy_key_name");
+		}
+
 		// no NBT data on this item at all? well then return "Blank Portal Key"
 		if (!stack.has(DimDungeons.DUNGEON_KEY_DATA))
 		{

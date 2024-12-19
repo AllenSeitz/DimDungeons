@@ -253,7 +253,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 					else
 					{
 						ItemStack key = keyhole.getObjectInserted();
-						if (key.getItem() == ItemRegistrar.ITEM_BLANK_BUILD_KEY.get())
+						if (key.getItem() == ItemRegistrar.ITEM_BUILD_KEY.get())
 						{
 							DungeonKeyDataComponentRecord itemData = key.get(DimDungeons.DUNGEON_KEY_DATA);
 							ChunkPos cpos = new ChunkPos((int) itemData.dest_x(), (int) itemData.dest_z());

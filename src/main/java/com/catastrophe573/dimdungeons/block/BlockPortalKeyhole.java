@@ -250,6 +250,24 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 
 		ItemStack insideItem = myEntity.getObjectInserted();
 
+		// might as well put this here? idk?
+		if (!playerItem.isEmpty() && playerItem.getItem() instanceof BaseItemKey)
+		{
+			if (BaseItemKey.hasLegacyData(playerItem))
+			{
+				DimDungeons.logMessageInfo("DIMDUNGEONS: Fixing a legacy key.");
+				BaseItemKey.convertLegacyData(playerItem);
+			}
+		}
+		if (!insideItem.isEmpty() && insideItem.getItem() instanceof BaseItemKey)
+		{
+			if (BaseItemKey.hasLegacyData(insideItem))
+			{
+				DimDungeons.logMessageInfo("DIMDUNGEONS: Fixing a legacy key.");
+				BaseItemKey.convertLegacyData(insideItem);
+			}
+		}
+
 		// if the keyhole is currently empty
 		if (insideItem.isEmpty())
 		{

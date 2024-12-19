@@ -3,17 +3,20 @@ package com.catastrophe573.dimdungeons.block;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.dimension.DungeonData;
 import com.catastrophe573.dimdungeons.item.BaseItemKey;
+import com.catastrophe573.dimdungeons.item.DungeonKeyDataComponentRecord;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import org.jetbrains.annotations.NotNull;
 
 public class TileEntityPortalKeyhole extends BlockEntity
 {
@@ -114,35 +117,93 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	}
 
 	@Override
-	public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries)
+	public void loadAdditional(@NotNull CompoundTag compound, HolderLookup.@NotNull Provider registries)
 	{
 		super.loadAdditional(compound, registries);
 
-		// as for Neoforge 1.21, encoding empty ItemStacks is no longer allowed for some reason?
-		if (compound.contains(ITEM_PROPERTY_KEY))
+		if (compound.contains(ITEM_PROPERTY_KEY, 10))
 		{
-			ItemStack decodedItem = ItemStack.parse(registries, compound.getCompound(ITEM_PROPERTY_KEY)).get();
-			setContents(decodedItem);
+			if (compound.getCompound(ITEM_PROPERTY_KEY).contains("id") && compound.getCompound(ITEM_PROPERTY_KEY).getString("id").equals("minecraft:air"))
+			{
+				DimDungeons.logMessageInfo("DIMDUNGEONS: Found a legacy keyhole with an air block inside of it. Fixing to be empty.");
+				this.objectInserted = ItemStack.EMPTY;
+				return;
+			}
+
+			this.objectInserted = (ItemStack)ItemStack.parse(registries, compound.getCompound(ITEM_PROPERTY_KEY)).orElse(ItemStack.EMPTY);
+
+			// is this a legacy 1.20 world being upgraded to 1.21? The item inside may have data components that need to be saved here.
+			if ( this.objectInserted.getItem() instanceof BaseItemKey && compound.getCompound(ITEM_PROPERTY_KEY).contains("tag") )
+			{
+				DimDungeons.logMessageInfo("DIMDUNGEONS: Found a legacy key inside a keyhole at load time. Trying to upgrade it now.");
+				DungeonKeyDataComponentRecord keydata = this.objectInserted.get(DimDungeons.DUNGEON_KEY_DATA);
+				assert keydata != null;
+				boolean key_activated = keydata.key_activated();
+				boolean built = keydata.built();
+				long dest_x = keydata.dest_x();
+				long dest_z = keydata.dest_z();
+				int name_type = keydata.name_type();
+				int name_part_1 = keydata.name_part_1();
+				int name_part_2 = keydata.name_part_2();
+				int theme = keydata.theme();
+				String dungeon_type = keydata.dungeon_type();
+				CompoundTag oldData = compound.getCompound(ITEM_PROPERTY_KEY).getCompound("tag");
+
+				if (oldData.contains(BaseItemKey.NBT_KEY_ACTIVATED))
+				{
+					key_activated = oldData.getBoolean(BaseItemKey.NBT_KEY_ACTIVATED);
+				}
+				if (oldData.contains(BaseItemKey.NBT_BUILT))
+				{
+					built = oldData.getBoolean(BaseItemKey.NBT_BUILT);
+				}
+				if (oldData.contains(BaseItemKey.NBT_KEY_DESTINATION_X))
+				{
+					dest_x = oldData.getLong(BaseItemKey.NBT_KEY_DESTINATION_X);
+				}
+				if (oldData.contains(BaseItemKey.NBT_KEY_DESTINATION_Z))
+				{
+					dest_z = oldData.getLong(BaseItemKey.NBT_KEY_DESTINATION_Z);
+				}
+				if (oldData.contains(BaseItemKey.NBT_NAME_TYPE))
+				{
+					name_type = oldData.getInt(BaseItemKey.NBT_NAME_TYPE);
+				}
+				if (oldData.contains(BaseItemKey.NBT_NAME_PART_1))
+				{
+					name_part_1 = oldData.getInt(BaseItemKey.NBT_NAME_PART_1);
+				}
+				if (oldData.contains(BaseItemKey.NBT_NAME_PART_2))
+				{
+					name_part_2 = oldData.getInt(BaseItemKey.NBT_NAME_PART_2);
+				}
+				if (oldData.contains(BaseItemKey.NBT_THEME))
+				{
+					theme = oldData.getInt(BaseItemKey.NBT_THEME);
+				}
+				if (oldData.contains(BaseItemKey.NBT_DUNGEON_TYPE))
+				{
+					dungeon_type = oldData.getString(BaseItemKey.NBT_DUNGEON_TYPE);
+				}
+
+				this.objectInserted.set(DimDungeons.DUNGEON_KEY_DATA, new DungeonKeyDataComponentRecord(key_activated, built, dest_x, dest_z, name_type, name_part_1, name_part_2, theme, dungeon_type));
+			}
 		}
 		else
 		{
-			objectInserted = ItemStack.EMPTY;
+			this.objectInserted = ItemStack.EMPTY;
 		}
 	}
 
 	@Override
-	protected void saveAdditional(CompoundTag compound, HolderLookup.Provider registries)
+	protected void saveAdditional(@NotNull CompoundTag compound, HolderLookup.@NotNull Provider registries)
 	{
 		super.saveAdditional(compound, registries);
 
 		// as for Neoforge 1.21, encoding empty ItemStacks is no longer allowed for some reason?
-		if ( objectInserted.isEmpty() )
+		if ( isFilled() && !getObjectInserted().isEmpty() )
 		{
-			compound.remove(ITEM_PROPERTY_KEY);
-		}
-		else
-		{
-			compound.put(ITEM_PROPERTY_KEY, objectInserted.save(registries));
+			compound.put(ITEM_PROPERTY_KEY, getObjectInserted().save(registries));
 		}
 	}
 
@@ -160,10 +221,9 @@ public class TileEntityPortalKeyhole extends BlockEntity
 			return false;
 		}
 		// awakened keys will open a portal to the dungeon dimension
-		else if (item.getItem() instanceof BaseItemKey)
+		else if (item.getItem() instanceof BaseItemKey key)
 		{
-			BaseItemKey key = (BaseItemKey) item.getItem();
-			return key.isActivated(item);
+            return key.isActivated(item);
 		}
 
 		return false;
@@ -171,6 +231,12 @@ public class TileEntityPortalKeyhole extends BlockEntity
 
 	public ItemStack getObjectInserted()
 	{
+		// repair legacy items before extracting them - this is the last chance before data is lost
+		if ( BaseItemKey.hasLegacyData(this.objectInserted) )
+		{
+			BaseItemKey.convertLegacyData(this.objectInserted);
+		}
+
 		return this.objectInserted;
 	}
 

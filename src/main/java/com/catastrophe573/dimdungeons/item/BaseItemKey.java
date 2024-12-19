@@ -8,16 +8,10 @@ import com.catastrophe573.dimdungeons.structure.DungeonDesigner;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,15 +24,14 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EndPortalFrameBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class BaseItemKey extends Item
 {
@@ -233,6 +226,35 @@ public class BaseItemKey extends Item
 		return false;
 	}
 
+	public static boolean hasLegacyData(ItemStack stack)
+	{
+		return stack.has(DataComponents.CUSTOM_DATA);
+	}
+
+	public static void convertLegacyData(ItemStack stack)
+	{
+		if (!stack.has(DataComponents.CUSTOM_DATA))
+		{
+			return;
+		}
+
+		CustomData cd = stack.getComponents().get(DataComponents.CUSTOM_DATA);
+		DungeonKeyDataComponentRecord newData = new DungeonKeyDataComponentRecord(
+				cd.contains(NBT_KEY_ACTIVATED) ? cd.getUnsafe().getBoolean(NBT_KEY_ACTIVATED) : false,
+				cd.contains(NBT_BUILT) ? cd.getUnsafe().getBoolean(NBT_BUILT) : false,
+				cd.contains(NBT_KEY_DESTINATION_X) ? cd.getUnsafe().getLong(NBT_KEY_DESTINATION_X) : 0,
+				cd.contains(NBT_KEY_DESTINATION_Z) ? cd.getUnsafe().getLong(NBT_KEY_DESTINATION_Z) : 0,
+				cd.contains(NBT_NAME_TYPE) ? cd.getUnsafe().getInt(NBT_NAME_TYPE) : 0,
+				cd.contains(NBT_NAME_PART_1) ? cd.getUnsafe().getInt(NBT_NAME_PART_1) : 0,
+				cd.contains(NBT_NAME_PART_2) ? cd.getUnsafe().getInt(NBT_NAME_PART_2) : 0,
+				cd.contains(NBT_THEME) ? cd.getUnsafe().getInt(NBT_THEME) : 0,
+				cd.contains(NBT_DUNGEON_TYPE) ? cd.getUnsafe().getString(NBT_DUNGEON_TYPE) : "BASIC"
+		);
+
+		stack.set(DimDungeons.DUNGEON_KEY_DATA, newData);
+		stack.remove(DataComponents.CUSTOM_DATA);
+	}
+
 	public float getWarpX(ItemStack stack)
 	{
 		if (stack != null && !stack.isEmpty())
@@ -241,6 +263,12 @@ public class BaseItemKey extends Item
 			if (itemData != null)
 			{
 				// teleporter keys make everything weird!
+				if ( itemData.dungeon_type().isEmpty() )
+				{
+					DimDungeons.logMessageError("DIMDUNGEONS: Key item is missing dungeon type. Key is corrupt and will be removed.");
+					stack.shrink(1);
+					return -1;
+				}
 				DungeonType dtype = DungeonType.valueOf(itemData.dungeon_type());
 				if (dtype == DungeonType.TELEPORTER_HUB)
 				{
@@ -264,6 +292,12 @@ public class BaseItemKey extends Item
 			if (itemData != null)
 			{
 				// teleporter keys make everything weird!
+				if ( itemData.dungeon_type().isEmpty() )
+				{
+					DimDungeons.logMessageError("DIMDUNGEONS: Key item is missing dungeon type. Key is corrupt and will be removed.");
+					stack.shrink(1);
+					return -1;
+				}
 				DungeonType dtype = DungeonType.valueOf(itemData.dungeon_type());
 				if (dtype == DungeonType.TELEPORTER_HUB)
 				{
@@ -325,7 +359,7 @@ public class BaseItemKey extends Item
 			DungeonKeyDataComponentRecord itemData = stack.get(DimDungeons.DUNGEON_KEY_DATA);
 
 			// keys created prior to version 153 will not have this field
-			if (itemData != null)
+			if (itemData != null && !itemData.dungeon_type().isEmpty())
 			{
 				return DungeonType.valueOf(itemData.dungeon_type());
 			}
@@ -571,5 +605,5 @@ public class BaseItemKey extends Item
 	static public boolean isAlternateKeyActivationBlock(Block b)
 	{
 		return  b.builtInRegistryHolder().is(tag_alternate_activation_blocks);
-	}	
+	}
 }

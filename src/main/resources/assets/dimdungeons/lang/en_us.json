@@ -25,7 +25,9 @@
     "item.dimdungeons.item_blank_teleporter_key": "Blank Teleporter Key",
     "item.dimdungeons.item_build_key": "Personal Dimension Key",
     "item.dimdungeons.item_teleporter_key": "Teleporter Key",
-	
+
+    "item.dimdungeons.item_legacy_key_name": "Legacy Data Key - use in a keyhole to restore it",
+
     "item.dimdungeons.item_secret_bell": "Bell of Secrets",
     "item.dimdungeons.item_homeward_pearl": "Homeward Pearl",
     "item.dimdungeons.item_guidebook": "Dimensional Dungeons Guidebook",

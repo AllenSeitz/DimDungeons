@@ -116,6 +116,12 @@ public class ItemBuildKey extends BaseItemKey
 	@Override
 	public Component getName(ItemStack stack)
 	{
+		// when keys are upgraded from 1.20 to 1.21 or newer for the first time
+		if ( hasLegacyData(stack) )
+		{
+			return Component.translatable("item.dimdungeons.item_legacy_key_name");
+		}
+
 		// this will likely never be seen because the key will probably be renamed
 		if (this.isActivated(stack))
 		{
@@ -123,6 +129,6 @@ public class ItemBuildKey extends BaseItemKey
 		}
 
 		// basically return "Blank Personal Dimension Key"
-		return Component.translatable("item.dimdungeons.item_blank_build_key");
+		return Component.translatable("item.dimdungeons.item_build_key");
 	}
 }
