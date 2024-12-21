@@ -461,8 +461,11 @@ public class DungeonConfig
 		tempBasicHallways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:redstrap_2");
-		temp.add("dimdungeons:crushhall_1");
 		temp.add("dimdungeons:mazenotfound_3");
+		tempBasicHallways.add(Lists.newArrayList(temp));
+		temp.clear();
+		temp.add("dimdungeons:crushhall_1");
+		temp.add("dimdungeons:crushhall_3");
 		tempBasicHallways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:yinyang_1");
@@ -703,7 +706,7 @@ public class DungeonConfig
 		temp.clear();
 		temp.add("dimdungeons:redstrap_1");
 		temp.add("dimdungeons:redore_1");
-		temp.add("dimdungeons:redore_3");
+		temp.add("dimdungeons:redore_2");
 		tempAdvancedFourways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:hiddenpath_1");
@@ -819,10 +822,11 @@ public class DungeonConfig
 		temp.clear();
 		temp.add("dimdungeons:moohall_1");
 		temp.add("dimdungeons:moohall_2");
+		temp.add("dimdungeons:redstrap_2");
 		tempAdvancedHallways.add(Lists.newArrayList(temp));
 		temp.clear();
-		temp.add("dimdungeons:redstrap_2");
 		temp.add("dimdungeons:crushhall_2");
+		temp.add("dimdungeons:crushhall_4");
 		tempAdvancedHallways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:yinyang_1");

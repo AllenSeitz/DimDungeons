@@ -15,6 +15,7 @@ import com.catastrophe573.dimdungeons.structure.DungeonDesigner.RoomType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
+import com.sun.jna.platform.win32.COM.util.annotation.ComObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -63,6 +64,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 // this class takes the dungeon layout which is designed by DungeonBuilderLogic and actually places it in the world
 public class DungeonPlacement
@@ -582,6 +584,10 @@ public class DungeonPlacement
 				String lockName = "Chest Key: "+makeChunkCode(world.getChunk(pos).getPos());
 				tag.putString("Lock", lockName);
 				te.handleUpdateTag(tag, world.getLevel().registryAccess());
+
+				String lootType = room.dungeonType == DungeonType.BASIC ? "basic" : "advanced";
+				String lootTable = "chest/chestloot_" + lootType + "_hard";
+				fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, lootTable), world, rand);
 			}
 		}
 		else if ("FortuneTeller".equals(name))
@@ -856,8 +862,6 @@ public class DungeonPlacement
 	// dungeon, but that would involve a post generation step
 	private static ItemStack generateLuckyMessage(RandomSource rand, DungeonType type)
 	{
-		ItemStack stack = new ItemStack(Items.WRITTEN_BOOK);
-
 		// randomize book contents
 		int bookType = rand.nextInt(3);
 		if (type == DungeonType.ADVANCED)
@@ -866,46 +870,44 @@ public class DungeonPlacement
 		}
 
 		int messageVariation = rand.nextInt(8) + 1;
-		String title = "";
-		String body = "";
+		Component title = Component.translatable("book.dimdungeons.title_1");
+		Component body = Component.translatable("book.dimdungeons.author");
+		Component author = Component.translatable("book.dimdungeons.author");
 
 		if (bookType == 0)
 		{
-			title = Component.translatable("book.dimdungeons.title_1").getString();
-			body = Component.translatable("book.dimdungeons.fun_message_" + messageVariation).getString();
-
+			title = Component.translatable("book.dimdungeons.title_1");
+			body = Component.translatable("book.dimdungeons.fun_message_" + messageVariation);
 		}
 		else if (bookType == 1)
 		{
-			title = Component.translatable("book.dimdungeons.title_2").getString();
-			body = Component.translatable("book.dimdungeons.helpful_message_" + messageVariation).getString();
+			title = Component.translatable("book.dimdungeons.title_2");
+			body = Component.translatable("book.dimdungeons.helpful_message_" + messageVariation);
 		}
 		else if (bookType == 2)
 		{
-			title = Component.translatable("book.dimdungeons.title_3").getString();
-			body = Component.translatable("book.dimdungeons.dangerous_message_" + messageVariation).getString();
+			title = Component.translatable("book.dimdungeons.title_3");
+			body = Component.translatable("book.dimdungeons.dangerous_message_" + messageVariation);
 		}
 		else if (bookType == 3)
 		{
-			title = Component.translatable("book.dimdungeons.title_4").getString();
-			body = Component.translatable("book.dimdungeons.advanced_message_" + messageVariation).getString();
+			title = Component.translatable("book.dimdungeons.title_4");
+			body = Component.translatable("book.dimdungeons.advanced_message_" + messageVariation);
 		}
 
 		// format the title of the book
-		Filterable<String> titleFilter = new Filterable<String>(title, null);
+		Filterable<String> titleFilter = new Filterable<String>(title.getString(), Optional.of(title.getString()));
 
 		// format the pages in the book
 		List<Filterable<Component>> pages = new ArrayList<Filterable<Component>>();
-		Component text = Component.translatable(body);
-		Filterable<Component> pageText = new Filterable<Component>(text, null);
+		Component text = Component.translatable(body.toString());
+		Filterable<Component> pageText = new Filterable<Component>(text, Optional.of(text));
 		pages.addFirst(pageText);
 
-		String author = Component.translatable("book.dimdungeons.author").getString();
+		WrittenBookContent bookComponent = new WrittenBookContent(titleFilter, author.toString(), 0, pages, true);
 
-		// actually set all the bookish NBT on the item (title, author, generation, pages, isResolved)
-		WrittenBookContent bookComponent = new WrittenBookContent(titleFilter, author, 0, pages, false);
+		ItemStack stack = new ItemStack(Items.WRITTEN_BOOK);
 		stack.set(DataComponents.WRITTEN_BOOK_CONTENT, bookComponent);
-
 		return stack;
 	}
 
