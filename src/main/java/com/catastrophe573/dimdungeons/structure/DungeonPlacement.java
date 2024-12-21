@@ -900,11 +900,11 @@ public class DungeonPlacement
 
 		// format the pages in the book
 		List<Filterable<Component>> pages = new ArrayList<Filterable<Component>>();
-		Component text = Component.translatable(body.toString());
+		Component text = Component.translatable(body.getString());
 		Filterable<Component> pageText = new Filterable<Component>(text, Optional.of(text));
 		pages.addFirst(pageText);
 
-		WrittenBookContent bookComponent = new WrittenBookContent(titleFilter, author.toString(), 0, pages, true);
+		WrittenBookContent bookComponent = new WrittenBookContent(titleFilter, author.getString(), 0, pages, true);
 
 		ItemStack stack = new ItemStack(Items.WRITTEN_BOOK);
 		stack.set(DataComponents.WRITTEN_BOOK_CONTENT, bookComponent);
