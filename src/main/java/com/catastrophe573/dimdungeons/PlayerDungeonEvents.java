@@ -358,7 +358,10 @@ public class PlayerDungeonEvents
 		// now that we're in the dungeon dimension check for forbidden items
 		if ( event.getItemStack().is(TAG_BUCKETS) )
 		{
-			event.setCanceled(true);
+			if ( event.getItemStack().getItem() != Items.MILK_BUCKET )
+			{
+				event.setCanceled(true);
+			}
 		}
 	}
 
@@ -567,7 +570,10 @@ public class PlayerDungeonEvents
 		// do not allow picking up or placing liquids with a bucket
 		if ( event.getItem().is(TAG_BUCKETS) )
 		{
-			event.setCanceled(true);
+			if ( event.getItem().getItem() != Items.MILK_BUCKET )
+			{
+				event.setCanceled(true);
+			}
 		}
 	}
 }
