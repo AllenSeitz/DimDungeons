@@ -33,7 +33,7 @@ public class CustomTeleporter implements net.minecraftforge.common.util.ITelepor
 	@Override
 	public Entity placeEntity(Entity entity, ServerLevel currentWorld, ServerLevel destWorld, float yaw, Function<Boolean, Entity> repositionEntity)
 	{
-		return repositionEntity.apply(true);
+		return repositionEntity.apply(false);
 	}
 
 	@Override
