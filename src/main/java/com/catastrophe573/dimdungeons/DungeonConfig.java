@@ -1468,14 +1468,17 @@ public class DungeonConfig
 	// a helper function for translating ResourceLocation strings (such as minecraft:chest) into blocks
 	private static Block parseBlock(String location)
 	{
-		Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(location));
-		if (block == null)
+		ResourceLocation rl = ResourceLocation.parse(location);
+
+		if ( BuiltInRegistries.BLOCK.get(rl).isEmpty() )
 		{
 			DimDungeons.logMessageWarn("dimdungeons: blacklist/whitelist could not find block " + location);
 			return Blocks.VOID_AIR; // a block that will do nothing in either the whitelist or blacklist
 		}
-
-		return block;
+		else
+		{
+			return BuiltInRegistries.BLOCK.get(rl).get().value();
+		}
 	}
 
 	public static int getDungeonBuildSpeed()

@@ -1,0 +1,7 @@
+{
+  "parent": "dimdungeons:item/item_blank_theme_key",
+    "textures": {
+        "layer0": "dimdungeons:item/theme_active_02"
+    }
+  }
+}

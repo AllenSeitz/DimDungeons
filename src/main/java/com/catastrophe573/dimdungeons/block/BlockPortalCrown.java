@@ -1,5 +1,9 @@
 package com.catastrophe573.dimdungeons.block;
 
+import com.catastrophe573.dimdungeons.DimDungeons;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.material.MapColor;
@@ -13,6 +17,8 @@ public class BlockPortalCrown extends WallBlock
 
 	public BlockPortalCrown()
 	{
-		super(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.PLING).strength(3).sound(SoundType.METAL));
+		super(BlockBehaviour.Properties.of().
+				setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
+				mapColor(MapColor.STONE).instrument(NoteBlockInstrument.PLING).strength(3).sound(SoundType.METAL));
 	}
 }

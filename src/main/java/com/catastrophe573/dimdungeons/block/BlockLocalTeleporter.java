@@ -2,7 +2,11 @@ package com.catastrophe573.dimdungeons.block;
 
 import javax.annotation.Nullable;
 
+import com.catastrophe573.dimdungeons.DimDungeons;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -20,10 +24,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.Vec3;
-
-import static net.minecraft.world.level.portal.DimensionTransition.DO_NOTHING;
 
 public class BlockLocalTeleporter extends BaseEntityBlock
 {
@@ -37,7 +40,9 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 
 	public BlockLocalTeleporter()
 	{
-		super(BlockBehaviour.Properties.of().pushReaction(PushReaction.BLOCK).randomTicks().strength(9999).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
+		super(BlockBehaviour.Properties.of().
+				setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
+				pushReaction(PushReaction.BLOCK).randomTicks().strength(9999).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
 	}
 
 	@Override
@@ -54,12 +59,12 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 	}
 
 	@Override
-	public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving)
+	public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, @Nullable Orientation orientation, boolean movedByPiston)
 	{
 	}
 
 	@Override
-	public ItemStack getCloneItemStack(LevelReader pLevel, BlockPos pPos, BlockState pState)
+	protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData)
 	{
 		return ItemStack.EMPTY;
 	}
@@ -110,13 +115,9 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 
 	protected Entity actuallyPerformTeleport(ServerPlayer player, ServerLevel dim, double x, double y, double z, float destYaw, float destPitch)
 	{
-		// old 1.20 logic - remove this once the port is finished
-		//CustomTeleporter tele = new CustomTeleporter(dim);
-		//tele.setDestPos(x, y, z, destYaw, destPitch);
-		//player.changeDimension(dim, tele); // changing within the same dimension, but still teleport safely anyways
+		TeleportTransition tt = new TeleportTransition(dim, new Vec3(x, y, z), new Vec3(0, 0, 0), destYaw, destPitch, TeleportTransition.DO_NOTHING);
 
-		DimensionTransition dt = new DimensionTransition(dim, new Vec3(x, y, z), new Vec3(0, 0, 0), destYaw, destPitch, false, DO_NOTHING);
-		player.changeDimension(dt);
+		player.teleport(tt);
 
 		return player;
 	}

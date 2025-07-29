@@ -9,22 +9,19 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.world.level.ChunkPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.world.level.NoiseColumn;
-import net.minecraft.world.level.StructureManager;
-import net.minecraft.world.level.LevelHeightAccessor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
-import net.minecraft.world.level.levelgen.GenerationStep.Carving;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
@@ -89,7 +86,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	// I don't know what this does. I copied it from the vanilla code.
 	public NoiseColumn getBaseColumn(int p_158270_, int p_158271_, LevelHeightAccessor p_158272_)
 	{
-		return new NoiseColumn(p_158272_.getMinBuildHeight(), this.settings.getLayers().stream().limit((long) p_158272_.getHeight()).map((p_64189_) ->
+		return new NoiseColumn(p_158272_.getMinY(), this.settings.getLayers().stream().limit((long) p_158272_.getHeight()).map((p_64189_) ->
 		{
 			return p_64189_ == null ? Blocks.AIR.defaultBlockState() : p_64189_;
 		}).toArray((p_64171_) ->
@@ -153,7 +150,14 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	}
 
 	@Override
-	public void createStructures(RegistryAccess p_255835_, ChunkGeneratorStructureState p_256505_, StructureManager p_255934_, ChunkAccess p_255767_, StructureTemplateManager p_255832_)
+	public void createStructures(
+			RegistryAccess registryAccess,
+			ChunkGeneratorStructureState structureState,
+			StructureManager structureManager,
+			ChunkAccess chunk,
+			StructureTemplateManager structureTemplateManager,
+			ResourceKey<Level> level
+	)
 	{
 		// intentionally do nothing!
 	}
@@ -183,7 +187,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	}
 
 	@Override
-	public void applyCarvers(WorldGenRegion p_223043_, long p_223044_, RandomState p_223045_, BiomeManager p_223046_, net.minecraft.world.level.StructureManager p_223047_, ChunkAccess p_223048_, Carving p_223049_)
+	public void applyCarvers(WorldGenRegion level, long seed, RandomState random, BiomeManager biomeManager, StructureManager structureManager, ChunkAccess chunk)
 	{
 		// intentionally do nothing!
 	}
@@ -213,7 +217,7 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	// copied this from FlatLevelSource just to have something that doesn't return null
 	public NoiseColumn getBaseColumn(int p_223028_, int p_223029_, LevelHeightAccessor p_223030_, RandomState p_223031_)
 	{
-		return new NoiseColumn(p_223030_.getMinBuildHeight(), this.settings.getLayers().stream().limit((long) p_223030_.getHeight()).map((p_204549_) ->
+		return new NoiseColumn(p_223030_.getMinY(), this.settings.getLayers().stream().limit((long) p_223030_.getHeight()).map((p_204549_) ->
 		{
 			return p_204549_ == null ? Blocks.AIR.defaultBlockState() : p_204549_;
 		}).toArray((p_204543_) ->

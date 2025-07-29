@@ -9,6 +9,8 @@ import com.catastrophe573.dimdungeons.block.BlockPortalKeyhole;
 import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.core.registries.Registries;
@@ -38,24 +40,24 @@ public class ItemRegistrar
 	public static final DeferredItem<ItemSecretBell> ITEM_SECRET_BELL = ITEMS.register(ItemSecretBell.REG_NAME, () -> new ItemSecretBell(new Item.Properties().stacksTo(1)));
 	public static final DeferredItem<ItemHomewardPearl> ITEM_HOMEWARD_PEARL = ITEMS.register(ItemHomewardPearl.REG_NAME, () -> new ItemHomewardPearl(new Item.Properties().stacksTo(16)));
 
-	public static final DeferredItem<Item> ITEM_TROPHY_1 = ITEMS.register("item_trophy_1", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
-	public static final DeferredItem<Item> ITEM_TROPHY_2 = ITEMS.register("item_trophy_2", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
-	public static final DeferredItem<Item> ITEM_TROPHY_3 = ITEMS.register("item_trophy_3", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
-	public static final DeferredItem<Item> ITEM_TROPHY_4 = ITEMS.register("item_trophy_4", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
-	public static final DeferredItem<Item> ITEM_TROPHY_5 = ITEMS.register("item_trophy_5", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
-	public static final DeferredItem<Item> ITEM_TROPHY_6 = ITEMS.register("item_trophy_6", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
-	public static final DeferredItem<Item> ITEM_TROPHY_7 = ITEMS.register("item_trophy_7", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
-	public static final DeferredItem<Item> ITEM_TROPHY_8 = ITEMS.register("item_trophy_8", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+	public static final DeferredItem<Item> ITEM_TROPHY_1 = ITEMS.register("item_trophy_1", registryName -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, registryName)).stacksTo(1).rarity(Rarity.RARE)));
+	public static final DeferredItem<Item> ITEM_TROPHY_2 = ITEMS.register("item_trophy_2", registryName -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, registryName)).stacksTo(1).rarity(Rarity.RARE)));
+	public static final DeferredItem<Item> ITEM_TROPHY_3 = ITEMS.register("item_trophy_3", registryName -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, registryName)).stacksTo(1).rarity(Rarity.RARE)));
+	public static final DeferredItem<Item> ITEM_TROPHY_4 = ITEMS.register("item_trophy_4", registryName -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, registryName)).stacksTo(1).rarity(Rarity.RARE)));
+	public static final DeferredItem<Item> ITEM_TROPHY_5 = ITEMS.register("item_trophy_5", registryName -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, registryName)).stacksTo(1).rarity(Rarity.RARE)));
+	public static final DeferredItem<Item> ITEM_TROPHY_6 = ITEMS.register("item_trophy_6", registryName -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, registryName)).stacksTo(1).rarity(Rarity.RARE)));
+	public static final DeferredItem<Item> ITEM_TROPHY_7 = ITEMS.register("item_trophy_7", registryName -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, registryName)).stacksTo(1).rarity(Rarity.RARE)));
+	public static final DeferredItem<Item> ITEM_TROPHY_8 = ITEMS.register("item_trophy_8", registryName -> new Item(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, registryName)).stacksTo(1).rarity(Rarity.RARE)));
 
 	// more DeferredRegister objects for the BlockItems
-	public static final DeferredItem<BlockItem> ITEM_GILDED_PORTAL = ItemRegistrar.ITEMS.register(BlockGildedPortal.REG_NAME, () -> new BlockItem(BlockRegistrar.BLOCK_GILDED_PORTAL.get(), new Item.Properties()));
-	public static final DeferredItem<BlockItem> ITEM_GOLD_PORTAL = ItemRegistrar.ITEMS.register(BlockGoldPortal.REG_NAME, () -> new BlockItem(BlockRegistrar.BLOCK_GOLD_PORTAL.get(), new Item.Properties()));
-	public static final DeferredItem<BlockItem> ITEM_LOCAL_TELEPORTER = ItemRegistrar.ITEMS.register(BlockLocalTeleporter.REG_NAME, () -> new BlockItem(BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get(), new Item.Properties()));
-	public static final DeferredItem<BlockItem> ITEM_PORTAL_KEYHOLE = ItemRegistrar.ITEMS.register(BlockPortalKeyhole.REG_NAME, () -> new BlockItem(BlockRegistrar.BLOCK_PORTAL_KEYHOLE.get(), new Item.Properties()));
-	public static final DeferredItem<BlockItem> ITEM_PORTAL_CROWN = ItemRegistrar.ITEMS.register(BlockPortalCrown.REG_NAME, () -> new BlockItem(BlockRegistrar.BLOCK_PORTAL_CROWN.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
-	public static final DeferredItem<BlockItem> ITEM_CHARGER_FULL = ItemRegistrar.ITEMS.register(BlockRegistrar.REG_NAME_CHARGER_FULL, () -> new BlockItem(BlockRegistrar.BLOCK_CHARGER_FULL.get(), new Item.Properties()));
-	public static final DeferredItem<BlockItem> ITEM_CHARGER_USED = ItemRegistrar.ITEMS.register(BlockRegistrar.REG_NAME_CHARGER_USED, () -> new BlockItem(BlockRegistrar.BLOCK_CHARGER_USED.get(), new Item.Properties()));
-	public static final DeferredItem<BlockItem> ITEM_CHARGER_DAMAGED = ItemRegistrar.ITEMS.register(BlockRegistrar.REG_NAME_CHARGER_DAMAGED, () -> new BlockItem(BlockRegistrar.BLOCK_CHARGER_DAMAGED.get(), new Item.Properties()));
+	public static final DeferredItem<BlockItem> ITEM_GILDED_PORTAL = ItemRegistrar.ITEMS.register(BlockGildedPortal.REG_NAME, () -> new BlockItem(BlockRegistrar.BLOCK_GILDED_PORTAL.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, BlockGildedPortal.REG_NAME)))));
+	public static final DeferredItem<BlockItem> ITEM_GOLD_PORTAL = ItemRegistrar.ITEMS.register(BlockGoldPortal.REG_NAME, () -> new BlockItem(BlockRegistrar.BLOCK_GOLD_PORTAL.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, BlockGoldPortal.REG_NAME)))));
+	public static final DeferredItem<BlockItem> ITEM_LOCAL_TELEPORTER = ItemRegistrar.ITEMS.register(BlockLocalTeleporter.REG_NAME, () -> new BlockItem(BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, BlockLocalTeleporter.REG_NAME)))));
+	public static final DeferredItem<BlockItem> ITEM_PORTAL_KEYHOLE = ItemRegistrar.ITEMS.register(BlockPortalKeyhole.REG_NAME, () -> new BlockItem(BlockRegistrar.BLOCK_PORTAL_KEYHOLE.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, BlockPortalKeyhole.REG_NAME)))));
+	public static final DeferredItem<BlockItem> ITEM_PORTAL_CROWN = ItemRegistrar.ITEMS.register(BlockPortalCrown.REG_NAME, () -> new BlockItem(BlockRegistrar.BLOCK_PORTAL_CROWN.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, BlockPortalCrown.REG_NAME))).rarity(Rarity.UNCOMMON)));
+	public static final DeferredItem<BlockItem> ITEM_CHARGER_FULL = ItemRegistrar.ITEMS.register(BlockRegistrar.REG_NAME_CHARGER_FULL, () -> new BlockItem(BlockRegistrar.BLOCK_CHARGER_FULL.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, BlockRegistrar.REG_NAME_CHARGER_FULL)))));
+	public static final DeferredItem<BlockItem> ITEM_CHARGER_USED = ItemRegistrar.ITEMS.register(BlockRegistrar.REG_NAME_CHARGER_USED, () -> new BlockItem(BlockRegistrar.BLOCK_CHARGER_USED.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, BlockRegistrar.REG_NAME_CHARGER_USED)))));
+	public static final DeferredItem<BlockItem> ITEM_CHARGER_DAMAGED = ItemRegistrar.ITEMS.register(BlockRegistrar.REG_NAME_CHARGER_DAMAGED, () -> new BlockItem(BlockRegistrar.BLOCK_CHARGER_DAMAGED.get(), new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, BlockRegistrar.REG_NAME_CHARGER_DAMAGED)))));
 
 	// register creative mode tab
 	public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, DimDungeons.MOD_ID);

@@ -4,6 +4,9 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +21,9 @@ public class ItemBlankAdvancedKey extends BaseItemKey
 
 	public ItemBlankAdvancedKey()
 	{
-		super(new Item.Properties().rarity(Rarity.UNCOMMON).stacksTo(1).component(DimDungeons.DUNGEON_KEY_DATA.get(), new DungeonKeyDataComponentRecord(false, false, -1, -1, 0, 0, 0, 0, String.valueOf(DungeonDesigner.DungeonType.valueOf(String.valueOf(DungeonDesigner.DungeonType.BASIC))))));
+		super(new Item.Properties().
+				setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
+				rarity(Rarity.UNCOMMON).stacksTo(1).component(DimDungeons.DUNGEON_KEY_DATA.get(), new DungeonKeyDataComponentRecord(false, false, -1, -1, 0, 0, 0, 0, String.valueOf(DungeonDesigner.DungeonType.valueOf(String.valueOf(DungeonDesigner.DungeonType.BASIC))))));
 	}
 
 	@Override

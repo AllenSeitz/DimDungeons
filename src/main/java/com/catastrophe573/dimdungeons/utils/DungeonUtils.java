@@ -34,10 +34,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
-
-import static net.minecraft.world.level.portal.DimensionTransition.DO_NOTHING;
 
 // basically just global functions
 public class DungeonUtils
@@ -459,8 +457,8 @@ public class DungeonUtils
 		//entity.resetFallDistance();
 		//entity.changeDimension(dim, tele);
 
-		DimensionTransition dt = new DimensionTransition(dim, new Vec3(topLeftX - 7, 51, topLeftZ + 4), new Vec3(0, 0, 0), 180.0f, 0, false, DO_NOTHING);
-		entity.changeDimension(dt);
+		TeleportTransition tt = new TeleportTransition(dim, new Vec3(topLeftX - 7, 51, topLeftZ + 4), new Vec3(0, 0, 0), 180.0f, 0, TeleportTransition.DO_NOTHING);
+		entity.teleport(tt);
 	}
 
 	// THIS MUST ONLY BE USED for the purposes of displaying an activated key in a gui (such as for the JEI compat)

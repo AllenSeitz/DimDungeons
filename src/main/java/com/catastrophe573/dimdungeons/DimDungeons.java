@@ -4,11 +4,12 @@ import com.catastrophe573.dimdungeons.item.*;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.client.renderer.item.properties.select.SelectItemModelProperties;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
@@ -69,11 +70,11 @@ public class DimDungeons
 	public static final Supplier<MapCodec<LootModifierNoDrops>> NO_DUNGEON_DROPS = GLOBAL_LOOT_MODIFIER_SERIALIZERS.register("no_dungeon_drops", () -> LootModifierNoDrops.CODEC);
 
 	// register custom data components for my classes
-	public static final DeferredRegister.DataComponents DATA_COMP_REGISTRAR = DeferredRegister.createDataComponents(DimDungeons.MOD_ID);
-	public static final Supplier<DataComponentType<DungeonKeyDataComponentRecord>> DUNGEON_KEY_DATA = DATA_COMP_REGISTRAR.registerComponentType(
+	public static final DeferredRegister.DataComponents DATA_COMPONENT_REGISTRAR = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, DimDungeons.MOD_ID);
+	public static final Supplier<DataComponentType<DungeonKeyDataComponentRecord>> DUNGEON_KEY_DATA = DATA_COMPONENT_REGISTRAR.registerComponentType(
 			"dungeon_key_data", builder -> builder.persistent(DungeonKeyDataComponent.DUNGEON_KEY_DCR_CODEC)
 	);
-	public static final Supplier<DataComponentType<SecretBellDataComponentRecord>> SECRET_BELL_DATA = DATA_COMP_REGISTRAR.registerComponentType(
+	public static final Supplier<DataComponentType<SecretBellDataComponentRecord>> SECRET_BELL_DATA = DATA_COMPONENT_REGISTRAR.registerComponentType(
 			"secret_bell_data", builder -> builder.persistent(SecretBellDataComponent.SECRET_BELL_DCR_CODEC)
 	);
 
@@ -83,7 +84,7 @@ public class DimDungeons
 		ItemRegistrar.register(modEventBus);
 		CHUNK_GENERATORS.register(modEventBus);
 		GLOBAL_LOOT_MODIFIER_SERIALIZERS.register(modEventBus);
-		DATA_COMP_REGISTRAR.register(modEventBus);
+		DATA_COMPONENT_REGISTRAR.register(modEventBus);
 
 		// register event listeners that don't use the event bus
 		modEventBus.addListener(this::enqueueIMC);
@@ -116,26 +117,27 @@ public class DimDungeons
 			ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get(), RenderType.translucent());
 
 			// register the custom property for the keys that allows for switching their model
-			ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "keytype"), (stack, world, entity, number) ->
-			{
-				return ItemPortalKey.getKeyLevelAsFloat(stack);
-			});
-			ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "keytheme"), (stack, world, entity, number) ->
-			{
-				return ItemPortalKey.getKeyThemeAsFloat(stack);
-			});
-			ItemProperties.register(ItemRegistrar.ITEM_BLANK_THEME_KEY.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "keytheme"), (stack, world, entity, number) ->
-			{
-				return ItemBlankThemeKey.getKeyThemeAsFloat(stack);
-			});
-			ItemProperties.register(ItemRegistrar.ITEM_SECRET_BELL.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
-			{
-				return ItemSecretBell.getUpgradeLevelAsFloat(stack);
-			});
-			ItemProperties.register(ItemRegistrar.ITEM_SECRET_BELL.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
-			{
-				return ItemSecretBell.getUpgradeLevelAsFloat(stack);
-			});
+			// TODO: was this removed in 1.21.4 and replaced with vanilla item model json?
+//			ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "keytype"), (stack, world, entity, number) ->
+//			{
+//				return ItemPortalKey.getKeyLevelAsFloat(stack);
+//			});
+//			ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "keytheme"), (stack, world, entity, number) ->
+//			{
+//				return ItemPortalKey.getKeyThemeAsFloat(stack);
+//			});
+//			ItemProperties.register(ItemRegistrar.ITEM_BLANK_THEME_KEY.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "keytheme"), (stack, world, entity, number) ->
+//			{
+//				return ItemBlankThemeKey.getKeyThemeAsFloat(stack);
+//			});
+//			ItemProperties.register(ItemRegistrar.ITEM_SECRET_BELL.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
+//			{
+//				return ItemSecretBell.getUpgradeLevelAsFloat(stack);
+//			});
+//			ItemProperties.register(ItemRegistrar.ITEM_SECRET_BELL.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
+//			{
+//				return ItemSecretBell.getUpgradeLevelAsFloat(stack);
+//			});
 		});
 	}
 

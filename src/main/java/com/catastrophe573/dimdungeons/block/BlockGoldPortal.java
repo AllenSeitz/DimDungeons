@@ -22,6 +22,7 @@ import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,7 +42,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -50,8 +52,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-
-import static net.minecraft.world.level.portal.DimensionTransition.DO_NOTHING;
 
 public class BlockGoldPortal extends BaseEntityBlock
 {
@@ -71,7 +71,9 @@ public class BlockGoldPortal extends BaseEntityBlock
 
 	public BlockGoldPortal()
 	{
-		super(BlockBehaviour.Properties.of().pushReaction(PushReaction.BLOCK).randomTicks().strength(9999).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
+		super(BlockBehaviour.Properties.of().
+				setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
+				pushReaction(PushReaction.BLOCK).randomTicks().strength(9999).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
 		this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X));
 	}
 
@@ -129,7 +131,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	}
 
 	@Override
-	public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving)
+	public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, @Nullable Orientation orientation, boolean movedByPiston)
 	{
 		if (!this.checkPortalIntegrity(state, worldIn, pos))
 		{
@@ -137,19 +139,8 @@ public class BlockGoldPortal extends BaseEntityBlock
 		}
 	}
 
-	// this function seems to be the true 1.14 replacement for updateNeighbors(), and it cares about block sides now
 	@Override
-	public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos)
-	{
-		if (checkPortalIntegrity(stateIn, worldIn, currentPos))
-		{
-			return stateIn;
-		}
-		return Blocks.AIR.defaultBlockState(); // destroy this block
-	}
-
-	@Override
-	public ItemStack getCloneItemStack(LevelReader pLevel, BlockPos pPos, BlockState pState)
+	protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData)
 	{
 		return ItemStack.EMPTY;
 	}
@@ -195,7 +186,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 				int cooldown = te.getCooldown();
 
 				// ask vanilla for permission
-				if ( !entityIn.canChangeDimensions(worldIn, entityIn.getServer().getLevel(te.getDestinationDimension())) )
+				if ( !entityIn.canUsePortal(false) )
 				{
 					return;
 				}
@@ -368,8 +359,8 @@ public class BlockGoldPortal extends BaseEntityBlock
 			z += 0.5D;
 		}
 
-		DimensionTransition dt = new DimensionTransition(dim, new Vec3(x,y,z), new Vec3(0,0,0), destYaw, destPitch, false, DO_NOTHING);
-		player.changeDimension(dt);
+		TeleportTransition tt = new TeleportTransition(dim, new Vec3(x, y, z), new Vec3(0, 0, 0), destYaw, destPitch, TeleportTransition.DO_NOTHING);
+		player.teleport(tt);
 
 		// old 1.19 logic for reference. delete this later
 		//CustomTeleporter tele = new CustomTeleporter(dim);
@@ -381,7 +372,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		{
 			for (ServerPlayer friend : multiplayerHardcore)
 			{
-				friend.changeDimension(dt);
+				friend.teleport(tt);
 			}
 		}
 		

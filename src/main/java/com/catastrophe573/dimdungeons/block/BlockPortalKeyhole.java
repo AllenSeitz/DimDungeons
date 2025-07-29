@@ -16,7 +16,9 @@ import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -27,6 +29,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -35,7 +39,6 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -67,7 +70,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		throw new AssertionError("Implement block codec!");
 	}
 
-	public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+	public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
 	public static final BooleanProperty FILLED = BooleanProperty.create("filled");
 	public static final BooleanProperty LIT = BooleanProperty.create("lit");
 	public static final BooleanProperty IS_BUILDING = BooleanProperty.create("is_building");
@@ -76,7 +79,9 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 
 	public BlockPortalKeyhole()
 	{
-		super(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.COW_BELL).strength(3).explosionResistance(1200).sound(SoundType.METAL));
+		super(BlockBehaviour.Properties.of().
+				setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
+				mapColor(MapColor.STONE).instrument(NoteBlockInstrument.COW_BELL).strength(3).explosionResistance(1200).sound(SoundType.METAL));
 		this.registerDefaultState(getMyCustomDefaultState());
 	}
 
@@ -222,7 +227,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 
 	// called when the player right-clicks this block WITH an item in EITHER hand (and called twice if both hands are full)
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hitResult)
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hitResult)
 	{
 		ItemStack playerItem = player.getItemInHand(handIn);
 		BlockEntity tileEntity = worldIn.getBlockEntity(pos);
@@ -232,20 +237,20 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		//DimDungeons.logMessageInfo("Hand: " + handIn + ", Item: " + playerItem.getDisplayName());
 		if ( handIn != InteractionHand.MAIN_HAND )
 		{
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.PASS; // PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		}
 
 		// sanity check
 		if (myEntity == null)
 		{
 			DimDungeons.logMessageError("dimdungeons: BlockEntity missing inside of BlockPortalKeyhole::useWithoutItem");
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.PASS; //PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		}
 		if (playerItem.isEmpty())
 		{
 			// this apparently happens all the time? why do we have two functions, then? what is useWithoutItem() for?
 			//DimDungeons.logMessageError("dimdungeons: called BlockPortalKeyhole::useItemOn with an empty item stack?");
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.PASS; //PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		}
 
 		ItemStack insideItem = myEntity.getObjectInserted();
@@ -345,7 +350,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			playerItem.shrink(1);
 			worldIn.playLocalSound((double) pos.getX() + 0.5D, (double) pos.getY(), (double) pos.getZ() + 0.5D, SoundEvents.TRIPWIRE_CLICK_ON, SoundSource.BLOCKS, 0.7F, 1.2f, false);
 
-			return ItemInteractionResult.SUCCESS;
+			return InteractionResult.SUCCESS;
 		}
 		// if the keyhole is currently full and so is the player's main hand
 		else
@@ -362,7 +367,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 
 			consequencesForRemovingIternalItem(myEntity, insideItem, worldIn, pos, state);
 
-			return ItemInteractionResult.SUCCESS;
+			return InteractionResult.SUCCESS;
 		}
 	}
 
@@ -581,7 +586,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	}
 
 	@Override
-	public ItemStack getCloneItemStack(LevelReader pLevel, BlockPos pPos, BlockState pState)
+	public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData)
 	{
 		return new ItemStack(this);
 	}

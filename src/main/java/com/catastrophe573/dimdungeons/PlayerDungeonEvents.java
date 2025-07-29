@@ -144,7 +144,7 @@ public class PlayerDungeonEvents
 		}
 
 		// DimDungeons.LOGGER.info("EXPLODING BRICKS: " + crackedBricks.size());
-		event.getExplosion().clearToBlow();
+		//event.getExplosion().clearToBlow();
 		event.getAffectedBlocks().addAll(crackedBricks);
 	}
 
@@ -543,8 +543,12 @@ public class PlayerDungeonEvents
 	}
 
 	@SubscribeEvent
-	public void onChorusTeleport(EntityTeleportEvent.ChorusFruit event)
+	public void onChorusTeleport(EntityTeleportEvent.ItemConsumption event)
 	{
+		ItemStack eatenItem = event.getConsumedItem();
+
+		// could check if the eatenItem is Chorus Fruit, but it probably is
+
 		// I only care about restricting teleports within my dimensions
 		if (DungeonUtils.isDimensionDungeon(event.getEntity().getCommandSenderWorld()))
 		{

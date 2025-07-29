@@ -36,7 +36,7 @@ public class LootModifierNoDrops extends net.neoforged.neoforge.common.loot.Loot
 	public ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context)
 	{
 		// is this a block breaking-type of loot table? (probably yes if this code is running, but make sure the target block isn't null anyway)
-		BlockState blockState = context.getParamOrNull(LootContextParams.BLOCK_STATE);
+		BlockState blockState = context.getOptionalParameter(LootContextParams.BLOCK_STATE);
 		if (blockState == null)
 		{
 			return generatedLoot;

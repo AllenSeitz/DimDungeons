@@ -33,11 +33,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
@@ -778,7 +774,7 @@ public class DungeonPlacement
 		// funny thing in 1.19.3 here. The second parameter really should be null.
 		// however, a new alternative version of spawn() was added with nullable 2nd and 3rd parameters as well, causing an ambiguous reference
 		// so instead this forces one of the two to be called, and should have no side effects
-		Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, MobSpawnType.STRUCTURE, true, true);
+		Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, EntitySpawnReason.STRUCTURE, true, true);
 		// Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, MobSpawnType.STRUCTURE, true, true);
 
 		if (mob == null)

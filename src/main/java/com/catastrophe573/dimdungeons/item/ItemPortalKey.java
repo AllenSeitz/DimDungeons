@@ -4,6 +4,9 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -18,7 +21,7 @@ public class ItemPortalKey extends BaseItemKey
 
 	public ItemPortalKey()
 	{
-		super(new Item.Properties());
+		super(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))));
 	}
 
 	// used in the item model json to change the graphic based on the dimdungeons:keytype property
@@ -98,7 +101,7 @@ public class ItemPortalKey extends BaseItemKey
 		// no NBT data on this item at all? well then return "Blank Portal Key"
 		if (!stack.has(DimDungeons.DUNGEON_KEY_DATA))
 		{
-			return Component.translatable(this.getDescriptionId(stack));
+			return Component.translatable(this.getDescriptionId());
 		}
 
 		DungeonKeyDataComponentRecord itemData = stack.get(DimDungeons.DUNGEON_KEY_DATA);
@@ -182,7 +185,7 @@ public class ItemPortalKey extends BaseItemKey
 		}
 
 		// basically return "Blank Portal Key"
-		return Component.translatable(this.getDescriptionId(stack));
+		return Component.translatable(this.getDescriptionId());
 	}
 
 	/**

@@ -4,6 +4,8 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
@@ -16,7 +18,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.sounds.SoundSource;
@@ -48,7 +49,7 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 	public ItemSecretBell(/* IItemTier tier, */ Item.Properties builderIn)
 	{
 		// super(tier, builderIn);
-		super(builderIn);
+		super(builderIn.setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))));
 	}
 
 	// used in the item model json to change the graphic based on the dimdungeons:keytype property
@@ -125,33 +126,33 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 
 	@SuppressWarnings("resource")
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn)
+	public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn)
 	{
 		ItemStack itemstack = playerIn.getItemInHand(handIn);
 
 		// do nothing on the client, let the server do the chest searching logic
 		if (playerIn.getCommandSenderWorld().isClientSide)
 		{
-			return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+			return InteractionResult.PASS;
 		}
 
 		// Only the level 2 bell may be used in any dimension. The level 1 bell works exclusively in the dungeon dimension.
 		if (getUpgradeLevel(itemstack) < 2 && !DungeonUtils.isDimensionDungeon((Level) playerIn.getCommandSenderWorld()))
 		{
-			return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+			return InteractionResult.PASS;
 		}
 
 		if (handIn == InteractionHand.MAIN_HAND)
 		{
-			playerIn.getCooldowns().addCooldown(this, BELL_COOLDOWN_TICKS);
+			playerIn.getCooldowns().addCooldown(ItemRegistrar.ITEM_SECRET_BELL.getId(), BELL_COOLDOWN_TICKS);
 
 			BlockPos secret = findSecretChestNearby(playerIn.blockPosition(), worldIn);
 			setSecretLocation(itemstack, secret.getX(), secret.getY(), secret.getZ());
-			return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemstack);
+			return InteractionResult.PASS;
 		}
 		else
 		{
-			return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+			return InteractionResult.PASS;
 		}
 	}
 
@@ -164,7 +165,7 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 		Player playerIn = (Player) entityIn;
 
 		// convert from percentage back to raw ticks
-		int time = (int) (playerIn.getCooldowns().getCooldownPercent(this, 0) * BELL_COOLDOWN_TICKS);
+		int time = (int) (playerIn.getCooldowns().getCooldownPercent(stack, 0) * BELL_COOLDOWN_TICKS);
 		if (time == 0)
 		{
 			return;

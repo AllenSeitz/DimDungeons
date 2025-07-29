@@ -5,7 +5,10 @@ import com.catastrophe573.dimdungeons.DungeonConfig;
 
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -23,7 +26,9 @@ public class ItemBlankThemeKey extends BaseItemKey
 
 	public ItemBlankThemeKey()
 	{
-		super(new Item.Properties().rarity(Rarity.COMMON));
+		super(new Item.Properties().
+				setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
+				rarity(Rarity.COMMON));
 	}
 
 	public static int getTheme(ItemStack stack)
@@ -61,7 +66,7 @@ public class ItemBlankThemeKey extends BaseItemKey
 		// no NBT data on this item at all? well then return a blank key
 		if ( !stack.has(DimDungeons.DUNGEON_KEY_DATA) )
 		{
-			return Component.translatable(this.getDescriptionId(stack), new Object[0]);
+			return Component.translatable(this.getDescriptionId(), new Object[0]);
 		}
 
 		theme = getTheme(stack);

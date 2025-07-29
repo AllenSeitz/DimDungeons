@@ -3,8 +3,11 @@ package com.catastrophe573.dimdungeons.item;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -22,7 +25,9 @@ public class ItemBuildKey extends BaseItemKey
 
 	public ItemBuildKey()
 	{
-		super(new Item.Properties().rarity(Rarity.COMMON));
+		super(new Item.Properties().
+				setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
+				rarity(Rarity.COMMON));
 	}
 
 	public boolean isPlotBuilt(ItemStack stack)

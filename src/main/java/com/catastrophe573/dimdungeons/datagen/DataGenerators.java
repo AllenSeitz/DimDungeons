@@ -18,14 +18,14 @@ import java.util.concurrent.CompletableFuture;
 public class DataGenerators
 {
     @SubscribeEvent
-    public static void gatherData(GatherDataEvent event)
+    public static void gatherData(GatherDataEvent.Client  event)
     {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
         // one provider for each data generator type. this one is for loot tables
-        generator.addProvider(event.includeServer(), new DimDungeonsLootTableProvider(packOutput,
+        generator.addProvider(event.includeDev(), new DimDungeonsLootTableProvider(packOutput,
             Collections.emptySet(),
                 List.of(new LootTableProvider.SubProviderEntry(DimDungeonsLootTableChestProvider::new, LootContextParamSets.CHEST),
                         new LootTableProvider.SubProviderEntry(DimDungeonsLootTableBlockProvider::new, LootContextParamSets.BLOCK)),
