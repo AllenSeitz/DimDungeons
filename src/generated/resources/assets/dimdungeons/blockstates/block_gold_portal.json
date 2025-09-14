@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "dimdungeons:block/block_gold_portal_ns"
+    },
+    "axis=z": {
+      "model": "dimdungeons:block/block_gold_portal_ew"
+    }
+  }
+}

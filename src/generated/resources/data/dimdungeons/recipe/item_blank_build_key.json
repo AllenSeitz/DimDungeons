@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": "minecraft:grass_block",
+    "H": "dimdungeons:item_homeward_pearl",
+    "K": "minecraft:echo_shard",
+    "O": "minecraft:ender_pearl"
+  },
+  "pattern": [
+    "OHO",
+    "OKO",
+    "OGO"
+  ],
+  "result": {
+    "count": 1,
+    "id": "dimdungeons:item_blank_build_key"
+  },
+  "show_notification": false
+}

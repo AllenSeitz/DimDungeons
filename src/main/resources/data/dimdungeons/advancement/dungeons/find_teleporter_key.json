@@ -4,7 +4,8 @@
 	{
 		"icon":
 		{
-			"id" : "dimdungeons:item_blank_teleporter_key"
+			"id" : "dimdungeons:item_blank_teleporter_key",
+			"components" : {"dimdungeons:dungeon_key_data" : {"key_activated":true,"dest_x":1,"dest_z":1,"built":true,"name_type":1,"name_part_1":1,"name_part_2":1,"theme":0,"dungeon_type":"TELEPORTER_HUB"}}			
 		},
 		"title":
 		{

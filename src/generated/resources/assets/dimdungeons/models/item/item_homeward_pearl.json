@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "dimdungeons:item/item_homeward_pearl"
+  }
+}

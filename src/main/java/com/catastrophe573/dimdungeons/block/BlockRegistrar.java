@@ -33,21 +33,21 @@ public class BlockRegistrar
 	public static final DeferredBlock<Block> BLOCK_PORTAL_KEYHOLE = BLOCKS.register(BlockPortalKeyhole.REG_NAME, BlockPortalKeyhole::new);
 	public static final DeferredBlock<Block> BLOCK_PORTAL_CROWN = BLOCKS.register(BlockPortalCrown.REG_NAME, BlockPortalCrown::new);
 	public static final DeferredBlock<Block> BLOCK_CHARGER_FULL = BLOCKS.register(REG_NAME_CHARGER_FULL,
-																					registryName -> new Block(BlockBehaviour.Properties.of().
+																					registryName -> new BlockKeyCharger(BlockBehaviour.Properties.of().
 																					setId(ResourceKey.create(Registries.BLOCK, registryName)).
 																					mapColor(MapColor.STONE).
 																					instrument(NoteBlockInstrument.BIT).
 																					strength(3).
 																					sound(SoundType.METAL)));
 	public static final DeferredBlock<Block> BLOCK_CHARGER_USED = BLOCKS.register(REG_NAME_CHARGER_USED,
-																				  registryName -> new Block(BlockBehaviour.Properties.of().
+																				  registryName -> new BlockKeyCharger(BlockBehaviour.Properties.of().
 																						  setId(ResourceKey.create(Registries.BLOCK, registryName)).
 																						  mapColor(MapColor.STONE).
 																						  instrument(NoteBlockInstrument.BIT).
 																						  strength(3).
 																						  sound(SoundType.METAL)));
 	public static final DeferredBlock<Block> BLOCK_CHARGER_DAMAGED = BLOCKS.register(REG_NAME_CHARGER_DAMAGED,
-																				  registryName -> new Block(BlockBehaviour.Properties.of().
+																				  registryName -> new BlockKeyCharger(BlockBehaviour.Properties.of().
 																						  setId(ResourceKey.create(Registries.BLOCK, registryName)).
 																						  mapColor(MapColor.STONE).
 																						  instrument(NoteBlockInstrument.BIT).
@@ -63,7 +63,7 @@ public class BlockRegistrar
 	);
 
 	public static final Supplier<BlockEntityType<TileEntityLocalTeleporter>> BE_LOCAL_TELEPORTER = BLOCK_ENTITIES.register(
-			TileEntityLocalTeleporter.REG_NAME, () -> new BlockEntityType<>(TileEntityLocalTeleporter::new, BLOCK_PORTAL_KEYHOLE.get())
+			TileEntityLocalTeleporter.REG_NAME, () -> new BlockEntityType<>(TileEntityLocalTeleporter::new, BLOCK_LOCAL_TELEPORTER.get())
 	);
 
 	public static void register(IEventBus modEventBus)

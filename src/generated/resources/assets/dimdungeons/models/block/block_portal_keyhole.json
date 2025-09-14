@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "dimdungeons:block/block_gilded_portal",
+    "east": "dimdungeons:block/block_gilded_portal",
+    "north": "dimdungeons:block/block_portal_keyhole",
+    "particle": "dimdungeons:block/block_gilded_portal",
+    "south": "dimdungeons:block/block_portal_keyhole",
+    "up": "dimdungeons:block/block_gilded_portal",
+    "west": "dimdungeons:block/block_gilded_portal"
+  }
+}

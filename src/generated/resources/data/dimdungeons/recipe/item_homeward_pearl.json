@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "dimdungeons:item_portal_key",
+    "minecraft:ender_pearl",
+    "minecraft:experience_bottle"
+  ],
+  "result": {
+    "count": 1,
+    "id": "dimdungeons:item_homeward_pearl"
+  }
+}

@@ -1,9 +1,5 @@
 package com.catastrophe573.dimdungeons.block;
 
-import com.catastrophe573.dimdungeons.DimDungeons;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,12 +17,19 @@ public class BlockKeyCharger extends Block
 {
 	protected static final VoxelShape BASE_SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 13.0D, 16.0D);
 
-	public BlockKeyCharger()
+	public BlockKeyCharger(BlockBehaviour.Properties props)
 	{
-		super(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BIT).strength(3).sound(SoundType.METAL));
+		super(props);
 	}
 
-	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
+	@Override
+	protected boolean useShapeForLightOcclusion(BlockState state)
+	{
+		return true;
+	}
+
+	@Override
+	public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context)
 	{
 		return BASE_SHAPE;
 	}

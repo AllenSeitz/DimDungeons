@@ -4,7 +4,7 @@
 	"biome.dimdungeons.biome_dungeon": "Dungeon",
 	"dimension.dimdungeons.dimension_dungeon": "Dungeon Dimension",
 
-	"dimdungeons:activate_key": "Key Activation", // JEI
+	"dimdungeons:activate_key": "Key Activation",
 
     "block.dimdungeons.block_gilded_portal": "Gilded Portal Block",
     "block.dimdungeons.block_gold_portal": "Gold Dungeon Portal",
@@ -14,6 +14,15 @@
     "block.dimdungeons.block_key_charger": "Key Inscribing Station",
     "block.dimdungeons.block_key_charger_used": "Used Key Inscribing Station",
     "block.dimdungeons.block_key_charger_damaged": "Damaged Key Inscribing Station",
+
+    "item.dimdungeons.block_gilded_portal": "Gilded Portal Block",
+    "item.dimdungeons.block_gold_portal": "Gold Dungeon Portal",
+    "item.dimdungeons.block_local_teleporter": "Local Teleporter",
+    "item.dimdungeons.block_portal_keyhole": "Portal Keystone",
+    "item.dimdungeons.block_portal_crown": "Portal Crown Block",
+    "item.dimdungeons.block_key_charger": "Key Inscribing Station",
+    "item.dimdungeons.block_key_charger_used": "Used Key Inscribing Station",
+    "item.dimdungeons.block_key_charger_damaged": "Damaged Key Inscribing Station",
 
     "item.dimdungeons.item_portal_key": "Blank Portal Key",
     "item.dimdungeons.item_portal_key_basic": "Basic Portal Key",
@@ -201,7 +210,6 @@
     "book.dimdungeons.advanced_message_7": "You can safely rename dungeon keys and they will still teleport you to the same place.",
     "book.dimdungeons.advanced_message_8": "There is more to come! This isn't the final dungeon.",
 
-	// guidebook text is not used
     "book.dimdungeons.guidebook_1": "This short guide will spell out everything you need to know about building a portal, crafting keys, and raiding dungeons!",
     "book.dimdungeons.guidebook_2": "First, your portal will require 3 Gilded Portal Blocks. To craft a Gilded Portal Block surround a Chiseled Stone Brick with 8 Gold Ingots.",
     "book.dimdungeons.guidebook_3": "Second, your portal requires a Keyhole Block. To craft this item take one of your 3 Gilded Portal Blocks and combine it with a Trapped Chest and an Eye of Ender.",
@@ -260,7 +268,7 @@
 	"advancements.dimdungeons.dungeons.all_trophies.description": "Find all 8 unique trophies.",
 	
 	"advancements.dimdungeons.dungeons.enter_personal_space.title": "Home Space Home",	
-	"advancements.dimdungeons.dungeons.enter_personal_space.description": "Find a key to your own personal dimension and enter it!",
+	"advancements.dimdungeons.dungeons.enter_personal_space.description": "Obtain a key to your own personal dimension and enter it!",
 	"advancements.dimdungeons.dungeons.find_teleporter_key.title": "Crossworld Crossroads",
 	"advancements.dimdungeons.dungeons.find_teleporter_key.description": "Find a key to a teleporter hub!",
 	"advancements.dimdungeons.dungeons.build_recursive_portal.title": "Recursive Portals?",
@@ -268,8 +276,6 @@
 
 	"advancements.dimdungeons.dungeons.find_bell_1.title": "Bell of Secrets",
 	"advancements.dimdungeons.dungeons.find_bell_1.description": "Find a Bell of Secrets.",
-	"advancements.dimdungeons.dungeons.find_bell_2.title": "[REDACTED]",
-	"advancements.dimdungeons.dungeons.find_bell_2.description": "In version 1.1 you can't get this item without cheating.",
 	"advancements.dimdungeons.dungeons.find_key_charger.title": "Key Inscribing Station",
 	"advancements.dimdungeons.dungeons.find_key_charger.description": "You've found a Key Inscribing Station.",
 

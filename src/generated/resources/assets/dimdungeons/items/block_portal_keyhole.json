@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "dimdungeons:block/block_portal_keyhole"
+  }
+}

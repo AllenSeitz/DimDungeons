@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "dimdungeons:block_gilded_portal",
+    "minecraft:ender_eye",
+    "#c:chests/trapped"
+  ],
+  "result": {
+    "count": 1,
+    "id": "dimdungeons:block_portal_keyhole"
+  }
+}

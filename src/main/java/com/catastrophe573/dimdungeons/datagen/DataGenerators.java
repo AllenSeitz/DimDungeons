@@ -18,18 +18,54 @@ import java.util.concurrent.CompletableFuture;
 public class DataGenerators
 {
     @SubscribeEvent
-    public static void gatherData(GatherDataEvent.Client  event)
+    public static void gatherClientData(GatherDataEvent.Client event)
     {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
         // one provider for each data generator type. this one is for loot tables
-        generator.addProvider(event.includeDev(), new DimDungeonsLootTableProvider(packOutput,
-            Collections.emptySet(),
+        generator.addProvider(event.includeDev(), new DimDungeonsLootTableProvider(
+                packOutput,
+                Collections.emptySet(),
                 List.of(new LootTableProvider.SubProviderEntry(DimDungeonsLootTableChestProvider::new, LootContextParamSets.CHEST),
                         new LootTableProvider.SubProviderEntry(DimDungeonsLootTableBlockProvider::new, LootContextParamSets.BLOCK)),
-            lookupProvider));
+                lookupProvider));
 
+        generator.addProvider(true, new DimDungeonsRecipeProvider.Runner(packOutput, lookupProvider));
+
+        //BlockTagsProvider blockTagsProvider = new ModBlockTagProvider(packOutput, lookupProvider);
+        //generator.addProvider(true, blockTagsProvider);
+        //generator.addProvider(true, new ModItemTagProvider(packOutput, lookupProvider, blockTagsProvider.contentsGetter()));
+
+        generator.addProvider(true, new DimDungeonsModelProvider(packOutput));
+
+        generator.addProvider(true, new DimDungeonsGlobalLootModifierProvider(packOutput, lookupProvider));
+    }
+
+    @SubscribeEvent
+    public static void gatherServerData(GatherDataEvent.Server event)
+    {
+        DataGenerator generator = event.getGenerator();
+        PackOutput packOutput = generator.getPackOutput();
+        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+
+        // one provider for each data generator type. this one is for loot tables
+        generator.addProvider(event.includeDev(), new DimDungeonsLootTableProvider(
+                packOutput,
+                Collections.emptySet(),
+                List.of(new LootTableProvider.SubProviderEntry(DimDungeonsLootTableChestProvider::new, LootContextParamSets.CHEST),
+                        new LootTableProvider.SubProviderEntry(DimDungeonsLootTableBlockProvider::new, LootContextParamSets.BLOCK)),
+                lookupProvider));
+
+        generator.addProvider(true, new DimDungeonsRecipeProvider.Runner(packOutput, lookupProvider));
+
+        //BlockTagsProvider blockTagsProvider = new ModBlockTagProvider(packOutput, lookupProvider);
+        //generator.addProvider(true, blockTagsProvider);
+        //generator.addProvider(true, new ModItemTagProvider(packOutput, lookupProvider, blockTagsProvider.contentsGetter()));
+
+        generator.addProvider(true, new DimDungeonsModelProvider(packOutput));
+
+        generator.addProvider(true, new DimDungeonsGlobalLootModifierProvider(packOutput, lookupProvider));
     }
 }

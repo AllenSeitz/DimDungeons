@@ -28,7 +28,7 @@ public class ItemRegistrar
 	public static int NUM_TROPHIES = 8;
 
 	// DeferredRegister objects replace the old registry events
-	private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(DimDungeons.MOD_ID);
+	public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(DimDungeons.MOD_ID);
 
 	public static final DeferredItem<ItemPortalKey> ITEM_PORTAL_KEY = ITEMS.register(ItemPortalKey.REG_NAME, ItemPortalKey::new);
 	public static final DeferredItem<ItemBlankAdvancedKey> ITEM_BLANK_ADVANCED_KEY = ITEMS.register(ItemBlankAdvancedKey.REG_NAME, ItemBlankAdvancedKey::new);

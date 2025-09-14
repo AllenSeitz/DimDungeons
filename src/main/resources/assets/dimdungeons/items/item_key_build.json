@@ -1,7 +1,0 @@
-{
-  "parent": "dimdungeons:item/item_portal_key",
-    "textures": {
-        "layer0": "dimdungeons:item/item_key_build"
-    }
-  }
-}
