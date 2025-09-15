@@ -61,6 +61,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockPortalKeyhole extends BaseEntityBlock
 {
@@ -250,7 +251,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		{
 			// this apparently happens all the time? why do we have two functions, then? what is useWithoutItem() for?
 			//DimDungeons.logMessageError("dimdungeons: called BlockPortalKeyhole::useItemOn with an empty item stack?");
-			return InteractionResult.PASS; //PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.TRY_WITH_EMPTY_HAND;
 		}
 
 		ItemStack insideItem = myEntity.getObjectInserted();

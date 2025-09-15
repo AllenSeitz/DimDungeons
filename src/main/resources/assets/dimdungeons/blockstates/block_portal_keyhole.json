@@ -1,0 +1,43 @@
+{
+    "variants": {
+        "is_building=false,facing=north,filled=false,lit=false": { "model": "dimdungeons:block/block_portal_keyhole" },
+        "is_building=false,facing=south,filled=false,lit=false": { "model": "dimdungeons:block/block_portal_keyhole", "y": 180 },
+        "is_building=false,facing=west,filled=false,lit=false": { "model": "dimdungeons:block/block_portal_keyhole", "y": 270 },
+        "is_building=false,facing=east,filled=false,lit=false": { "model": "dimdungeons:block/block_portal_keyhole", "y": 90 },
+
+        "is_building=false,facing=north,filled=true,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_full" },
+        "is_building=false,facing=south,filled=true,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_full", "y": 180 },
+        "is_building=false,facing=west,filled=true,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_full", "y": 270 },
+        "is_building=false,facing=east,filled=true,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_full", "y": 90 },
+
+        "is_building=false,facing=north,filled=true,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit" },
+        "is_building=false,facing=south,filled=true,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit", "y": 180 },
+        "is_building=false,facing=west,filled=true,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit", "y": 270 },
+        "is_building=false,facing=east,filled=true,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit", "y": 90 },
+
+        "is_building=false,facing=north,filled=false,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit" },
+        "is_building=false,facing=south,filled=false,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit", "y": 180 },
+        "is_building=false,facing=west,filled=false,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit", "y": 270 },
+        "is_building=false,facing=east,filled=false,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_lit", "y": 90 },
+		
+        "is_building=true,facing=north,filled=false,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_building" },
+        "is_building=true,facing=south,filled=false,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_building", "y": 180 },
+        "is_building=true,facing=west,filled=false,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_building", "y": 270 },
+        "is_building=true,facing=east,filled=false,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_building", "y": 90 },
+
+        "is_building=true,facing=north,filled=true,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_building" },
+        "is_building=true,facing=south,filled=true,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_building", "y": 180 },
+        "is_building=true,facing=west,filled=true,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_building", "y": 270 },
+        "is_building=true,facing=east,filled=true,lit=false": { "model": "dimdungeons:block/block_portal_keyhole_building", "y": 90 },
+
+        "is_building=true,facing=north,filled=true,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_building" },
+        "is_building=true,facing=south,filled=true,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_building", "y": 180 },
+        "is_building=true,facing=west,filled=true,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_building", "y": 270 },
+        "is_building=true,facing=east,filled=true,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_building", "y": 90 },
+
+        "is_building=true,facing=north,filled=false,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_building" },
+        "is_building=true,facing=south,filled=false,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_building", "y": 180 },
+        "is_building=true,facing=west,filled=false,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_building", "y": 270 },
+        "is_building=true,facing=east,filled=false,lit=true": { "model": "dimdungeons:block/block_portal_keyhole_building", "y": 90 }		
+    }
+}

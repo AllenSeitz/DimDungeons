@@ -99,37 +99,37 @@ public class DimDungeonsModelProvider extends ModelProvider
         MultiVariantGenerator fullState = MultiVariantGenerator.multiVariant(chargerFull, Variant.variant().with(VariantProperties.MODEL, fullModel));
         blockModels.blockStateOutput.accept(fullState);
 
-        // the Portal Keyhole Block is a basic cube with some unique blockstates
-        Block keyholeBlock = BlockRegistrar.BLOCK_PORTAL_KEYHOLE.get();
-        TextureMapping keyholeTextures = blockModels.texturedModels.getOrDefault(keyholeBlock, TexturedModel.CUBE.get(keyholeBlock)).getMapping();
-        keyholeTextures.put(TextureSlot.PARTICLE, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_gilded_portal"));
-        keyholeTextures.put(TextureSlot.UP, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_gilded_portal"));
-        keyholeTextures.put(TextureSlot.DOWN, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_gilded_portal"));
-        keyholeTextures.put(TextureSlot.BACK, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_gilded_portal"));
-        keyholeTextures.put(TextureSlot.FRONT, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_keyhole_front"));
-        keyholeTextures.put(TextureSlot.WEST, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_gilded_portal"));
-        keyholeTextures.put(TextureSlot.EAST, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_gilded_portal"));
-        MultiVariantGenerator keyholeState = MultiVariantGenerator.multiVariant(keyholeBlock)
-                .with(PropertyDispatch.property(BlockStateProperties.HORIZONTAL_FACING)
-                        .select(Direction.NORTH, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R0))
-                        .select(Direction.SOUTH, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R180))
-                        .select(Direction.WEST, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R90))
-                        .select(Direction.EAST, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R270)))
-                .with(PropertyDispatch.property(BlockPortalKeyhole.FILLED)
-                        .select(true, Variant.variant().with(VariantProperties.MODEL, ModelLocationUtils.getModelLocation(keyholeBlock, "_full")))
-                        .select(false, Variant.variant().with(VariantProperties.MODEL, ModelLocationUtils.getModelLocation(keyholeBlock, ""))))
-                .with(PropertyDispatch.property(BlockPortalKeyhole.LIT)
-                        .select(true, Variant.variant().with(VariantProperties.MODEL, ModelLocationUtils.getModelLocation(keyholeBlock, "_lit")))
-                        .select(false, Variant.variant().with(VariantProperties.MODEL, ModelLocationUtils.getModelLocation(keyholeBlock, ""))));
-        blockModels.blockStateOutput.accept(keyholeState);
-        ResourceLocation keyholeItem = ModelTemplates.CUBE.create(keyholeBlock, keyholeTextures, blockModels.modelOutput);
-        blockModels.registerSimpleItemModel(keyholeBlock, keyholeItem);
+        // The Portal Keyhole Block is too much of a pain to datagenerate. Seriously, this incomplete snippet  is already more lines than the result itself.
+//        Block keyholeBlock = BlockRegistrar.BLOCK_PORTAL_KEYHOLE.get();
+//        TextureMapping keyholeTextures_default = blockModels.texturedModels.getOrDefault(keyholeBlock, TexturedModel.CUBE.get(keyholeBlock)).getMapping();
+//        keyholeTextures_default.put(TextureSlot.PARTICLE, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_gilded_portal"));
+//        keyholeTextures_default.put(TextureSlot.UP, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_gilded_portal"));
+//        keyholeTextures_default.put(TextureSlot.DOWN, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_gilded_portal"));
+//        keyholeTextures_default.put(TextureSlot.BACK, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_gilded_portal"));
+//        keyholeTextures_default.put(TextureSlot.FRONT, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_keyhole_front"));
+//        keyholeTextures_default.put(TextureSlot.WEST, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_gilded_portal"));
+//        keyholeTextures_default.put(TextureSlot.EAST, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_gilded_portal"));
+//        MultiVariantGenerator keyholeState = MultiVariantGenerator.multiVariant(keyholeBlock)
+//                .with(PropertyDispatch.property(BlockStateProperties.HORIZONTAL_FACING)
+//                        .select(Direction.NORTH, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R0))
+//                        .select(Direction.SOUTH, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R180))
+//                        .select(Direction.WEST, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R90))
+//                        .select(Direction.EAST, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R270)))
+//                .with(PropertyDispatch.property(BlockPortalKeyhole.FILLED)
+//                        .select(true, Variant.variant().with(VariantProperties.MODEL, ModelLocationUtils.getModelLocation(keyholeBlock, "_full")))
+//                        .select(false, Variant.variant().with(VariantProperties.MODEL, ModelLocationUtils.getModelLocation(keyholeBlock, ""))))
+//                .with(PropertyDispatch.property(BlockPortalKeyhole.LIT)
+//                        .select(true, Variant.variant().with(VariantProperties.MODEL, ModelLocationUtils.getModelLocation(keyholeBlock, "_lit")))
+//                        .select(false, Variant.variant().with(VariantProperties.MODEL, ModelLocationUtils.getModelLocation(keyholeBlock, ""))));
+//        blockModels.blockStateOutput.accept(keyholeState);
+//        ResourceLocation keyholeItem = ModelTemplates.CUBE.create(keyholeBlock, keyholeTextures_default, blockModels.modelOutput); // create inventory item for keyhole
+//        blockModels.registerSimpleItemModel(keyholeBlock, keyholeItem);
     }
 
     @Override
     public Stream<? extends Holder<Block>> getKnownBlocks()
     {
-        return BlockRegistrar.BLOCKS.getEntries().stream();
+        return BlockRegistrar.BLOCKS.getEntries().stream().filter(x -> !x.is(BlockRegistrar.BLOCK_PORTAL_KEYHOLE));
     }
 
     @Override

@@ -1,0 +1,8 @@
+{
+    "parent": "block/orientable",
+    "textures": {
+        "top": "dimdungeons:block/block_gilded_portal",
+        "front": "dimdungeons:block/block_keyhole_front_lit",
+        "side": "dimdungeons:block/block_gilded_portal"
+    }
+}
