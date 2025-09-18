@@ -247,6 +247,37 @@ public class DungeonConfig
 			// default "do not drop items" blocks
 			List<String> hardcodedDefaultNoDropsBlacklist = Lists.newArrayList();
 			hardcodedDefaultNoDropsBlacklist.add("minecraft:cracked_stone_bricks");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:trapped_chest");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:scaffolding");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:acacia_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:oak_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:birch_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:spruce_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:jungle_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:dark_oak_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:bamboo_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:cherry_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:crimson_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:warped_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:mangrove_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:pale_oak_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:white_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:orange_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:magenta_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:light_blue_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:yellow_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:lime_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:pink_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:gray_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:light_gray_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:cyan_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:purple_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:blue_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:brown_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:green_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:red_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:black_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:black_carpet");
 
 			// list of server options and comments
 			builder.comment("Options for general mod behavior.").push("general");
