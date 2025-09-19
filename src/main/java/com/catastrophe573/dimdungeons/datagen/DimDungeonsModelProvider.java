@@ -8,6 +8,7 @@ import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.blockstates.*;
 import net.minecraft.client.data.models.model.*;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.data.PackOutput;
@@ -16,6 +17,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class DimDungeonsModelProvider extends ModelProvider
@@ -33,9 +35,9 @@ public class DimDungeonsModelProvider extends ModelProvider
         // items
         //
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        itemModels.generateFlatItem(ItemRegistrar.ITEM_PORTAL_KEY.get(), ModelTemplates.FLAT_ITEM);
+        generatePortalKeyItem(itemModels, ItemRegistrar.ITEM_PORTAL_KEY.get());
         itemModels.generateFlatItem(ItemRegistrar.ITEM_BLANK_ADVANCED_KEY.get(), ModelTemplates.FLAT_ITEM);
-        itemModels.generateFlatItem(ItemRegistrar.ITEM_BLANK_THEME_KEY.get(), ModelTemplates.FLAT_ITEM);
+        generateBlankThemeKeyItem(itemModels, ItemRegistrar.ITEM_BLANK_THEME_KEY.get());
         itemModels.generateFlatItem(ItemRegistrar.ITEM_BLANK_BUILD_KEY.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ItemRegistrar.ITEM_BUILD_KEY.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ItemRegistrar.ITEM_BLANK_TELEPORTER_KEY.get(), ModelTemplates.FLAT_ITEM);
@@ -99,7 +101,7 @@ public class DimDungeonsModelProvider extends ModelProvider
         MultiVariantGenerator fullState = MultiVariantGenerator.multiVariant(chargerFull, Variant.variant().with(VariantProperties.MODEL, fullModel));
         blockModels.blockStateOutput.accept(fullState);
 
-        // The Portal Keyhole Block is too much of a pain to datagenerate. Seriously, this incomplete snippet  is already more lines than the result itself.
+        // The Portal Keyhole Block is too much of a pain to data-generate. Seriously, this incomplete snippet is already more lines than the result itself.
 //        Block keyholeBlock = BlockRegistrar.BLOCK_PORTAL_KEYHOLE.get();
 //        TextureMapping keyholeTextures_default = blockModels.texturedModels.getOrDefault(keyholeBlock, TexturedModel.CUBE.get(keyholeBlock)).getMapping();
 //        keyholeTextures_default.put(TextureSlot.PARTICLE, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_gilded_portal"));
@@ -136,5 +138,70 @@ public class DimDungeonsModelProvider extends ModelProvider
     public Stream<? extends Holder<Item>> getKnownItems()
     {
         return ItemRegistrar.ITEMS.getEntries().stream();
+        //return ItemRegistrar.ITEMS.getEntries().stream().filter(x -> x.get() != ItemRegistrar.ITEM_PORTAL_KEY.asItem() && x.get() != ItemRegistrar.ITEM_BLANK_THEME_KEY.asItem());
+    }
+
+    private static void generateBlankThemeKeyItem(ItemModelGenerators itemModels, Item item)
+    {
+        ItemModel.Unbaked itemmodel$unbaked = ItemModelUtils.plainModel(itemModels.createFlatItemModel(item, "", new ModelTemplate(Optional.of(ResourceLocation.fromNamespaceAndPath("minecraft", "item/generated")), Optional.of(""), TextureSlot.LAYER0)));
+        ItemModel.Unbaked itemmodel$unbaked1 = ItemModelUtils.plainModel(itemModels.createFlatItemModel(item, "_01", new ModelTemplate(Optional.of(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "item/item_blank_theme_key")), Optional.of("_01"), TextureSlot.LAYER0)));
+        ItemModel.Unbaked itemmodel$unbaked2 = ItemModelUtils.plainModel(itemModels.createFlatItemModel(item, "_02", new ModelTemplate(Optional.of(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "item/item_blank_theme_key")), Optional.of("_02"), TextureSlot.LAYER0)));
+        ItemModel.Unbaked itemmodel$unbaked3 = ItemModelUtils.plainModel(itemModels.createFlatItemModel(item, "_03", new ModelTemplate(Optional.of(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "item/item_blank_theme_key")), Optional.of("_03"), TextureSlot.LAYER0)));
+        itemModels.itemModelOutput
+                .accept(
+                        item,
+                        ItemModelUtils.conditional(
+                                // if the item has key data
+                                ItemModelUtils.hasComponent(DimDungeons.DUNGEON_KEY_DATA.get()),
+                                // select based on the theme property
+                                ItemModelUtils.rangeSelect(
+                                        new ModelPropertyTheme(),
+                                        1, // unused scalar - must be 1
+                                        itemmodel$unbaked,
+                                        ItemModelUtils.override(itemmodel$unbaked, 0.00F),
+                                        ItemModelUtils.override(itemmodel$unbaked1, 0.01F),
+                                        ItemModelUtils.override(itemmodel$unbaked2, 0.02F),
+                                        ItemModelUtils.override(itemmodel$unbaked3, 0.03F),
+                                        ItemModelUtils.override(itemmodel$unbaked, 0.04F)
+                                ),
+                                // default item model if hasComponent fails
+                                itemmodel$unbaked
+                        )
+                );
+    }
+
+    private static void generatePortalKeyItem(ItemModelGenerators itemModels, Item item)
+    {
+        ItemModel.Unbaked itemmodel$unbaked = ItemModelUtils.plainModel(itemModels.createFlatItemModel(item, "", new ModelTemplate(Optional.of(ResourceLocation.fromNamespaceAndPath("minecraft", "item/generated")), Optional.of(""), TextureSlot.LAYER0)));
+        ItemModel.Unbaked itemmodel$unbaked1 = ItemModelUtils.plainModel(itemModels.createFlatItemModel(item, "_001", new ModelTemplate(Optional.of(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "item/item_portal_key")), Optional.of("_001"), TextureSlot.LAYER0)));
+        ItemModel.Unbaked itemmodel$unbaked2 = ItemModelUtils.plainModel(itemModels.createFlatItemModel(item, "_002", new ModelTemplate(Optional.of(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "item/item_portal_key")), Optional.of("_002"), TextureSlot.LAYER0)));
+        ItemModel.Unbaked itemmodel$unbaked3 = ItemModelUtils.plainModel(itemModels.createFlatItemModel(item, "_101", new ModelTemplate(Optional.of(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "item/item_portal_key")), Optional.of("_101"), TextureSlot.LAYER0)));
+        ItemModel.Unbaked itemmodel$unbaked4 = ItemModelUtils.plainModel(itemModels.createFlatItemModel(item, "_102", new ModelTemplate(Optional.of(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "item/item_portal_key")), Optional.of("_102"), TextureSlot.LAYER0)));
+        ItemModel.Unbaked itemmodel$unbaked5 = ItemModelUtils.plainModel(itemModels.createFlatItemModel(item, "_103", new ModelTemplate(Optional.of(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "item/item_portal_key")), Optional.of("_103"), TextureSlot.LAYER0)));
+        ItemModel.Unbaked itemmodel$unbaked6 = ItemModelUtils.plainModel(itemModels.createFlatItemModel(item, "_999", new ModelTemplate(Optional.of(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "item/item_portal_key")), Optional.of("_999"), TextureSlot.LAYER0)));
+        itemModels.itemModelOutput
+                .accept(
+                        item,
+                        ItemModelUtils.conditional(
+                                // if the item has key data
+                                ItemModelUtils.hasComponent(DimDungeons.DUNGEON_KEY_DATA.get()),
+                                // select based on the theme property
+                                ItemModelUtils.rangeSelect(
+                                        new ModelPropertyLevel(),
+                                        1, // unused scalar - must be 1
+                                        itemmodel$unbaked,
+                                        ItemModelUtils.override(itemmodel$unbaked, 0.0f),
+                                        ItemModelUtils.override(itemmodel$unbaked1, 0.001f),
+                                        ItemModelUtils.override(itemmodel$unbaked2, 0.002f),
+                                        ItemModelUtils.override(itemmodel$unbaked3, 0.101f),
+                                        ItemModelUtils.override(itemmodel$unbaked4, 0.102f),
+                                        ItemModelUtils.override(itemmodel$unbaked5, 0.103f),
+                                        ItemModelUtils.override(itemmodel$unbaked, 0.104f),
+                                        ItemModelUtils.override(itemmodel$unbaked6, 0.999f)
+                                ),
+                                // default item model if hasComponent fails
+                                itemmodel$unbaked
+                        )
+                );
     }
 }

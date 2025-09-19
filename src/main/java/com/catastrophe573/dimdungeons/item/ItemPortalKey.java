@@ -31,13 +31,18 @@ public class ItemPortalKey extends BaseItemKey
 		{
 			if (((ItemPortalKey) stack.getItem()).getDungeonType(stack) == DungeonType.TELEPORTER_HUB)
 			{
-				return 0.21f; // teleporter hub
+				return 0.999f; // teleporter hub
+			}
+			int theme = ((ItemPortalKey) stack.getItem()).getDungeonTheme(stack);
+			if ( theme > 0 )
+			{
+				return 0.100f + (theme / 1000.0f);
 			}
 			if (((ItemPortalKey) stack.getItem()).getKeyLevel(stack) == 2)
 			{
-				return 0.2f; // level 2 key
+				return 0.002f; // level 2 key
 			}
-			return 0.1f; // level 1 key
+			return 0.001f; // level 1 key
 		}
 		return 0.0f; // unactivated key
 	}

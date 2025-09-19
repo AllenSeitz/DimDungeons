@@ -1,6 +1,56 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "dimdungeons:item/item_blank_theme_key"
+    "type": "minecraft:condition",
+    "component": "dimdungeons:dungeon_key_data",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "dimdungeons:item/item_blank_theme_key"
+    },
+    "on_true": {
+      "type": "minecraft:range_dispatch",
+      "entries": [
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "dimdungeons:item/item_blank_theme_key"
+          },
+          "threshold": 0.0
+        },
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "dimdungeons:item/item_blank_theme_key_01"
+          },
+          "threshold": 0.01
+        },
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "dimdungeons:item/item_blank_theme_key_02"
+          },
+          "threshold": 0.02
+        },
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "dimdungeons:item/item_blank_theme_key_03"
+          },
+          "threshold": 0.03
+        },
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "dimdungeons:item/item_blank_theme_key"
+          },
+          "threshold": 0.04
+        }
+      ],
+      "fallback": {
+        "type": "minecraft:model",
+        "model": "dimdungeons:item/item_blank_theme_key"
+      },
+      "property": "dimdungeons:dungeon_theme"
+    },
+    "property": "minecraft:has_component"
   }
 }

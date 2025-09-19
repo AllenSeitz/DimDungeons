@@ -1,6 +1,77 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "dimdungeons:item/item_portal_key"
+    "type": "minecraft:condition",
+    "component": "dimdungeons:dungeon_key_data",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "dimdungeons:item/item_portal_key"
+    },
+    "on_true": {
+      "type": "minecraft:range_dispatch",
+      "entries": [
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "dimdungeons:item/item_portal_key"
+          },
+          "threshold": 0.0
+        },
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "dimdungeons:item/item_portal_key_001"
+          },
+          "threshold": 0.001
+        },
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "dimdungeons:item/item_portal_key_002"
+          },
+          "threshold": 0.002
+        },
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "dimdungeons:item/item_portal_key_101"
+          },
+          "threshold": 0.101
+        },
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "dimdungeons:item/item_portal_key_102"
+          },
+          "threshold": 0.102
+        },
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "dimdungeons:item/item_portal_key_103"
+          },
+          "threshold": 0.103
+        },
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "dimdungeons:item/item_portal_key"
+          },
+          "threshold": 0.104
+        },
+        {
+          "model": {
+            "type": "minecraft:model",
+            "model": "dimdungeons:item/item_portal_key_999"
+          },
+          "threshold": 0.999
+        }
+      ],
+      "fallback": {
+        "type": "minecraft:model",
+        "model": "dimdungeons:item/item_portal_key"
+      },
+      "property": "dimdungeons:dungeon_level"
+    },
+    "property": "minecraft:has_component"
   }
 }

@@ -4,6 +4,7 @@ import com.catastrophe573.dimdungeons.item.*;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperty;
 import net.minecraft.client.renderer.item.properties.select.SelectItemModelProperties;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceKey;
@@ -92,6 +93,7 @@ public class DimDungeons
 		modEventBus.addListener(this::doCommonStuff);
 		modEventBus.addListener(this::doClientStuff);
 		modEventBus.addListener(this::modConfig);
+		modEventBus.addListener(this::onRegisterItemModelProperties);
 
 		// Register ourselves for server, registry and other game events we are interested in
 		NeoForge.EVENT_BUS.register(eventHandler);
@@ -115,29 +117,6 @@ public class DimDungeons
 			// TODO: set the render type in the model json instead of doing it here
 			ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_GOLD_PORTAL.get(), RenderType.translucent());
 			ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get(), RenderType.translucent());
-
-			// register the custom property for the keys that allows for switching their model
-			// TODO: was this removed in 1.21.4 and replaced with vanilla item model json?
-//			ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "keytype"), (stack, world, entity, number) ->
-//			{
-//				return ItemPortalKey.getKeyLevelAsFloat(stack);
-//			});
-//			ItemProperties.register(ItemRegistrar.ITEM_PORTAL_KEY.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "keytheme"), (stack, world, entity, number) ->
-//			{
-//				return ItemPortalKey.getKeyThemeAsFloat(stack);
-//			});
-//			ItemProperties.register(ItemRegistrar.ITEM_BLANK_THEME_KEY.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "keytheme"), (stack, world, entity, number) ->
-//			{
-//				return ItemBlankThemeKey.getKeyThemeAsFloat(stack);
-//			});
-//			ItemProperties.register(ItemRegistrar.ITEM_SECRET_BELL.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
-//			{
-//				return ItemSecretBell.getUpgradeLevelAsFloat(stack);
-//			});
-//			ItemProperties.register(ItemRegistrar.ITEM_SECRET_BELL.get(), ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "bellupgrade"), (stack, world, entity, number) ->
-//			{
-//				return ItemSecretBell.getUpgradeLevelAsFloat(stack);
-//			});
 		});
 	}
 
@@ -145,6 +124,14 @@ public class DimDungeons
 	public void onRegisterCommands(RegisterCommandsEvent event)
 	{
 		CommandDimDungeons.register(event.getDispatcher());
+	}
+
+	@SubscribeEvent
+	public void onRegisterItemModelProperties(net.neoforged.neoforge.client.event.RegisterRangeSelectItemModelPropertyEvent event)
+	{
+		//DimDungeons.logMessageInfo("Registering custom item model properties!");
+		event.register(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "dungeon_theme"), ModelPropertyTheme.MAP_CODEC);
+		event.register(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "dungeon_level"), ModelPropertyLevel.MAP_CODEC);
 	}
 
 	private void enqueueIMC(final InterModEnqueueEvent event)
