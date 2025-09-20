@@ -78,41 +78,32 @@ public class ItemBlankThemeKey extends BaseItemKey
 	}
 
 	@Override
-	public void performActivationRitual(Player player, ItemStack itemstack, Level worldIn, BlockPos pos)
+	public ItemStack performActivationRitual(Player player, ItemStack itemstack, Level worldIn, BlockPos pos)
 	{
 		worldIn.playSound((Player) null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
 
 		if (player == null)
 		{
 			DimDungeons.logMessageError("Somehow activated a blank theme key without a player present. Do not do this.");
-			return;
+			return null;
 		}
 
 		if (!worldIn.isClientSide)
 		{
-			// delete this item and replace it with a regular blank key, but first remember which inventory slot it was in
-			int slot = player.getInventory().findSlotMatchingItem(itemstack);
 			int theme = ItemBlankThemeKey.getTheme(itemstack);
 			if (theme < 1)
 			{
 				// by design, pick a random theme if the NBT isn't set
 				theme = worldIn.getRandom().nextInt(DungeonConfig.themeSettings.size()) + 1;
 			}
-			itemstack.shrink(1);
 
 			// generate the blank key and try to insert it into the player's inventory multiple ways as a fail-safe
 			ItemStack newkey = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
 			activateKeyLevel1(worldIn.getServer(), newkey, theme);
-
-			if (!player.getInventory().add(slot, newkey))
-			{
-				if (!player.addItem(newkey))
-				{
-					player.drop(newkey, false);
-				}
-			}
+			return newkey;
 		}
 
 		createActivationParticleEffects(worldIn, pos);
+		return null;
 	}
 }

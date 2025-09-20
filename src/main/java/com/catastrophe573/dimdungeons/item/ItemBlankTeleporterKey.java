@@ -29,7 +29,7 @@ public class ItemBlankTeleporterKey extends BaseItemKey
 	}
 
 	@Override
-	public void performActivationRitual(Player player, ItemStack itemstack, Level worldIn, BlockPos pos)
+	public ItemStack performActivationRitual(Player player, ItemStack itemstack, Level worldIn, BlockPos pos)
 	{
 		worldIn.playSound((Player) null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
 
@@ -39,24 +39,13 @@ public class ItemBlankTeleporterKey extends BaseItemKey
 
 		if (!worldIn.isClientSide)
 		{
-			// delete this item and replace it with a regular key, but first remember which
-			// inventory slot it was in
-			int slot = player.getInventory().findSlotMatchingItem(itemstack);
-			itemstack.shrink(1);
-
-			// generate the activated key and try to insert it into the player's inventory
-			// multiple ways as a fail-safe
+			// generate the activated key and try to insert it into the player's inventory multiple ways as a fail-safe
 			ItemStack newkey = new ItemStack(ItemRegistrar.ITEM_PORTAL_KEY.get());
 			activateKeyForNewTeleporterHub(worldIn.getServer(), newkey);
-
-			if (!player.getInventory().add(slot, newkey))
-			{
-				if (!player.addItem(newkey))
-				{
-					player.drop(newkey, false);
-				}
-			}
+			return newkey;
 		}
+
+		return null;
 	}
 
 	// EVEN MORE particle effects for this special event!

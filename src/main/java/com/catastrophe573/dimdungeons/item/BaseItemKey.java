@@ -20,9 +20,13 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemFrameItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
@@ -399,7 +403,14 @@ public class BaseItemKey extends Item
 		RandomSource random = worldIn.getRandom();
 
 		BlockState iblockstate = worldIn.getBlockState(pos);
-		ItemStack itemstack = parameters.getItemInHand();
+		ItemStack itemstack = player.getItemInHand(parameters.getHand());
+
+		// this check fixes slot logic
+		if ( parameters.getHand() != InteractionHand.MAIN_HAND )
+		{
+			return InteractionResult.PASS;
+		}
+		int slot = player.getInventory().selected;
 
 		// new in 1.13 the hit vector contains world coordinates in the integer part, and I would like just the decimal part
 		hitX = Math.abs((int) hitX - hitX);
@@ -430,7 +441,7 @@ public class BaseItemKey extends Item
 							}
 							else
 							{
-								performActivationRitual(player, itemstack, worldIn, pos);
+								performActivationHelper(player, itemstack, worldIn, pos, slot);
 								return InteractionResult.SUCCESS;
 							}
 						}
@@ -439,9 +450,6 @@ public class BaseItemKey extends Item
 					{
 						worldIn.setBlock(pos, iblockstate.setValue(EndPortalFrameBlock.HAS_EYE, Boolean.valueOf(false)), 2);
 						worldIn.updateNeighbourForOutputSignal(pos, Blocks.END_PORTAL_FRAME);
-
-						// do this if you want the key to break, too
-						// itemstack.shrink(1);
 
 						// dramatic effect for what you just did!
 						worldIn.playSound((Player) null, pos, SoundEvents.ENDER_EYE_DEATH, SoundSource.BLOCKS, 1.5F, 1.0F);
@@ -477,7 +485,7 @@ public class BaseItemKey extends Item
 				}
 				else if (blockid.equals("end_creator") || blockid.equals("end_creator_activated") || blockid.equals("ancient_portal_frame"))
 				{
-					performActivationRitual(player, itemstack, worldIn, pos);
+					performActivationHelper(player, itemstack, worldIn, pos, slot);
 					return InteractionResult.SUCCESS;
 				}
 			}
@@ -486,7 +494,7 @@ public class BaseItemKey extends Item
 				// implement the block tag for alternate key chargers
 				if (!isActivated(itemstack))
 				{
-					performActivationRitual(player, itemstack, worldIn, pos);
+					performActivationHelper(player, itemstack, worldIn, pos, slot);
 					return InteractionResult.SUCCESS;
 				}
 				else
@@ -506,7 +514,7 @@ public class BaseItemKey extends Item
 					}
 					else
 					{
-						performActivationRitual(player, itemstack, worldIn, pos);
+						performActivationHelper(player, itemstack, worldIn, pos, slot);
 
 						// handle possible damage to the key activation station, similar to an anvil
 						// running this block of code on the client can cause a flicker
@@ -570,7 +578,7 @@ public class BaseItemKey extends Item
 		return InteractionResult.PASS;
 	}
 
-	public void performActivationRitual(Player player, ItemStack itemstack, Level worldIn, BlockPos pos)
+	public ItemStack performActivationRitual(Player player, ItemStack itemstack, Level worldIn, BlockPos pos)
 	{
 		// System.out.println("Triggered special event to initialize key!");
 		worldIn.playSound((Player) null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -584,6 +592,28 @@ public class BaseItemKey extends Item
 		}
 
 		createActivationParticleEffects(worldIn, pos);
+		return null;
+	}
+
+	private void performActivationHelper(Player player, ItemStack itemstack, Level worldIn, BlockPos pos, int slot)
+	{
+		ItemStack newkey = performActivationRitual(player, itemstack, worldIn, pos);
+		if ( newkey != null )
+		{
+			itemstack.shrink(1);
+			if ( player.hasInfiniteMaterials() )
+			{
+				player.getInventory().setItem(slot, ItemStack.EMPTY); // no seriously, feels like a bug otherwise, even in creative mode
+			}
+
+			if (!player.getInventory().add(slot, newkey))
+			{
+				if (!player.addItem(newkey))
+				{
+					player.drop(newkey, false);
+				}
+			}
+		}
 	}
 
 	// more particle effects for this special event!

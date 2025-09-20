@@ -40,39 +40,27 @@ public class ItemBlankBuildKey extends BaseItemKey
 	}
 
 	@Override
-	public void performActivationRitual(Player player, ItemStack itemstack, Level worldIn, BlockPos pos)
+	public ItemStack performActivationRitual(Player player, ItemStack itemstack, Level worldIn, BlockPos pos)
 	{
 		worldIn.playSound((Player) null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
 
 		if (player == null)
 		{
 			DimDungeons.logMessageError("Somehow activated a blank personal key without a player present. Do not do this.");
-			return;
+			return null;
 		}
 
 		if (!worldIn.isClientSide)
 		{
-			// delete this item and replace it with a regular build key, but first remember
-			// which inventory slot it was in
-			int slot = player.getInventory().findSlotMatchingItem(itemstack);
-			itemstack.shrink(1);
-
-			// generate the activated key and try to insert it into the player's inventory
-			// multiple ways as a fail-safe
+			// generate the activated key and try to insert it into the player's inventory multiple ways as a fail-safe
 			ItemStack newkey = new ItemStack(ItemRegistrar.ITEM_BUILD_KEY.get());
 			activateBuildKey(worldIn.getServer(), newkey, player);
-
-			if (!player.getInventory().add(slot, newkey))
-			{
-				if (!player.addItem(newkey))
-				{
-					player.drop(newkey, false);
-				}
-			}
+			return newkey;
 		}
 
 		createActivationParticleEffects(worldIn, pos);
 		createActivationParticleEffectsForBuildKey(worldIn, pos);
+		return null;
 	}
 
 	public void activateBuildKey(MinecraftServer server, ItemStack stack, LivingEntity player)
