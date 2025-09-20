@@ -145,6 +145,7 @@ public class PlayerDungeonEvents
 
 		// DimDungeons.LOGGER.info("EXPLODING BRICKS: " + crackedBricks.size());
 		//event.getExplosion().clearToBlow();
+		event.getAffectedBlocks().clear();
 		event.getAffectedBlocks().addAll(crackedBricks);
 	}
 
