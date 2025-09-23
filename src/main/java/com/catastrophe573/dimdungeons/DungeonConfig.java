@@ -188,6 +188,7 @@ public class DungeonConfig
 			hardcodedDefaultInteractionBlacklist.add("minecraft:lodestone");
 			hardcodedDefaultInteractionBlacklist.add("minecraft:beehive");
 			hardcodedDefaultInteractionBlacklist.add("minecraft:bee_nest");
+			hardcodedDefaultInteractionBlacklist.add("minecraft:decorated_pot");
 
 			// or I could add support for mixing tags and block ids in the blacklist
 			hardcodedDefaultInteractionBlacklist.add("minecraft:black_bed");
@@ -243,6 +244,8 @@ public class DungeonConfig
 			List<String> hardcodedDefaultBreakingWhitelist = Lists.newArrayList();
 			hardcodedDefaultBreakingWhitelist.add("gravestone:gravestone");
 			hardcodedDefaultBreakingWhitelist.add("minecraft:suspicious_sand");
+			hardcodedDefaultBreakingWhitelist.add("minecraft:suspicious_gravel");
+			hardcodedDefaultBreakingWhitelist.add("minecraft:decorated_pot");
 
 			// default "do not drop items" blocks
 			List<String> hardcodedDefaultNoDropsBlacklist = Lists.newArrayList();
@@ -496,7 +499,7 @@ public class DungeonConfig
 		tempBasicHallways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:crushhall_1");
-		temp.add("dimdungeons:crushhall_3");
+		temp.add("dimdungeons:crushhall_2");
 		tempBasicHallways.add(Lists.newArrayList(temp));
 		temp.clear();
 		temp.add("dimdungeons:yinyang_1");
@@ -661,7 +664,7 @@ public class DungeonConfig
 		temp.add("dimdungeons:crueltrap_3");
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
-		temp.add("dimdungeons:beacon_3");
+		temp.add("dimdungeons:beacon_2");
 		temp.add("dimdungeons:library_1");
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
@@ -721,7 +724,6 @@ public class DungeonConfig
 		temp.add("dimdungeons:combat_1");
 		temp.add("dimdungeons:combat_2");
 		temp.add("dimdungeons:combat_3");
-		temp.add("dimdungeons:farmland_puzzle_1");
 		tempAdvancedFourways.add(Lists.newArrayList(temp));
 		temp.add("dimdungeons:combat_4");
 		temp.add("dimdungeons:combat_5");
@@ -856,7 +858,7 @@ public class DungeonConfig
 		temp.add("dimdungeons:redstrap_2");
 		tempAdvancedHallways.add(Lists.newArrayList(temp));
 		temp.clear();
-		temp.add("dimdungeons:crushhall_2");
+		temp.add("dimdungeons:crushhall_3");
 		temp.add("dimdungeons:crushhall_4");
 		tempAdvancedHallways.add(Lists.newArrayList(temp));
 		temp.clear();
@@ -1370,7 +1372,7 @@ public class DungeonConfig
 			theme = 2;
 			builder.comment("Settings for Theme " + theme).push("dungeonTheme" + theme);
 			theme2.themeEntrances = builder.translation("config.dimdungeons.themeEntrances" + theme).define("themeEntrances" + theme, makeDefaultThemeRoomSet(theme, "entrance", 4));
-			theme2.themeFourways = builder.translation("config.dimdungeons.themeFourways" + theme).define("themeFourways" + theme, makeDefaultThemeRoomSetAlternate(theme, 31));
+			theme2.themeFourways = builder.translation("config.dimdungeons.themeFourways" + theme).define("themeFourways" + theme, makeDefaultThemeRoomSetAlternate(theme, 32));
 			theme2.themeThreeways = builder.translation("config.dimdungeons.basicThreeways" + theme).define("themeThreeways" + theme, makeDefaultThemeRoomSet(theme, "threeway", 1));
 			theme2.themeHallways = builder.translation("config.dimdungeons.basicHallways" + theme).define("themeHallways" + theme, makeDefaultThemeRoomSet(theme, "hallway", 1));
 			theme2.themeCorners = builder.translation("config.dimdungeons.basicCorners" + theme).define("themeCorners" + theme, makeDefaultThemeRoomSet(theme, "corner", 1));
