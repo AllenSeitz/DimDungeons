@@ -16,8 +16,11 @@ import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import com.sun.jna.platform.win32.COM.util.annotation.ComObject;
+import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -30,14 +33,17 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.network.Filterable;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.LockCode;
 import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.WrittenBookContent;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -578,7 +584,14 @@ public class DungeonPlacement
 			{
 				CompoundTag tag = ((BaseContainerBlockEntity) te).getUpdateTag(world.getLevel().registryAccess());
 				String lockName = "Chest Key: "+makeChunkCode(world.getChunk(pos).getPos());
-				tag.putString("Lock", lockName);
+
+				CompoundTag itemPredicate = new CompoundTag();
+				CompoundTag itemData = new CompoundTag();
+				CompoundTag nameData = new CompoundTag();
+				nameData.putString("dimdungeons_lockedchest", lockName);
+				itemData.put("minecraft:custom_data", nameData);
+				itemPredicate.put("predicates", itemData);
+				tag.put("lock", itemPredicate);
 				te.handleUpdateTag(tag, world.getLevel().registryAccess());
 
 				String lootType = room.dungeonType == DungeonType.BASIC ? "basic" : "advanced";
@@ -746,6 +759,10 @@ public class DungeonPlacement
 					String lockName = "Chest Key: "+makeChunkCode(world.getChunk(pos).getPos());
 					//stack.setHoverName(Component.translatable(lockName));
 					stack.update(DataComponents.CUSTOM_NAME, Component.translatable(lockName), component -> component);
+
+					CompoundTag customData = new CompoundTag();
+					customData.putString("dimdungeons_lockedchest", lockName);
+					CustomData.set(DataComponents.CUSTOM_DATA, stack, customData);
 
 					((Mob) mob).setItemSlot(EquipmentSlot.CHEST, stack);
 					((Mob) mob).setDropChance(EquipmentSlot.CHEST, 1.0f);
