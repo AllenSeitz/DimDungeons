@@ -972,6 +972,10 @@ public class DungeonConfig
 		temp.add("dimdungeons:speedpuzzle_4");
 		tempAdvancedEnds.add(Lists.newArrayList(temp));
 		temp.clear();
+		temp.add("dimdungeons:endportal_1");
+		temp.add("dimdungeons:endportal_2");
+		tempAdvancedEnds.add(Lists.newArrayList(temp));
+		temp.clear();
 		temp.add("dimdungeons:honeytrap_2");
 		temp.add("dimdungeons:honeytrap_3");
 		temp.add("dimdungeons:honeytrap_4");
