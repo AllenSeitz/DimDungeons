@@ -7,6 +7,9 @@ import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.DispenserBlockEntity;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,6 +29,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.loot.LootTable;
 
 public class ItemSecretBell extends Item // extends TieredItem implements IVanishable
 {
@@ -278,7 +282,17 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 
 						if (tagged)
 						{
-							// the bell just rings for any tagged blocks (chests, barrels, etc) no more checking for loot tables
+							BlockEntity te = worldIn.getBlockEntity(new BlockPos(x, y, z));
+							if (te instanceof RandomizableContainerBlockEntity)
+							{
+								ResourceKey<LootTable> lt = ((RandomizableContainerBlockEntity) te).getLootTable();
+								if ( lt == null )
+								{
+									continue;
+								}
+							}
+
+							// if the tagged block isn't a container that doesn't do loot tables (like a Lootr container) then just ring anyway
 							return new BlockPos(x, y, z);
 						}
 					}
