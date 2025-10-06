@@ -242,10 +242,44 @@ public class DungeonConfig
 			// by default nothing should be breakable. but gravestone/death chest-type mods need this special exception
 			List<String> hardcodedDefaultBreakingWhitelist = Lists.newArrayList();
 			hardcodedDefaultBreakingWhitelist.add("gravestone:gravestone");
+			hardcodedDefaultBreakingWhitelist.add("minecraft:suspicious_sand");
+			hardcodedDefaultBreakingWhitelist.add("minecraft:suspicious_gravel");
+			hardcodedDefaultBreakingWhitelist.add("minecraft:decorated_pot");
 
 			// default "do not drop items" blocks
 			List<String> hardcodedDefaultNoDropsBlacklist = Lists.newArrayList();
 			hardcodedDefaultNoDropsBlacklist.add("minecraft:cracked_stone_bricks");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:trapped_chest");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:scaffolding");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:acacia_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:oak_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:birch_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:spruce_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:jungle_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:dark_oak_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:bamboo_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:cherry_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:crimson_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:warped_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:mangrove_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:pale_oak_wall_sign");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:white_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:orange_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:magenta_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:light_blue_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:yellow_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:lime_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:pink_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:gray_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:light_gray_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:cyan_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:purple_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:blue_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:brown_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:green_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:red_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:black_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:black_carpet");
 
 			// list of server options and comments
 			builder.comment("Options for general mod behavior.").push("general");
@@ -627,7 +661,7 @@ public class DungeonConfig
 		temp.add("dimdungeons:crueltrap_3");
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
-		temp.add("dimdungeons:beacon_3");
+		temp.add("dimdungeons:beacon_2");
 		temp.add("dimdungeons:library_1");
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
@@ -642,7 +676,6 @@ public class DungeonConfig
 		temp.add("dimdungeons:honeytrap_4");
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
-		temp.add("dimdungeons:sand_2");
 		temp.add("dimdungeons:sand_3");
 		tempBasicEnds.add(Lists.newArrayList(temp));
 		temp.clear();
@@ -980,8 +1013,11 @@ public class DungeonConfig
 		temp.add("dimdungeons:fightchest_1");
 		tempAdvancedEnds.add(Lists.newArrayList(temp));
 		temp.clear();
+		temp.add("dimdungeons:endportal_1");
+		temp.add("dimdungeons:endportal_2");
+		tempAdvancedEnds.add(Lists.newArrayList(temp));
+		temp.clear();
 		temp.add("dimdungeons:slotmachine_2");
-		temp.add("dimdungeons:sand_2");
 		temp.add("dimdungeons:sand_3");
 		tempAdvancedEnds.add(Lists.newArrayList(temp));
 		temp.clear();
