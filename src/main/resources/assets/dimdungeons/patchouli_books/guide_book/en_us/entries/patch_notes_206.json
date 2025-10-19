@@ -1,0 +1,12 @@
+{
+    "name": "Version 206",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 206,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)New textures by Ganpan14O. $(li)Minor updates to several rooms. $(li)Bugfixes for puzzles."
+        }		
+    ]
+}
