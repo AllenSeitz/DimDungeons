@@ -6,6 +6,7 @@ import com.catastrophe573.dimdungeons.item.*;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.MultiVariant;
 import net.minecraft.client.data.models.blockstates.*;
 import net.minecraft.client.data.models.model.*;
 import net.minecraft.client.renderer.item.ItemModel;
@@ -15,10 +16,13 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import static net.minecraft.client.data.models.BlockModelGenerators.plainVariant;
 
 public class DimDungeonsModelProvider extends ModelProvider
 {
@@ -64,41 +68,43 @@ public class DimDungeonsModelProvider extends ModelProvider
         // the Gold Portal borrows block states from the vanilla nether portal (see: BlockModelGenerators.createNetherPortalBlock)
         // but an actual model is still used in assets/dimdungeons/models/block_gold_portal_model
         Block portalBlock = BlockRegistrar.BLOCK_GOLD_PORTAL.get();
-        TextureMapping portalTextures = blockModels.texturedModels.getOrDefault(portalBlock, TexturedModel.CUBE.get(portalBlock)).getMapping();
+        TextureMapping portalTextures = blockModels.TEXTURED_MODELS.getOrDefault(portalBlock, TexturedModel.CUBE.get(portalBlock)).getMapping();
         portalTextures.put(TextureSlot.LAYER0, ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_gold_portal"));
-        MultiVariantGenerator gportal = MultiVariantGenerator.multiVariant(portalBlock).with(
-                PropertyDispatch.property(BlockStateProperties.HORIZONTAL_AXIS)
-                        .select(Direction.Axis.X, Variant.variant().with(VariantProperties.MODEL, ModelLocationUtils.getModelLocation(portalBlock, "_ns")))
-                        .select(Direction.Axis.Z, Variant.variant().with(VariantProperties.MODEL, ModelLocationUtils.getModelLocation(portalBlock, "_ew"))));
+        MultiVariantGenerator gportal = MultiVariantGenerator.dispatch(portalBlock).with(
+                PropertyDispatch.initial(BlockStateProperties.HORIZONTAL_AXIS)
+                        .select(Direction.Axis.X, plainVariant(ModelLocationUtils.getModelLocation(portalBlock, "_ns")))
+                        .select(Direction.Axis.Z, plainVariant(ModelLocationUtils.getModelLocation(portalBlock, "_ew"))));
         blockModels.blockStateOutput.accept(gportal);
         ResourceLocation portalItem = ModelTemplates.FLAT_ITEM.create(portalBlock, portalTextures, blockModels.modelOutput); // create an inventory item just in case
         blockModels.registerSimpleItemModel(portalBlock, portalItem);
 
         // crown block borrows from vanilla wall (see: BlockModelGenerators.BlockFamilyProvider wall)
         Block crownBlock = BlockRegistrar.BLOCK_PORTAL_CROWN.get();
-        TextureMapping crownTextures = blockModels.texturedModels.getOrDefault(crownBlock, TexturedModel.CUBE.get(crownBlock)).getMapping();
-        ResourceLocation wall0 = ModelTemplates.WALL_POST.create(crownBlock, crownTextures, blockModels.modelOutput);
-        ResourceLocation wall1 = ModelTemplates.WALL_LOW_SIDE.create(crownBlock, crownTextures, blockModels.modelOutput);
-        ResourceLocation wall2 = ModelTemplates.WALL_TALL_SIDE.create(crownBlock, crownTextures, blockModels.modelOutput);
-        BlockStateGenerator wall = BlockModelGenerators.createWall(BlockRegistrar.BLOCK_PORTAL_CROWN.get(), wall0, wall1, wall2);
+        TextureMapping crownTextures = blockModels.TEXTURED_MODELS.getOrDefault(crownBlock, TexturedModel.CUBE.get(crownBlock)).getMapping();
+        MultiVariant wall0 = BlockModelGenerators.plainVariant(ModelTemplates.WALL_POST.create(crownBlock, crownTextures, blockModels.modelOutput));
+        MultiVariant wall1 = BlockModelGenerators.plainVariant(ModelTemplates.WALL_LOW_SIDE.create(crownBlock, crownTextures, blockModels.modelOutput));
+        MultiVariant wall2 = BlockModelGenerators.plainVariant(ModelTemplates.WALL_TALL_SIDE.create(crownBlock, crownTextures, blockModels.modelOutput));
+
+        BlockModelDefinitionGenerator wall = BlockModelGenerators.createWall(BlockRegistrar.BLOCK_PORTAL_CROWN.get(), wall0, wall1, wall2);
         blockModels.blockStateOutput.accept(wall);
         ResourceLocation wall3 = ModelTemplates.WALL_INVENTORY.create(crownBlock, crownTextures, blockModels.modelOutput);
         blockModels.registerSimpleItemModel(crownBlock, wall3);
 
-        // the Key Inscribing Station has no block states and an actual model is still used in assets/dimdungeons/models/block_key_charger
+        // the Key Inscribing Station has only basic block states and an actual model is still used in assets/dimdungeons/models/block_key_charger
+        // for updates, refer to: BlockModelGenerators.createEndPortalFrame
         Block chargerDamaged = BlockRegistrar.BLOCK_CHARGER_DAMAGED.get();
         ResourceLocation damagedModel = ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_key_charger_damaged");
-        MultiVariantGenerator damagedState = MultiVariantGenerator.multiVariant(chargerDamaged, Variant.variant().with(VariantProperties.MODEL, damagedModel));
+        MultiVariantGenerator damagedState = MultiVariantGenerator.dispatch(chargerDamaged, plainVariant(damagedModel));
         blockModels.blockStateOutput.accept(damagedState);
 
         Block chargerUsed = BlockRegistrar.BLOCK_CHARGER_USED.get();
         ResourceLocation usedModel = ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_key_charger_used");
-        MultiVariantGenerator usedState = MultiVariantGenerator.multiVariant(chargerUsed, Variant.variant().with(VariantProperties.MODEL, usedModel));
+        MultiVariantGenerator usedState = MultiVariantGenerator.dispatch(chargerUsed, plainVariant(usedModel));
         blockModels.blockStateOutput.accept(usedState);
 
         Block chargerFull = BlockRegistrar.BLOCK_CHARGER_FULL.get();
         ResourceLocation fullModel = ResourceLocation.fromNamespaceAndPath("dimdungeons", "block/block_key_charger");
-        MultiVariantGenerator fullState = MultiVariantGenerator.multiVariant(chargerFull, Variant.variant().with(VariantProperties.MODEL, fullModel));
+        MultiVariantGenerator fullState = MultiVariantGenerator.dispatch(chargerFull, plainVariant(fullModel));
         blockModels.blockStateOutput.accept(fullState);
 
         // The Portal Keyhole Block is too much of a pain to data-generate. Seriously, this incomplete snippet is already more lines than the result itself.

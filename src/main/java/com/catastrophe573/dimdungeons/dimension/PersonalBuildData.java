@@ -64,7 +64,7 @@ public class PersonalBuildData extends SavedData
 	@Nonnull
 	public static PersonalBuildData get(Level level)
 	{
-		if (level.isClientSide)
+		if (level.isClientSide())
 		{
 			throw new RuntimeException("Don't access this client-side!");
 		}

@@ -29,11 +29,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemFrameItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.Spawner;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EndPortalFrameBlock;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
@@ -242,17 +245,19 @@ public class BaseItemKey extends Item
 			return;
 		}
 
-		CustomData cd = stack.getComponents().get(DataComponents.CUSTOM_DATA);
+		//CustomData cd = stack.getComponents().get(DataComponents.CUSTOM_DATA);
+		TypedEntityData<BlockEntityType<?>> cd = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+
 		DungeonKeyDataComponentRecord newData = new DungeonKeyDataComponentRecord(
-				cd.contains(NBT_KEY_ACTIVATED) ? cd.getUnsafe().getBoolean(NBT_KEY_ACTIVATED) : false,
-				cd.contains(NBT_BUILT) ? cd.getUnsafe().getBoolean(NBT_BUILT) : false,
-				cd.contains(NBT_KEY_DESTINATION_X) ? cd.getUnsafe().getLong(NBT_KEY_DESTINATION_X) : 0,
-				cd.contains(NBT_KEY_DESTINATION_Z) ? cd.getUnsafe().getLong(NBT_KEY_DESTINATION_Z) : 0,
-				cd.contains(NBT_NAME_TYPE) ? cd.getUnsafe().getInt(NBT_NAME_TYPE) : 0,
-				cd.contains(NBT_NAME_PART_1) ? cd.getUnsafe().getInt(NBT_NAME_PART_1) : 0,
-				cd.contains(NBT_NAME_PART_2) ? cd.getUnsafe().getInt(NBT_NAME_PART_2) : 0,
-				cd.contains(NBT_THEME) ? cd.getUnsafe().getInt(NBT_THEME) : 0,
-				cd.contains(NBT_DUNGEON_TYPE) ? cd.getUnsafe().getString(NBT_DUNGEON_TYPE) : "BASIC"
+				cd.contains(NBT_KEY_ACTIVATED) ? cd.getUnsafe().getBoolean(NBT_KEY_ACTIVATED).get() : false,
+				cd.contains(NBT_BUILT) ? cd.getUnsafe().getBoolean(NBT_BUILT).get() : false,
+				cd.contains(NBT_KEY_DESTINATION_X) ? cd.getUnsafe().getLong(NBT_KEY_DESTINATION_X).get() : 0,
+				cd.contains(NBT_KEY_DESTINATION_Z) ? cd.getUnsafe().getLong(NBT_KEY_DESTINATION_Z).get() : 0,
+				cd.contains(NBT_NAME_TYPE) ? cd.getUnsafe().getInt(NBT_NAME_TYPE).get() : 0,
+				cd.contains(NBT_NAME_PART_1) ? cd.getUnsafe().getInt(NBT_NAME_PART_1).get() : 0,
+				cd.contains(NBT_NAME_PART_2) ? cd.getUnsafe().getInt(NBT_NAME_PART_2).get() : 0,
+				cd.contains(NBT_THEME) ? cd.getUnsafe().getInt(NBT_THEME).get() : 0,
+				cd.contains(NBT_DUNGEON_TYPE) ? cd.getUnsafe().getString(NBT_DUNGEON_TYPE).get() : "BASIC"
 		);
 
 		stack.set(DimDungeons.DUNGEON_KEY_DATA, newData);
@@ -410,7 +415,7 @@ public class BaseItemKey extends Item
 		{
 			return InteractionResult.PASS;
 		}
-		int slot = player.getInventory().selected;
+		int slot = player.getInventory().getSelectedSlot();
 
 		// new in 1.13 the hit vector contains world coordinates in the integer part, and I would like just the decimal part
 		hitX = Math.abs((int) hitX - hitX);
@@ -518,7 +523,7 @@ public class BaseItemKey extends Item
 
 						// handle possible damage to the key activation station, similar to an anvil
 						// running this block of code on the client can cause a flicker
-						if (!worldIn.isClientSide)
+						if (!worldIn.isClientSide())
 						{
 							String blockid = worldIn.getBlockState(pos).getBlock().builtInRegistryHolder().key().location().getPath();
 							int roll = worldIn.getRandom().nextInt(100);
@@ -582,7 +587,7 @@ public class BaseItemKey extends Item
 	{
 		// System.out.println("Triggered special event to initialize key!");
 		worldIn.playSound((Player) null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
-		if (!worldIn.isClientSide)
+		if (!worldIn.isClientSide())
 		{
 			activateKeyLevel1(worldIn.getServer(), itemstack, 0);
 

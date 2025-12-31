@@ -1,16 +1,13 @@
 package com.catastrophe573.dimdungeons;
 
 import com.catastrophe573.dimdungeons.item.*;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperty;
-import net.minecraft.client.renderer.item.properties.select.SelectItemModelProperties;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.Item;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
@@ -19,8 +16,6 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -38,7 +33,6 @@ import com.catastrophe573.dimdungeons.block.BlockRegistrar;
 import com.catastrophe573.dimdungeons.dimension.DungeonChunkGenerator;
 import com.catastrophe573.dimdungeons.utils.CommandDimDungeons;
 import com.catastrophe573.dimdungeons.utils.LootModifierNoDrops;
-import com.mojang.serialization.Codec;
 
 import java.util.function.Supplier;
 
@@ -47,7 +41,10 @@ import java.util.function.Supplier;
 public class DimDungeons
 {
 	// reference a log4j logger
-	private static final Logger LOGGER = LogManager.getLogger();
+	public static final Logger LOGGER = LogManager.getLogger();
+
+	// used in the new ValueInput and ValueOutput functions when editing entity NBT
+	public static ProblemReporter.ScopedCollector PROBLEM_REPORTER = new ProblemReporter.ScopedCollector(LogUtils.getLogger());
 
 	// constants used by other classes
 	public static final String MOD_ID = "dimdungeons"; // this must match mods.toml
@@ -90,8 +87,6 @@ public class DimDungeons
 		// register event listeners that don't use the event bus
 		modEventBus.addListener(this::enqueueIMC);
 		modEventBus.addListener(this::processIMC);
-		modEventBus.addListener(this::doCommonStuff);
-		modEventBus.addListener(this::doClientStuff);
 		modEventBus.addListener(this::modConfig);
 		modEventBus.addListener(this::onRegisterItemModelProperties);
 
@@ -102,22 +97,6 @@ public class DimDungeons
 		container.registerConfig(ModConfig.Type.SERVER, DungeonConfig.SERVER_SPEC, "dimdungeons-server-r206.toml");
 		container.registerConfig(ModConfig.Type.CLIENT, DungeonConfig.CLIENT_SPEC);
 		container.registerConfig(ModConfig.Type.COMMON, DungeonConfig.COMMON_SPEC, "dimdungeons-common-r206.toml");
-	}
-
-	private void doCommonStuff(final FMLCommonSetupEvent event)
-	{
-	}
-
-	@SuppressWarnings("deprecation")
-	private void doClientStuff(final FMLClientSetupEvent event)
-	{
-		// this needs enqueueWork() because of the DeferredRegister
-		event.enqueueWork(() ->
-		{
-			// TODO: set the render type in the model json instead of doing it here
-			ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_GOLD_PORTAL.get(), RenderType.translucent());
-			ItemBlockRenderTypes.setRenderLayer(BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get(), RenderType.translucent());
-		});
 	}
 
 	@SubscribeEvent

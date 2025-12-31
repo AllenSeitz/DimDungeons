@@ -88,7 +88,7 @@ public class ItemBlankThemeKey extends BaseItemKey
 			return null;
 		}
 
-		if (!worldIn.isClientSide)
+		if (!worldIn.isClientSide())
 		{
 			int theme = ItemBlankThemeKey.getTheme(itemstack);
 			if (theme < 1)

@@ -58,7 +58,7 @@ public class PlayerDungeonEvents
 	// for some reason this doesn't use SubscribeEvent and is instead registered from the main class
 	public static void onWorldTick(LevelTickEvent.Pre event)
 	{
-		if (event.getLevel().isClientSide)
+		if (event.getLevel().isClientSide())
 		{
 			return;
 		}
@@ -525,7 +525,7 @@ public class PlayerDungeonEvents
 		// restrict player teleports
 		if (event.getEntity() instanceof ServerPlayer)
 		{
-			if (DungeonUtils.isDimensionDungeon(event.getEntity().getCommandSenderWorld()))
+			if (DungeonUtils.isDimensionDungeon(event.getEntity().level()))
 			{
 				// TODO: teleporting over the void? cancelled
 				// TODO: teleporting above y= roof level? cancelled
@@ -536,7 +536,7 @@ public class PlayerDungeonEvents
 		if (event.getEntity() instanceof EnderMan || event.getEntity() instanceof Shulker)
 		{
 			// I only care about restricting teleports within my dimensions
-			if (DungeonUtils.isDimensionDungeon(event.getEntity().getCommandSenderWorld()))
+			if (DungeonUtils.isDimensionDungeon(event.getEntity().level()))
 			{
 				event.setCanceled(true);
 			}
@@ -551,7 +551,7 @@ public class PlayerDungeonEvents
 		// could check if the eatenItem is Chorus Fruit, but it probably is
 
 		// I only care about restricting teleports within my dimensions
-		if (DungeonUtils.isDimensionDungeon(event.getEntity().getCommandSenderWorld()))
+		if (DungeonUtils.isDimensionDungeon(event.getEntity().level()))
 		{
 			event.setCanceled(true);
 		}

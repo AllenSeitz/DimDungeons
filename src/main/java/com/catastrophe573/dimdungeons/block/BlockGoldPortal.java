@@ -23,6 +23,8 @@ import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
+import net.minecraft.world.entity.InsideBlockEffectType;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
@@ -73,7 +75,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 	{
 		super(BlockBehaviour.Properties.of().
 				setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
-				pushReaction(PushReaction.BLOCK).randomTicks().strength(9999).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
+				pushReaction(PushReaction.BLOCK).randomTicks().strength(9999).sound(SoundType.GLASS).noCollision().lightLevel((p) -> 15));
 		this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X));
 	}
 
@@ -152,12 +154,18 @@ public class BlockGoldPortal extends BaseEntityBlock
 		return true;
 	}
 
-	// called When an entity collides with the Block
 	@Override
-	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn)
+	protected void entityInside(BlockState state, Level level, BlockPos blockpos, Entity entity, InsideBlockEffectApplier effectApplier, boolean intersects)
+	{
+		//effectApplier.apply(InsideBlockEffectType.FIRE_IGNITE); // example code of using normal effect Appliers
+		actuallyTeleportEntityInside(state, level, blockpos, entity);
+	}
+
+	// called When an entity collides with the Block
+	public void actuallyTeleportEntityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn)
 	{
 		// do not process this block on the client
-		if (worldIn.isClientSide)
+		if (worldIn.isClientSide())
 		{
 			return;
 		}
@@ -249,7 +257,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 							DungeonKeyDataComponentRecord itemData = key.get(DimDungeons.DUNGEON_KEY_DATA);
 							ChunkPos cpos = new ChunkPos((int) itemData.dest_x(), (int) itemData.dest_z());
 
-							if (!PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(entityIn.getServer())).isPlayerAllowedInPersonalDimension((ServerPlayer) entityIn, cpos))
+							if (!PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(worldIn.getServer())).isPlayerAllowedInPersonalDimension((ServerPlayer) entityIn, cpos))
 							{
 								te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
 								DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.player_failed_teleport");
@@ -277,7 +285,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 
 				DimDungeons.logMessageInfo("Player is using a gold portal to teleport to (" + warpX + " " + warpY + " " + warpZ + ") in dimension " + destDim.location().toString() + ".");
 				ServerPlayer player = (ServerPlayer) entityIn;
-				actuallyPerformTeleport(player, player.getServer().getLevel(te.getDestinationDimension()), warpX, warpY, warpZ, getReturnYawForDirection(te.getExitDirection()));
+				actuallyPerformTeleport(player, worldIn.getServer().getLevel(te.getDestinationDimension()), warpX, warpY, warpZ, getReturnYawForDirection(te.getExitDirection()));
 			}
 		}
 	}
@@ -398,12 +406,12 @@ public class BlockGoldPortal extends BaseEntityBlock
 		else
 		{
 			// fallback: send the player to the overworld spawn
-			lastX = player.getServer().getLevel(Level.OVERWORLD).getLevelData().getSpawnPos().getX();
-			lastY = player.getServer().getLevel(Level.OVERWORLD).getLevelData().getSpawnPos().getY() + 2; // plus 2 to stand on the ground I guess
-			lastZ = player.getServer().getLevel(Level.OVERWORLD).getLevelData().getSpawnPos().getZ();
+			lastX = player.level().getServer().getLevel(Level.OVERWORLD).getLevelData().getRespawnData().pos().getX();
+			lastY = player.level().getServer().getLevel(Level.OVERWORLD).getLevelData().getRespawnData().pos().getY() + 2; // plus 2 to stand on the ground I guess
+			lastZ = player.level().getServer().getLevel(Level.OVERWORLD).getLevelData().getRespawnData().pos().getZ();
 		}
 
-		actuallyPerformTeleport(player, player.getServer().getLevel(Level.OVERWORLD), lastX, lastY, lastZ, lastYaw);
+		actuallyPerformTeleport(player, player.level().getServer().getLevel(Level.OVERWORLD), lastX, lastY, lastZ, lastYaw);
 	}
 
 	// this function returns boolean and relies on another function to actually destroy the block

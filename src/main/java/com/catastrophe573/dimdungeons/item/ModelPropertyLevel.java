@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperty;
+import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -17,9 +18,9 @@ public record ModelPropertyLevel() implements RangeSelectItemModelProperty
     public static final MapCodec<ModelPropertyLevel> MAP_CODEC = MapCodec.unit(new ModelPropertyLevel());
 
     @Override
-    public float get(ItemStack itemstack, @Nullable ClientLevel levelin, @Nullable LivingEntity entity, int p_386612_)
+    public float get(ItemStack itemstack, @org.jetbrains.annotations.Nullable ClientLevel levelin, @org.jetbrains.annotations.Nullable ItemOwner owner, int seed)
     {
-        return getLevel(itemstack, entity);
+        return getLevel(itemstack, owner.asLivingEntity());
     }
 
     @Override

@@ -218,10 +218,10 @@ public class DungeonPlacementDebug extends DungeonPlacement
 		{
 			if (template$blockinfo.nbt() != null)
 			{
-				StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt().getString("mode"));
+				StructureMode structuremode = StructureMode.valueOf(String.valueOf(template$blockinfo.nbt().getString("mode")));
 				if (structuremode == StructureMode.DATA)
 				{
-					handleDataBlock(template$blockinfo.nbt().getString("metadata"), template$blockinfo.pos(), world, world.getRandom(), placementsettings.getBoundingBox(), room);
+					handleDataBlock(String.valueOf(template$blockinfo.nbt().getString("metadata")), template$blockinfo.pos(), world, world.getRandom(), placementsettings.getBoundingBox(), room);
 				}
 			}
 		}

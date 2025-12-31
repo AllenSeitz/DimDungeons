@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = DimDungeons.MOD_ID)
+@EventBusSubscriber(modid = DimDungeons.MOD_ID)
 public class DataGenerators
 {
     @SubscribeEvent

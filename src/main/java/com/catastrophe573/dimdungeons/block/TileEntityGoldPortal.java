@@ -2,9 +2,7 @@ package com.catastrophe573.dimdungeons.block;
 
 import com.catastrophe573.dimdungeons.DungeonConfig;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -12,6 +10,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class TileEntityGoldPortal extends BlockEntity
 {
@@ -29,53 +29,32 @@ public class TileEntityGoldPortal extends BlockEntity
 	}
 
 	@Override
-	public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries)
+	protected void loadAdditional(ValueInput input)
 	{
-		super.loadAdditional(compound, registries);
-		if (compound.contains("destX") && compound.contains("destY") && compound.contains("destZ"))
-		{
-			this.destX = compound.getDouble("destX");
-			this.destY = compound.getDouble("destY");
-			this.destZ = compound.getDouble("destZ");
-		}
-		if (compound.contains("cooldown"))
-		{
-			this.cooldown = compound.getInt("cooldown");
-		}
+		super.loadAdditional(input);
 
-		// default value for portals that players created before I allowed portals to
-		// other dimensions
-		if (compound.contains("destDimension"))
-		{
-			this.destDimension = compound.getString("destDimension");
-		}
-		else
-		{
-			this.destDimension = "minecraft:overworld";
-		}
+		this.destX = input.getDoubleOr("destX", 0);
+		this.destY = input.getDoubleOr("destY", -10000);
+		this.destZ = input.getDoubleOr("destZ", 0);
 
-		// default value for portals that players created before I allowed portals to
-		// face directions other than north
-		if (compound.contains("facing"))
-		{
-			this.facing = Direction.valueOf(compound.getString("facing"));
-		}
-		else
-		{
-			this.facing = Direction.NORTH;
-		}
+		this.cooldown = input.getIntOr("cooldown", DungeonConfig.portalCooldownTicks);
+
+		this.destDimension = input.getStringOr("destDimension", "minecraft:overworld");
+
+		this.facing = Direction.valueOf(input.getStringOr("facing", Direction.NORTH.getName()));
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag compound, HolderLookup.Provider registries)
+	protected void saveAdditional(ValueOutput output)
 	{
-		super.saveAdditional(compound, registries);
-		compound.putDouble("destX", this.destX);
-		compound.putDouble("destY", this.destY);
-		compound.putDouble("destZ", this.destZ);
-		compound.putInt("cooldown", this.cooldown);
-		compound.putString("destDimension", this.destDimension);
-		compound.putString("facing", this.facing.name());
+		super.saveAdditional(output);
+
+		output.putDouble("destX", this.destX);
+		output.putDouble("destY", this.destY);
+		output.putDouble("destZ", this.destZ);
+		output.putInt("cooldown", this.cooldown);
+		output.putString("destDimension", this.destDimension);
+		output.putString("facing", this.facing.name());
 	}
 
 	public void setDestination(double posX, double posY, double posZ, String destDim, Direction faceExit)

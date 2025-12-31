@@ -179,7 +179,7 @@ public class DungeonUtils
 	public static void openPortalAfterBuild(Level worldIn, BlockPos pos, DungeonGenData genData, TileEntityPortalKeyhole myEntity)
 	{
 		// should portal blocks be spawned?
-		if (!worldIn.isClientSide)
+		if (!worldIn.isClientSide())
 		{
 			BlockState state = worldIn.getBlockState(pos);
 			BaseItemKey key = (BaseItemKey) genData.keyItem.getItem();
@@ -451,7 +451,7 @@ public class DungeonUtils
 		topLeftZ = (topLeftZ * ItemBuildKey.BLOCKS_APART_PER_PLOT) + ItemBuildKey.ENTRANCE_OFFSET_Z;
 
 		// old 1.20 logic that used a CustomTeleporter class that no longer exists
-		ServerLevel dim = DungeonUtils.getPersonalBuildWorld(entity.getServer());
+		ServerLevel dim = DungeonUtils.getPersonalBuildWorld(entity.level().getServer());
 		//CustomTeleporter tele = new CustomTeleporter(dim);
 		//tele.setDestPos(topLeftX - 7, 51, topLeftZ + 4, 180.0f, 0);
 		//entity.resetFallDistance();

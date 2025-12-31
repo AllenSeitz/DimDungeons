@@ -7,6 +7,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -42,7 +43,7 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 	{
 		super(BlockBehaviour.Properties.of().
 				setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
-				pushReaction(PushReaction.BLOCK).randomTicks().strength(9999).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
+				pushReaction(PushReaction.BLOCK).randomTicks().strength(9999).sound(SoundType.GLASS).noCollision().lightLevel((p) -> 15));
 	}
 
 	@Override
@@ -76,18 +77,23 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 		return true;
 	}
 
-	// called When an entity collides with the Block
 	@Override
-	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn)
+	// called When an entity collides with the Block
+	protected void entityInside(BlockState state, Level level, BlockPos blockpos, Entity entity, InsideBlockEffectApplier effectApplier, boolean intersects)
+	{
+		//effectApplier.apply(InsideBlockEffectType.FIRE_IGNITE); // example code of using normal effect Appliers
+		actuallyTeleportEntityInside(state, level, blockpos, entity);
+	}
+
+	public void actuallyTeleportEntityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn)
 	{
 		// do not process this block on the client
-		if (worldIn.isClientSide)
+		if (worldIn.isClientSide())
 		{
 			return;
 		}
 
-		// only teleport players! items and mobs and who knows what else must stay
-		// behind
+		// only teleport players! items and mobs and who knows what else must stay behind
 		if (!(entityIn instanceof ServerPlayer))
 		{
 			return;
@@ -108,7 +114,7 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 				float newPitch = (float) te.getPitch();
 				float newYaw = (float) te.getYaw();
 
-				actuallyPerformTeleport((ServerPlayer) entityIn, worldIn.getServer().getLevel(entityIn.getCommandSenderWorld().dimension()), warpX, warpY, warpZ, newYaw, newPitch);
+				actuallyPerformTeleport((ServerPlayer) entityIn, worldIn.getServer().getLevel(entityIn.level().dimension()), warpX, warpY, warpZ, newYaw, newPitch);
 			}
 		}
 	}

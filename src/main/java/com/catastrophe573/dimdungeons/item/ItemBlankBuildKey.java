@@ -50,7 +50,7 @@ public class ItemBlankBuildKey extends BaseItemKey
 			return null;
 		}
 
-		if (!worldIn.isClientSide)
+		if (!worldIn.isClientSide())
 		{
 			// generate the activated key and try to insert it into the player's inventory multiple ways as a fail-safe
 			ItemStack newkey = new ItemStack(ItemRegistrar.ITEM_BUILD_KEY.get());

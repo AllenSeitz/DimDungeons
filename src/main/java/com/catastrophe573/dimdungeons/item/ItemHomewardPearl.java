@@ -33,19 +33,19 @@ public class ItemHomewardPearl extends Item
 		ItemStack itemstack = playerIn.getItemInHand(handIn);
 
 		// this item only works in the Dungeon Dimension
-		if (!DungeonUtils.isDimensionDungeon((Level) playerIn.getCommandSenderWorld()))
+		if (!DungeonUtils.isDimensionDungeon((Level) playerIn.level()))
 		{
 			return InteractionResult.FAIL;
 		}
 
 		// do nothing on the client, let the server do the teleport
-		if (playerIn.getCommandSenderWorld().isClientSide)
+		if (playerIn.level().isClientSide())
 		{
 			return InteractionResult.SUCCESS_SERVER.withoutItem();
 		}
 
 		// this is the dungeon dimension
-		ServerLevel serverWorld = playerIn.getCommandSenderWorld().getServer().getLevel(playerIn.getCommandSenderWorld().dimension());
+		ServerLevel serverWorld = playerIn.level().getServer().getLevel(playerIn.level().dimension());
 
 		double newx = getHomeX(playerIn.getX());
 		double newy = 55.1D;

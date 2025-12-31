@@ -20,15 +20,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-import net.minecraft.world.level.block.Mirror;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.MapColor;
@@ -96,7 +89,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type)
 	{
-		if (level.isClientSide)
+		if (level.isClientSide())
 		{
 			return null;
 		}
@@ -284,7 +277,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 			myEntity.setContents(playerItem.copy());
 
 			// should we begin to build the dungeon on the other side?
-			if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide && isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
+			if (playerItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide() && isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
 			{
 				// all this math just to figure out where the coordinates of the dungeon are
 				ItemPortalKey key = (ItemPortalKey) playerItem.getItem();
@@ -317,7 +310,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 					is_building = true;
 				}
 			}
-			else if (playerItem.getItem() instanceof ItemBuildKey && !worldIn.isClientSide && isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
+			else if (playerItem.getItem() instanceof ItemBuildKey && !worldIn.isClientSide() && isOkayToSpawnPortalBlocks(worldIn, pos, state, myEntity))
 			{
 				// building a personal build space is different
 				ItemBuildKey key = (ItemBuildKey) playerItem.getItem();
@@ -334,7 +327,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 						DimDungeons.logMessageInfo("DIMENSIONAL DUNGEONS: building a new personal dimension.");
 						ItemPortalKey.setDungeonBuilt(playerItem);
 						myEntity.setContents(playerItem.copy()); // do this again to solve a bug
-						DungeonUtils.buildSuperflatPersonalSpace(buildX, buildZ, player.getServer());
+						DungeonUtils.buildSuperflatPersonalSpace(buildX, buildZ, worldIn.getServer());
 					}
 				}
 
@@ -376,7 +369,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	private static void consequencesForRemovingIternalItem(TileEntityPortalKeyhole myEntity, ItemStack insideItem, Level worldIn, BlockPos pos, BlockState state)
 	{
 		// if a teleporter hub key was removed then remove the door on the other side
-		if (insideItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide)
+		if (insideItem.getItem() instanceof ItemPortalKey && !worldIn.isClientSide())
 		{
 			ItemPortalKey key = (ItemPortalKey) insideItem.getItem();
 
@@ -524,33 +517,6 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		worldIn.setBlock(pos, state.setValue(FACING, placer.getDirection().getOpposite()), 2);
 	}
 
-	// Called server side after this block is replaced with another in Chunk, but before the TileEntity is updated
-	// this function is now in charge of preserving TileEntities across block updates, too, instead of the former TileEntity->shouldRefresh()
-	@SuppressWarnings("deprecation")
-	@Override
-	public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving)
-	{
-		BlockEntity tileentity = worldIn.getBlockEntity(pos);
-
-		// DO NOT call super.onReplaced() unless this block has no TileEntity, or unless the block was deleted/changed to another block of course
-		if (state.getBlock() != newState.getBlock())
-		{
-			// if the block was destroyed and it held an item then spit the item out somewhere
-			if (tileentity instanceof TileEntityPortalKeyhole)
-			{
-				ItemStack item = ((TileEntityPortalKeyhole) tileentity).getObjectInserted();
-				if (!item.isEmpty())
-				{
-					Containers.dropItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), item);
-				}
-				worldIn.updateNeighbourForOutputSignal(pos, this);
-			}
-
-			super.onRemove(state, worldIn, pos, newState, isMoving);
-			worldIn.removeBlockEntity(pos);
-		}
-	}
-
 	@Override
 	public boolean hasAnalogOutputSignal(BlockState state)
 	{
@@ -559,7 +525,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 
 	// return 3 if a build is in progress, 2 if a usable key is inside, 1 if the block is filled with any item stack, and 0 otherwise
 	@Override
-	public int getAnalogOutputSignal(BlockState blockState, Level worldIn, BlockPos pos)
+	public int getAnalogOutputSignal(BlockState blockState, Level worldIn, BlockPos pos, Direction dir)
 	{
 		if (blockState.getValue(IS_BUILDING))
 		{
@@ -613,7 +579,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	public static void checkForProblemsAndLiterallySpeakToPlayer(Level worldIn, BlockPos pos, BlockState state, TileEntityPortalKeyhole tileEntity, Player player, boolean dungeonExistsHere)
 	{
 		// only run this function once, either on the client or on the server this runs on the server now because some errors happen exclusively on the server's side
-		if (worldIn.isClientSide || player == null)
+		if (worldIn.isClientSide() || player == null)
 		{
 			return;
 		}

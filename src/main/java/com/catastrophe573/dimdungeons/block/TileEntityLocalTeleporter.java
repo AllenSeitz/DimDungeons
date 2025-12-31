@@ -1,10 +1,10 @@
 package com.catastrophe573.dimdungeons.block;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class TileEntityLocalTeleporter extends BlockEntity
 {
@@ -20,28 +20,29 @@ public class TileEntityLocalTeleporter extends BlockEntity
 	}
 
 	@Override
-	public void loadAdditional(CompoundTag compound, HolderLookup.Provider registries)
+	protected void loadAdditional(ValueInput input)
 	{
-		super.loadAdditional(compound, registries);
-		if (compound.contains("destX") && compound.contains("destY") && compound.contains("destZ") && compound.contains("destPitch") && compound.contains("destYaw"))
-		{
-			this.destX = compound.getDouble("destX");
-			this.destY = compound.getDouble("destY");
-			this.destZ = compound.getDouble("destZ");
-			this.destPitch = compound.getDouble("destPitch");
-			this.destYaw = compound.getDouble("destYaw");
-		}
+		super.loadAdditional(input);
+
+		this.destX = input.getDoubleOr("destX", 0);
+		this.destY = input.getDoubleOr("destY", -10000);
+		this.destZ = input.getDoubleOr("destZ", 0);
+
+		this.destPitch = input.getDoubleOr("destPitch", 0);
+		this.destYaw = input.getDoubleOr("destYaw", 0);
 	}
 
 	@Override
-	protected void saveAdditional(CompoundTag compound, HolderLookup.Provider registries)
+	protected void saveAdditional(ValueOutput output)
 	{
-		super.saveAdditional(compound, registries);
-		compound.putDouble("destX", this.destX);
-		compound.putDouble("destY", this.destY);
-		compound.putDouble("destZ", this.destZ);
-		compound.putDouble("destPitch", this.destPitch);
-		compound.putDouble("destYaw", this.destYaw);
+		super.saveAdditional(output);
+
+		output.putDouble("destX", this.destX);
+		output.putDouble("destY", this.destY);
+		output.putDouble("destZ", this.destZ);
+
+		output.putDouble("destPitch", this.destPitch);
+		output.putDouble("destYaw", this.destYaw);
 	}
 
 	public void setDestination(double posX, double posY, double posZ, double pitch, double yaw)

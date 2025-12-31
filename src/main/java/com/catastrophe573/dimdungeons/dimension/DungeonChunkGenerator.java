@@ -1,33 +1,34 @@
 package com.catastrophe573.dimdungeons.dimension;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
 import com.catastrophe573.dimdungeons.structure.DungeonRoom;
+import com.catastrophe573.dimdungeons.utils.DungeonUtils;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.core.*;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.world.level.levelgen.*;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
-import net.minecraft.world.level.levelgen.FlatLevelSource;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.Heightmap.Types;
-import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.biome.BiomeManager;
@@ -37,9 +38,9 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 {
 	// copied from FlatLevelSource
 	public static final MapCodec<FlatLevelSource> CODEC = RecordCodecBuilder.mapCodec((p_255577_) ->
-	{
-		return p_255577_.group(FlatLevelGeneratorSettings.CODEC.fieldOf("settings").forGetter(FlatLevelSource::settings)).apply(p_255577_, p_255577_.stable(FlatLevelSource::new));
-	});
+																					  {
+																						  return p_255577_.group(FlatLevelGeneratorSettings.CODEC.fieldOf("settings").forGetter(FlatLevelSource::settings)).apply(p_255577_, p_255577_.stable(FlatLevelSource::new));
+																					  });
 
 	private final FlatLevelGeneratorSettings settings;
 
@@ -83,81 +84,8 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 		return 0;
 	}
 
-	// I don't know what this does. I copied it from the vanilla code.
-	public NoiseColumn getBaseColumn(int p_158270_, int p_158271_, LevelHeightAccessor p_158272_)
-	{
-		return new NoiseColumn(p_158272_.getMinY(), this.settings.getLayers().stream().limit((long) p_158272_.getHeight()).map((p_64189_) ->
-		{
-			return p_64189_ == null ? Blocks.AIR.defaultBlockState() : p_64189_;
-		}).toArray((p_64171_) ->
-		{
-			return new BlockState[p_64171_];
-		}));
-	}
-
-	// public void makeBase(LevelAccessor worldIn, ChunkAccess chunkIn)
-	public void makeBase(ChunkAccess chunkIn)
-	{
-		int x = chunkIn.getPos().x;
-		int z = chunkIn.getPos().z;
-
-		// first generate a superflat world - sandstone where dungeons can appear, and void otherwise
-		if (DungeonPlacement.isDungeonChunk(x, z))
-		{
-			for (int px = 0; px < 16; px++)
-			{
-				for (int py = 1; py < 255; py++)
-				{
-					for (int pz = 0; pz < 16; pz++)
-					{
-						if (py < 2)
-						{
-							chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BEDROCK.defaultBlockState(), false);
-						}
-						else if (py < 50)
-						{
-							// for debugging mostly but it also kind of looks good when you're in creative mode
-							if (DungeonPlacement.isEntranceChunk(x, z))
-							{
-								chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BLACKSTONE.defaultBlockState(), false);
-							}
-							else
-							{
-								chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.SANDSTONE.defaultBlockState(), false);
-							}
-						}
-					}
-				}
-			}
-		}
-		else
-		{
-			// add barrier blocks to the void in case the player escapes (although these are escapable, too)
-			if (x % 16 == 0 || z % 16 == 0)
-			{
-				for (int px = 0; px < 16; px++)
-				{
-					for (int py = 1; py < 255; py++)
-					{
-						for (int pz = 0; pz < 16; pz++)
-						{
-							chunkIn.setBlockState(new BlockPos(px, py, pz), Blocks.BARRIER.defaultBlockState(), false);
-						}
-					}
-				}
-			}
-		}
-	}
-
 	@Override
-	public void createStructures(
-			RegistryAccess registryAccess,
-			ChunkGeneratorStructureState structureState,
-			StructureManager structureManager,
-			ChunkAccess chunk,
-			StructureTemplateManager structureTemplateManager,
-			ResourceKey<Level> level
-	)
+	public void createStructures(RegistryAccess registryAccess, ChunkGeneratorStructureState structureState, StructureManager structureManager, ChunkAccess chunk, StructureTemplateManager structureTemplateManager, ResourceKey<Level> level)
 	{
 		// intentionally do nothing!
 	}
@@ -193,6 +121,18 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	}
 
 	@Override
+	public Pair<BlockPos, Holder<Structure>> findNearestMapStructure(ServerLevel level, HolderSet<Structure> structure, BlockPos pos, int searchRadius, boolean skipKnownStructures)
+	{
+		return null; // expected by vanilla in some circumstances
+	}
+
+	@Override
+	public void applyBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager)
+	{
+		// intentionally do nothing!
+	}
+
+	@Override
 	public void buildSurface(WorldGenRegion p_223050_, net.minecraft.world.level.StructureManager p_223051_, RandomState p_223052_, ChunkAccess p_223053_)
 	{
 		// intentionally do nothing!
@@ -201,9 +141,6 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	@Override
 	public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk)
 	{
-		// I don't know why this function isn't being called, but it doesn't really matter
-		makeBase(chunk);
-
 		return CompletableFuture.completedFuture(chunk);
 	}
 
@@ -227,12 +164,11 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 	}
 
 	@Override
-	public void addDebugScreenInfo(List<String> p_223175_, RandomState p_223176_, BlockPos p_223177_)
+	// TODO: this is now possible in 1.21.9!!!
+	public void addDebugScreenInfo(List<String> p_224304_, RandomState p_224305_, BlockPos p_224306_)
 	{
-		//ChunkPos cpos = new ChunkPos(p_223177_);
-		//DungeonRoom room = DungeonData.get().getRoomAtPos(cpos);
-		//p_223175_.add("Dungeon Room: " + room.structure);
-
-		//p_223175_.add("Dungeon Room: " + "TODO maybe print dungeon room here"); // not possible because this doesn't execute in the same thread as the server
+		//ChunkPos cpos = new ChunkPos(p_224306_);
+		//DungeonRoom room = DungeonData.get(DungeonUtils.getDungeonWorld()).getRoomAtPos(cpos); // this requires syncing data from the server to the client
+		//p_224304_.add("Dungeon Room: " + room.structure);
 	}
 }

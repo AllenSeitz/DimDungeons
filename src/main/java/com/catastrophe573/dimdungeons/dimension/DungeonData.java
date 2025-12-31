@@ -1,5 +1,6 @@
 package com.catastrophe573.dimdungeons.dimension;
 
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nonnull;
@@ -30,8 +31,7 @@ public class DungeonData extends SavedData
 	private ConcurrentHashMap<ChunkPos, DungeonRoom> roomMap = new ConcurrentHashMap<>();
 
 	// keep track of a subset of rooms which still need to be built
-	// this data is duplicated for convenience, but the majority of the time this
-	// list will be empty
+	// this data is duplicated for convenience, but the majority of the time this list will be empty
 	private ConcurrentHashMap<ChunkPos, DungeonRoom> remainingBuilds = new ConcurrentHashMap<>();
 
 	// keep track of the total number of dungeons ever built in this dimension
@@ -45,7 +45,7 @@ public class DungeonData extends SavedData
 	@Nonnull
 	public static DungeonData get(Level level)
 	{
-		if (level.isClientSide)
+		if (level.isClientSide())
 		{
 			throw new RuntimeException("Don't access this client-side!");
 		}
@@ -143,39 +143,39 @@ public class DungeonData extends SavedData
 	// this constructor is called when data already exists
 	public DungeonData(CompoundTag tag, HolderLookup.Provider lookupProvider)
 	{
-		ListTag allRooms = tag.getList("room_data", tag.getId()); // the second parameter returns a hardcoded 10, ask vanilla why
+		Optional<ListTag> allRooms = tag.getList("room_data");
 
-		for (net.minecraft.nbt.Tag t : allRooms)
+		for (net.minecraft.nbt.Tag t : allRooms.get())
 		{
 			CompoundTag roomTag = (CompoundTag) t;
-			ChunkPos pos = new ChunkPos(roomTag.getInt("x"), roomTag.getInt("z"));
+			ChunkPos pos = new ChunkPos(roomTag.getInt("x").get(), roomTag.getInt("z").get());
 			DungeonRoom room = new DungeonRoom();
-			room.structure = roomTag.getString("structure");
-			room.rotation = Rotation.valueOf(roomTag.getString("rotation"));
-			room.roomType = RoomType.valueOf(roomTag.getString("room_type"));
-			room.dungeonType = DungeonType.valueOf(roomTag.getString("dungeon_type"));
+			room.structure = roomTag.getString("structure").get();
+			room.rotation = Rotation.valueOf(roomTag.getString("rotation").get());
+			room.roomType = RoomType.valueOf(roomTag.getString("room_type").get());
+			room.dungeonType = DungeonType.valueOf(roomTag.getString("dungeon_type").get());
 
 			roomMap.put(pos, room);
 		}
 
-		ListTag newBuilds = tag.getList("remaining_builds", tag.getId()); // the second parameter returns a hardcoded 10, ask vanilla why
+		Optional<ListTag> newBuilds = tag.getList("remaining_builds");
 
-		for (net.minecraft.nbt.Tag t : newBuilds)
+		for (net.minecraft.nbt.Tag t : newBuilds.get())
 		{
 			CompoundTag roomTag = (CompoundTag) t;
-			ChunkPos pos = new ChunkPos(roomTag.getInt("x"), roomTag.getInt("z"));
+			ChunkPos pos = new ChunkPos(roomTag.getInt("x").get(), roomTag.getInt("z").get());
 			DungeonRoom room = new DungeonRoom();
-			room.structure = roomTag.getString("structure");
-			room.rotation = Rotation.valueOf(roomTag.getString("rotation"));
-			room.roomType = RoomType.valueOf(roomTag.getString("room_type"));
-			room.dungeonType = DungeonType.valueOf(roomTag.getString("dungeon_type"));
+			room.structure = roomTag.getString("structure").get();
+			room.rotation = Rotation.valueOf(roomTag.getString("rotation").get());
+			room.roomType = RoomType.valueOf(roomTag.getString("room_type").get());
+			room.dungeonType = DungeonType.valueOf(roomTag.getString("dungeon_type").get());
 
 			remainingBuilds.put(pos, room);
 		}
 
 		// the next thing in allData is the "otherData"
-		CompoundTag totalKeyData = tag.getCompound("total_key_data");
-		numKeysRegistered = totalKeyData.getInt("numKeysActivated");
+		CompoundTag totalKeyData = tag.getCompound("total_key_data").get();
+		numKeysRegistered = totalKeyData.getInt("numKeysActivated").get();
 	}
 
 	@Override

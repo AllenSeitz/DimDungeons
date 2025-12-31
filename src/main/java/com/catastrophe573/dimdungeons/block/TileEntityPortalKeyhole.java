@@ -12,18 +12,27 @@ import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.SharedConstants;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.datafix.DataFixers;
 import net.minecraft.util.datafix.fixes.ItemStackComponentizationFix;
 import net.minecraft.util.datafix.schemas.V3818_5;
+import net.minecraft.world.Container;
+import net.minecraft.world.Containers;
+import net.minecraft.world.item.JukeboxSong;
+import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public class TileEntityPortalKeyhole extends BlockEntity
 {
@@ -124,101 +133,21 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	}
 
 	@Override
-	public void loadAdditional(@NotNull CompoundTag compound, HolderLookup.@NotNull Provider registries)
+	protected void loadAdditional(ValueInput input)
 	{
-		super.loadAdditional(compound, registries);
+		super.loadAdditional(input);
+		ItemStack itemstack = input.read(ITEM_PROPERTY_KEY, ItemStack.CODEC).orElse(ItemStack.EMPTY);
 
-		if (compound.contains(ITEM_PROPERTY_KEY, 10))
-		{
-			if (compound.getCompound(ITEM_PROPERTY_KEY).contains("id") && compound.getCompound(ITEM_PROPERTY_KEY).getString("id").equals("minecraft:air"))
-			{
-				DimDungeons.logMessageInfo("DIMDUNGEONS: Found a legacy keyhole with an air block inside of it. Fixing to be empty.");
-				this.objectInserted = ItemStack.EMPTY;
-				return;
-			}
-
-			this.objectInserted = (ItemStack)ItemStack.parse(registries, compound.getCompound(ITEM_PROPERTY_KEY)).orElse(ItemStack.EMPTY);
-
-			// is this a legacy 1.20 world being upgraded to 1.21? The item inside may have data components that need to be saved here.
-			if ( compound.getCompound(ITEM_PROPERTY_KEY).contains("tag") )
-			{
-				if ( this.objectInserted.getItem() instanceof BaseItemKey )
-				{
-					DimDungeons.logMessageInfo("DIMDUNGEONS: Found a legacy key inside a keyhole at load time. Trying to upgrade it now.");
-					DungeonKeyDataComponentRecord keydata = this.objectInserted.get(DimDungeons.DUNGEON_KEY_DATA);
-					assert keydata != null;
-					boolean key_activated = keydata.key_activated();
-					boolean built = keydata.built();
-					long dest_x = keydata.dest_x();
-					long dest_z = keydata.dest_z();
-					int name_type = keydata.name_type();
-					int name_part_1 = keydata.name_part_1();
-					int name_part_2 = keydata.name_part_2();
-					int theme = keydata.theme();
-					String dungeon_type = keydata.dungeon_type();
-					CompoundTag oldData = compound.getCompound(ITEM_PROPERTY_KEY).getCompound("tag");
-
-					if (oldData.contains(BaseItemKey.NBT_KEY_ACTIVATED))
-					{
-						key_activated = oldData.getBoolean(BaseItemKey.NBT_KEY_ACTIVATED);
-					}
-					if (oldData.contains(BaseItemKey.NBT_BUILT))
-					{
-						built = oldData.getBoolean(BaseItemKey.NBT_BUILT);
-					}
-					if (oldData.contains(BaseItemKey.NBT_KEY_DESTINATION_X))
-					{
-						dest_x = oldData.getLong(BaseItemKey.NBT_KEY_DESTINATION_X);
-					}
-					if (oldData.contains(BaseItemKey.NBT_KEY_DESTINATION_Z))
-					{
-						dest_z = oldData.getLong(BaseItemKey.NBT_KEY_DESTINATION_Z);
-					}
-					if (oldData.contains(BaseItemKey.NBT_NAME_TYPE))
-					{
-						name_type = oldData.getInt(BaseItemKey.NBT_NAME_TYPE);
-					}
-					if (oldData.contains(BaseItemKey.NBT_NAME_PART_1))
-					{
-						name_part_1 = oldData.getInt(BaseItemKey.NBT_NAME_PART_1);
-					}
-					if (oldData.contains(BaseItemKey.NBT_NAME_PART_2))
-					{
-						name_part_2 = oldData.getInt(BaseItemKey.NBT_NAME_PART_2);
-					}
-					if (oldData.contains(BaseItemKey.NBT_THEME))
-					{
-						theme = oldData.getInt(BaseItemKey.NBT_THEME);
-					}
-					if (oldData.contains(BaseItemKey.NBT_DUNGEON_TYPE))
-					{
-						dungeon_type = oldData.getString(BaseItemKey.NBT_DUNGEON_TYPE);
-					}
-
-					this.objectInserted.set(DimDungeons.DUNGEON_KEY_DATA, new DungeonKeyDataComponentRecord(key_activated, built, dest_x, dest_z, name_type, name_part_1, name_part_2, theme, dungeon_type));
-				}
-				else
-				{
-					DimDungeons.logMessageError("DIMDUNGEONS: Found a legacy item ("+compound.getCompound(ITEM_PROPERTY_KEY).getString("id")+") with NBT inside of keyhole while upgrading worlds. This is not supported.");
-					this.objectInserted = (ItemStack)ItemStack.parseOptional(registries, compound.getCompound(ITEM_PROPERTY_KEY));
-				}
-			}
-		}
-		else
-		{
-			this.objectInserted = ItemStack.EMPTY;
-		}
+		this.objectInserted = itemstack;
 	}
 
 	@Override
-	protected void saveAdditional(@NotNull CompoundTag compound, HolderLookup.@NotNull Provider registries)
+	protected void saveAdditional(ValueOutput output)
 	{
-		super.saveAdditional(compound, registries);
-
-		// as for Neoforge 1.21, encoding empty ItemStacks is no longer allowed for some reason?
-		if ( isFilled() && !getObjectInserted().isEmpty() )
+		super.saveAdditional(output);
+		if (!this.getObjectInserted().isEmpty())
 		{
-			compound.put(ITEM_PROPERTY_KEY, getObjectInserted().save(registries));
+			output.store(ITEM_PROPERTY_KEY, ItemStack.CODEC, this.getObjectInserted());
 		}
 	}
 
@@ -268,5 +197,18 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	{
 		this.objectInserted = ItemStack.EMPTY;
 		this.setChanged();
-	}	
+	}
+
+	@Override
+	public void preRemoveSideEffects(BlockPos pos, BlockState state)
+	{
+		if (this instanceof TileEntityPortalKeyhole keyhole && this.level != null)
+		{
+			ItemStack item = ((TileEntityPortalKeyhole) this).getObjectInserted();
+			if (!item.isEmpty())
+			{
+				Containers.dropItemStack(this.level, pos.getX(), pos.getY(), pos.getZ(), item);
+			}
+		}
+	}
 }

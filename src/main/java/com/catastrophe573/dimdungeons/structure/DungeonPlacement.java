@@ -20,6 +20,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -31,6 +32,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.network.Filterable;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.LockCode;
@@ -62,6 +64,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.loot.LootTable;
 
 import java.util.ArrayList;
@@ -285,10 +289,10 @@ public class DungeonPlacement
 		{
 			if (template$blockinfo.nbt() != null)
 			{
-				StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt().getString("mode"));
+				StructureMode structuremode = StructureMode.valueOf(String.valueOf(template$blockinfo.nbt().getString("mode")));
 				if (structuremode == StructureMode.DATA)
 				{
-					handleDataBlock(template$blockinfo.nbt().getString("metadata"), template$blockinfo.pos(), world, world.getRandom(), placementsettings.getBoundingBox(), room);
+					handleDataBlock(String.valueOf(template$blockinfo.nbt().getString("metadata")), template$blockinfo.pos(), world, world.getRandom(), placementsettings.getBoundingBox(), room);
 				}
 			}
 		}
@@ -503,10 +507,10 @@ public class DungeonPlacement
 		{
 			if (template$blockinfo.nbt() != null)
 			{
-				StructureMode structuremode = StructureMode.valueOf(template$blockinfo.nbt().getString("mode"));
+				StructureMode structuremode = StructureMode.valueOf(String.valueOf(template$blockinfo.nbt().getString("mode")));
 				if (structuremode == StructureMode.DATA)
 				{
-					handleDataBlock(template$blockinfo.nbt().getString("metadata"), template$blockinfo.pos(), world, world.getRandom(), placementsettings.getBoundingBox(), room);
+					handleDataBlock(String.valueOf(template$blockinfo.nbt().getString("metadata")), template$blockinfo.pos(), world, world.getRandom(), placementsettings.getBoundingBox(), room);
 				}
 			}
 		}
@@ -592,7 +596,10 @@ public class DungeonPlacement
 				itemData.put("minecraft:custom_data", nameData);
 				itemPredicate.put("predicates", itemData);
 				tag.put("lock", itemPredicate);
-				te.handleUpdateTag(tag, world.getLevel().registryAccess());
+
+				// 1.21.6: NBT access is handled via a new ValueInput class
+				ValueInput tvi = TagValueInput.create(DimDungeons.PROBLEM_REPORTER, world.getLevel().registryAccess(), tag);
+				te.handleUpdateTag(tvi);
 
 				String lootType = room.dungeonType == DungeonType.BASIC ? "basic" : "advanced";
 				String lootTable = "chest/chestloot_" + lootType + "_hard";
@@ -768,14 +775,6 @@ public class DungeonPlacement
 					((Mob) mob).setDropChance(EquipmentSlot.CHEST, 1.0f);
 				}
 			}
-
-			// and give it an extra 50% health plus some potion buffs, because
-			AttributeInstance tempHealth = ((Mob) mob).getAttribute(Attributes.MAX_HEALTH);
-			((Mob) mob).getAttribute(Attributes.MAX_HEALTH).setBaseValue(tempHealth.getBaseValue() * 1.5f);
-			((Mob) mob).setHealth((float) ((Mob) mob).getAttribute(Attributes.MAX_HEALTH).getBaseValue());
-
-			((Mob) mob).addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 9999999, 1, false, false));
-			((Mob) mob).addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 9999999, 1, false, false));			
 		}
 		else
 		{
@@ -788,18 +787,14 @@ public class DungeonPlacement
 	{
 		EntityType<?> entitytype = EntityType.byString(resourceLocation).orElse(EntityType.CHICKEN);
 
-		// funny thing in 1.19.3 here. The second parameter really should be null.
-		// however, a new alternative version of spawn() was added with nullable 2nd and 3rd parameters as well, causing an ambiguous reference
-		// so instead this forces one of the two to be called, and should have no side effects
 		Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, EntitySpawnReason.STRUCTURE, true, true);
-		// Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, MobSpawnType.STRUCTURE, true, true);
 
+		// this can happen if the above mob spawn failed (such as another mod cancelling it via events)
 		if (mob == null)
 		{
-			return null; // this can happen if the mob in question does not exist, such as another mod
-			             // named "Bad Mobs" preventing minecraft:zombie from spawning
+			return null;
 		}
-		mob.moveTo(pos, 0.0F, 0.0F);
+		mob.snapTo(pos, 0.0F, 0.0F);
 
 		// append a "2" to the mob name in advanced dungeons
 		String advancedDungeonNames = type == DungeonType.ADVANCED ? "2" : "";
@@ -814,7 +809,7 @@ public class DungeonPlacement
 		if (mob instanceof Mob)
 		{
 			((Mob) mob).setCanPickUpLoot(false);
-			((Mob) mob).restrictTo(pos, 8);
+			((Mob) mob).setHomeTo(pos, 8);
 			((Mob) mob).setPersistenceRequired();
 
 			// health scaling
@@ -855,9 +850,9 @@ public class DungeonPlacement
 			{
 				// ADVANCED MODE! EVEN HARDER MOBS!
 				((Mob) mob).getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f); // baby zombie speed
-				((Mob) mob).addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 9999999, 1, false, false));
-				((Mob) mob).addEffect(new MobEffectInstance(MobEffects.JUMP, 9999999, 3, false, false));
-				((Mob) mob).addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 9999999, 1, false, false));
+				((Mob) mob).addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, -1, 1, false, false));
+				((Mob) mob).addEffect(new MobEffectInstance(MobEffects.JUMP_BOOST, -1, 3, false, false));
+				((Mob) mob).addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, -1, 1, false, false));
 			}
 		}
 		
