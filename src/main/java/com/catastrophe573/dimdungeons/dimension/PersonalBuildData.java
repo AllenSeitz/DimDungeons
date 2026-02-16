@@ -52,6 +52,7 @@ public class PersonalBuildData extends SavedData
 	{
 	}
 
+	// this constructor is called when data already exists
 	public PersonalBuildData(List<OwnerData> allPlayerData)
 	{
 		for ( OwnerData owner : allPlayerData )

@@ -74,8 +74,14 @@ public class DungeonData extends SavedData
 	public DungeonData(Integer p_lifetimeKeys, Map<ChunkPos, DungeonRoom> p_allRooms, Map<ChunkPos, DungeonRoom> p_remainingBuilds)
 	{
 		numKeysRegistered = p_lifetimeKeys;
-		roomMap = (ConcurrentHashMap<ChunkPos, DungeonRoom>) p_allRooms;
-		remainingBuilds = (ConcurrentHashMap<ChunkPos, DungeonRoom>) p_remainingBuilds;
+		for ( Map.Entry<ChunkPos, DungeonRoom> data : p_allRooms.entrySet() )
+		{
+			roomMap.put(data.getKey(), data.getValue());
+		}
+		for ( Map.Entry<ChunkPos, DungeonRoom> data : p_remainingBuilds.entrySet() )
+		{
+			remainingBuilds.put(data.getKey(), data.getValue());
+		}
 	}
 
 	@Nonnull

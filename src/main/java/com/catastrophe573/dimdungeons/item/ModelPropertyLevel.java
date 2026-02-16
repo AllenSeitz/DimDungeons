@@ -17,7 +17,7 @@ public record ModelPropertyLevel() implements RangeSelectItemModelProperty
     @Override
     public float get(ItemStack itemstack, @org.jetbrains.annotations.Nullable ClientLevel levelin, @org.jetbrains.annotations.Nullable ItemOwner owner, int seed)
     {
-        return getLevel(itemstack, owner.asLivingEntity());
+        return getLevel(itemstack);
     }
 
     @Override
@@ -26,7 +26,7 @@ public record ModelPropertyLevel() implements RangeSelectItemModelProperty
         return MAP_CODEC;
     }
 
-    public static float getLevel(ItemStack stack, LivingEntity entity)
+    public static float getLevel(ItemStack stack)
     {
         if ( stack.getItem() instanceof ItemPortalKey )
         {

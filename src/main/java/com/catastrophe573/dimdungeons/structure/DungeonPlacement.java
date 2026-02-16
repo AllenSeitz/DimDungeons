@@ -507,10 +507,14 @@ public class DungeonPlacement
 		{
 			if (template$blockinfo.nbt() != null)
 			{
-				StructureMode structuremode = StructureMode.valueOf(String.valueOf(template$blockinfo.nbt().getString("mode")));
-				if (structuremode == StructureMode.DATA)
+				String sbmode = template$blockinfo.nbt().getString("mode").get();
+				if ( sbmode != null )
 				{
-					handleDataBlock(String.valueOf(template$blockinfo.nbt().getString("metadata")), template$blockinfo.pos(), world, world.getRandom(), placementsettings.getBoundingBox(), room);
+					StructureMode structuremode = StructureMode.valueOf(sbmode);
+					if (structuremode == StructureMode.DATA)
+					{
+						handleDataBlock(String.valueOf(template$blockinfo.nbt().getString("metadata").get()), template$blockinfo.pos(), world, world.getRandom(), placementsettings.getBoundingBox(), room);
+					}
 				}
 			}
 		}

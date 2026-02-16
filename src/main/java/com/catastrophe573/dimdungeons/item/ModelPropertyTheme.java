@@ -17,7 +17,7 @@ public record ModelPropertyTheme() implements RangeSelectItemModelProperty
     @Override
     public float get(ItemStack itemstack, @org.jetbrains.annotations.Nullable ClientLevel level, @org.jetbrains.annotations.Nullable ItemOwner owner, int seed)
     {
-        return getTheme(itemstack, owner.asLivingEntity());
+        return getTheme(itemstack);
     }
 
     @Override
@@ -25,8 +25,8 @@ public record ModelPropertyTheme() implements RangeSelectItemModelProperty
     {
         return MAP_CODEC;
     }
-    
-    public static float getTheme(ItemStack stack, LivingEntity entity)
+
+    public static float getTheme(ItemStack stack)
     {
         if ( stack.getItem() instanceof ItemBlankThemeKey )
         {
