@@ -1,8 +1,6 @@
 package com.catastrophe573.dimdungeons.dimension;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nonnull;
@@ -10,8 +8,11 @@ import javax.annotation.Nonnull;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.item.ItemBuildKey;
+import com.catastrophe573.dimdungeons.structure.DungeonRoom;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -23,46 +24,61 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 
 public class PersonalBuildData extends SavedData
 {
-	// just a data structure
-	public class OwnerData
-	{
-		UUID uuid;
-		String playerName;
-
-		// this data was added later and might not exist in all worlds
-		ArrayList<String> guestList;
-		boolean isBlacklist;
-
-		OwnerData(Player player)
-		{
-			uuid = player.getUUID();
-			playerName = player.getName().getString();
-
-			guestList = new ArrayList<String>();
-			isBlacklist = false;
-		}
-
-		OwnerData(UUID id, String name)
-		{
-			uuid = id;
-			playerName = name;
-
-			guestList = new ArrayList<String>();
-			isBlacklist = false;
-		}
-	};
-
 	// keep track of which rooms are supposed to exist at each coordinate
 	private ConcurrentHashMap<ChunkPos, OwnerData> ownerMap = new ConcurrentHashMap<>();
 
-	private static String MY_DATA = "build_data";
+	private static String PERSONAL_OWNER_DATA = "build_data";
+
+	public static final Codec<PersonalBuildData> PERSONAL_OWNER_DATA_CODEC = RecordCodecBuilder.create(
+			instance ->
+			{
+				return instance.group(
+						//Codec.unboundedMap(ChunkPos.CODEC, OwnerData.OWNER_DATA_CODEC).fieldOf("player_data").forGetter(sd -> sd.ownerMap)
+						Codec.list(OwnerData.OWNER_DATA_CODEC).fieldOf("player_data").forGetter(PersonalBuildData::preSerializeOwnerData)
+				).apply(instance, PersonalBuildData::new);
+			}
+	);
+
+	public static final SavedDataType<PersonalBuildData> PERSONAL_OWNER_DATA_TYPE = new SavedDataType<>(PERSONAL_OWNER_DATA, PersonalBuildData::new, PERSONAL_OWNER_DATA_CODEC);
+
+	// this constructor is called on fresh levels
+	public PersonalBuildData()
+	{
+	}
+
+	public PersonalBuildData(List<OwnerData> allPlayerData)
+	{
+		for ( OwnerData owner : allPlayerData )
+		{
+			ChunkPos pos = new ChunkPos(owner.chunkX, owner.chunkZ);
+			ownerMap.put(pos, owner);
+		}
+	}
+
+	// older versions of this mod saved a simple list of OwnerData with the chunk pos (x,z) included with the other data, then reconstructed the HashMap
+	// and so newer versions must respect this odd way of serializing data, even though it is now easy to directly store an unboundedMap
+	public List<OwnerData> preSerializeOwnerData()
+	{
+		List<OwnerData> list = new ArrayList<OwnerData>();
+
+		ownerMap.forEach((chunkPos, owner) ->
+			 {
+				 OwnerData temp = owner;
+				 temp.chunkX = chunkPos.x;
+				 temp.chunkZ = chunkPos.z;
+				 list.add(temp);
+			 }
+		);
+		return list;
+	}
 
 	@Nonnull
-	public static PersonalBuildData get(Level level)
+	public static SavedData get(Level level)
 	{
 		if (level.isClientSide())
 		{
@@ -76,13 +92,8 @@ public class PersonalBuildData extends SavedData
 		// get the vanilla storage manager from the level
 		DimensionDataStorage storage = ((ServerLevel) level).getDataStorage();
 
-		// old 1.20 logic - remove once the port is complete
-		//return storage.computeIfAbsent(PersonalBuildData::new, PersonalBuildData::new, MY_DATA); // 1.20.1
-		//SavedData.Factory<SavedData> tempFactory = new SavedData.Factory<SavedData>(PersonalBuildData::new, PersonalBuildData::new);
-		//return (PersonalBuildData) storage.computeIfAbsent(tempFactory, MY_DATA);
-
 		// get the PersonalBuildData if it already exists for this level, otherwise create a new one
-		return storage.computeIfAbsent(new Factory<>(PersonalBuildData::create, PersonalBuildData::load), MY_DATA);
+		return storage.computeIfAbsent(PERSONAL_OWNER_DATA_TYPE);
 	}
 
 	// if the chunk is empty then return null (this is expected)
@@ -92,15 +103,13 @@ public class PersonalBuildData extends SavedData
 	}
 
 	// returns a new or existing plot for this player
-	// note that the return value is not a ChunkPos, but a [dest_x, dest_z] pair
-	// that is consistent with other key types
+	// note that the return value is not a ChunkPos, but a [dest_x, dest_z] pair that is consistent with other key types
 	public ChunkPos getPosForOwner(LivingEntity player)
 	{
 		Iterator<ChunkPos> iter = ownerMap.keySet().iterator();
 		ChunkPos cpos;
 
-		// sanity check. The parameter to this function should always be a Player except
-		// when debugging.
+		// sanity check. The parameter to this function should always be a Player except when debugging
 		if (player == null || (!(player instanceof Player) && !DungeonConfig.enableDebugCheats))
 		{
 			DimDungeons.logMessageError("DIMENSIONAL DUNGEONS ERROR: registering personal key for a non-player or a null player.");
@@ -120,9 +129,9 @@ public class PersonalBuildData extends SavedData
 		}
 
 		// pick the next available plot and also register it now
-		cpos = getNewChunkPos(ownerMap.size() + 1, player.getServer());
+		cpos = getNewChunkPos(ownerMap.size() + 1, player.level().getServer());
 		DimDungeons.logMessageInfo("DIMENSIONAL DUNGEONS: Assigning player " + player.getName().getString() + " the build plot at (" + cpos.x + ", " + cpos.z + ")");
-		OwnerData newOwner = new OwnerData(player.getUUID(), player.getName().getString());
+		OwnerData newOwner = new OwnerData((Player) player);
 		ownerMap.computeIfAbsent(cpos, cp -> newOwner);
 		setDirty();
 		return cpos;
@@ -207,13 +216,11 @@ public class PersonalBuildData extends SavedData
 
 		if (owner == null)
 		{
+			DimDungeons.logMessageInfo(visitor.nameAndId().name() + " is entering a personal build dimension, but the owner is null? Allowing entry.");
 			return true; // shouldn't happen, but it happened to one person so this check is here now
 		}
 
-		String visitorName = visitor.getGameProfile().getName();
-		visitorName = visitorName.replace("[", "");
-		visitorName = visitorName.replace("]", "");
-		visitorName = visitorName.replace(" ", ""); // thanks Apotheosis
+		String visitorName = visitor.nameAndId().name();
 
 		// creative mode players and the owner themselves are never banned, even if configured otherwise
 		// if (owner.uuid == visitor.getUUID() || visitor.isCreative() || DungeonConfig.disablePersonalDimSecurity)
@@ -231,83 +238,6 @@ public class PersonalBuildData extends SavedData
 		{
 			return owner.guestList.contains(visitorName);
 		}
-	}
-
-	// this constructor is called on fresh levels
-	public PersonalBuildData()
-	{
-	}
-
-	// this constructor is called when data already exists
-	public PersonalBuildData(CompoundTag tag, HolderLookup.Provider lookupProvider)
-	{
-		ListTag allOwners = tag.getList("player_data", tag.getId()); // the second parameter returns a hardcoded 10, ask vanilla why
-
-		for (net.minecraft.nbt.Tag t : allOwners)
-		{
-			CompoundTag ownerTag = (CompoundTag) t;
-			ChunkPos pos = new ChunkPos(ownerTag.getInt("x"), ownerTag.getInt("z"));
-			UUID id = UUID.fromString(ownerTag.getString("uuid"));
-			String name = ownerTag.getString("name");
-			OwnerData owner = new OwnerData(id, name);
-
-			// get optional data about the guest list, which may not exist in all worlds
-			if (ownerTag.contains("isBlacklist"))
-			{
-				owner.isBlacklist = ownerTag.getBoolean("isBlacklist");
-			}
-			if (ownerTag.contains("guestList"))
-			{
-				ListTag guests = ownerTag.getList("guestList", 8); // getList() reads my data, but then returns an empty list unless the second parameter is 8?
-
-				for (net.minecraft.nbt.Tag g : guests)
-				{
-					StringTag guestName = (StringTag) g;
-					owner.guestList.add(guestName.getAsString());
-				}
-			}
-
-			ownerMap.put(pos, owner);
-		}
-	}
-
-	@Override
-	public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider)
-	{
-		ListTag allOwners = new ListTag();
-		ownerMap.forEach((chunkPos, owner) ->
-		{
-			CompoundTag ownerTag = new CompoundTag();
-			ownerTag.putInt("x", chunkPos.x);
-			ownerTag.putInt("z", chunkPos.z);
-			ownerTag.putString("uuid", owner.uuid.toString());
-			ownerTag.putString("name", owner.playerName);
-			ownerTag.putBoolean("isBlacklist", owner.isBlacklist);
-			if (owner.guestList != null && owner.guestList.size() > 0)
-			{
-				ListTag guests = new ListTag();
-				owner.guestList.forEach((guest) ->
-				{
-					StringTag g = StringTag.valueOf(guest);
-					guests.add(g);
-				});
-				ownerTag.put("guestList", guests);
-			}
-			allOwners.add(ownerTag);
-		});
-
-		tag.put("player_data", allOwners);
-		return tag;
-	}
-
-	public static PersonalBuildData create()
-	{
-		return new PersonalBuildData();
-	}
-
-	public static PersonalBuildData load(CompoundTag tag, HolderLookup.Provider lookupProvider)
-	{
-		return new PersonalBuildData(tag, lookupProvider);
 	}
 
 	// do not do this on a real world, obviously

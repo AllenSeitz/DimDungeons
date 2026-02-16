@@ -1,5 +1,6 @@
 package com.catastrophe573.dimdungeons.dimension;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,14 +15,21 @@ import com.catastrophe573.dimdungeons.structure.DungeonDesigner.RoomType;
 import com.catastrophe573.dimdungeons.structure.DungeonRoom;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureSpawnOverride;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 
 // based off McJty's 1.18.1 example
@@ -31,7 +39,7 @@ public class DungeonData extends SavedData
 	private ConcurrentHashMap<ChunkPos, DungeonRoom> roomMap = new ConcurrentHashMap<>();
 
 	// keep track of a subset of rooms which still need to be built
-	// this data is duplicated for convenience, but the majority of the time this list will be empty
+	// the majority of the time this list will be empty
 	private ConcurrentHashMap<ChunkPos, DungeonRoom> remainingBuilds = new ConcurrentHashMap<>();
 
 	// keep track of the total number of dungeons ever built in this dimension
@@ -40,7 +48,35 @@ public class DungeonData extends SavedData
 	// this is how the config is able to control how many ticks between builds
 	private int ticksBetweenBuilds = 10;
 
-	private static final String MY_DATA = "dungeon_data";
+	// the identifier of the saved data, and used as the path within the level's `data` folder
+	private static final String DUNGEON_DATA = "dungeon_data";
+
+	public static final Codec<DungeonData> DUNGEON_DATA_CODEC = RecordCodecBuilder.create(
+		instance ->
+		{
+            return instance.group(
+					Codec.INT.fieldOf("total_key_data").forGetter(sd -> sd.numKeysRegistered),
+					Codec.unboundedMap(ChunkPos.CODEC, DungeonRoom.DUNGEON_ROOM_CODEC).fieldOf("room_data").forGetter(sd -> sd.roomMap),
+					Codec.unboundedMap(ChunkPos.CODEC, DungeonRoom.DUNGEON_ROOM_CODEC).fieldOf("remaining_builds").forGetter(sd -> sd.remainingBuilds)
+			).apply(instance, DungeonData::new);
+    	}
+	);
+
+	public static final SavedDataType<DungeonData> DUNGEON_DATA_TYPE = new SavedDataType<>(DUNGEON_DATA, DungeonData::new, DUNGEON_DATA_CODEC);
+
+	// this constructor is called on fresh levels
+	public DungeonData()
+	{
+		numKeysRegistered = 0;
+	}
+
+	// this constructor is called when data already exists
+	public DungeonData(Integer p_lifetimeKeys, Map<ChunkPos, DungeonRoom> p_allRooms, Map<ChunkPos, DungeonRoom> p_remainingBuilds)
+	{
+		numKeysRegistered = p_lifetimeKeys;
+		roomMap = (ConcurrentHashMap<ChunkPos, DungeonRoom>) p_allRooms;
+		remainingBuilds = (ConcurrentHashMap<ChunkPos, DungeonRoom>) p_remainingBuilds;
+	}
 
 	@Nonnull
 	public static DungeonData get(Level level)
@@ -57,12 +93,8 @@ public class DungeonData extends SavedData
 		// get the vanilla storage manager from the level
 		DimensionDataStorage storage = ((ServerLevel) level).getDataStorage();
 
-		// old 1.20 logic - remove after the port is complete
-		//SavedData.Factory<SavedData> tempFactory = new SavedData.Factory<SavedData>(DungeonData::new, DungeonData::new);
-		//return (DungeonData) storage.computeIfAbsent(tempFactory, MY_DATA);
-
 		// get the DungeonData if it already exists for this level, otherwise create a new one
-		return storage.computeIfAbsent(new Factory<>(DungeonData::create, DungeonData::load), MY_DATA);
+		return storage.computeIfAbsent(DUNGEON_DATA_TYPE);
 	}
 
 	// if the chunk is empty then return null (this is expected)
@@ -132,99 +164,5 @@ public class DungeonData extends SavedData
 			DimDungeons.logMessageInfo("Now building room: " + nextBuild.structure);
 			DungeonPlacement.buildRoomAtChunk(DungeonUtils.getDungeonWorld(level.getServer()), cpos);
 		}
-	}
-
-	// this constructor is called on fresh levels
-	public DungeonData()
-	{
-		numKeysRegistered = 0;
-	}
-
-	// this constructor is called when data already exists
-	public DungeonData(CompoundTag tag, HolderLookup.Provider lookupProvider)
-	{
-		Optional<ListTag> allRooms = tag.getList("room_data");
-
-		for (net.minecraft.nbt.Tag t : allRooms.get())
-		{
-			CompoundTag roomTag = (CompoundTag) t;
-			ChunkPos pos = new ChunkPos(roomTag.getInt("x").get(), roomTag.getInt("z").get());
-			DungeonRoom room = new DungeonRoom();
-			room.structure = roomTag.getString("structure").get();
-			room.rotation = Rotation.valueOf(roomTag.getString("rotation").get());
-			room.roomType = RoomType.valueOf(roomTag.getString("room_type").get());
-			room.dungeonType = DungeonType.valueOf(roomTag.getString("dungeon_type").get());
-
-			roomMap.put(pos, room);
-		}
-
-		Optional<ListTag> newBuilds = tag.getList("remaining_builds");
-
-		for (net.minecraft.nbt.Tag t : newBuilds.get())
-		{
-			CompoundTag roomTag = (CompoundTag) t;
-			ChunkPos pos = new ChunkPos(roomTag.getInt("x").get(), roomTag.getInt("z").get());
-			DungeonRoom room = new DungeonRoom();
-			room.structure = roomTag.getString("structure").get();
-			room.rotation = Rotation.valueOf(roomTag.getString("rotation").get());
-			room.roomType = RoomType.valueOf(roomTag.getString("room_type").get());
-			room.dungeonType = DungeonType.valueOf(roomTag.getString("dungeon_type").get());
-
-			remainingBuilds.put(pos, room);
-		}
-
-		// the next thing in allData is the "otherData"
-		CompoundTag totalKeyData = tag.getCompound("total_key_data").get();
-		numKeysRegistered = totalKeyData.getInt("numKeysActivated").get();
-	}
-
-	@Override
-	public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider)
-	{
-		ListTag allRooms = new ListTag();
-		roomMap.forEach((chunkPos, room) ->
-		{
-			CompoundTag roomTag = new CompoundTag();
-			roomTag.putInt("x", chunkPos.x);
-			roomTag.putInt("z", chunkPos.z);
-			roomTag.putString("structure", room.structure);
-			roomTag.putString("rotation", room.rotation.toString());
-			roomTag.putString("room_type", room.roomType.toString());
-			roomTag.putString("dungeon_type", room.dungeonType.toString());
-			roomTag.putInt("theme", room.theme);
-			allRooms.add(roomTag);
-		});
-
-		ListTag buildingRooms = new ListTag();
-		remainingBuilds.forEach((chunkPos, room) ->
-		{
-			CompoundTag roomTag = new CompoundTag();
-			roomTag.putInt("x", chunkPos.x);
-			roomTag.putInt("z", chunkPos.z);
-			roomTag.putString("structure", room.structure);
-			roomTag.putString("rotation", room.rotation.toString());
-			roomTag.putString("room_type", room.roomType.toString());
-			roomTag.putString("dungeon_type", room.dungeonType.toString());
-			roomTag.putInt("theme", room.theme);
-			buildingRooms.add(roomTag);
-		});
-
-		CompoundTag totalKeyData = new CompoundTag();
-		totalKeyData.putInt("numKeysActivated", numKeysRegistered);
-
-		tag.put("room_data", allRooms);
-		tag.put("remaining_builds", buildingRooms);
-		tag.put("total_key_data", totalKeyData);
-		return tag;
-	}
-
-	public static DungeonData create()
-	{
-		return new DungeonData();
-	}
-
-	public static DungeonData load(CompoundTag tag, HolderLookup.Provider lookupProvider)
-	{
-		return new DungeonData(tag, lookupProvider);
 	}
 }
