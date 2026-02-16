@@ -17,7 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 public class ItemBlankThemeKey extends BaseItemKey
@@ -52,7 +51,6 @@ public class ItemBlankThemeKey extends BaseItemKey
 		return (float)theme / 100.0f;
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	@Override
 	public @NotNull Component getName(ItemStack stack)
 	{

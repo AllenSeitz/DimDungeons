@@ -9,10 +9,7 @@ import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-
-@OnlyIn(Dist.CLIENT)
 public record ModelPropertyTheme() implements RangeSelectItemModelProperty
 {
     public static final MapCodec<ModelPropertyTheme> MAP_CODEC = MapCodec.unit(new ModelPropertyTheme());
@@ -28,7 +25,7 @@ public record ModelPropertyTheme() implements RangeSelectItemModelProperty
     {
         return MAP_CODEC;
     }
-
+    
     public static float getTheme(ItemStack stack, LivingEntity entity)
     {
         if ( stack.getItem() instanceof ItemBlankThemeKey )

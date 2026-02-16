@@ -21,7 +21,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
@@ -55,7 +54,6 @@ public final class DungeonChunkGenerator extends ChunkGenerator
 		return CODEC;
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	public ChunkGenerator withSeed(long p_230349_1_)
 	{
 		// worldSeed = p_230349_1_;

@@ -12,7 +12,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemBuildKey extends BaseItemKey
@@ -117,7 +116,6 @@ public class ItemBuildKey extends BaseItemKey
 		return -1;
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	@Override
 	public Component getName(ItemStack stack)
 	{

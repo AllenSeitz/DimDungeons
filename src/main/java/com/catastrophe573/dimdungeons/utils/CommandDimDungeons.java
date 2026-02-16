@@ -300,7 +300,7 @@ public class CommandDimDungeons
 	@SuppressWarnings("unused")
 	private static int erasePersonalMap(CommandContext<CommandSourceStack> cmd) throws CommandSyntaxException
 	{
-		PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(cmd.getSource().getServer())).debugClearKnownOwners();
+		((PersonalBuildData)PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(cmd.getSource().getServer()))).debugClearKnownOwners();
 		cmd.getSource().sendSuccess(() -> Component.literal("Deleted all known personal key associations."), true);
 		return 0;
 	}

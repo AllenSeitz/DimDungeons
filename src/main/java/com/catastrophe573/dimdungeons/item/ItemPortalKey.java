@@ -13,7 +13,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class ItemPortalKey extends BaseItemKey
 {
@@ -94,7 +93,6 @@ public class ItemPortalKey extends BaseItemKey
 		stack.set(DimDungeons.DUNGEON_KEY_DATA, newData);
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	@Override
 	public Component getName(ItemStack stack)
 	{

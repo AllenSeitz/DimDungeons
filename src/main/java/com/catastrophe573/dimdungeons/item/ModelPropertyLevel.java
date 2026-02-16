@@ -9,10 +9,7 @@ import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-
-@OnlyIn(Dist.CLIENT)
 public record ModelPropertyLevel() implements RangeSelectItemModelProperty
 {
     public static final MapCodec<ModelPropertyLevel> MAP_CODEC = MapCodec.unit(new ModelPropertyLevel());

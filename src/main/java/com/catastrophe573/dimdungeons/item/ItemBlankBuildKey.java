@@ -65,7 +65,7 @@ public class ItemBlankBuildKey extends BaseItemKey
 
 	public void activateBuildKey(MinecraftServer server, ItemStack stack, LivingEntity player)
 	{
-		ChunkPos dest = PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(server)).getPosForOwner(player);
+		ChunkPos dest = ((PersonalBuildData)PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(server))).getPosForOwner(player);
 
 		// set the component data (activated, built, x, z, name type, name1, name 2, theme, key type)
 		stack.set(DimDungeons.DUNGEON_KEY_DATA, new DungeonKeyDataComponentRecord(true, false, dest.x, dest.z, 8, 0, 0, 0, DungeonType.PERSONAL_BUILD.toString()));

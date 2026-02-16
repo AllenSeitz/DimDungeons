@@ -22,6 +22,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -457,8 +458,8 @@ public class BaseItemKey extends Item
 						worldIn.updateNeighbourForOutputSignal(pos, Blocks.END_PORTAL_FRAME);
 
 						// dramatic effect for what you just did!
-						worldIn.playSound((Player) null, pos, SoundEvents.ENDER_EYE_DEATH, SoundSource.BLOCKS, 1.5F, 1.0F);
-						worldIn.playSound((Player) null, pos, SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 0.4F, 1.5F);
+						worldIn.playSound(null, pos, SoundEvents.ENDER_EYE_DEATH, SoundSource.BLOCKS, 1.5F, 1.0F);
+						worldIn.playSound(null, pos, SoundEvents.IRON_BREAK, SoundSource.BLOCKS, 0.4F, 1.5F);
 
 						// launch a ring of particles up and outwards from the center
 						for (int i = 0; i < 32; i++)

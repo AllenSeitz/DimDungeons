@@ -52,7 +52,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class BlockGoldPortal extends BaseEntityBlock
@@ -257,7 +256,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 							DungeonKeyDataComponentRecord itemData = key.get(DimDungeons.DUNGEON_KEY_DATA);
 							ChunkPos cpos = new ChunkPos((int) itemData.dest_x(), (int) itemData.dest_z());
 
-							if (!PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(worldIn.getServer())).isPlayerAllowedInPersonalDimension((ServerPlayer) entityIn, cpos))
+							if (!((PersonalBuildData)PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(worldIn.getServer()))).isPlayerAllowedInPersonalDimension((ServerPlayer)entityIn, cpos))
 							{
 								te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
 								DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.player_failed_teleport");
@@ -678,7 +677,6 @@ public class BlockGoldPortal extends BaseEntityBlock
 	/**
 	 * Called periodically client side on blocks near the player to show effects (like furnace fire particles). Note that this method is unrelated to randomTick and needsRandomTick, and will always be called regardless of whether the block can receive random update ticks
 	 */
-	@OnlyIn(Dist.CLIENT)
 	public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, Random rand)
 	{
 		if (DungeonConfig.showParticles)

@@ -19,6 +19,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
@@ -210,7 +211,7 @@ public class PersonalBuildData extends SavedData
 	}
 
 	// remember that the ChunkPos destination is in "key coordinates" and is not an actual ChunkPos
-	public boolean isPlayerAllowedInPersonalDimension(Player visitor, ChunkPos destination)
+	public boolean isPlayerAllowedInPersonalDimension(ServerPlayer visitor, ChunkPos destination)
 	{
 		OwnerData owner = getOwnerAtPos(destination);
 

@@ -52,7 +52,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import org.jetbrains.annotations.NotNull;
 
@@ -104,7 +103,6 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	}
 
 	// based on code from vanilla furnaces, which also play a sound effect and make particles when their TileEntity is being productive
-	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void animateTick(BlockState stateIn, Level worldIn, BlockPos pos, RandomSource rand)
 	{

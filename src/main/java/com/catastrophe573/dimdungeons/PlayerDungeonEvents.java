@@ -404,9 +404,9 @@ public class PlayerDungeonEvents
 								playerName = playerName.replace(" ", ""); // thanks Apotheosis
 
 								// add or remove a name from the list and print an appropriate message
-								if (PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).getBlacklistMode(player))
+								if (((PersonalBuildData)PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer()))).getBlacklistMode(player))
 								{
-									boolean wasAdded = PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).toggleNameOnGuestList(player, playerName);
+									boolean wasAdded = ((PersonalBuildData)PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer()))).toggleNameOnGuestList(player, playerName);
 									if (wasAdded)
 									{
 										DungeonUtils.notifyGuestListChange(event.getEntity(), "security.dimdungeons.player_added_blacklist", playerName);
@@ -418,7 +418,7 @@ public class PlayerDungeonEvents
 								}
 								else
 								{
-									boolean wasAdded = PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).toggleNameOnGuestList(player, playerName);
+									boolean wasAdded = ((PersonalBuildData)PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer()))).toggleNameOnGuestList(player, playerName);
 									if (wasAdded)
 									{
 										DungeonUtils.notifyGuestListChange(event.getEntity(), "security.dimdungeons.player_added_whitelist", playerName);
@@ -438,11 +438,11 @@ public class PlayerDungeonEvents
 						if (itemInHand.getItem() == Items.BOOK)
 						{
 							// list all players and the current mode
-							ArrayList<String> guests = PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).getGuestListForPlayer(player);
+							ArrayList<String> guests = ((PersonalBuildData)PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer()))).getGuestListForPlayer(player);
 							DungeonUtils.displayGuestList(player, guests);
 
 							// also print whitelist/blacklist mode status right after
-							if (PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).getBlacklistMode(player))
+							if (((PersonalBuildData)PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer()))).getBlacklistMode(player))
 							{
 								DungeonUtils.giveSecuritySystemPrompt(event.getEntity(), "security.dimdungeons.status_blacklist");
 							}
@@ -455,10 +455,10 @@ public class PlayerDungeonEvents
 						{
 							// clear all names from the guest list
 							DungeonUtils.giveSecuritySystemPrompt(event.getEntity(), "security.dimdungeons.use_grindstone");
-							PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).clearGuestListForPlayer(player);
+							((PersonalBuildData)PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer()))).clearGuestListForPlayer(player);
 
 							// also print whitelist/blacklist mode status right after
-							if (PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).getBlacklistMode(player))
+							if (((PersonalBuildData)PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer()))).getBlacklistMode(player))
 							{
 								DungeonUtils.giveSecuritySystemPrompt(event.getEntity(), "security.dimdungeons.status_blacklist");
 							}
@@ -470,12 +470,12 @@ public class PlayerDungeonEvents
 						if (itemInHand.getItem() == Items.WHITE_DYE)
 						{
 							DungeonUtils.giveSecuritySystemPrompt(event.getEntity(), "security.dimdungeons.use_white");
-							PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).changeBlacklistMode(player, false);
+							((PersonalBuildData)PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer()))).changeBlacklistMode(player, false);
 						}
 						if (itemInHand.getItem() == Items.BLACK_DYE)
 						{
 							DungeonUtils.giveSecuritySystemPrompt(event.getEntity(), "security.dimdungeons.use_black");
-							PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer())).changeBlacklistMode(player, true);
+							((PersonalBuildData)PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(event.getLevel().getServer()))).changeBlacklistMode(player, true);
 						}
 					}
 				}
