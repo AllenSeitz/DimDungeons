@@ -41,7 +41,7 @@ public class DungeonRoom
 				return instance.group(
 						Codec.INT.fieldOf("x").forGetter(sd -> sd.chunkX),
 						Codec.INT.fieldOf("z").forGetter(sd -> sd.chunkZ),
-						Codec.STRING.fieldOf("structure").forGetter(sd -> sd.structure),
+						Codec.STRING.fieldOf("structure").forGetter(sd -> sd.structure.toString()),
 						Codec.STRING.fieldOf("rotation").forGetter(sd -> sd.rotation.toString()),
 						Codec.STRING.fieldOf("room_type").forGetter(sd -> sd.roomType.toString()),
 						Codec.STRING.fieldOf("dungeon_type").forGetter(sd -> sd.dungeonType.toString()),

@@ -31,6 +31,7 @@ import net.minecraft.world.level.levelgen.structure.StructureSpawnOverride;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.world.level.storage.DimensionDataStorage;
+import net.minecraft.world.phys.Vec2;
 
 // based off McJty's 1.18.1 example
 public class DungeonData extends SavedData
@@ -51,13 +52,24 @@ public class DungeonData extends SavedData
 	// the identifier of the saved data, and used as the path within the level's `data` folder
 	private static final String DUNGEON_DATA = "dungeon_data";
 
+	// make a custom codec, because an unboundedMap needs to have string keys
+	public static Codec<ChunkPos> chunkPosCodec = Codec.STRING.xmap(
+			// Convert String to ChunkPos
+			str -> { int x = Integer.parseInt(str.split(",")[0]); int y = Integer.parseInt(str.split(",")[1]); return new ChunkPos(x, y); },
+			// Convert ChunkPos to String
+			pos ->
+            {
+                return new String(pos.x + "," + pos.z);
+            }
+	);
+
 	public static final Codec<DungeonData> DUNGEON_DATA_CODEC = RecordCodecBuilder.create(
 		instance ->
 		{
             return instance.group(
 					Codec.INT.fieldOf("total_key_data").forGetter(sd -> sd.numKeysRegistered),
-					Codec.unboundedMap(ChunkPos.CODEC, DungeonRoom.DUNGEON_ROOM_CODEC).fieldOf("room_data").forGetter(sd -> sd.roomMap),
-					Codec.unboundedMap(ChunkPos.CODEC, DungeonRoom.DUNGEON_ROOM_CODEC).fieldOf("remaining_builds").forGetter(sd -> sd.remainingBuilds)
+					Codec.unboundedMap(chunkPosCodec, DungeonRoom.DUNGEON_ROOM_CODEC).fieldOf("room_data").forGetter(sd -> sd.roomMap),
+					Codec.unboundedMap(chunkPosCodec, DungeonRoom.DUNGEON_ROOM_CODEC).fieldOf("remaining_builds").forGetter(sd -> sd.remainingBuilds)
 			).apply(instance, DungeonData::new);
     	}
 	);
