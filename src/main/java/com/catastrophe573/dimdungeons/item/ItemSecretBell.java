@@ -6,7 +6,12 @@ import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.NoteBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,6 +32,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootTable;
+
+import javax.annotation.Nullable;
 
 public class ItemSecretBell extends Item // extends TieredItem implements IVanishable
 {
@@ -101,12 +108,7 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 
 	public void setUpgradeLevel(ItemStack stack, int level)
 	{
-		SecretBellDataComponentRecord newData = new SecretBellDataComponentRecord(
-				level,
-				-1,
-				-1,
-				-1
-		);
+		SecretBellDataComponentRecord newData = new SecretBellDataComponentRecord(level, -1, -1, -1);
 
 		stack.set(DimDungeons.SECRET_BELL_DATA, newData);
 	}
@@ -115,14 +117,21 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 	{
 		int upgradeLevel = this.getUpgradeLevel(stack);
 
-		SecretBellDataComponentRecord newData = new SecretBellDataComponentRecord(
-				upgradeLevel,
-				x,
-				y,
-				z
-		);
+		SecretBellDataComponentRecord newData = new SecretBellDataComponentRecord(upgradeLevel, x, y, z);
 
 		stack.set(DimDungeons.SECRET_BELL_DATA, newData);
+	}
+
+	@Override
+	public ItemUseAnimation getUseAnimation(ItemStack p_273490_)
+	{
+		return ItemUseAnimation.SPYGLASS;
+	}
+
+	@Override
+	public int getUseDuration(ItemStack p_272765_, LivingEntity p_344739_)
+	{
+		return 100;
 	}
 
 	@SuppressWarnings("resource")
@@ -149,6 +158,7 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 
 			BlockPos secret = findSecretChestNearby(playerIn.blockPosition(), worldIn);
 			setSecretLocation(itemstack, secret.getX(), secret.getY(), secret.getZ());
+			playerIn.startUsingItem(handIn);
 			return InteractionResult.PASS;
 		}
 		else
@@ -157,9 +167,44 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 		}
 	}
 
-	public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected)
+	@Override
+	public void onUseTick(Level worldIn, LivingEntity entityIn, ItemStack stack, int useDuration)
 	{
-		if (!(entityIn instanceof Player) || !isSelected)
+		if (!(entityIn instanceof Player))
+		{
+			return;
+		}
+		Player playerIn = (Player) entityIn;
+
+		// only show particles while the button is held down (and only on the client)
+		if ( worldIn.isClientSide() )
+		{
+			int time = (int) (playerIn.getCooldowns().getCooldownPercent(stack, 0) * BELL_COOLDOWN_TICKS);
+			if (time == BELL_COOLDOWN_TICKS || time == BELL_COOLDOWN_TICKS - 3 || time == BELL_COOLDOWN_TICKS - 6 || time == BELL_COOLDOWN_TICKS - 9 )
+			{
+				int note = time / 3; // not accurate to the note being played, but doesn't matter
+				worldIn.addParticle(ParticleTypes.NOTE, entityIn.getX() + 1.0d, entityIn.getY() + 1.2d, entityIn.getZ() + 0.0d, note / 24.0, 0.0D, 0.0D);
+				worldIn.addParticle(ParticleTypes.NOTE, entityIn.getX() - 1.0d, entityIn.getY() + 1.2d, entityIn.getZ() + 0.0d, note / 24.0, 0.0D, 0.0D);
+				worldIn.addParticle(ParticleTypes.NOTE, entityIn.getX() + 0.0d, entityIn.getY() + 1.2d, entityIn.getZ() + 1.0d, note / 24.0, 0.0D, 0.0D);
+				worldIn.addParticle(ParticleTypes.NOTE, entityIn.getX() + 0.0d, entityIn.getY() + 1.2d, entityIn.getZ() - 1.0d, note / 24.0, 0.0D, 0.0D);
+			}
+			if (time == BELL_COOLDOWN_TICKS - 12 || time == BELL_COOLDOWN_TICKS - 15 || time == BELL_COOLDOWN_TICKS - 18 || time == BELL_COOLDOWN_TICKS - 21 )
+			{
+				int note = time / 3; // not accurate to the note being played, but doesn't matter
+				BlockPos secretPos = new BlockPos(getSecretX(stack), getSecretY(stack), getSecretZ(stack));
+				worldIn.addParticle(ParticleTypes.NOTE, secretPos.getX() + 1.0d + 0.5d, secretPos.getY() + 0.2d, secretPos.getZ() + 0.0d + 0.5d, note / 24.0, 0.0D, 0.0D);
+				worldIn.addParticle(ParticleTypes.NOTE, secretPos.getX() - 1.0d + 0.5d, secretPos.getY() + 0.2d, secretPos.getZ() + 0.0d + 0.5d, note / 24.0, 0.0D, 0.0D);
+				worldIn.addParticle(ParticleTypes.NOTE, secretPos.getX() + 0.0d + 0.5d, secretPos.getY() + 0.2d, secretPos.getZ() + 1.0d + 0.5d, note / 24.0, 0.0D, 0.0D);
+				worldIn.addParticle(ParticleTypes.NOTE, secretPos.getX() + 0.0d + 0.5d, secretPos.getY() + 0.2d, secretPos.getZ() - 1.0d + 0.5d, note / 24.0, 0.0D, 0.0D);
+			}
+		}
+	}
+
+	@Override
+	public void inventoryTick(ItemStack stack, ServerLevel worldIn, Entity entityIn, @Nullable EquipmentSlot slot)
+	{
+		// intentionally want it to keep working now, even if switched off of (do not check equipment slot)
+		if (!(entityIn instanceof Player))
 		{
 			return;
 		}
@@ -217,14 +262,17 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 	{
 		float pitch = (float) Math.pow(2.0D, (double) (note - 12) / 12.0D);
 
-		worldIn.playLocalSound(x, y, z, NoteBlockInstrument.BELL.getSoundEvent().value(), SoundSource.PLAYERS, note, pitch, false);
+		// playLocalSound apparently does nothing in 1.21.10? Thanks?
+		//worldIn.playLocalSound(x, y, z, NoteBlockInstrument.BELL.getSoundEvent().value(), SoundSource.PLAYERS, note, pitch, false);
+		worldIn.playSound(null, x, y, z, NoteBlockInstrument.BELL.getSoundEvent().value(), SoundSource.RECORDS, 3.0F, pitch);
 
 		if (DungeonConfig.showParticles)
 		{
-			worldIn.addParticle(ParticleTypes.NOTE, x + 1.0d, y, z + 0.0d, (double) note / 24.0D, 0.0D, 0.0D);
-			worldIn.addParticle(ParticleTypes.NOTE, x - 1.0d, y, z + 0.0d, (double) note / 24.0D, 0.0D, 0.0D);
-			worldIn.addParticle(ParticleTypes.NOTE, x + 0.0d, y, z + 1.0d, (double) note / 24.0D, 0.0D, 0.0D);
-			worldIn.addParticle(ParticleTypes.NOTE, x + 0.0d, y, z - 1.0d, (double) note / 24.0D, 0.0D, 0.0D);
+			BlockPos pos = new BlockPos((int) x, (int) y, (int) z);
+			worldIn.addParticle(ParticleTypes.NOTE, x + 1.0d, y, z + 0.0d, note / 24.0, 0.0D, 0.0D);
+			worldIn.addParticle(ParticleTypes.NOTE, x - 1.0d, y, z + 0.0d, note / 24.0, 0.0D, 0.0D);
+			worldIn.addParticle(ParticleTypes.NOTE, x + 0.0d, y, z + 1.0d, note / 24.0, 0.0D, 0.0D);
+			worldIn.addParticle(ParticleTypes.NOTE, x + 0.0d, y, z - 1.0d, note / 24.0, 0.0D, 0.0D);
 		}
 	}
 

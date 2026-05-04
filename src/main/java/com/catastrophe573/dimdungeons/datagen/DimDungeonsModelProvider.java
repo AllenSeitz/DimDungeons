@@ -15,6 +15,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -26,6 +27,11 @@ import static net.minecraft.client.data.models.BlockModelGenerators.plainVariant
 
 public class DimDungeonsModelProvider extends ModelProvider
 {
+    // hold the bell by the handle and swing it by the handle
+    public static final ModelTemplate HANDHELD_BELL_ITEM = ModelTemplates.FLAT_HANDHELD_ITEM.extend().
+            transform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, t -> t.rotation(0f, .0f, 180.0f).translation(1.0f, 0.0f, 0.0f)).
+            transform(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, t -> t.rotation(0.0f, 10.0f, 180.0f).translation(0.0f, 3.0f, 1.0f)).build();
+
     public DimDungeonsModelProvider(PackOutput output)
     {
         super(output, DimDungeons.MOD_ID);
@@ -45,7 +51,7 @@ public class DimDungeonsModelProvider extends ModelProvider
         itemModels.generateFlatItem(ItemRegistrar.ITEM_BLANK_BUILD_KEY.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ItemRegistrar.ITEM_BUILD_KEY.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ItemRegistrar.ITEM_BLANK_TELEPORTER_KEY.get(), ModelTemplates.FLAT_ITEM);
-        itemModels.generateFlatItem(ItemRegistrar.ITEM_SECRET_BELL.get(), ModelTemplates.FLAT_ITEM);
+        itemModels.generateFlatItem(ItemRegistrar.ITEM_SECRET_BELL.get(), HANDHELD_BELL_ITEM);
         itemModels.generateFlatItem(ItemRegistrar.ITEM_HOMEWARD_PEARL.get(), ModelTemplates.FLAT_ITEM);
 
         itemModels.generateFlatItem(ItemRegistrar.ITEM_TROPHY_1.get(), ModelTemplates.FLAT_ITEM);
