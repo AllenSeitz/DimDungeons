@@ -69,7 +69,7 @@ public class DimDungeonsModelProvider extends ModelProvider
         //
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         blockModels.createTrivialCube(BlockRegistrar.BLOCK_GILDED_PORTAL.get());
-        blockModels.createGenericCube(BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get());
+        blockModels.createTrivialCube(BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get());
 
         // the Gold Portal borrows block states from the vanilla nether portal (see: BlockModelGenerators.createNetherPortalBlock)
         // but an actual model is still used in assets/dimdungeons/models/block_gold_portal_model

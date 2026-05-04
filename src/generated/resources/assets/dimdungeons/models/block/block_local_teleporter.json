@@ -1,12 +1,6 @@
 {
-  "parent": "minecraft:block/cube",
+  "parent": "minecraft:block/cube_all",
   "textures": {
-    "down": "dimdungeons:block/block_local_teleporter_down",
-    "east": "dimdungeons:block/block_local_teleporter_east",
-    "north": "dimdungeons:block/block_local_teleporter_north",
-    "particle": "dimdungeons:block/block_local_teleporter_particle",
-    "south": "dimdungeons:block/block_local_teleporter_south",
-    "up": "dimdungeons:block/block_local_teleporter_up",
-    "west": "dimdungeons:block/block_local_teleporter_west"
+    "all": "dimdungeons:block/block_local_teleporter"
   }
 }
