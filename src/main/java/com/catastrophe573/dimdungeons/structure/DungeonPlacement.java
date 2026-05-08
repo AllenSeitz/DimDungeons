@@ -17,7 +17,7 @@ import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import com.sun.jna.platform.win32.COM.util.annotation.ComObject;
 import net.minecraft.ChatFormatting;
-import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
