@@ -28,7 +28,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.network.Filterable;
@@ -268,7 +268,7 @@ public class DungeonPlacement
 		MinecraftServer minecraftserver = ((Level) world).getServer();
 		StructureTemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
-		StructureTemplate template = templatemanager.getOrCreate(ResourceLocation.parse(room.structure));
+		StructureTemplate template = templatemanager.getOrCreate(Identifier.parse(room.structure));
 		StructurePlaceSettings placementsettings = (new StructurePlaceSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false);
 		placementsettings.setRotation(Rotation.NONE);
 		placementsettings.setBoundingBox(new BoundingBox(cpos.x * 16, 0, cpos.z * 16, (cpos.x * 16) + 32 - 1, 255, (cpos.z * 16) + 32 - 1));
@@ -463,7 +463,7 @@ public class DungeonPlacement
 		MinecraftServer minecraftserver = ((Level) world).getServer();
 		StructureTemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
-		StructureTemplate template = templatemanager.getOrCreate(ResourceLocation.parse(room.structure));
+		StructureTemplate template = templatemanager.getOrCreate(Identifier.parse(room.structure));
 		StructurePlaceSettings placementsettings = (new StructurePlaceSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false);
 		placementsettings.setBoundingBox(placementsettings.getBoundingBox());
 
@@ -611,7 +611,7 @@ public class DungeonPlacement
 
 				String lootType = room.dungeonType == DungeonType.BASIC ? "basic" : "advanced";
 				String lootTable = "chest/chestloot_" + lootType + "_hard";
-				fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, lootTable), world, rand);
+				fillChestBelow(pos, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, lootTable), world, rand);
 			}
 		}
 		else if ("FortuneTeller".equals(name))
@@ -631,18 +631,18 @@ public class DungeonPlacement
 		{
 			String lootType = room.dungeonType == DungeonType.BASIC ? "basic" : "advanced";
 			String lootTable = "chest/chestloot_" + lootType + "_easy";
-			fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, lootTable), world, rand);
+			fillChestBelow(pos, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, lootTable), world, rand);
 		}
 		else if ("ChestLoot2".equals(name))
 		{
 			String lootType = room.dungeonType == DungeonType.BASIC ? "basic" : "advanced";
 			String lootTable = "chest/chestloot_" + lootType + "_hard";
-			fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, lootTable), world, rand);
+			fillChestBelow(pos, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, lootTable), world, rand);
 		}
 		else if ("ChestLootKit".equals(name))
 		{
 			String lootTable = "chest/kit_random";
-			fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, lootTable), world, rand);
+			fillChestBelow(pos, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, lootTable), world, rand);
 		}
 		else if ("ChestLootLucky".equals(name))
 		{
@@ -652,11 +652,11 @@ public class DungeonPlacement
 			{
 				if (room.dungeonType == DungeonType.BASIC)
 				{
-					fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_lucky"), world, rand);
+					fillChestBelow(pos, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_lucky"), world, rand);
 				}
 				else
 				{
-					fillChestBelow(pos, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_crazy"), world, rand);
+					fillChestBelow(pos, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_crazy"), world, rand);
 				}
 			}
 			else
@@ -791,9 +791,9 @@ public class DungeonPlacement
 		}
 	}
 
-	private static Entity spawnEnemyHere(BlockPos pos, String resourceLocation, ServerLevel world, int theme, DungeonType type)
+	private static Entity spawnEnemyHere(BlockPos pos, String Identifier, ServerLevel world, int theme, DungeonType type)
 	{
-		EntityType<?> entitytype = EntityType.byString(resourceLocation).orElse(EntityType.CHICKEN);
+		EntityType<?> entitytype = EntityType.byString(Identifier).orElse(EntityType.CHICKEN);
 
 		Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, EntitySpawnReason.STRUCTURE, true, true);
 
@@ -806,7 +806,7 @@ public class DungeonPlacement
 
 		// append a "2" to the mob name in advanced dungeons
 		String advancedDungeonNames = type == DungeonType.ADVANCED ? "2" : "";
-		MutableComponent fancyName = Component.translatable("enemy.dimdungeons." + resourceLocation + advancedDungeonNames);
+		MutableComponent fancyName = Component.translatable("enemy.dimdungeons." + Identifier + advancedDungeonNames);
 
 		// don't nametag the mob if the translation string fails
 		if (!(fancyName == null || fancyName.getString().contains("enemy.dimdungeons.")))
@@ -867,7 +867,7 @@ public class DungeonPlacement
 		return mob;
 	}
 
-	private static void fillChestBelow(BlockPos pos, ResourceLocation lootTable, LevelAccessor world, RandomSource rand)
+	private static void fillChestBelow(BlockPos pos, Identifier lootTable, LevelAccessor world, RandomSource rand)
 	{
 		world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
 		ResourceKey<LootTable> lootTableKey = ResourceKey.create(Registries.LOOT_TABLE, lootTable);

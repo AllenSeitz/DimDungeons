@@ -14,7 +14,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -47,7 +47,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 public class PlayerDungeonEvents
 {
-	public static final TagKey<Item> TAG_BUCKETS = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "buckets"));
+	public static final TagKey<Item> TAG_BUCKETS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "buckets"));
 
 	@SubscribeEvent
 	public void registerCommands(RegisterCommandsEvent event)

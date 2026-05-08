@@ -11,7 +11,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -44,7 +44,7 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
         HolderLookup.RegistryLookup<Enchantment> enchants = this.registries.lookupOrThrow(Registries.ENCHANTMENT);
 
         // kit_glass
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_glass")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_glass")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(27)).name("dimdungeons:kit_glass").
                         add(LootItem.lootTableItem(Items.TINTED_GLASS).setWeight(20).apply(SetItemCountFunction.setCount(UniformGenerator.between(5, 9)))).
                         add(LootItem.lootTableItem(Items.WHITE_STAINED_GLASS).setWeight(20).apply(SetItemCountFunction.setCount(UniformGenerator.between(5, 9)))).
@@ -83,7 +83,7 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
         );
 
         // kit_concrete
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_concrete")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_concrete")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(27)).name("dimdungeons:kit_concrete").
                         add(LootItem.lootTableItem(Items.WHITE_CONCRETE).setWeight(20).apply(SetItemCountFunction.setCount(UniformGenerator.between(5, 9)))).
                         add(LootItem.lootTableItem(Items.ORANGE_CONCRETE).setWeight(20).apply(SetItemCountFunction.setCount(UniformGenerator.between(5, 9)))).
@@ -121,7 +121,7 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
         );
 
         // kit_sherd, used by kit_pottery
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_sherd")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_sherd")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:kit_sherd").
                         add(LootItem.lootTableItem(Items.ANGLER_POTTERY_SHERD)).
                         add(LootItem.lootTableItem(Items.ARCHER_POTTERY_SHERD)).
@@ -150,7 +150,7 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
         );
 
         // kit_pottery
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_pottery")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_pottery")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(27)).name("dimdungeons:kit_pottery").
                         add(LootItem.lootTableItem(Items.BRICK).setWeight(30).apply(SetItemCountFunction.setCount(UniformGenerator.between(5, 9)))).
                         add(LootItem.lootTableItem(Items.CLAY_BALL).setWeight(20).apply(SetItemCountFunction.setCount(UniformGenerator.between(5, 9)))).
@@ -158,12 +158,12 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
                         add(LootItem.lootTableItem(Items.FLOWER_POT).setWeight(20).apply(SetItemCountFunction.setCount(UniformGenerator.between(5, 9)))).
                         add(LootItem.lootTableItem(Items.DECORATED_POT).setWeight(10).apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4)))).
                         add(LootItem.lootTableItem(Items.FURNACE).setWeight(10).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 1)))).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_sherd"))).setWeight(10))
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_sherd"))).setWeight(10))
                 )
         );
 
         // kit_food
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_food")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_food")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(27)).name("dimdungeons:kit_food").
                         add(LootItem.lootTableItem(Items.BREAD).setWeight(3).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 1)))).
                         add(LootItem.lootTableItem(Items.GLOW_BERRIES).setWeight(3).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 1)))).
@@ -182,7 +182,7 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
         );
 
         // kit_wool
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_wool")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_wool")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(27)).name("dimdungeons:kit_wool").
                         add(LootItem.lootTableItem(Items.WHITE_WOOL).setWeight(20).apply(SetItemCountFunction.setCount(UniformGenerator.between(5, 9)))).
                         add(LootItem.lootTableItem(Items.ORANGE_WOOL).setWeight(20).apply(SetItemCountFunction.setCount(UniformGenerator.between(5, 9)))).
@@ -220,7 +220,7 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
         );
 
         // kit_redstone
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_redstone")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_redstone")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(27)).name("dimdungeons:kit_redstone").
                         add(LootItem.lootTableItem(Items.PISTON).setWeight(1).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 1)))).
                         add(LootItem.lootTableItem(Items.STICKY_PISTON).setWeight(1).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 1)))).
@@ -239,19 +239,19 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
         );
 
         // kit_random
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_random")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_random")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:kit_random").
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_food"))).setWeight(10)).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_concrete"))).setWeight(10)).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_glass"))).setWeight(10)).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_redstone"))).setWeight(10)).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_wool"))).setWeight(10)).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_pottery"))).setWeight(10))
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_food"))).setWeight(10)).
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_concrete"))).setWeight(10)).
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_glass"))).setWeight(10)).
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_redstone"))).setWeight(10)).
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_wool"))).setWeight(10)).
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_pottery"))).setWeight(10))
                 )
         );
 
         // trophy_1
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/trophy_1")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/trophy_1")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:trophy_1").
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_TROPHY_1).setWeight(10).
                             apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_1").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
@@ -305,7 +305,7 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
         );
 
 //        // chestloot_lucky - vanilla datagen is stupid and insists on me regenerating the vanilla table at the same time
-//        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_lucky")), LootTable.lootTable()
+//        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_lucky")), LootTable.lootTable()
 //                .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestloot_lucky").
 //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.ABANDONED_MINESHAFT).setWeight(10)).
 //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.DESERT_PYRAMID).setWeight(10)).
@@ -322,7 +322,7 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
 //        );
 //
 //        // chestloot_crazy - vanilla datagen is stupid and insists on me regenerating the vanilla table at the same time
-//        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_crazy")), LootTable.lootTable()
+//        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_crazy")), LootTable.lootTable()
 //                .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestloot_crazy").
 //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.SHIPWRECK_TREASURE).setWeight(10)).
 //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.ANCIENT_CITY).setWeight(10)).
@@ -336,7 +336,7 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
 //        );
 
         // chestbooks_1
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_1")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_1")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestbooks_1").
                         add(LootItem.lootTableItem(Items.ENCHANTED_BOOK).setWeight(2).apply(new SetEnchantmentsFunction.Builder().withEnchantment(enchants.getOrThrow(Enchantments.SILK_TOUCH), ConstantValue.exactly(1.0F)))).
                         add(LootItem.lootTableItem(Items.ENCHANTED_BOOK).setWeight(2).apply(new SetEnchantmentsFunction.Builder().withEnchantment(enchants.getOrThrow(Enchantments.BLAST_PROTECTION), ConstantValue.exactly(4.0F)))).
@@ -359,7 +359,7 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
         );
 
         // chestbooks_2
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_2")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_2")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestbooks_2").
                         add(LootItem.lootTableItem(Items.ENCHANTED_BOOK).setWeight(2).apply(new SetEnchantmentsFunction.Builder().withEnchantment(enchants.getOrThrow(Enchantments.EFFICIENCY), ConstantValue.exactly(5.0F)))).
                         add(LootItem.lootTableItem(Items.ENCHANTED_BOOK).setWeight(2).apply(new SetEnchantmentsFunction.Builder().withEnchantment(enchants.getOrThrow(Enchantments.UNBREAKING), ConstantValue.exactly(3.0F)))).
@@ -381,7 +381,7 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
         );
 
         // chestbooks_3
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_3")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_3")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestbooks_3").
                         add(LootItem.lootTableItem(Items.ENCHANTED_BOOK).setWeight(4).apply(new SetEnchantmentsFunction.Builder().withEnchantment(enchants.getOrThrow(Enchantments.UNBREAKING), ConstantValue.exactly(3.0F)).withEnchantment(enchants.getOrThrow(Enchantments.MENDING), ConstantValue.exactly(1.0F)))).
                         add(LootItem.lootTableItem(Items.ENCHANTED_BOOK).setWeight(2).apply(new SetEnchantmentsFunction.Builder().withEnchantment(enchants.getOrThrow(Enchantments.UNBREAKING), ConstantValue.exactly(3.0F)).withEnchantment(enchants.getOrThrow(Enchantments.SILK_TOUCH), ConstantValue.exactly(1.0F)))).
@@ -401,7 +401,7 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
         );
 
         // chestbooks_4 - unused for now
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_4")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_4")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestbooks_4").
                         add(LootItem.lootTableItem(Items.ENCHANTED_BOOK).setWeight(2).apply(new SetEnchantmentsFunction.Builder().withEnchantment(enchants.getOrThrow(Enchantments.EFFICIENCY), ConstantValue.exactly(6.0F)))).
                         add(LootItem.lootTableItem(Items.ENCHANTED_BOOK).setWeight(4).apply(new SetEnchantmentsFunction.Builder().withEnchantment(enchants.getOrThrow(Enchantments.UNBREAKING), ConstantValue.exactly(4.0F)))).
@@ -419,7 +419,7 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
         );
 
         // chestloot_1
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_1")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_1")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestloot_1").
                         add(LootItem.lootTableItem(Items.RAW_COPPER_BLOCK).setWeight(3).apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4)))).
                         add(LootItem.lootTableItem(Items.RAW_GOLD_BLOCK).setWeight(3).apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4)))).
@@ -436,14 +436,14 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
                         add(LootItem.lootTableItem(Items.SLIME_BALL).setWeight(3).apply(SetItemCountFunction.setCount(UniformGenerator.between(8, 12)))).
                         add(LootItem.lootTableItem(Items.ENDER_PEARL).setWeight(3).apply(SetItemCountFunction.setCount(UniformGenerator.between(5, 8)))).
                         add(LootItem.lootTableItem(Items.NAME_TAG).setWeight(4).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_random"))).setWeight(20)).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_1"))).setWeight(32)).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/trophy_1"))).setWeight(1))
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_random"))).setWeight(20)).
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_1"))).setWeight(32)).
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/trophy_1"))).setWeight(1))
                 )
         );
 
         // chestloot_2
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_2")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_2")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestloot_2").
                         add(LootItem.lootTableItem(Items.EMERALD).setWeight(3).apply(SetItemCountFunction.setCount(UniformGenerator.between(8, 16)))).
                         add(LootItem.lootTableItem(Items.DIAMOND).setWeight(3).apply(SetItemCountFunction.setCount(UniformGenerator.between(4, 8)))).
@@ -464,13 +464,13 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_SECRET_BELL).setWeight(4).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 1)))).
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_CHARGER_FULL).setWeight(4).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 1)))).
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_PORTAL_CROWN).setWeight(5).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 1)))).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_2"))).setWeight(32)).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/trophy_1"))).setWeight(1))
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_2"))).setWeight(32)).
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/trophy_1"))).setWeight(1))
                 )
         );
 
         // chestloot_3
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_3")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_3")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestloot_3").
                         add(LootItem.lootTableItem(Items.EMERALD).setWeight(3).apply(SetItemCountFunction.setCount(UniformGenerator.between(12, 24)))).
                         add(LootItem.lootTableItem(Items.LAPIS_BLOCK).setWeight(3).apply(SetItemCountFunction.setCount(UniformGenerator.between(3, 5)))).
@@ -487,14 +487,14 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
                         add(LootItem.lootTableItem(Items.DRAGON_BREATH).setWeight(3).apply(SetItemCountFunction.setCount(UniformGenerator.between(3, 6)))).
                         add(LootItem.lootTableItem(Items.ENDER_PEARL).setWeight(3).apply(SetItemCountFunction.setCount(UniformGenerator.between(6, 10)))).
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_PORTAL_KEY).setWeight(4).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 1)))).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_random"))).setWeight(20)).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_2"))).setWeight(32)).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/trophy_1"))).setWeight(1))
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/kit_random"))).setWeight(20)).
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_2"))).setWeight(32)).
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/trophy_1"))).setWeight(1))
                 )
         );
 
         // chestloot_4
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_4")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_4")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestloot_4").
                         add(LootItem.lootTableItem(Items.ANCIENT_DEBRIS).setWeight(3).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 3)))).
                         add(LootItem.lootTableItem(Items.TOTEM_OF_UNDYING).setWeight(3).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 1)))).
@@ -516,38 +516,38 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_SECRET_BELL).setWeight(4).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 1)))).
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_CHARGER_FULL).setWeight(5).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 1)))).
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_BLANK_TELEPORTER_KEY).setWeight(4).apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 1)))).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_3"))).setWeight(32)).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/trophy_1"))).setWeight(1))
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_3"))).setWeight(32)).
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/trophy_1"))).setWeight(1))
                 )
         );
 
         // chestloot_basic_easy
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_basic_easy")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_basic_easy")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestloot_basic_easy").
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_1"))).setWeight(4)).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_2"))).setWeight(1))
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_1"))).setWeight(4)).
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_2"))).setWeight(1))
                 )
         );
 
         // chestloot_basic_hard
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_basic_hard")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_basic_hard")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestloot_basic_hard").
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_2"))).setWeight(1))
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_2"))).setWeight(1))
                 )
         );
 
         // chestloot_advanced_easy
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_advanced_easy")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_advanced_easy")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestloot_advanced_easy").
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_3"))).setWeight(4)).
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_4"))).setWeight(1))
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_3"))).setWeight(4)).
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_4"))).setWeight(1))
                 )
         );
 
         // chestloot_advanced_hard
-        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_advanced_hard")), LootTable.lootTable()
+        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_advanced_hard")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestloot_advanced_hard").
-                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_4"))).setWeight(1))
+                        add(NestedLootTable.lootTableReference(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_4"))).setWeight(1))
                 )
         );
     }

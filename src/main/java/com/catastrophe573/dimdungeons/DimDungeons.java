@@ -5,7 +5,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.Level;
@@ -52,9 +52,9 @@ public class DimDungeons
 	public static final String dungeon_dimension_regname = "dungeon_dimension";
 	public static final String build_dimension_regname = "build_dimension";
 
-	// commonly used ResourceLocations for my two dimensions
-	public static final ResourceKey<Level> DUNGEON_DIMENSION = ResourceKey.create(Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath(MOD_ID, dungeon_dimension_regname));
-	public static final ResourceKey<Level> BUILD_DIMENSION = ResourceKey.create(Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath(MOD_ID, build_dimension_regname));
+	// commonly used Identifiers for my two dimensions
+	public static final ResourceKey<Level> DUNGEON_DIMENSION = ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath(MOD_ID, dungeon_dimension_regname));
+	public static final ResourceKey<Level> BUILD_DIMENSION = ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath(MOD_ID, build_dimension_regname));
 
 	// register my custom ChunkGenerator here instead of in a separate class
 	private static final DeferredRegister<MapCodec<? extends ChunkGenerator>> CHUNK_GENERATORS = DeferredRegister.create(Registries.CHUNK_GENERATOR.location(), DimDungeons.MOD_ID);
@@ -109,8 +109,8 @@ public class DimDungeons
 	public void onRegisterItemModelProperties(net.neoforged.neoforge.client.event.RegisterRangeSelectItemModelPropertyEvent event)
 	{
 		//DimDungeons.logMessageInfo("Registering custom item model properties!");
-		event.register(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "dungeon_theme"), ModelPropertyTheme.MAP_CODEC);
-		event.register(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "dungeon_level"), ModelPropertyLevel.MAP_CODEC);
+		event.register(Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "dungeon_theme"), ModelPropertyTheme.MAP_CODEC);
+		event.register(Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "dungeon_level"), ModelPropertyLevel.MAP_CODEC);
 	}
 
 	private void enqueueIMC(final InterModEnqueueEvent event)

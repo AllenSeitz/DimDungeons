@@ -5,7 +5,7 @@ import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -23,7 +23,7 @@ public class ItemHomewardPearl extends Item
 
 	public ItemHomewardPearl(Item.Properties builderIn)
 	{
-		super(builderIn.setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))));
+		super(builderIn.setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))));
 	}
 
 	@Override

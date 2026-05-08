@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.block.state.properties.StructureMode;
 import net.minecraft.world.level.block.Mirror;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
@@ -152,7 +152,7 @@ public class DungeonPlacementDebug extends DungeonPlacement
 		MinecraftServer minecraftserver = ((Level) world).getServer();
 		StructureTemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
-		StructureTemplate template = templatemanager.getOrCreate(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "basic_template"));
+		StructureTemplate template = templatemanager.getOrCreate(Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "basic_template"));
 		StructurePlaceSettings placementsettings = (new StructurePlaceSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false);
 		placementsettings.setBoundingBox(placementsettings.getBoundingBox());
 		placementsettings.setRotation(Rotation.NONE);
@@ -169,7 +169,7 @@ public class DungeonPlacementDebug extends DungeonPlacement
 		MinecraftServer minecraftserver = ((Level) world).getServer();
 		StructureTemplateManager templatemanager = DungeonUtils.getDungeonWorld(minecraftserver).getStructureManager();
 
-		StructureTemplate template = templatemanager.getOrCreate(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, room.structure));
+		StructureTemplate template = templatemanager.getOrCreate(Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, room.structure));
 		StructurePlaceSettings placementsettings = (new StructurePlaceSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false);
 		placementsettings.setBoundingBox(placementsettings.getBoundingBox());
 

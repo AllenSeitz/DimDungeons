@@ -42,7 +42,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.redstone.Orientation;
@@ -68,12 +68,12 @@ public class BlockGoldPortal extends BaseEntityBlock
 	protected static final VoxelShape X_AABB = Block.box(0.0D, 0.0D, 6.0D, 16.0D, 16.0D, 10.0D);
 	protected static final VoxelShape Z_AABB = Block.box(6.0D, 0.0D, 0.0D, 10.0D, 16.0D, 16.0D);
 
-	public static final TagKey<Block> tag_portal_frame_blocks = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "portal_frame_blocks"));
+	public static final TagKey<Block> tag_portal_frame_blocks = TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "portal_frame_blocks"));
 
 	public BlockGoldPortal()
 	{
 		super(BlockBehaviour.Properties.of().
-				setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
+				setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
 				pushReaction(PushReaction.BLOCK).randomTicks().strength(9999).sound(SoundType.GLASS).noCollision().lightLevel((p) -> 15));
 		this.registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.X));
 	}
@@ -337,14 +337,14 @@ public class BlockGoldPortal extends BaseEntityBlock
 			if (entrance != null && entrance.dungeonType == DungeonType.ADVANCED)
 			{
 				// since the condition is minecraft:impossible, this is the only way to trigger it
-				player.getAdvancements().award(dim.getServer().getAdvancements().get(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
+				player.getAdvancements().award(dim.getServer().getAdvancements().get(Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
 
 				// award the achievement to everyone joining in hardcore mode too
 				if ( multiplayerHardcore != null )
 				{
 					for (ServerPlayer friend : multiplayerHardcore)
 					{
-						friend.getAdvancements().award(dim.getServer().getAdvancements().get(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
+						friend.getAdvancements().award(dim.getServer().getAdvancements().get(Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "dungeons/enter_advanced_dungeon")), "advanced_dungeon");
 					}
 				}
 			}
@@ -357,7 +357,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 			// try to award a joke advancement
 			if (DungeonUtils.isDimensionPersonalBuild(player.level()) && DungeonUtils.isDimensionPersonalBuild(dim))
 			{
-				// player.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new ResourceLocation(DimDungeons.RESOURCE_PREFIX + "dungeons/build_recursive_portal")), "build_portal_inside");
+				// player.getAdvancements().award(dim.getServer().getAdvancements().getAdvancement(new Identifier(DimDungeons.RESOURCE_PREFIX + "dungeons/build_recursive_portal")), "build_portal_inside");
 			}
 		}
 		else

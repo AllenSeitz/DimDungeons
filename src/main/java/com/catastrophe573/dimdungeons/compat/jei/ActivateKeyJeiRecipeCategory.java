@@ -12,12 +12,12 @@ package com.catastrophe573.dimdungeons.compat.jei;
 //import mezz.jei.api.recipe.RecipeType;
 //import mezz.jei.api.recipe.category.IRecipeCategory;
 //import net.minecraft.network.chat.Component;
-//import net.minecraft.resources.ResourceLocation;
+//import net.minecraft.resources.Identifier;
 //
 //public class ActivateKeyJeiRecipeCategory implements IRecipeCategory<ActivateKeyJeiRecipe>
 //{
-//	private static final ResourceLocation texture = new ResourceLocation(DimDungeons.MOD_ID, "textures/gui/jei/jei_activate_key.png");
-//	public static final ResourceLocation UID = new ResourceLocation(DimDungeons.MOD_ID, "activate_key");
+//	private static final Identifier texture = new Identifier(DimDungeons.MOD_ID, "textures/gui/jei/jei_activate_key.png");
+//	public static final Identifier UID = new Identifier(DimDungeons.MOD_ID, "activate_key");
 //
 //	private final IDrawable background;
 //	private final IDrawable icon;

@@ -5,7 +5,7 @@ import com.catastrophe573.dimdungeons.DungeonConfig;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -78,7 +78,7 @@ public class TileEntityGoldPortal extends BlockEntity
 
 	public ResourceKey<Level> getDestinationDimension()
 	{
-		return ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(destDimension));
+		return ResourceKey.create(Registries.DIMENSION, Identifier.parse(destDimension));
 	}
 
 	public Direction getExitDirection()

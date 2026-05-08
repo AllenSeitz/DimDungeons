@@ -6,7 +6,7 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -42,7 +42,7 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 	public BlockLocalTeleporter()
 	{
 		super(BlockBehaviour.Properties.of().
-				setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
+				setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
 				pushReaction(PushReaction.BLOCK).randomTicks().strength(9999).sound(SoundType.GLASS).noCollision().lightLevel((p) -> 15));
 	}
 

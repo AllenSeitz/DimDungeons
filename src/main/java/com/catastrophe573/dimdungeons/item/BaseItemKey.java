@@ -12,7 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -62,7 +62,7 @@ public class BaseItemKey extends Item
 	public static final float ENTRANCE_OFFSET_X = 8.0f + (8 * 16); // applied when the player teleports in, centered on the two-block-wide return portal
 	public static final float ENTRANCE_OFFSET_Z = 12.5f + (11 * 16); // applied when the player teleports in, centered on the two-block-wide return portal
 
-	public static final TagKey<Block> tag_alternate_activation_blocks = BlockTags.create(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "key_activation_blocks"));
+	public static final TagKey<Block> tag_alternate_activation_blocks = BlockTags.create(Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "key_activation_blocks"));
 
 	public BaseItemKey(Item.Properties properties)
 	{
@@ -594,7 +594,7 @@ public class BaseItemKey extends Item
 
 			// since the condition is minecraft:impossible, this is the only way to trigger it
 			ServerPlayer sp = worldIn.getServer().getPlayerList().getPlayer(player.getUUID());
-			sp.getAdvancements().award(worldIn.getServer().getAdvancements().get(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "dungeons/activate_basic_key")), "getkey");
+			sp.getAdvancements().award(worldIn.getServer().getAdvancements().get(Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "dungeons/activate_basic_key")), "getkey");
 		}
 
 		createActivationParticleEffects(worldIn, pos);

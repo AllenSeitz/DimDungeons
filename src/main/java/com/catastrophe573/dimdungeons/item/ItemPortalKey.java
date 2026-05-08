@@ -6,7 +6,7 @@ import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -20,7 +20,7 @@ public class ItemPortalKey extends BaseItemKey
 
 	public ItemPortalKey()
 	{
-		super(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))));
+		super(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))));
 	}
 
 	// used in the item model json to change the graphic based on the dimdungeons:keytype property

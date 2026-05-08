@@ -16,7 +16,7 @@ import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -407,7 +407,7 @@ public class DungeonUtils
 	// returns the limit of the dungeon space not in blocks, but in dungeon widths (which is BLOCKS_APART_PER_DUNGEON)
 	public static long getLimitOfWorldBorder(MinecraftServer server)
 	{
-		ResourceKey<Level> configkey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(DungeonConfig.worldborderToRespect));
+		ResourceKey<Level> configkey = ResourceKey.create(Registries.DIMENSION, Identifier.parse(DungeonConfig.worldborderToRespect));
 		ServerLevel world = server.getLevel(configkey);
 		double size = world.getWorldBorder().getSize() / 2;
 

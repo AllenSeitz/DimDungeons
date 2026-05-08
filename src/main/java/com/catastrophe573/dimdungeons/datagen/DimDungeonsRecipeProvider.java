@@ -7,7 +7,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -26,8 +26,8 @@ public class DimDungeonsRecipeProvider extends RecipeProvider
     @Override
     protected void buildRecipes()
     {
-        TagKey<Item> gold_ingots = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c","ingots/gold"));
-        TagKey<Item> trapped_chests = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c","chests/trapped"));
+        TagKey<Item> gold_ingots = ItemTags.create(Identifier.fromNamespaceAndPath("c","ingots/gold"));
+        TagKey<Item> trapped_chests = ItemTags.create(Identifier.fromNamespaceAndPath("c","chests/trapped"));
 
         // gilded portal
         shaped(RecipeCategory.MISC, BlockRegistrar.BLOCK_GILDED_PORTAL.get())

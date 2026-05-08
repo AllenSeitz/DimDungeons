@@ -20,7 +20,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.InteractionResult;
@@ -52,12 +52,12 @@ public class ItemSecretBell extends Item // extends TieredItem implements IVanis
 
 	public static final int BELL_COOLDOWN_TICKS = 60;
 
-	public static final TagKey<Block> tag_secret_chime = BlockTags.create(ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, "secret_chime_blocks"));
+	public static final TagKey<Block> tag_secret_chime = BlockTags.create(Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "secret_chime_blocks"));
 
 	public ItemSecretBell(/* IItemTier tier, */ Item.Properties builderIn)
 	{
 		// super(tier, builderIn);
-		super(builderIn.setId(ResourceKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))));
+		super(builderIn.setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))));
 	}
 
 	// used in the item model json to change the graphic based on the dimdungeons:keytype property

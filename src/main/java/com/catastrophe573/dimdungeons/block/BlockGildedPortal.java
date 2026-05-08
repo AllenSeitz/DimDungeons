@@ -3,7 +3,7 @@ package com.catastrophe573.dimdungeons.block;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
@@ -19,7 +19,7 @@ public class BlockGildedPortal extends Block
 	public BlockGildedPortal()
 	{
 		super(BlockBehaviour.Properties.of().
-				setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
+				setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
 				mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).strength(2).sound(SoundType.METAL));
 	}
 

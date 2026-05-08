@@ -14,7 +14,7 @@ package com.catastrophe573.dimdungeons.compat.jei;
 //import mezz.jei.api.registration.IRecipeCatalystRegistration;
 //import mezz.jei.api.registration.IRecipeCategoryRegistration;
 //import mezz.jei.api.registration.IRecipeRegistration;
-//import net.minecraft.resources.ResourceLocation;
+//import net.minecraft.resources.Identifier;
 //import net.minecraft.world.item.ItemStack;
 //import net.minecraft.world.item.Items;
 //import net.minecraftforge.registries.ForgeRegistries;
@@ -23,9 +23,9 @@ package com.catastrophe573.dimdungeons.compat.jei;
 //public class JEIAddon implements IModPlugin
 //{
 //	@Override
-//	public ResourceLocation getPluginUid()
+//	public Identifier getPluginUid()
 //	{
-//		return new ResourceLocation(DimDungeons.MOD_ID, "jei");
+//		return new Identifier(DimDungeons.MOD_ID, "jei");
 //	}
 //
 //	static public RecipeType<ActivateKeyJeiRecipe> getActivateKeyRecipeType()
@@ -57,7 +57,7 @@ package com.catastrophe573.dimdungeons.compat.jei;
 //		// this allows end:remastered portal frames to work too
 //		if (DungeonConfig.isModInstalled("endrem"))
 //		{
-//			ResourceLocation id = new ResourceLocation("endrem", "ancient_portal_frame");
+//			Identifier id = new Identifier("endrem", "ancient_portal_frame");
 //			ItemStack ancient_frame = new ItemStack(ForgeRegistries.BLOCKS.getValue(id));
 //			allRecipes.add(new ActivateKeyJeiRecipe(blank_key, ancient_frame, DungeonUtils.getExampleKey()));
 //			allRecipes.add(new ActivateKeyJeiRecipe(teleporter_key, ancient_frame, DungeonUtils.getExampleTeleporterHubKey()));

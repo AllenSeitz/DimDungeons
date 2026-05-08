@@ -18,7 +18,7 @@ import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
@@ -73,7 +73,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 	public BlockPortalKeyhole()
 	{
 		super(BlockBehaviour.Properties.of().
-				setId(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
+				setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, REG_NAME))).
 				mapColor(MapColor.STONE).instrument(NoteBlockInstrument.COW_BELL).strength(3).explosionResistance(1200).sound(SoundType.METAL));
 		this.registerDefaultState(getMyCustomDefaultState());
 	}

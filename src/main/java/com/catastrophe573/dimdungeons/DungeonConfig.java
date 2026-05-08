@@ -9,7 +9,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -1502,10 +1502,10 @@ public class DungeonConfig
 		}
 	}
 
-	// a helper function for translating ResourceLocation strings (such as minecraft:chest) into blocks
+	// a helper function for translating Identifier strings (such as minecraft:chest) into blocks
 	private static Block parseBlock(String location)
 	{
-		ResourceLocation rl = ResourceLocation.parse(location);
+		Identifier rl = Identifier.parse(location);
 
 		if ( BuiltInRegistries.BLOCK.get(rl).isEmpty() )
 		{
