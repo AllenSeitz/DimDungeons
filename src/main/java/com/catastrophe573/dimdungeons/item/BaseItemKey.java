@@ -480,10 +480,10 @@ public class BaseItemKey extends Item
 					worldIn.playSound((Player) null, pos, SoundEvents.GLASS_HIT, SoundSource.BLOCKS, 1.0F, 1.0F);
 				}
 			}
-			else if (worldIn.getBlockState(pos).getBlock().builtInRegistryHolder().key().location().getNamespace().equals("endrem"))
+			else if (worldIn.getBlockState(pos).getBlock().builtInRegistryHolder().key().identifier().getNamespace().equals("endrem"))
 			{
 				// compatibility for End:Remastered
-				String blockid = worldIn.getBlockState(pos).getBlock().builtInRegistryHolder().key().location().getPath();
+				String blockid = worldIn.getBlockState(pos).getBlock().builtInRegistryHolder().key().identifier().getPath();
 				if (isActivated(itemstack))
 				{
 					// System.out.println("Key already activated!");
@@ -526,7 +526,7 @@ public class BaseItemKey extends Item
 						// running this block of code on the client can cause a flicker
 						if (!worldIn.isClientSide())
 						{
-							String blockid = worldIn.getBlockState(pos).getBlock().builtInRegistryHolder().key().location().getPath();
+							String blockid = worldIn.getBlockState(pos).getBlock().builtInRegistryHolder().key().identifier().getPath();
 							int roll = worldIn.getRandom().nextInt(100);
 							if (blockid.equals(BlockRegistrar.REG_NAME_CHARGER_FULL))
 							{

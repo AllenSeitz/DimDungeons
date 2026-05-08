@@ -57,7 +57,7 @@ public class DimDungeons
 	public static final ResourceKey<Level> BUILD_DIMENSION = ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath(MOD_ID, build_dimension_regname));
 
 	// register my custom ChunkGenerator here instead of in a separate class
-	private static final DeferredRegister<MapCodec<? extends ChunkGenerator>> CHUNK_GENERATORS = DeferredRegister.create(Registries.CHUNK_GENERATOR.location(), DimDungeons.MOD_ID);
+	private static final DeferredRegister<MapCodec<? extends ChunkGenerator>> CHUNK_GENERATORS = DeferredRegister.create(Registries.CHUNK_GENERATOR.identifier(), DimDungeons.MOD_ID);
 	public static final DeferredHolder<MapCodec<? extends ChunkGenerator>, MapCodec<FlatLevelSource>> MY_CHUNK_GEN = CHUNK_GENERATORS.register("dimdungeons_chunkgen", () -> DungeonChunkGenerator.CODEC);
 
 	// see PlayerDungeonEvents.java

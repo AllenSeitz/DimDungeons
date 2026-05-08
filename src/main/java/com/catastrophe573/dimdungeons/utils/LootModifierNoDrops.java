@@ -43,7 +43,7 @@ public class LootModifierNoDrops extends net.neoforged.neoforge.common.loot.Loot
 		}
 
 		// check if the block broken is on the "no drops in this dimension" list
-		String id = blockState.getBlock().builtInRegistryHolder().key().location().toString();
+		String id = blockState.getBlock().builtInRegistryHolder().key().identifier().toString();
 		if ( DungeonConfig.SERVER.blockDropBlacklist.get().contains(id))
 		{
 			generatedLoot.removeAll(generatedLoot);

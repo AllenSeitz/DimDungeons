@@ -216,7 +216,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 					te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
 				}
 
-				if (destDim.location().getPath().equals(DimDungeons.dungeon_dimension_regname))
+				if (destDim.identifier().getPath().equals(DimDungeons.dungeon_dimension_regname))
 				{
 					// implement hardcore mode
 					if (DungeonConfig.hardcoreMode)
@@ -241,7 +241,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 
 				// implement the whitelist or blacklist for players the try to enter the Personal Build Dimension
 				// this is actually 50% defensive coding against cases that should never happen
-				if (destDim.location().getPath().equals(DimDungeons.build_dimension_regname))
+				if (destDim.identifier().getPath().equals(DimDungeons.build_dimension_regname))
 				{
 					TileEntityPortalKeyhole keyhole = findKeyholeForThisPortal(state, worldIn, pos);
 					if (keyhole == null)
@@ -282,7 +282,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 					}
 				}
 
-				DimDungeons.logMessageInfo("Player is using a gold portal to teleport to (" + warpX + " " + warpY + " " + warpZ + ") in dimension " + destDim.location().toString() + ".");
+				DimDungeons.logMessageInfo("Player is using a gold portal to teleport to (" + warpX + " " + warpY + " " + warpZ + ") in dimension " + destDim.identifier().toString() + ".");
 				ServerPlayer player = (ServerPlayer) entityIn;
 				actuallyPerformTeleport(player, worldIn.getServer().getLevel(te.getDestinationDimension()), warpX, warpY, warpZ, getReturnYawForDirection(te.getExitDirection()));
 			}

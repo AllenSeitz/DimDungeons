@@ -129,15 +129,15 @@ public class PlayerDungeonEvents
 		List<BlockPos> crackedBricks = Lists.newArrayList();
 		for (int i = 0; i < event.getAffectedBlocks().size(); i++)
 		{
-			if (event.getLevel().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().location().getPath().equals("cracked_stone_bricks"))
+			if (event.getLevel().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().identifier().getPath().equals("cracked_stone_bricks"))
 			{
 				crackedBricks.add(event.getAffectedBlocks().get(i));
 			}
-			if (event.getLevel().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().location().getPath().equals("trapped_chest"))
+			if (event.getLevel().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().identifier().getPath().equals("trapped_chest"))
 			{
 				crackedBricks.add(event.getAffectedBlocks().get(i));
 			}
-			if (event.getLevel().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().location().getPath().equals("tnt"))
+			if (event.getLevel().getBlockState(event.getAffectedBlocks().get(i)).getBlock().builtInRegistryHolder().key().identifier().getPath().equals("tnt"))
 			{
 				crackedBricks.add(event.getAffectedBlocks().get(i));
 			}
@@ -218,7 +218,7 @@ public class PlayerDungeonEvents
 
 		// assume this is frost walker and allow it?
 		// TODO: this might need to change in 1.21, or it might no longer be important
-		String whatBlock = event.getPlacedBlock().getBlock().builtInRegistryHolder().key().location().getPath();
+		String whatBlock = event.getPlacedBlock().getBlock().builtInRegistryHolder().key().identifier().getPath();
 		//String whyBlock = event.getBlockSnapshot().get getReplacedBlock().getBlock().builtInRegistryHolder().key().location().getPath();
 		if ("water".equals(whatBlock) /*&& "water".equals(whyBlock)*/)
 		{

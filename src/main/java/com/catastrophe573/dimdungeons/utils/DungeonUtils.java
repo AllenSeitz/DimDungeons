@@ -51,7 +51,7 @@ public class DungeonUtils
 		{
 			return false;
 		}
-		return worldIn.dimension().location().getPath() == DimDungeons.dungeon_dimension_regname;
+		return worldIn.dimension().identifier().getPath() == DimDungeons.dungeon_dimension_regname;
 	}
 
 	public static boolean isDimensionPersonalBuild(Level worldIn)
@@ -60,7 +60,7 @@ public class DungeonUtils
 		{
 			return false;
 		}
-		return worldIn.dimension().location().getPath() == DimDungeons.build_dimension_regname;
+		return worldIn.dimension().identifier().getPath() == DimDungeons.build_dimension_regname;
 	}
 
 	// this is used by the dungeon building logic
@@ -236,7 +236,7 @@ public class DungeonUtils
 		Level dim = DungeonUtils.getPersonalBuildWorld(worldIn.getServer());
 		BlockPos portalStart = new BlockPos((int)(entranceX + 1), 51, (int)(entranceZ + 1));
 
-		if (genData.returnDimension.equals(DimDungeons.BUILD_DIMENSION.location().toString()))
+		if (genData.returnDimension.equals(DimDungeons.BUILD_DIMENSION.identifier().toString()))
 		{
 			return false; // for now, do not allow this
 		}
@@ -296,7 +296,7 @@ public class DungeonUtils
 				if (te != null)
 				{
 					te.setDestination(genData.returnPoint.getX(), genData.returnPoint.getY(), genData.returnPoint.getZ(), genData.returnDimension, keyholeFacing);
-					DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + nextBlock.getX() + ", " + nextBlock.getY() + ", " + nextBlock.getZ() + ") in dim " + dim.dimension().location().getPath());
+					DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + nextBlock.getX() + ", " + nextBlock.getY() + ", " + nextBlock.getZ() + ") in dim " + dim.dimension().identifier().getPath());
 				}
 				else
 				{
@@ -321,7 +321,7 @@ public class DungeonUtils
 				if (te != null)
 				{
 					te.setDestination(genData.returnPoint.getX(), genData.returnPoint.getY(), genData.returnPoint.getZ(), genData.returnDimension, keyholeFacing);
-					DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ") in dim " + dim.dimension().location().getPath());
+					DimDungeons.logMessageInfo("DIMDUNGEONS INFO: Reprogrammed exit door at (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ") in dim " + dim.dimension().identifier().getPath());
 				}
 				else
 				{
@@ -401,7 +401,7 @@ public class DungeonUtils
 	// takes World.OVERWORLD and returns "minecraft:overworld"
 	public static String serializeDimensionKey(ResourceKey<Level> dimension)
 	{
-		return dimension.location().getNamespace() + ":" + dimension.location().getPath();
+		return dimension.identifier().getNamespace() + ":" + dimension.identifier().getPath();
 	}
 
 	// returns the limit of the dungeon space not in blocks, but in dungeon widths (which is BLOCKS_APART_PER_DUNGEON)
