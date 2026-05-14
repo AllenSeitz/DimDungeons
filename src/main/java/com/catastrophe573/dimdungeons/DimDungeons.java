@@ -4,11 +4,13 @@ import com.catastrophe573.dimdungeons.item.*;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
 import net.neoforged.api.distmarker.Dist;
@@ -16,11 +18,13 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -37,7 +41,7 @@ import com.catastrophe573.dimdungeons.utils.LootModifierNoDrops;
 import java.util.function.Supplier;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("dimdungeons")
+@Mod(DimDungeons.MOD_ID)
 public class DimDungeons
 {
 	// reference a log4j logger
@@ -76,7 +80,7 @@ public class DimDungeons
 			"secret_bell_data", builder -> builder.persistent(SecretBellDataComponent.SECRET_BELL_DCR_CODEC)
 	);
 
-	public DimDungeons(IEventBus modEventBus, Dist dist, ModContainer container)
+	public DimDungeons(IEventBus modEventBus, ModContainer container)
 	{
 		BlockRegistrar.register(modEventBus);
 		ItemRegistrar.register(modEventBus);
@@ -127,7 +131,7 @@ public class DimDungeons
 	{
 		ModConfig config = event.getConfig();
 
-		if ( event instanceof  ModConfigEvent.Unloading )
+		if ( event instanceof ModConfigEvent.Unloading )
 		{
 			return; // do not call refreshServer() after it has been unloaded (Unloading only happens for the server)
 		}
@@ -140,6 +144,14 @@ public class DimDungeons
 		{
 			DungeonConfig.refreshServer();
 		}
+	}
+
+	// You can use SubscribeEvent and let the Event Bus discover methods to call
+	@SubscribeEvent
+	public void onServerStarting(ServerStartingEvent event)
+	{
+		// Do something when the server starts
+		//LOGGER.info("HELLO from server starting");
 	}
 
 	public static void logMessageInfo(String message)
