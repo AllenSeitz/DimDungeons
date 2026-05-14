@@ -321,7 +321,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 			x -= 0.00;
 			z += 1.0D;
 
-			ChunkPos cpos = new ChunkPos(new BlockPos((int) x, (int) y, (int) z));
+			ChunkPos cpos = ChunkPos.containing(new BlockPos((int) x, (int) y, (int) z));
 
 			// implement hardcore portal radius
 			if (DungeonConfig.hardcoreMode)

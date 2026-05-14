@@ -20,6 +20,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.MobCategory;
@@ -30,7 +31,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureSpawnOverride;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
-import net.minecraft.world.level.storage.DimensionDataStorage;
+import net.minecraft.world.level.storage.SavedDataStorage;
 import net.minecraft.world.phys.Vec2;
 
 // based off McJty's 1.18.1 example
@@ -59,7 +60,7 @@ public class DungeonData extends SavedData
 			// Convert ChunkPos to String
 			pos ->
             {
-                return new String(pos.x + "," + pos.z);
+                return new String(pos.x() + "," + pos.z());
             }
 	);
 
@@ -74,7 +75,7 @@ public class DungeonData extends SavedData
     	}
 	);
 
-	public static final SavedDataType<DungeonData> DUNGEON_DATA_TYPE = new SavedDataType<>(DUNGEON_DATA, DungeonData::new, DUNGEON_DATA_CODEC);
+	public static final SavedDataType<DungeonData> DUNGEON_DATA_TYPE = new SavedDataType<>(Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, DUNGEON_DATA), DungeonData::new, DUNGEON_DATA_CODEC);
 
 	// this constructor is called on fresh levels
 	public DungeonData()
@@ -109,7 +110,7 @@ public class DungeonData extends SavedData
 		}
 
 		// get the vanilla storage manager from the level
-		DimensionDataStorage storage = ((ServerLevel) level).getDataStorage();
+		SavedDataStorage storage = ((ServerLevel) level).getDataStorage();
 
 		// get the DungeonData if it already exists for this level, otherwise create a new one
 		return storage.computeIfAbsent(DUNGEON_DATA_TYPE);

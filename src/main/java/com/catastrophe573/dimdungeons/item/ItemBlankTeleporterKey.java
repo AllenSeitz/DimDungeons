@@ -31,7 +31,7 @@ public class ItemBlankTeleporterKey extends BaseItemKey
 	@Override
 	public ItemStack performActivationRitual(Player player, ItemStack itemstack, Level worldIn, BlockPos pos)
 	{
-		worldIn.playSound((Player) null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
+		worldIn.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
 
 		// in 1.21 do these first, because stack.shrink(1) causes the itemstack to empty (why wasn't this broken in previous versions?)
 		createActivationParticleEffects(worldIn, pos);
@@ -60,7 +60,7 @@ public class ItemBlankTeleporterKey extends BaseItemKey
 			double xspeed = (random.nextFloat() * 0.08) * (random.nextBoolean() ? 1 : -1);
 			double yspeed = random.nextFloat() * 0.45;
 			double zspeed = (random.nextFloat() * 0.08) * (random.nextBoolean() ? 1 : -1);
-			worldIn.addParticle(new ItemParticleOption(ParticleTypes.ITEM, itemstack), d0, d1, d2, xspeed, yspeed, zspeed);
+			worldIn.addParticle(new ItemParticleOption(ParticleTypes.ITEM, itemstack.getItem()), d0, d1, d2, xspeed, yspeed, zspeed);
 		}
 	}
 }

@@ -89,10 +89,10 @@ public class PlayerDungeonEvents
 			if (!DungeonUtils.isPersonalBuildChunk(event.getEntity().blockPosition()))
 			{
 				// player is leaving the build area (probably on elytra) and needs a correction
-				ChunkPos chunk = new ChunkPos(event.getEntity().blockPosition());
+				ChunkPos chunk = ChunkPos.containing(event.getEntity().blockPosition());
 
-				int nx = (chunk.x - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
-				int nz = (chunk.z - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
+				int nx = (chunk.x() - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
+				int nz = (chunk.z() - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
 
 				if (nx < -1 || (nx > 8 && nx < 31) || nz < -1 || (nz > 8 && nz < 31))
 				{

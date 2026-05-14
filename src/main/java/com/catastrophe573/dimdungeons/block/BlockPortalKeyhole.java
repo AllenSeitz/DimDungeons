@@ -726,7 +726,7 @@ public class BlockPortalKeyhole extends BaseEntityBlock
 		}
 		text1.withStyle(text1.getStyle().withItalic(true));
 		text1.withStyle(text1.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
-		playerIn.displayClientMessage(text1, true);
+		playerIn.sendOverlayMessage(text1);
 	}
 
 	@Override

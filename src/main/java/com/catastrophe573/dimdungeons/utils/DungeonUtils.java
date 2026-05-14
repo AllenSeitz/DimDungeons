@@ -426,15 +426,15 @@ public class DungeonUtils
 	// takes a block pos (not a chunk pos) and returns true if this space is potentially buildable or false if it is void
 	public static boolean isPersonalBuildChunk(BlockPos pos)
 	{
-		ChunkPos chunk = new ChunkPos(pos);
+		ChunkPos chunk = ChunkPos.containing(pos);
 
-		if (chunk.x < 4 || chunk.z < 4)
+		if (chunk.x() < 4 || chunk.z() < 4)
 		{
 			return false;
 		}
 
-		int nx = (chunk.x - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
-		int nz = (chunk.z - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
+		int nx = (chunk.x() - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
+		int nz = (chunk.z() - 4) % (ItemBuildKey.BLOCKS_APART_PER_PLOT / 16);
 
 		// remember the +4 offset was for map art
 		return (nx) < 8 && (nz) < 8;
@@ -536,7 +536,7 @@ public class DungeonUtils
 
 		text1.withStyle(text1.getStyle().withItalic(true));
 		text1.withStyle(text1.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
-		playerIn.displayClientMessage(text1, false);
+		playerIn.sendSystemMessage(text1);
 	}
 
 	public static void displayGuestList(Player playerIn, ArrayList<String> guestList)
@@ -554,7 +554,7 @@ public class DungeonUtils
 
 		text1.withStyle(text1.getStyle().withItalic(true));
 		text1.withStyle(text1.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
-		playerIn.displayClientMessage(text1, false);
+		playerIn.sendSystemMessage(text1);
 	}
 
 	// this is related to the build dimension security system
@@ -565,6 +565,6 @@ public class DungeonUtils
 
 		text1.withStyle(text1.getStyle().withItalic(true));
 		text1.withStyle(text1.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.BLUE)));
-		playerIn.displayClientMessage(text1, false);
+		playerIn.sendSystemMessage(text1);
 	}
 }

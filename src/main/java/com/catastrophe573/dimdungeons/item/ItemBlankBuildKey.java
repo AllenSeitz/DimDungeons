@@ -68,7 +68,7 @@ public class ItemBlankBuildKey extends BaseItemKey
 		ChunkPos dest = ((PersonalBuildData)PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(server))).getPosForOwner(player);
 
 		// set the component data (activated, built, x, z, name type, name1, name 2, theme, key type)
-		stack.set(DimDungeons.DUNGEON_KEY_DATA, new DungeonKeyDataComponentRecord(true, false, dest.x, dest.z, 8, 0, 0, 0, DungeonType.PERSONAL_BUILD.toString()));
+		stack.set(DimDungeons.DUNGEON_KEY_DATA, new DungeonKeyDataComponentRecord(true, false, dest.x(), dest.z(), 8, 0, 0, 0, DungeonType.PERSONAL_BUILD.toString()));
 
 		// name the key after the player
 		stack.set(DataComponents.CUSTOM_NAME, Component.translatable("npart.dimdungeons.struct_8", Component.literal(player.getName().getString()).withStyle(ChatFormatting.DARK_AQUA)));

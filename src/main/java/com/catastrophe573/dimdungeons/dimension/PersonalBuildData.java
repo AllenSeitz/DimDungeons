@@ -17,6 +17,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,7 +27,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
-import net.minecraft.world.level.storage.DimensionDataStorage;
+import net.minecraft.world.level.storage.SavedDataStorage;
 
 public class PersonalBuildData extends SavedData
 {
@@ -45,7 +46,7 @@ public class PersonalBuildData extends SavedData
 			}
 	);
 
-	public static final SavedDataType<PersonalBuildData> PERSONAL_OWNER_DATA_TYPE = new SavedDataType<>(PERSONAL_OWNER_DATA, PersonalBuildData::new, PERSONAL_OWNER_DATA_CODEC);
+	public static final SavedDataType<PersonalBuildData> PERSONAL_OWNER_DATA_TYPE = new SavedDataType<>(Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, PERSONAL_OWNER_DATA), PersonalBuildData::new, PERSONAL_OWNER_DATA_CODEC);
 
 	// this constructor is called on fresh levels
 	public PersonalBuildData()
@@ -71,8 +72,8 @@ public class PersonalBuildData extends SavedData
 		ownerMap.forEach((chunkPos, owner) ->
 			 {
 				 OwnerData temp = owner;
-				 temp.chunkX = chunkPos.x;
-				 temp.chunkZ = chunkPos.z;
+				 temp.chunkX = chunkPos.x();
+				 temp.chunkZ = chunkPos.z();
 				 list.add(temp);
 			 }
 		);
@@ -92,7 +93,7 @@ public class PersonalBuildData extends SavedData
 		}
 
 		// get the vanilla storage manager from the level
-		DimensionDataStorage storage = ((ServerLevel) level).getDataStorage();
+		SavedDataStorage storage = ((ServerLevel) level).getDataStorage();
 
 		// get the PersonalBuildData if it already exists for this level, otherwise create a new one
 		return storage.computeIfAbsent(PERSONAL_OWNER_DATA_TYPE);
@@ -125,14 +126,14 @@ public class PersonalBuildData extends SavedData
 
 			if (nextOwner.uuid.equals(player.getUUID()))
 			{
-				DimDungeons.logMessageInfo("DIMENSIONAL DUNGEONS: Found existing build plot for player " + player.getName().getString() + " at (" + cpos.x + ", " + cpos.z + ")");
+				DimDungeons.logMessageInfo("DIMENSIONAL DUNGEONS: Found existing build plot for player " + player.getName().getString() + " at (" + cpos.x() + ", " + cpos.z() + ")");
 				return cpos; // this player has an existing plot
 			}
 		}
 
 		// pick the next available plot and also register it now
 		cpos = getNewChunkPos(ownerMap.size() + 1, player.level().getServer());
-		DimDungeons.logMessageInfo("DIMENSIONAL DUNGEONS: Assigning player " + player.getName().getString() + " the build plot at (" + cpos.x + ", " + cpos.z + ")");
+		DimDungeons.logMessageInfo("DIMENSIONAL DUNGEONS: Assigning player " + player.getName().getString() + " the build plot at (" + cpos.x() + ", " + cpos.z() + ")");
 		OwnerData newOwner = new OwnerData((Player) player);
 		ownerMap.computeIfAbsent(cpos, cp -> newOwner);
 		setDirty();

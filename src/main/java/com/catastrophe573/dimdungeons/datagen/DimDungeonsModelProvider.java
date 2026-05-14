@@ -10,6 +10,7 @@ import net.minecraft.client.data.models.MultiVariant;
 import net.minecraft.client.data.models.blockstates.*;
 import net.minecraft.client.data.models.model.*;
 import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.data.PackOutput;
@@ -75,7 +76,7 @@ public class DimDungeonsModelProvider extends ModelProvider
         // but an actual model is still used in assets/dimdungeons/models/block_gold_portal_model
         Block portalBlock = BlockRegistrar.BLOCK_GOLD_PORTAL.get();
         TextureMapping portalTextures = blockModels.TEXTURED_MODELS.getOrDefault(portalBlock, TexturedModel.CUBE.get(portalBlock)).getMapping();
-        portalTextures.put(TextureSlot.LAYER0, Identifier.fromNamespaceAndPath("dimdungeons", "block/block_gold_portal"));
+        portalTextures.put(TextureSlot.LAYER0, new Material(Identifier.fromNamespaceAndPath("dimdungeons", "block/block_gold_portal")));
         MultiVariantGenerator gportal = MultiVariantGenerator.dispatch(portalBlock).with(
                 PropertyDispatch.initial(BlockStateProperties.HORIZONTAL_AXIS)
                         .select(Direction.Axis.X, plainVariant(ModelLocationUtils.getModelLocation(portalBlock, "_ns")))

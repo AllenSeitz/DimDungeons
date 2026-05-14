@@ -174,9 +174,9 @@ public class DungeonPlacement
 				closeDoorsOnLargeRoom(cpos, world, nextRoom);
 
 				// close the doors on the other 3 'fake' rooms now
-				closeDoorsOnLargeRoom(new ChunkPos(cpos.x + 1, cpos.z), world, nextRoom);
-				closeDoorsOnLargeRoom(new ChunkPos(cpos.x, cpos.z + 1), world, nextRoom);
-				closeDoorsOnLargeRoom(new ChunkPos(cpos.x + 1, cpos.z + 1), world, nextRoom);
+				closeDoorsOnLargeRoom(new ChunkPos(cpos.x() + 1, cpos.z()), world, nextRoom);
+				closeDoorsOnLargeRoom(new ChunkPos(cpos.x(), cpos.z() + 1), world, nextRoom);
+				closeDoorsOnLargeRoom(new ChunkPos(cpos.x() + 1, cpos.z() + 1), world, nextRoom);
 			}
 		}
 		else if (nextRoom.roomType == RoomType.LARGE_DUMMY)
@@ -271,7 +271,7 @@ public class DungeonPlacement
 		StructureTemplate template = templatemanager.getOrCreate(Identifier.parse(room.structure));
 		StructurePlaceSettings placementsettings = (new StructurePlaceSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false);
 		placementsettings.setRotation(Rotation.NONE);
-		placementsettings.setBoundingBox(new BoundingBox(cpos.x * 16, 0, cpos.z * 16, (cpos.x * 16) + 32 - 1, 255, (cpos.z * 16) + 32 - 1));
+		placementsettings.setBoundingBox(new BoundingBox(cpos.x() * 16, 0, cpos.z() * 16, (cpos.x() * 16) + 32 - 1, 255, (cpos.z() * 16) + 32 - 1));
 		BlockPos position = new BlockPos(cpos.getMinBlockX(), 50, cpos.getMinBlockZ());
 		BlockPos sizeRange = new BlockPos(32, 13, 32);
 
@@ -311,8 +311,8 @@ public class DungeonPlacement
 		BlockState redBlock = Blocks.RED_CONCRETE.defaultBlockState();
 		BlockPos startPos = new BlockPos(cpos.getMinBlockX(), 55, cpos.getMinBlockZ());
 
-		int x = cpos.x;
-		int z = cpos.z;
+		int x = cpos.x();
+		int z = cpos.z();
 
 		// remember, these can be null
 		ChunkPos west = new ChunkPos(x - 1, z);
@@ -929,7 +929,7 @@ public class DungeonPlacement
 
 	public static String makeChunkCode(ChunkPos pos)
 	{
-		int r = pos.x * 2 + pos.z;
+		int r = pos.x() * 2 + pos.z();
 
 		r ^= r << 13;
 		r ^= r >> 17;
