@@ -20,6 +20,10 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.permissions.Permission;
+import net.minecraft.server.permissions.PermissionCheck;
+import net.minecraft.server.permissions.PermissionLevel;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -35,6 +39,8 @@ import net.minecraft.network.chat.TextColor;
 
 public class CommandDimDungeons
 {
+	public static final Permission COMMANDS_ADMINS = new Permission.HasCommandLevel(PermissionLevel.ADMINS);
+
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher)
 	{
 		// register all commands "under" a single cheat "/dimdungeons". This is a more
@@ -48,7 +54,7 @@ public class CommandDimDungeons
 		// the first part of the /dimdungeons cheat
 		LiteralArgumentBuilder<CommandSourceStack> argumentBuilder = Commands.literal("dimdungeons").requires((cmd) ->
 		{
-			return cmd.hasPermission(2);
+			return cmd.permissions().hasPermission(COMMANDS_ADMINS);
 		});
 
 		// make a different cheat for "givekey basic", "givekey advanced", etc
