@@ -13,6 +13,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 public class ItemPortalKey extends BaseItemKey
 {
@@ -96,6 +97,11 @@ public class ItemPortalKey extends BaseItemKey
 	@Override
 	public Component getName(ItemStack stack)
 	{
+		if ( FMLEnvironment.getDist() == Dist.DEDICATED_SERVER )
+		{
+			return Component.empty();
+		}
+
 		if ( hasLegacyData(stack) )
 		{
 			return Component.translatable("item.dimdungeons.item_legacy_key_name");

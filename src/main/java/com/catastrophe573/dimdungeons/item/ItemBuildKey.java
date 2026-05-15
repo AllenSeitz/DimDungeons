@@ -12,6 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemBuildKey extends BaseItemKey
@@ -119,6 +120,11 @@ public class ItemBuildKey extends BaseItemKey
 	@Override
 	public Component getName(ItemStack stack)
 	{
+		if ( FMLEnvironment.getDist() == Dist.DEDICATED_SERVER )
+		{
+			return Component.empty();
+		}
+
 		// when keys are upgraded from 1.20 to 1.21 or newer for the first time
 		if ( hasLegacyData(stack) )
 		{
