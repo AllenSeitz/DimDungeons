@@ -25,7 +25,7 @@ public class DimDungeonsGlobalLootModifierProvider extends GlobalLootModifierPro
                 "no_dungeon_drops",
                 new LootModifierNoDrops(new LootItemCondition[] {
                         LocationCheck.checkLocation(LocationPredicate.Builder.inDimension(DimDungeons.DUNGEON_DIMENSION)).build()
-                })
+                }, 1)
         );
     }
 }

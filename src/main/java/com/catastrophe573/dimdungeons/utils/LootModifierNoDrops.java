@@ -25,9 +25,9 @@ public class LootModifierNoDrops extends net.neoforged.neoforge.common.loot.Loot
 		 LootModifier.codecStart(inst).apply(inst, LootModifierNoDrops::new)
 	);
 
-	public LootModifierNoDrops(LootItemCondition[] conditionsIn)
+	public LootModifierNoDrops(LootItemCondition[] conditionsIn, int priority)
 	{
-		super(conditionsIn);
+		super(conditionsIn, priority);
 	}
 
 	@SuppressWarnings("deprecation")

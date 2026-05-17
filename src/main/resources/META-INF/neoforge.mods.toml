@@ -36,10 +36,10 @@ logoFile="mod-logo.png" #optional
 credits="mod by Catastrophe573" #optional
 
 # A text field displayed in the mod UI
-authors="${mod_authors}" #optional
+authors="Catastrophe573" #optional
 
 # The description text for the mod (multi line!) (#mandatory)
-description='''${mod_description}'''
+description='''This mod implements limitless proceedurally generated dungeons! These dungeons are placed in their own single dimension. Hence the name: Dimensional Dungeons.'''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
 #[[mixins]]

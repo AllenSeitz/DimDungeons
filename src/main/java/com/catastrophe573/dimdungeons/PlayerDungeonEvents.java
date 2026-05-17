@@ -24,6 +24,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDestroyBlockEvent;
@@ -150,7 +151,8 @@ public class PlayerDungeonEvents
 	}
 
 	@SubscribeEvent
-	public void blockBreak(BlockEvent.BreakEvent event)
+	// THIS FUNCTION IS CALLED ON BOTH THE CLIENT AND THE SERVER NOW (as of 26.1.2), FYI
+	public void blockBreak(BreakBlockEvent event)
 	{
 		// the build dimension is always block-protected outside of the build space, no matter what
 		if (DungeonUtils.isDimensionPersonalBuild((Level) event.getLevel()))
