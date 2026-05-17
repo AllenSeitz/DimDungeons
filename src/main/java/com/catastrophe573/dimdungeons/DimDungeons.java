@@ -41,7 +41,7 @@ import com.catastrophe573.dimdungeons.utils.LootModifierNoDrops;
 import java.util.function.Supplier;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod(DimDungeons.MOD_ID)
+@Mod("dimdungeons")
 public class DimDungeons
 {
 	// reference a log4j logger

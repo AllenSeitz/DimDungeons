@@ -3,9 +3,10 @@ package com.catastrophe573.dimdungeons.datagen;
 
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.item.ItemRegistrar;
+import com.mojang.serialization.JsonOps;
+import com.google.gson.JsonPrimitive;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.selector.EntitySelector;
-import net.minecraft.commands.arguments.selector.SelectorPattern;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.LootTableSubProvider;
@@ -79,7 +80,7 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
                         add(LootItem.lootTableItem(Items.GREEN_STAINED_GLASS_PANE).setWeight(20).apply(SetItemCountFunction.setCount(UniformGenerator.between(5, 9)))).
                         add(LootItem.lootTableItem(Items.RED_STAINED_GLASS_PANE).setWeight(20).apply(SetItemCountFunction.setCount(UniformGenerator.between(5, 9)))).
                         add(LootItem.lootTableItem(Items.BLACK_STAINED_GLASS_PANE).setWeight(20).apply(SetItemCountFunction.setCount(UniformGenerator.between(5, 9))))
-            )
+                )
         );
 
         // kit_concrete
@@ -250,90 +251,90 @@ public class DimDungeonsLootTableChestProvider implements LootTableSubProvider
                 )
         );
 
-        // trophy_1
+        // trophies
         biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/trophy_1")), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:trophy_1").
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_TROPHY_1).setWeight(10).
-                            apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_1").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
-                            apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_1_line1").withStyle(ChatFormatting.AQUA)).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_1_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
-                                addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(new SelectorPattern("@s", null), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE))))).
+                        apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_1").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
+                        apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_1_line1").withStyle(ChatFormatting.AQUA)).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_1_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
+                        addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(EntitySelector.COMPILABLE_CODEC.parse(JsonOps.INSTANCE, new JsonPrimitive("@s")).getOrThrow(), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE))))).
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_TROPHY_2).setWeight(10).
-                            apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_2").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
-                            apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_2_line1").withStyle(ChatFormatting.AQUA)).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_2_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
-                                addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(new SelectorPattern("@s", null), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE))))).
+                        apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_2").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
+                        apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_2_line1").withStyle(ChatFormatting.AQUA)).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_2_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
+                        addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(EntitySelector.COMPILABLE_CODEC.parse(JsonOps.INSTANCE, new JsonPrimitive("@s")).getOrThrow(), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE))))).
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_TROPHY_3).setWeight(10).
-                            apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_3").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
-                            apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_3_line1").withStyle(ChatFormatting.AQUA)).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_3_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
-                                addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(new SelectorPattern("@s", null), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE))))).
+                        apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_3").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
+                        apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_3_line1").withStyle(ChatFormatting.AQUA)).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_3_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
+                        addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(EntitySelector.COMPILABLE_CODEC.parse(JsonOps.INSTANCE, new JsonPrimitive("@s")).getOrThrow(), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE))))).
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_TROPHY_4).setWeight(10).
-                            apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_4").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
-                            apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_4_line1").withStyle(ChatFormatting.AQUA)).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_4_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
-                                addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(new SelectorPattern("@s", null), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE))))).
+                        apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_4").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
+                        apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_4_line1").withStyle(ChatFormatting.AQUA)).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_4_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
+                        addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(EntitySelector.COMPILABLE_CODEC.parse(JsonOps.INSTANCE, new JsonPrimitive("@s")).getOrThrow(), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE))))).
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_TROPHY_5).setWeight(10).
-                            apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_5").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
-                            apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_5_line1").withStyle(ChatFormatting.AQUA)).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_5_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
-                                addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(new SelectorPattern("@s", null), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE))))).
+                        apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_5").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
+                        apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_5_line1").withStyle(ChatFormatting.AQUA)).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_5_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
+                        addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(EntitySelector.COMPILABLE_CODEC.parse(JsonOps.INSTANCE, new JsonPrimitive("@s")).getOrThrow(), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE))))).
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_TROPHY_6).setWeight(10).
-                            apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_6").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
-                            apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_6_line1").withStyle(ChatFormatting.AQUA)).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_6_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
-                                addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(new SelectorPattern("@s", null), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE))))).
+                        apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_6").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
+                        apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_6_line1").withStyle(ChatFormatting.AQUA)).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_6_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
+                        addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(EntitySelector.COMPILABLE_CODEC.parse(JsonOps.INSTANCE, new JsonPrimitive("@s")).getOrThrow(), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE))))).
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_TROPHY_7).setWeight(10).
-                            apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_7").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
-                            apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_7_line1").withStyle(ChatFormatting.AQUA)).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_7_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
-                                addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(new SelectorPattern("@s", null), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE))))).
+                        apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_7").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
+                        apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_7_line1").withStyle(ChatFormatting.AQUA)).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_7_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
+                        addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(EntitySelector.COMPILABLE_CODEC.parse(JsonOps.INSTANCE, new JsonPrimitive("@s")).getOrThrow(), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE))))).
                         add(LootItem.lootTableItem(ItemRegistrar.ITEM_TROPHY_8).setWeight(10).
-                            apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_8").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
-                            apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_8_line1").withStyle(ChatFormatting.AQUA)).
-                                addLine(Component.translatable("item.dimdungeons.item_trophy_8_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
-                                addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(new SelectorPattern("@s", null), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE)))))
+                        apply(SetNameFunction.setName(Component.translatable("item.dimdungeons.item_trophy_8").withStyle(ChatFormatting.YELLOW).withStyle(ChatFormatting.BOLD), SetNameFunction.Target.ITEM_NAME)).
+                        apply(SetLoreFunction.setLore().setMode(ListOperation.Append.INSTANCE).setResolutionContext(LootContext.EntityTarget.THIS).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_8_line1").withStyle(ChatFormatting.AQUA)).
+                        addLine(Component.translatable("item.dimdungeons.item_trophy_8_line2").withStyle(ChatFormatting.DARK_AQUA).withStyle(ChatFormatting.ITALIC)).
+                        addLine(Component.empty().append(Component.translatable("item.dimdungeons.item_trophy_found_by").withStyle(ChatFormatting.GOLD)).append(Component.selector(EntitySelector.COMPILABLE_CODEC.parse(JsonOps.INSTANCE, new JsonPrimitive("@s")).getOrThrow(), Optional.empty()).withStyle(ChatFormatting.LIGHT_PURPLE)))))
                 )
         );
 
-//        // chestloot_lucky - vanilla datagen is stupid and insists on me regenerating the vanilla table at the same time
-//        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_lucky")), LootTable.lootTable()
-//                .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestloot_lucky").
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.ABANDONED_MINESHAFT).setWeight(10)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.DESERT_PYRAMID).setWeight(10)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.JUNGLE_TEMPLE).setWeight(10)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.WOODLAND_MANSION).setWeight(10)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.SIMPLE_DUNGEON).setWeight(10)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.STRONGHOLD_CROSSING).setWeight(10)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.STRONGHOLD_LIBRARY).setWeight(10)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.TRIAL_CHAMBERS_SUPPLY).setWeight(10)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.RUINED_PORTAL).setWeight(10)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.PILLAGER_OUTPOST).setWeight(10)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.SHIPWRECK_SUPPLY).setWeight(10))
-//                )
-//        );
-//
-//        // chestloot_crazy - vanilla datagen is stupid and insists on me regenerating the vanilla table at the same time
-//        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_crazy")), LootTable.lootTable()
-//                .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestloot_crazy").
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.SHIPWRECK_TREASURE).setWeight(10)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.ANCIENT_CITY).setWeight(10)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.END_CITY_TREASURE).setWeight(10)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.NETHER_BRIDGE).setWeight(10)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.BASTION_OTHER).setWeight(10)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.BASTION_TREASURE).setWeight(5)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.TRIAL_CHAMBERS_REWARD_COMMON).setWeight(5)).
-//                        add(NestedLootTable.lootTableReference(BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS).setWeight(5))
-//                )
-//        );
+        //        // chestloot_lucky - vanilla datagen is stupid and insists on me regenerating the vanilla table at the same time
+        //        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_lucky")), LootTable.lootTable()
+        //                .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestloot_lucky").
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.ABANDONED_MINESHAFT).setWeight(10)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.DESERT_PYRAMID).setWeight(10)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.JUNGLE_TEMPLE).setWeight(10)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.WOODLAND_MANSION).setWeight(10)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.SIMPLE_DUNGEON).setWeight(10)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.STRONGHOLD_CROSSING).setWeight(10)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.STRONGHOLD_LIBRARY).setWeight(10)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.TRIAL_CHAMBERS_SUPPLY).setWeight(10)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.RUINED_PORTAL).setWeight(10)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.PILLAGER_OUTPOST).setWeight(10)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.SHIPWRECK_SUPPLY).setWeight(10))
+        //                )
+        //        );
+        //
+        //        // chestloot_crazy - vanilla datagen is stupid and insists on me regenerating the vanilla table at the same time
+        //        biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestloot_crazy")), LootTable.lootTable()
+        //                .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).name("dimdungeons:chestloot_crazy").
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.SHIPWRECK_TREASURE).setWeight(10)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.ANCIENT_CITY).setWeight(10)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.END_CITY_TREASURE).setWeight(10)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.NETHER_BRIDGE).setWeight(10)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.BASTION_OTHER).setWeight(10)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.BASTION_TREASURE).setWeight(5)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.TRIAL_CHAMBERS_REWARD_COMMON).setWeight(5)).
+        //                        add(NestedLootTable.lootTableReference(BuiltInLootTables.TRIAL_CHAMBERS_REWARD_OMINOUS).setWeight(5))
+        //                )
+        //        );
 
         // chestbooks_1
         biConsumer.accept(ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(DimDungeons.MOD_ID, "chest/chestbooks_1")), LootTable.lootTable()
