@@ -243,6 +243,7 @@ public class DungeonConfig
 			List<String> hardcodedDefaultBreakingWhitelist = Lists.newArrayList();
 			hardcodedDefaultBreakingWhitelist.add("gravestone:gravestone");
 			hardcodedDefaultBreakingWhitelist.add("minecraft:suspicious_sand");
+			hardcodedDefaultBreakingWhitelist.add("minecraft:decorated_pot");
 
 			// default "do not drop items" blocks
 			List<String> hardcodedDefaultNoDropsBlacklist = Lists.newArrayList();
