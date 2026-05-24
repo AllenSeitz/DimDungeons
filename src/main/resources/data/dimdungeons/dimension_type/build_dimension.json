@@ -1,19 +1,20 @@
 {
-  "ambient_light": 0.1,
+  "ambient_light": 0.0,
   "attributes": {
     "minecraft:audio/background_music": {
       "default": {
         "max_delay": 24000,
         "min_delay": 12000,
-        "sound": "minecraft:music.game"
+		"replace_current_music": true,
+        "sound": "minecraft:music_disc.far"
       }
     },
     "minecraft:gameplay/bed_rule": {
       "can_set_spawn": "always",
-      "can_sleep": "always",
+      "can_sleep": "never",
       "explodes": false
     },
-	
+
     "minecraft:gameplay/can_start_raid": false,
     "minecraft:gameplay/water_evaporates": false,
     "minecraft:gameplay/fast_lava": false,
@@ -21,28 +22,27 @@
     "minecraft:gameplay/snow_golem_melts": false,
     "minecraft:gameplay/nether_portal_spawns_piglin": false,
     "minecraft:gameplay/respawn_anchor_works": true,
-    "minecraft:visual/ambient_light_color": "#0a0a0a",
-    "minecraft:visual/cloud_color": "#ccffffff",
-    "minecraft:visual/cloud_height": 573.33,
-    "minecraft:visual/fog_start_distance": 64,
-    "minecraft:visual/fog_end_distance": 96,
-    "minecraft:visual/fog_color": "#c0d8ff",
-    "minecraft:visual/sky_color": "#78a7ff",
-    "minecraft:visual/sky_light_factor": 0
+    "minecraft:gameplay/sky_light_level": 15.0,
+    "minecraft:visual/ambient_light_color": "#ffffff",
+    "minecraft:visual/fog_color": "#000000",
+    "minecraft:visual/sky_color": "#000000",
+    "minecraft:visual/sky_light_color": "#000000",
+    "minecraft:visual/sky_light_factor": 1.0
   },
     
   "coordinate_scale": 1,
-  "default_clock": "minecraft:overworld",
   "has_ceiling": false,
   "has_ender_dragon_fight": false,
   "has_skylight": true,
-  "has_fixed_time": true,
+  "has_fixed_time": false,
   "height": 256,
   "infiniburn": "#minecraft:infiniburn_overworld",
   "logical_height": 256,
   "min_y": 0,
+  "skybox": "none",
   "monster_spawn_block_light_limit": 0,
   "monster_spawn_light_level": 0,
-  "skybox": "end",  
-  "timelines": "#minecraft:in_overworld"
+  "timelines": [
+    "minecraft:villager_schedule"
+  ]
 }

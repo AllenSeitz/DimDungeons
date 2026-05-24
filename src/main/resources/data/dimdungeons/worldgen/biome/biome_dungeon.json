@@ -1,10 +1,8 @@
 {
   "temperature": 0.5,
-  "downfall": 0.5,
+  "downfall": 0.0,
   "has_precipitation": false,
   "effects": {
-    "sky_color": 8103167,
-    "fog_color": 12638463,
     "water_color": 6141935,
     "water_fog_color": 329011
   },
