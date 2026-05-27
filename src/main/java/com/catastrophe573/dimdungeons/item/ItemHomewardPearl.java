@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class ItemHomewardPearl extends Item
 {
@@ -28,7 +29,7 @@ public class ItemHomewardPearl extends Item
 
 	@Override
 	// public ActionResultType onItemUse(ItemUseContext parameters)
-	public @NotNull InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn)
+	public @NotNull InteractionResult use(@NonNull Level worldIn, Player playerIn, @NonNull InteractionHand handIn)
 	{
 		ItemStack itemstack = playerIn.getItemInHand(handIn);
 

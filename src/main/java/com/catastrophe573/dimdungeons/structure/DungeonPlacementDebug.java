@@ -6,6 +6,7 @@ import com.catastrophe573.dimdungeons.structure.DungeonDesigner.RoomType;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.block.state.properties.StructureMode;
@@ -177,7 +178,7 @@ public class DungeonPlacementDebug extends DungeonPlacement
 		BlockPos position = new BlockPos(cpos.getMinBlockX(), 50, cpos.getMinBlockZ());
 		BlockPos sizeRange = new BlockPos(16, 13, 16);
 
-		if (template == null)
+		if (template.getSize() == Vec3i.ZERO)
 		{
 			DimDungeons.logMessageError("DIMDUNGEONS FATAL ERROR: Structure does not exist (" + room.structure + ")");
 			return false;

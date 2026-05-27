@@ -22,18 +22,12 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.decoration.ItemFrame;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemFrameItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.Spawner;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EndPortalFrameBlock;
@@ -430,7 +424,7 @@ public class BaseItemKey extends Item
 			// did they use the key on an end portal frame?
 			if (worldIn.getBlockState(pos).getBlock() == Blocks.END_PORTAL_FRAME)
 			{
-				boolean isFilled = ((Boolean) worldIn.getBlockState(pos).getValue(EndPortalFrameBlock.HAS_EYE)).booleanValue();
+				boolean isFilled = (Boolean) worldIn.getBlockState(pos).getValue(EndPortalFrameBlock.HAS_EYE);
 
 				// did they hit precisely the black area in the middle?
 				if (hitX > 0.3f && hitX < 0.7f && hitZ > 0.3f && hitZ < 0.8f)
@@ -454,7 +448,7 @@ public class BaseItemKey extends Item
 					}
 					else
 					{
-						worldIn.setBlock(pos, iblockstate.setValue(EndPortalFrameBlock.HAS_EYE, Boolean.valueOf(false)), 2);
+						worldIn.setBlock(pos, iblockstate.setValue(EndPortalFrameBlock.HAS_EYE, Boolean.FALSE), 2);
 						worldIn.updateNeighbourForOutputSignal(pos, Blocks.END_PORTAL_FRAME);
 
 						// dramatic effect for what you just did!

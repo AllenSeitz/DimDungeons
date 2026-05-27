@@ -1,14 +1,10 @@
 package com.catastrophe573.dimdungeons.structure;
 
-import com.catastrophe573.dimdungeons.dimension.DungeonData;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner.RoomType;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Rotation;
 
 // dungeons are a maximum of 8x8 chunks (always much smaller) where each chunk is a structure at a specific rotation
@@ -41,7 +37,7 @@ public class DungeonRoom
 				return instance.group(
 						Codec.INT.fieldOf("x").forGetter(sd -> sd.chunkX),
 						Codec.INT.fieldOf("z").forGetter(sd -> sd.chunkZ),
-						Codec.STRING.fieldOf("structure").forGetter(sd -> sd.structure.toString()),
+						Codec.STRING.fieldOf("structure").forGetter(sd -> sd.structure),
 						Codec.STRING.fieldOf("rotation").forGetter(sd -> sd.rotation.toString()),
 						Codec.STRING.fieldOf("room_type").forGetter(sd -> sd.roomType.toString()),
 						Codec.STRING.fieldOf("dungeon_type").forGetter(sd -> sd.dungeonType.toString()),

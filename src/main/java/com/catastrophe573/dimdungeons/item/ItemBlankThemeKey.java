@@ -16,7 +16,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
 import org.jetbrains.annotations.NotNull;
 
 public class ItemBlankThemeKey extends BaseItemKey

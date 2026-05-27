@@ -18,8 +18,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -39,13 +39,13 @@ public class DimDungeonsModelProvider extends ModelProvider
     }
 
     @Override
-    protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels)
+    protected void registerModels(BlockModelGenerators blockModels, @NonNull ItemModelGenerators itemModels)
     {
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //
         // items
         //
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         generatePortalKeyItem(itemModels, ItemRegistrar.ITEM_PORTAL_KEY.get());
         itemModels.generateFlatItem(ItemRegistrar.ITEM_BLANK_ADVANCED_KEY.get(), ModelTemplates.FLAT_ITEM);
         generateBlankThemeKeyItem(itemModels, ItemRegistrar.ITEM_BLANK_THEME_KEY.get());
@@ -64,11 +64,11 @@ public class DimDungeonsModelProvider extends ModelProvider
         itemModels.generateFlatItem(ItemRegistrar.ITEM_TROPHY_7.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ItemRegistrar.ITEM_TROPHY_8.get(), ModelTemplates.FLAT_ITEM);
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //
         // blocks
         //
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         blockModels.createTrivialCube(BlockRegistrar.BLOCK_GILDED_PORTAL.get());
         blockModels.createTrivialCube(BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get());
 
@@ -142,13 +142,13 @@ public class DimDungeonsModelProvider extends ModelProvider
     }
 
     @Override
-    public Stream<? extends Holder<Block>> getKnownBlocks()
+    public @NonNull Stream<? extends Holder<Block>> getKnownBlocks()
     {
         return BlockRegistrar.BLOCKS.getEntries().stream().filter(x -> !x.is(BlockRegistrar.BLOCK_PORTAL_KEYHOLE));
     }
 
     @Override
-    public Stream<? extends Holder<Item>> getKnownItems()
+    public @NonNull Stream<? extends Holder<Item>> getKnownItems()
     {
         return ItemRegistrar.ITEMS.getEntries().stream();
         //return ItemRegistrar.ITEMS.getEntries().stream().filter(x -> x.get() != ItemRegistrar.ITEM_PORTAL_KEY.asItem() && x.get() != ItemRegistrar.ITEM_BLANK_THEME_KEY.asItem());

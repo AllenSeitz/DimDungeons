@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
+import org.jspecify.annotations.NonNull;
 
 public class BlockGildedPortal extends Block
 {
@@ -24,7 +25,7 @@ public class BlockGildedPortal extends Block
 	}
 
 	@Override
-	public RenderShape getRenderShape(BlockState iBlockState)
+	public @NonNull RenderShape getRenderShape(@NonNull BlockState iBlockState)
 	{
 		return RenderShape.MODEL;
 	}

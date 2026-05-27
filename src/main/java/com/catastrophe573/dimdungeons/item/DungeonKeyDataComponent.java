@@ -3,9 +3,6 @@ package com.catastrophe573.dimdungeons.item;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 
 public class DungeonKeyDataComponent
 {

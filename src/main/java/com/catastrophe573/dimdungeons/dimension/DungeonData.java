@@ -1,7 +1,6 @@
 package com.catastrophe573.dimdungeons.dimension;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nonnull;
@@ -10,29 +9,18 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.DungeonConfig;
 import com.catastrophe573.dimdungeons.structure.DungeonDesigner;
 import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
-import com.catastrophe573.dimdungeons.structure.DungeonDesigner.DungeonType;
-import com.catastrophe573.dimdungeons.structure.DungeonDesigner.RoomType;
 import com.catastrophe573.dimdungeons.structure.DungeonRoom;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraft.world.level.levelgen.structure.StructureSpawnOverride;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.world.level.storage.SavedDataStorage;
-import net.minecraft.world.phys.Vec2;
 
 // based off McJty's 1.18.1 example
 public class DungeonData extends SavedData
@@ -129,7 +117,7 @@ public class DungeonData extends SavedData
 
 	public boolean hasMoreRoomsToBuild()
 	{
-		return remainingBuilds.size() > 0;
+		return !remainingBuilds.isEmpty();
 	}
 
 	public void notifyOfNewKeyActivation()
@@ -168,7 +156,7 @@ public class DungeonData extends SavedData
 	{
 		ticksBetweenBuilds--;
 
-		if (ticksBetweenBuilds <= 0 && remainingBuilds.size() > 0)
+		if (ticksBetweenBuilds <= 0 && !remainingBuilds.isEmpty())
 		{
 			ticksBetweenBuilds = DungeonConfig.getDungeonBuildSpeed();
 

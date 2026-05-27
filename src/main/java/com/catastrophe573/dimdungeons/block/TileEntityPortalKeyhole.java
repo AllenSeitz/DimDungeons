@@ -3,36 +3,19 @@ package com.catastrophe573.dimdungeons.block;
 import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.dimension.DungeonData;
 import com.catastrophe573.dimdungeons.item.BaseItemKey;
-import com.catastrophe573.dimdungeons.item.DungeonKeyDataComponentRecord;
 import com.catastrophe573.dimdungeons.item.ItemPortalKey;
 import com.catastrophe573.dimdungeons.utils.DungeonGenData;
 import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
-import com.mojang.datafixers.DataFixer;
-import com.mojang.datafixers.DataFixerBuilder;
-import com.mojang.datafixers.schemas.Schema;
-import net.minecraft.SharedConstants;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.util.datafix.DataFixers;
-import net.minecraft.util.datafix.fixes.ItemStackComponentizationFix;
-import net.minecraft.util.datafix.schemas.V3818_5;
-import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
-import net.minecraft.world.item.JukeboxSong;
-import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 
 public class TileEntityPortalKeyhole extends BlockEntity
 {
@@ -133,7 +116,7 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	}
 
 	@Override
-	protected void loadAdditional(ValueInput input)
+	protected void loadAdditional(@NonNull ValueInput input)
 	{
 		super.loadAdditional(input);
 		ItemStack itemstack = input.read(ITEM_PROPERTY_KEY, ItemStack.CODEC).orElse(ItemStack.EMPTY);
@@ -142,7 +125,7 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	}
 
 	@Override
-	protected void saveAdditional(ValueOutput output)
+	protected void saveAdditional(@NonNull ValueOutput output)
 	{
 		super.saveAdditional(output);
 		if (!this.getObjectInserted().isEmpty())
@@ -200,7 +183,7 @@ public class TileEntityPortalKeyhole extends BlockEntity
 	}
 
 	@Override
-	public void preRemoveSideEffects(BlockPos pos, BlockState state)
+	public void preRemoveSideEffects(@NonNull BlockPos pos, @NonNull BlockState state)
 	{
 		if (this instanceof TileEntityPortalKeyhole keyhole && this.level != null)
 		{

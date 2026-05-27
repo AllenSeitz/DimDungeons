@@ -28,7 +28,7 @@ public class DungeonDesigner
 	};
 
 	// this is the final constructed dungeon
-	public DungeonRoom finalLayout[][] = new DungeonRoom[8][8];
+	public DungeonRoom[][] finalLayout = new DungeonRoom[8][8];
 	public int enemyVariation1 = 0;
 	public int enemyVariation2 = 0;
 	public int dungeonSize = 20;
@@ -296,7 +296,7 @@ public class DungeonDesigner
 		// remaining rooms: for each opening, place a room that fits, and update
 		// openings, until no openings are left
 		shuffleArray(openings);
-		while (openings.size() > 0)
+		while (!openings.isEmpty())
 		{
 			ImmutablePair<Integer, Integer> roomPos = openings.remove(0);
 			RoomType nextType = RoomType.END;
@@ -338,14 +338,11 @@ public class DungeonDesigner
 				noEndingsYet = true;
 			}
 
-			// when mustPickEndings is false this is used to hold the list of valid
-			// possibilities
+			// when mustPickEndings is false this is used to hold the list of valid possibilities
 			ArrayList<ImmutablePair<RoomType, Rotation>> roomPossibilities = new ArrayList<ImmutablePair<RoomType, Rotation>>(0);
 
-			// look at the neighboring doors and pick the room and rotation that connects
-			// them without making new openings
-			// TODO: eliminate the redundant half of this IF statement by using
-			// mustPickEndings to abort the roomPossibilities[] check at the end
+			// look at the neighboring doors and pick the room and rotation that connects them without making new openings
+			// TODO: eliminate the redundant half of this IF statement by using mustPickEndings to abort the roomPossibilities[] check at the end
 			if (mustPickEndings)
 			{
 				// this case should be impossible
@@ -736,10 +733,9 @@ public class DungeonDesigner
 				}
 			}
 
-			// if the previous block of code populated the roomPossibilities array then make
-			// a selection from it and use it instead
+			// if the previous block of code populated the roomPossibilities array then make a selection from it and use it instead
 			// this code path represents more doorways being added and branching paths
-			if (roomPossibilities.size() > 0 && !mustPickEndings)
+			if (!roomPossibilities.isEmpty() && !mustPickEndings)
 			{
 				shuffleRoomPossibilities(roomPossibilities);
 				nextType = roomPossibilities.get(0).left;

@@ -1,27 +1,25 @@
 package com.catastrophe573.dimdungeons.item;
 
 import com.mojang.serialization.MapCodec;
-import javax.annotation.Nullable;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperty;
 import net.minecraft.world.entity.ItemOwner;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
+import org.jspecify.annotations.NonNull;
 
 public record ModelPropertyLevel() implements RangeSelectItemModelProperty
 {
     public static final MapCodec<ModelPropertyLevel> MAP_CODEC = MapCodec.unit(new ModelPropertyLevel());
 
     @Override
-    public float get(ItemStack itemstack, @org.jetbrains.annotations.Nullable ClientLevel levelin, @org.jetbrains.annotations.Nullable ItemOwner owner, int seed)
+    public float get(@NonNull ItemStack itemstack, @org.jetbrains.annotations.Nullable ClientLevel levelin, @org.jetbrains.annotations.Nullable ItemOwner owner, int seed)
     {
         return getLevel(itemstack);
     }
 
     @Override
-    public MapCodec<ModelPropertyLevel> type()
+    public @NonNull MapCodec<ModelPropertyLevel> type()
     {
         return MAP_CODEC;
     }

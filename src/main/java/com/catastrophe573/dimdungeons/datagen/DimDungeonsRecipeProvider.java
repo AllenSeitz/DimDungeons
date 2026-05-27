@@ -12,7 +12,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.ItemLike;
+import org.jspecify.annotations.NonNull;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -86,13 +86,13 @@ public class DimDungeonsRecipeProvider extends RecipeProvider
         }
 
         @Override
-        protected RecipeProvider createRecipeProvider(HolderLookup.Provider provider, RecipeOutput output)
+        protected @NonNull RecipeProvider createRecipeProvider(HolderLookup.@NonNull Provider provider, @NonNull RecipeOutput output)
         {
             return new DimDungeonsRecipeProvider(provider, output);
         }
 
         @Override
-        public String getName()
+        public @NonNull String getName()
         {
             return "DimDungeons Recipes";
         }

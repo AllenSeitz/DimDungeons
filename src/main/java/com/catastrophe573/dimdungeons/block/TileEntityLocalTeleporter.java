@@ -5,6 +5,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import org.jspecify.annotations.NonNull;
 
 public class TileEntityLocalTeleporter extends BlockEntity
 {
@@ -20,7 +21,7 @@ public class TileEntityLocalTeleporter extends BlockEntity
 	}
 
 	@Override
-	protected void loadAdditional(ValueInput input)
+	protected void loadAdditional(@NonNull ValueInput input)
 	{
 		super.loadAdditional(input);
 
@@ -33,7 +34,7 @@ public class TileEntityLocalTeleporter extends BlockEntity
 	}
 
 	@Override
-	protected void saveAdditional(ValueOutput output)
+	protected void saveAdditional(@NonNull ValueOutput output)
 	{
 		super.saveAdditional(output);
 
