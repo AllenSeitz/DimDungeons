@@ -281,6 +281,7 @@ public class DungeonConfig
 			hardcodedDefaultNoDropsBlacklist.add("minecraft:red_carpet");
 			hardcodedDefaultNoDropsBlacklist.add("minecraft:black_carpet");
 			hardcodedDefaultNoDropsBlacklist.add("minecraft:black_carpet");
+			hardcodedDefaultNoDropsBlacklist.add("minecraft:decorated_pot");
 
 			// list of server options and comments
 			builder.comment("Options for general mod behavior.").push("general");
