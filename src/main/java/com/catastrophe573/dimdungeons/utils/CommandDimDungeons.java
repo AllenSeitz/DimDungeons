@@ -7,7 +7,6 @@ import com.catastrophe573.dimdungeons.DimDungeons;
 import com.catastrophe573.dimdungeons.dimension.DungeonData;
 import com.catastrophe573.dimdungeons.dimension.PersonalBuildData;
 import com.catastrophe573.dimdungeons.item.*;
-//import com.catastrophe573.dimdungeons.structure.DungeonPlacement;
 import com.catastrophe573.dimdungeons.structure.DungeonRoom;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -15,31 +14,49 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.Permission;
-import net.minecraft.server.permissions.PermissionCheck;
 import net.minecraft.server.permissions.PermissionLevel;
-import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.StructureBlockEntity;
+import net.minecraft.world.level.block.state.properties.StructureMode;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 public class CommandDimDungeons
 {
 	public static final Permission COMMANDS_ADMINS = new Permission.HasCommandLevel(PermissionLevel.ADMINS);
+
+	// copied from the vanilla PlaceCommand
+	private static final SuggestionProvider<CommandSourceStack> SUGGEST_TEMPLATES = (context, builder) -> {
+		StructureTemplateManager structureManager = context.getSource().getLevel().getStructureManager();
+		return SharedSuggestionProvider.suggestResource(structureManager.listTemplates(), builder);
+	};
 
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher)
 	{
@@ -50,6 +67,7 @@ public class CommandDimDungeons
 		// /dimdungeons givekey [player recipient] [string type] [int theme, optional]
 		// /dimdungeons givepersonal [player recipient] [player target, optional]
 		// /dimdungeons getroom [player target]
+		// /dimdungeons devbuild [structure]
 
 		// the first part of the /dimdungeons cheat
 		LiteralArgumentBuilder<CommandSourceStack> argumentBuilder = Commands.literal("dimdungeons").requires((cmd) ->
@@ -85,7 +103,17 @@ public class CommandDimDungeons
 		{
 			return printRoomName(cmd, EntityArgument.getPlayer(cmd, "target_player"));
 		})));
-		
+
+		// make a cheat for placing a single dimdungeons room, chunk aligned, with convenient structure blocks, and the name above it in a display entity
+		// refer to the vanilla Place command for reference
+		if (!FMLEnvironment.isProduction())
+		{
+			argumentBuilder.then(Commands.literal("devbuild").then(Commands.argument("template", IdentifierArgument.id()).suggests(SUGGEST_TEMPLATES).executes((cmd) ->
+			{
+				return devBuildRoom(cmd, IdentifierArgument.getId(cmd, "template"));
+			})));
+		}
+
 		// this is a debugging hack that must not ship
 		// argumentBuilder.then(Commands.literal("debugpersonal").then(Commands.argument("recipient",
 		// EntityArgument.players()).then(Commands.argument("target_player",
@@ -204,8 +232,7 @@ public class CommandDimDungeons
 			}
 			else
 			{
-				// keys don't normally stack, but just in case this block of code gives a stack
-				// of keys
+				// keys don't normally stack, but just in case this block of code gives a stack of keys
 				ItemEntity itementity = serverplayerentity.drop(newkey, false);
 				if (itementity != null)
 				{
@@ -309,5 +336,79 @@ public class CommandDimDungeons
 		((PersonalBuildData)PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(cmd.getSource().getServer()))).debugClearKnownOwners();
 		cmd.getSource().sendSuccess(() -> Component.literal("Deleted all known personal key associations."), true);
 		return 0;
+	}
+
+	private static int devBuildRoom(CommandContext<CommandSourceStack> cmd, Identifier templateID) throws CommandSyntaxException
+	{
+		ServerPlayer player = cmd.getSource().getPlayer();
+
+		if (player == null)
+		{
+			cmd.getSource().sendFailure(Component.literal("Called devbuild with a non-player source."));
+			return 0;
+		}
+
+		// get the structure that was passed in and make sure it exists
+		StructureTemplateManager templateManager = player.level().getServer().getStructureManager();
+		StructureTemplate template = templateManager.getOrCreate(templateID);
+		int structureHeight = template.getSize().getY();
+		if (structureHeight == 0)
+		{
+			cmd.getSource().sendFailure(Component.literal("Could not find a structure named " + templateID + "."));
+			return 0;
+		}
+
+		// assume a superflat world, and get the sky height of the southwest corner
+		ChunkPos cpos = player.chunkPosition();
+		Level level = player.level();
+		int y = level.getHeight(Heightmap.Types.WORLD_SURFACE, cpos.getBlockX(0), cpos.getBlockZ(0));
+
+		// place two structure blocks in the southwest corner
+		BlockPos baseCorner = new BlockPos(cpos.getBlockX(0), y, cpos.getBlockZ(0));
+		level.setBlock(baseCorner, Blocks.STRUCTURE_BLOCK.defaultBlockState(), Block.UPDATE_ALL);
+		level.setBlock(baseCorner.above(1), Blocks.STRUCTURE_BLOCK.defaultBlockState(), Block.UPDATE_ALL);
+		StructureBlockEntity blankBox = (StructureBlockEntity) level.getBlockEntity(baseCorner);
+		StructureBlockEntity loadBox = (StructureBlockEntity) level.getBlockEntity(baseCorner.above(1));
+
+		// initialize the values in these structure blocks
+		blankBox.setMode(StructureMode.LOAD);
+		blankBox.setStructureName("dimdungeons:blank");
+		blankBox.setStructureSize(template.getSize());
+		blankBox.setStructurePos(BlockPos.ZERO.above(2));
+
+		loadBox.setMode(StructureMode.LOAD);
+		loadBox.setStructureName(templateID.toString());
+		loadBox.setStructureSize(template.getSize());
+		loadBox.setStructurePos(BlockPos.ZERO.above(1));
+		loadBox.setIgnoreEntities(false);
+
+		// place a corner block outside the southeast corner and a save block above the northwest corner
+		BlockPos cornerPos = baseCorner.south(16).west(1).above(1);
+		BlockPos savePos = baseCorner.east(16).north(1).above(structureHeight+2);
+		level.setBlock(cornerPos, Blocks.STRUCTURE_BLOCK.defaultBlockState(), Block.UPDATE_ALL);
+		level.setBlock(savePos, Blocks.STRUCTURE_BLOCK.defaultBlockState(), Block.UPDATE_ALL);
+		StructureBlockEntity cornerBox = (StructureBlockEntity) level.getBlockEntity(cornerPos);
+		StructureBlockEntity saveBox = (StructureBlockEntity) level.getBlockEntity(savePos);
+
+		// also initialize the values in these structure blocks
+		cornerBox.setMode(StructureMode.CORNER);
+		cornerBox.setStructureName(templateID.toString());
+
+		saveBox.setMode(StructureMode.SAVE);
+		saveBox.setStructureName(templateID.toString());
+		saveBox.setStructureSize(template.getSize());
+		saveBox.setStructurePos(new BlockPos(template.getSize().getX() * -1, template.getSize().getY() * -1, 1));
+		saveBox.setIgnoreEntities(false);
+
+//		StructurePlaceSettings placementsettings = (new StructurePlaceSettings()).setMirror(Mirror.NONE).setRotation(Rotation.NONE).setIgnoreEntities(false);
+//		placementsettings.setBoundingBox(placementsettings.getBoundingBox());
+
+//		BlockPos position = new BlockPos(cpos.getMinBlockX(), 50, cpos.getMinBlockZ());
+//		BlockPos sizeRange = new BlockPos(16, 13, 16);
+
+//		boolean success = template.placeInWorld((ServerLevelAccessor) world, position, sizeRange, placementsettings, world.getRandom(), 2);
+
+
+		return 1; // 1 room built
 	}
 }
