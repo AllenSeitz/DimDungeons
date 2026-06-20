@@ -155,8 +155,7 @@ public class DungeonPlacement
 			return false; // no sign here means no room
 		}
 
-		// also, set bedrock two blocked under the sign to permanently signal that this
-		// function has been called on this chunk already
+		// also, set bedrock two blocked under the sign to permanently signal that this function has been called on this chunk already
 		world.setBlockAndUpdate(bpos.below().below(), Blocks.BEDROCK.defaultBlockState());
 
 		// step 3: place room here, with these parameters
@@ -456,8 +455,7 @@ public class DungeonPlacement
 		}
 	}
 
-	// used by the place() and the slow building logic function to place a single
-	// room
+	// used by the place() and the slow building logic function to place a single room
 	public static boolean putRoomHere(ChunkPos cpos, ServerLevel world, DungeonRoom room)
 	{
 		MinecraftServer minecraftserver = ((Level) world).getServer();
@@ -477,8 +475,7 @@ public class DungeonPlacement
 			return false;
 		}
 
-		// next if the structure is to be rotated then it must also be offset, because
-		// rotating a structure also moves it
+		// next if the structure is to be rotated then it must also be offset, because rotating a structure also moves it
 		if (room.rotation == Rotation.COUNTERCLOCKWISE_90)
 		{
 			// west: rotate CCW and push +Z
@@ -874,8 +871,7 @@ public class DungeonPlacement
 		RandomizableContainer.setBlockEntityLootTable(world, rand, pos.below(), lootTableKey);
 	}
 
-	// I was originally thinking that this would contain direct hints about the
-	// dungeon, but that would involve a post generation step
+	// I was originally thinking that this would contain direct hints about the dungeon, but that would involve a post generation step
 	private static ItemStack generateLuckyMessage(RandomSource rand, DungeonType type)
 	{
 		// randomize book contents
