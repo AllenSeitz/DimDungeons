@@ -97,6 +97,7 @@ public class DimDungeons
 		container.registerConfig(ModConfig.Type.SERVER, DungeonConfig.SERVER_SPEC, "dimdungeons-server-r222.toml");
 		container.registerConfig(ModConfig.Type.CLIENT, DungeonConfig.CLIENT_SPEC);
 		container.registerConfig(ModConfig.Type.COMMON, DungeonConfig.COMMON_SPEC, "dimdungeons-common-r222.toml");
+		container.registerConfig(ModConfig.Type.COMMON, DungeonConfig.ENEMIES_SPEC, "dimdungeons-enemies-r222.toml");
 	}
 
 	@SubscribeEvent

@@ -27,6 +27,7 @@ public class DungeonConfig
 
 	public static final int DEFAULT_NUMBER_OF_THEMES = 3;
 	public static final int MAXIMUM_NUMBER_OF_THEMES = 99;
+	public static final int MAX_ENEMY_DEFINITIONS = 99;
 	public static final int DEFAULT_THEME_DUNGEON_SIZE = 14;
 	public static final int DEFAULT_CHANCE_FOR_THEME_KEYS = 4;
 
@@ -63,6 +64,16 @@ public class DungeonConfig
 		final Pair<CommonConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(CommonConfig::new);
 		COMMON_SPEC = specPair.getRight();
 		COMMON = specPair.getLeft();
+	}
+
+	public static final EnemyConfig ENEMIES;
+	public static final ModConfigSpec ENEMIES_SPEC;
+
+	static
+	{
+		final Pair<EnemyConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(EnemyConfig::new);
+		ENEMIES_SPEC = specPair.getRight();
+		ENEMIES = specPair.getLeft();
 	}
 
 	// server options
@@ -112,6 +123,24 @@ public class DungeonConfig
 	public static double basicEnemyHealthScaling = 1.0f;
 	public static double advancedEnemyHealthScaling = 2.0f;
 	public static int numberOfThemes = DEFAULT_NUMBER_OF_THEMES;
+
+	// enemy definition structure used in the enemy config
+	public static class EnemyDefinition
+	{
+		public String baseEntity = "";
+		public double healthScaling = 1.0;
+		public double speedScaling = 1.0;
+		public double meleeScaling = 1.0;
+		public double scaleScaling = 1.0;
+		public String mainWeapon = "";
+		public String customName = "";
+	}
+
+	// some hardcoded weapon items for enemies
+ 	public static String JUICED_CROSSBOW = "{components: {\"minecraft:enchantments\": {\"minecraft:quick_charge\": 2, \"minecraft:multishot\": 1}, \"minecraft:charged_projectiles\": [{components: {\"minecraft:fireworks\": {explosions: [{fade_colors: [8073150], has_trail: 1b, shape: \"star\", colors: [15790320], has_twinkle: 1b}], flight_duration: 2b}, \"minecraft:intangible_projectile\": {}}, id: \"minecraft:firework_rocket\"}, {components: {\"minecraft:fireworks\": {explosions: [{fade_colors: [8073150], has_trail: 1b, shape: \"star\", colors: [15790320], has_twinkle: 1b}], flight_duration: 2b}, \"minecraft:intangible_projectile\": {}}, id: \"minecraft:firework_rocket\"}, {components: {\"minecraft:fireworks\": {explosions: [{fade_colors: [8073150], has_trail: 1b, shape: \"star\", colors: [15790320], has_twinkle: 1b}], flight_duration: 2b}, \"minecraft:intangible_projectile\": {}}, id: \"minecraft:firework_rocket\"}]}, count: 1, id: \"minecraft:crossbow\"}";
+
+	// list of 99 enemies from the enemy config (that can be used in enemy sets)
+	public static List<EnemyDefinition> enemyDefinitions;
 
 	// theme options
 	public static class ThemeStructure
@@ -1052,10 +1081,10 @@ public class DungeonConfig
 	public static List<? extends String> defaultBasicEnemySet1()
 	{
 		List<String> temp = Lists.newArrayList();
-		temp.add("minecraft:zombie");
-		temp.add("minecraft:husk");
-		temp.add("minecraft:drowned");
-		temp.add("minecraft:spider");
+		temp.add("enemy01");
+		temp.add("enemy02");
+		temp.add("enemy03");
+		temp.add("enemy04");
 
 		return temp;
 	}
@@ -1063,10 +1092,10 @@ public class DungeonConfig
 	public static List<? extends String> defaultBasicEnemySet2()
 	{
 		List<String> temp = Lists.newArrayList();
-		temp.add("minecraft:wither_skeleton");
-		temp.add("minecraft:stray");
-		temp.add("minecraft:skeleton");
-		temp.add("minecraft:pillager");
+		temp.add("enemy05");
+		temp.add("enemy06");
+		temp.add("enemy07");
+		temp.add("enemy08");
 
 		return temp;
 	}
@@ -1074,10 +1103,10 @@ public class DungeonConfig
 	public static List<? extends String> defaultAdvancedEnemySet1()
 	{
 		List<String> temp = Lists.newArrayList();
-		temp.add("minecraft:pillager");
-		temp.add("minecraft:skeleton");
-		temp.add("minecraft:stray");
-		temp.add("minecraft:blaze");
+		temp.add("enemy09");
+		temp.add("enemy10");
+		temp.add("enemy11");
+		temp.add("enemy12");
 
 		return temp;
 	}
@@ -1085,10 +1114,10 @@ public class DungeonConfig
 	public static List<? extends String> defaultAdvancedEnemySet2()
 	{
 		List<String> temp = Lists.newArrayList();
-		temp.add("minecraft:wither_skeleton");
-		temp.add("minecraft:hoglin");
-		temp.add("minecraft:vindicator");
-		temp.add("minecraft:witch");
+		temp.add("enemy13");
+		temp.add("enemy14");
+		temp.add("enemy15");
+		temp.add("enemy16");
 
 		return temp;
 	}
@@ -1099,11 +1128,11 @@ public class DungeonConfig
 	{
 		if (themeNum == 1)
 		{
-			return Lists.newArrayList("minecraft:skeleton", "minecraft:piglin", "minecraft:blaze");
+			return Lists.newArrayList("enemy13", "enemy13", "enemy17", "enemy17", "enemy14", "enemy18");
 		}
 		if (themeNum == 2)
 		{
-			return Lists.newArrayList("minecraft:husk", "minecraft:pillager", "minecraft:magma_cube");
+			return Lists.newArrayList("enemy03", "enemy19", "enemy17", "enemy20");
 		}
 
 		return defaultBasicEnemySet1();
@@ -1115,11 +1144,11 @@ public class DungeonConfig
 	{
 		if (themeNum == 1)
 		{
-			return Lists.newArrayList("minecraft:wither_skeleton", "minecraft:blaze", "minecraft:wither_skeleton", "minecraft:blaze", "minecraft:hoglin", "minecraft:piglin_brute");
+			return Lists.newArrayList("enemy13", "enemy13", "enemy17", "enemy17", "enemy14", "enemy18");
 		}
 		if (themeNum == 2)
 		{
-			return Lists.newArrayList("minecraft:wither_skeleton", "minecraft:blaze", "minecraft:wither_skeleton", "minecraft:blaze");
+			return Lists.newArrayList("enemy03", "enemy19", "enemy17", "enemy20");
 		}
 
 		return defaultBasicEnemySet2();
@@ -1127,20 +1156,12 @@ public class DungeonConfig
 
 	public static List<? extends String> defaultSewersEnemySet1()
 	{
-		List<String> temp = Lists.newArrayList();
-		temp.add("minecraft:zombie");
-		temp.add("minecraft:husk");
-		temp.add("minecraft:zombie_villager");
-
-		return temp;
+		return Lists.newArrayList("enemy21", "enemy01", "enemy22");
 	}
 
 	public static List<? extends String> defaultSewersEnemySet2()
 	{
-		List<String> temp = Lists.newArrayList();
-		temp.add("minecraft:slime");
-
-		return temp;
+		return Lists.newArrayList("enemy23");
 	}
 
 	// this function is silly in purpose, but it is similar to the other hardcoded functions for the tiered dungeons
@@ -1270,6 +1291,57 @@ public class DungeonConfig
 		return tempEnds;
 	}
 
+	// used by buildDefaultEnemyDefinitions() to hardcode default enemy data concisely and clearly
+	private static EnemyDefinition makeEnemyDef(String baseEntity, double healthScaling, double speedScaling, double meleeScaling, double scaleScaling, String mainWeapon, String customName)
+	{
+		EnemyDefinition def = new EnemyDefinition();
+		def.baseEntity = baseEntity;
+		def.healthScaling = healthScaling;
+		def.speedScaling = speedScaling;
+		def.meleeScaling = meleeScaling;
+		def.scaleScaling = scaleScaling;
+		def.mainWeapon = mainWeapon;
+		def.customName = customName;
+		return def;
+	}
+
+	public static List<EnemyDefinition> buildDefaultEnemyDefinitions()
+	{
+		List<EnemyDefinition> list = Lists.newArrayList();
+
+		// baseEntity, healthScaling, speedScaling, meleeScaling, scaleScaling, mainWeapon, customName
+		//                                  entity                  hp,  spd, dam, siz, main
+		/* enemy01 */ list.add(makeEnemyDef("minecraft:zombie", 	1.2, 0.8, 1.0, 1.5, "", "enemy.dimdungeons.enemy01"));
+		/* enemy02 */ list.add(makeEnemyDef("minecraft:pillager", 	1.0, 1.0, 1.0, 1.0, "", "enemy.dimdungeons.enemy02"));
+		/* enemy03 */ list.add(makeEnemyDef("minecraft:husk", 		1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy03"));
+		/* enemy04 */ list.add(makeEnemyDef("minecraft:drowned", 	1.0, 1.0, 1.25, 1.0, "", "enemy.dimdungeons.enemy04"));
+		/* enemy05 */ list.add(makeEnemyDef("minecraft:skeleton", 	1.0, 1.0, 1.25, 1.0, "", "enemy.dimdungeons.enemy05"));
+		/* enemy06 */ list.add(makeEnemyDef("minecraft:stray", 		1.2, 0.8, 1.0, 1.0, "", "enemy.dimdungeons.enemy06"));
+		/* enemy07 */ list.add(makeEnemyDef("minecraft:creeper", 	0.8, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy07"));
+		/* enemy08 */ list.add(makeEnemyDef("minecraft:wither_skeleton", 1.0, 1.0, 1.0, 1.0, "", "enemy.dimdungeons.enemy08"));
+		/* enemy09 */ list.add(makeEnemyDef("minecraft:blaze", 		1.0, 1.4, 1.0, 1.0, "", "enemy.dimdungeons.enemy09"));
+		/* enemy10 */ list.add(makeEnemyDef("minecraft:ghast", 		2.0, 1.5, 1.0, 0.4, "", "enemy.dimdungeons.enemy10"));
+		/* enemy11 */ list.add(makeEnemyDef("minecraft:vex", 		1.0, 1.0, 1.5, 1.4, "", "enemy.dimdungeons.enemy11"));
+		/* enemy12 */ list.add(makeEnemyDef("minecraft:drowned", 	1.2, 1.1, 1.25, 1.0, "", "enemy.dimdungeons.enemy12"));
+		/* enemy13 */ list.add(makeEnemyDef("minecraft:wither_skeleton", 1.2, 1.4, 1.2, 1.0, "", "enemy.dimdungeons.enemy13"));
+		/* enemy14 */ list.add(makeEnemyDef("minecraft:hoglin", 	1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy14"));
+		/* enemy15 */ list.add(makeEnemyDef("minecraft:vindicator", 1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy15"));
+		/* enemy16 */ list.add(makeEnemyDef("minecraft:witch", 		1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy16"));
+		/* enemy17 */ list.add(makeEnemyDef("minecraft:blaze", 		1.5, 1.4, 1.0, 1.0, "", "enemy.dimdungeons.enemy17"));
+		/* enemy18 */ list.add(makeEnemyDef("minecraft:piglin_brute", 0.8, 1.1, 1.1, 1.0, "", "enemy.dimdungeons.enemy18"));
+		/* enemy19 */ list.add(makeEnemyDef("minecraft:magma_cube", 1.0, 2.0, 2.0, 1.5, "", "enemy.dimdungeons.enemy19"));
+		/* enemy20 */ list.add(makeEnemyDef("minecraft:parched", 	2.0, 0.7, 3.0, 3.0, "", "enemy.dimdungeons.enemy20"));
+		/* enemy21 */ list.add(makeEnemyDef("minecraft:bogged", 	1.2, 1.2, 1.5, 1.25, "", "enemy.dimdungeons.enemy21"));
+		/* enemy22 */ list.add(makeEnemyDef("minecraft:zombie_villager", 1.2, 1.2, 1.25, 1.0, "", "enemy.dimdungeons.enemy22"));
+		/* enemy23 */ list.add(makeEnemyDef("minecraft:slime",		0.8, 2.0, 1.0, 1.5, "", "enemy.dimdungeons.enemy23"));
+		/* enemy24 */ list.add(makeEnemyDef("minecraft:guardian", 	0.8, 1.0, 1.0, 1.0, "", "enemy.dimdungeons.enemy24"));
+		/* enemy25 */ list.add(makeEnemyDef("minecraft:enderman", 	1.0, 1.0, 1.0, 1.0, "", "enemy.dimdungeons.enemy25"));
+		/* enemy26 */ list.add(makeEnemyDef("minecraft:enderman", 	0.8, 1.25, 1.2, 0.4, "", "enemy.dimdungeons.enemy26"));
+		/* enemy27 */ list.add(makeEnemyDef("minecraft:zombie", 	1.0, 1.0, 1.0, 1.0, "", "enemy.dimdungeons.enemy27"));
+
+		return list;
+	}
+
 	// any config that has to deal with datapacks
 	public static class CommonConfig
 	{
@@ -1290,13 +1362,6 @@ public class DungeonConfig
 		public final ModConfigSpec.ConfigValue<List<? extends List<String>>> advancedEnds;
 		public final ModConfigSpec.ConfigValue<List<? extends List<String>>> advancedLarge;
 
-		// enemy sets
-		public final ModConfigSpec.ConfigValue<List<? extends String>> basicEnemySet1;
-		public final ModConfigSpec.ConfigValue<List<? extends String>> basicEnemySet2;
-		public final ModConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet1;
-		public final ModConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet2;
-		public final ConfigValue<Double> basicEnemyHealthScaling;
-		public final ConfigValue<Double> advancedEnemyHealthScaling;
 		public final ConfigValue<Integer> numberOfThemes;
 
 		public static class ThemeConfigStructure
@@ -1339,14 +1404,8 @@ public class DungeonConfig
 			advancedLarge = builder.translation("config.dimdungeons.advancedLarge").define("advancedLarge", defaultAdvancedLarge());
 			builder.pop();
 
-			// enemy sets
-			builder.comment("Enemy Sets for Dungeons").push("enemySets");
-			basicEnemySet1 = builder.translation("config.dimdungeons.basicEnemySet1").define("basicEnemySet1", defaultBasicEnemySet1());
-			basicEnemySet2 = builder.translation("config.dimdungeons.basicEnemySet2").define("basicEnemySet2", defaultBasicEnemySet2());
-			advancedEnemySet1 = builder.translation("config.dimdungeons.advancedEnemySet1").define("advancedEnemySet1", defaultAdvancedEnemySet1());
-			advancedEnemySet2 = builder.translation("config.dimdungeons.advancedEnemySet2").define("advancedEnemySet2", defaultAdvancedEnemySet2());
-			basicEnemyHealthScaling = builder.translation("config.dimdungeons.basicEnemyHealthScaling").define("basicEnemyHealthScaling", 1.0);
-			advancedEnemyHealthScaling = builder.translation("config.dimdungeons.advancedEnemyHealthScaling").define("advancedEnemyHealthScaling", 2.0);
+			// number of themes is now in its own section (now that enemy sets have moved)
+			builder.comment("Theme Configs").push("themeConfigs");
 			numberOfThemes = builder.comment("The number of themes to expect in the common config.").translation("config.dimdungeons.numberOfThemes").define("numberOfThemes", DEFAULT_NUMBER_OF_THEMES);
 			builder.pop();
 
@@ -1431,6 +1490,60 @@ public class DungeonConfig
 		}
 	}
 
+	public static class EnemyConfig
+	{
+		public final ModConfigSpec.ConfigValue<List<? extends String>> basicEnemySet1;
+		public final ModConfigSpec.ConfigValue<List<? extends String>> basicEnemySet2;
+		public final ModConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet1;
+		public final ModConfigSpec.ConfigValue<List<? extends String>> advancedEnemySet2;
+		public final ConfigValue<Double> basicEnemyHealthScaling;
+		public final ConfigValue<Double> advancedEnemyHealthScaling;
+
+		public static class EnemyDefinitionConfig
+		{
+			public ConfigValue<String> baseEntity;
+			public ConfigValue<Double> healthScaling;
+			public ConfigValue<Double> speedScaling;
+			public ConfigValue<Double> meleeScaling;
+			public ConfigValue<Double> scaleScaling;
+			public ConfigValue<String> mainWeapon;
+			public ConfigValue<String> customName;
+		}
+
+		List<EnemyDefinitionConfig> allEnemyDefinitionConfigs;
+
+		EnemyConfig(ModConfigSpec.Builder builder)
+		{
+			builder.comment("Enemy types and health scaling for Basic and Advanced dungeons.").push("enemySets");
+			basicEnemySet1 = builder.comment("Pool of enemies used for SummonEnemy1 data blocks in basic dungeons.").translation("config.dimdungeons.basicEnemySet1").define("basicEnemySet1", defaultBasicEnemySet1());
+			basicEnemySet2 = builder.comment("Pool of enemies used for SummonEnemy2/SummonKeyholder data blocks in basic dungeons.").translation("config.dimdungeons.basicEnemySet2").define("basicEnemySet2", defaultBasicEnemySet2());
+			advancedEnemySet1 = builder.comment("Pool of enemies used for SummonEnemy1 data blocks in advanced dungeons.").translation("config.dimdungeons.advancedEnemySet1").define("advancedEnemySet1", defaultAdvancedEnemySet1());
+			advancedEnemySet2 = builder.comment("Pool of enemies used for SummonEnemy2/SummonKeyholder data blocks in advanced dungeons.").translation("config.dimdungeons.advancedEnemySet2").define("advancedEnemySet2", defaultAdvancedEnemySet2());
+			basicEnemyHealthScaling = builder.comment("Health multiplier applied to all enemies spawned in basic dungeons.").translation("config.dimdungeons.basicEnemyHealthScaling").define("basicEnemyHealthScaling", 1.0);
+			advancedEnemyHealthScaling = builder.comment("Health multiplier applied to all enemies spawned in advanced dungeons.").translation("config.dimdungeons.advancedEnemyHealthScaling").define("advancedEnemyHealthScaling", 2.0);
+			builder.pop();
+
+			allEnemyDefinitionConfigs = new ArrayList<EnemyDefinitionConfig>();
+			List<EnemyDefinition> presetDefaults = buildDefaultEnemyDefinitions();
+			for (int i = 1; i <= MAX_ENEMY_DEFINITIONS; i++)
+			{
+				EnemyDefinition slotDefault = (i <= presetDefaults.size()) ? presetDefaults.get(i - 1) : new EnemyDefinition();
+				String key = String.format("enemy%02d", i);
+				EnemyDefinitionConfig def = new EnemyDefinitionConfig();
+				builder.comment("Enemy definition slot " + i).push(key);
+				def.baseEntity = builder.comment("The entity to spawn. (for example minecraft:zombie)").define("baseEntity", slotDefault.baseEntity);
+				def.healthScaling = builder.comment("Multiplier applied to this enemy's max health.").define("healthScaling", slotDefault.healthScaling);
+				def.speedScaling = builder.comment("Multiplier applied to this enemy's movement speed.").define("speedScaling", slotDefault.speedScaling);
+				def.meleeScaling = builder.comment("Multiplier applied to this enemy's attack damage.").define("meleeScaling", slotDefault.meleeScaling);
+				def.scaleScaling = builder.comment("Multiplier applied to this enemy's size scale.").define("scaleScaling", slotDefault.scaleScaling);
+				def.mainWeapon = builder.comment("Serialized NBT string for the item placed in this enemy's main hand. Leave empty for no override.").define("mainWeapon", slotDefault.mainWeapon);
+				def.customName = builder.comment("Custom display name for this enemy. Leave empty for no custom name-tagging. Can be a translation string.").define("customName", slotDefault.customName);
+				builder.pop();
+				allEnemyDefinitionConfigs.add(def);
+			}
+		}
+	}
+
 	public static void refreshClient()
 	{
 		showParticles = CLIENT.showParticles.get();
@@ -1476,13 +1589,28 @@ public class DungeonConfig
 		advancedEnds = COMMON.advancedEnds.get();
 		advancedLarge = COMMON.advancedLarge.get();
 
-		basicEnemySet1 = COMMON.basicEnemySet1.get();
-		basicEnemySet2 = COMMON.basicEnemySet2.get();
-		advancedEnemySet1 = COMMON.advancedEnemySet1.get();
-		advancedEnemySet2 = COMMON.advancedEnemySet2.get();
-		basicEnemyHealthScaling = COMMON.basicEnemyHealthScaling.get();
-		advancedEnemyHealthScaling = COMMON.advancedEnemyHealthScaling.get();
+		basicEnemySet1 = ENEMIES.basicEnemySet1.get();
+		basicEnemySet2 = ENEMIES.basicEnemySet2.get();
+		advancedEnemySet1 = ENEMIES.advancedEnemySet1.get();
+		advancedEnemySet2 = ENEMIES.advancedEnemySet2.get();
+		basicEnemyHealthScaling = ENEMIES.basicEnemyHealthScaling.get();
+		advancedEnemyHealthScaling = ENEMIES.advancedEnemyHealthScaling.get();
 		numberOfThemes = COMMON.numberOfThemes.get();
+
+		// refresh all enemy definitions
+		enemyDefinitions = new ArrayList<EnemyDefinition>();
+		for (int i = 0; i < MAX_ENEMY_DEFINITIONS; i++)
+		{
+			EnemyDefinition def = new EnemyDefinition();
+			def.baseEntity = ENEMIES.allEnemyDefinitionConfigs.get(i).baseEntity.get();
+			def.healthScaling = ENEMIES.allEnemyDefinitionConfigs.get(i).healthScaling.get();
+			def.speedScaling = ENEMIES.allEnemyDefinitionConfigs.get(i).speedScaling.get();
+			def.meleeScaling = ENEMIES.allEnemyDefinitionConfigs.get(i).meleeScaling.get();
+			def.scaleScaling = ENEMIES.allEnemyDefinitionConfigs.get(i).scaleScaling.get();
+			def.mainWeapon = ENEMIES.allEnemyDefinitionConfigs.get(i).mainWeapon.get();
+			def.customName = ENEMIES.allEnemyDefinitionConfigs.get(i).customName.get();
+			enemyDefinitions.add(def);
+		}
 
 		// refresh all theme configs
 		themeSettings = new ArrayList<ThemeStructure>();

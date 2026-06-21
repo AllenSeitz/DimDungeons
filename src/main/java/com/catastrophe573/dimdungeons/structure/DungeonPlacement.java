@@ -788,9 +788,30 @@ public class DungeonPlacement
 		}
 	}
 
-	private static Entity spawnEnemyHere(BlockPos pos, String Identifier, ServerLevel world, int theme, DungeonType type)
+	private static Entity spawnEnemyHere(BlockPos pos, String identifier, ServerLevel world, int theme, DungeonType type)
 	{
-		EntityType<?> entitytype = EntityType.byString(Identifier).orElse(EntityType.CHICKEN);
+		// If identifier has a colon (minecraft:zombie) then summon that mob directly. Otherwise if "enemy02" then use enemy definition 02.
+		String entityId = identifier;
+		DungeonConfig.EnemyDefinition definition = null;
+
+		if (!identifier.contains(":"))
+		{
+			try
+			{
+				int defIndex = Integer.parseInt(identifier.replace("enemy", "")) - 1;
+				if (defIndex >= 0 && defIndex < DungeonConfig.enemyDefinitions.size())
+				{
+					definition = DungeonConfig.enemyDefinitions.get(defIndex);
+					entityId = definition.baseEntity;
+				}
+			}
+			catch (NumberFormatException e)
+			{
+				DimDungeons.logMessageWarn("spawnEnemyHere: unrecognized enemy key '" + identifier + "'");
+			}
+		}
+
+		EntityType<?> entitytype = EntityType.byString(entityId).orElse(EntityType.CHICKEN);
 
 		Entity mob = entitytype.spawn((ServerLevel) world, null, null, pos, EntitySpawnReason.STRUCTURE, true, true);
 
@@ -801,11 +822,18 @@ public class DungeonPlacement
 		}
 		mob.snapTo(pos, 0.0F, 0.0F);
 
-		// append a "2" to the mob name in advanced dungeons
-		String advancedDungeonNames = type == DungeonType.ADVANCED ? "2" : "";
-		MutableComponent fancyName = Component.translatable("enemy.dimdungeons." + Identifier + advancedDungeonNames);
+		String nameLookup = "enemy.dimdungeons." + identifier;
+		if (definition != null && !definition.customName.isEmpty())
+		{
+			nameLookup = definition.customName;
+		}
+		else if ( type == DungeonType.ADVANCED )
+		{
+			nameLookup += "2";
+		}
 
 		// don't nametag the mob if the translation string fails
+		MutableComponent fancyName = Component.translatable(nameLookup);
 		if (!(fancyName == null || fancyName.getString().contains("enemy.dimdungeons.")))
 		{
 			mob.setCustomName(fancyName);
@@ -817,19 +845,66 @@ public class DungeonPlacement
 			((Mob) mob).setHomeTo(pos, 8);
 			((Mob) mob).setPersistenceRequired();
 
-			// health scaling
-			double healthScaling = DungeonConfig.basicEnemyHealthScaling;
-			if (theme > 0)
+			if (definition != null)
 			{
-				healthScaling = DungeonConfig.themeSettings.get(theme - 1).themeEnemyHealthScaling;
+				// replace the global health scaling with the per-mob version if it is defined
+				AttributeInstance tempHealth = ((Mob) mob).getAttribute(Attributes.MAX_HEALTH);
+				((Mob) mob).getAttribute(Attributes.MAX_HEALTH).setBaseValue(tempHealth.getBaseValue() * definition.healthScaling);
+				((Mob) mob).setHealth((float) ((Mob) mob).getAttribute(Attributes.MAX_HEALTH).getBaseValue());
+
+				AttributeInstance tempSpeed = ((Mob) mob).getAttribute(Attributes.MOVEMENT_SPEED);
+				if (tempSpeed != null)
+				{
+					tempSpeed.setBaseValue(tempSpeed.getBaseValue() * definition.speedScaling);
+				}
+
+				AttributeInstance tempMelee = ((Mob) mob).getAttribute(Attributes.ATTACK_DAMAGE);
+				if (tempMelee != null)
+				{
+					tempMelee.setBaseValue(tempMelee.getBaseValue() * definition.meleeScaling);
+				}
+
+				AttributeInstance tempScale = ((Mob) mob).getAttribute(Attributes.SCALE);
+				if (tempScale != null)
+				{
+					tempScale.setBaseValue(tempScale.getBaseValue() * definition.scaleScaling);
+				}
+
+				if (!definition.mainWeapon.isEmpty())
+				{
+					try
+					{
+						net.minecraft.nbt.CompoundTag weaponTag = net.minecraft.nbt.TagParser.parseCompoundFully(definition.mainWeapon);
+						net.minecraft.resources.RegistryOps<net.minecraft.nbt.Tag> nbtOps = net.minecraft.resources.RegistryOps.create(net.minecraft.nbt.NbtOps.INSTANCE, world.registryAccess());
+						ItemStack weapon = ItemStack.CODEC.parse(nbtOps, weaponTag).result().orElse(ItemStack.EMPTY);
+						if (!weapon.isEmpty())
+						{
+							((Mob) mob).setItemSlot(EquipmentSlot.MAINHAND, weapon);
+							((Mob) mob).setDropChance(EquipmentSlot.MAINHAND, 0.0f);
+						}
+					}
+					catch (com.mojang.brigadier.exceptions.CommandSyntaxException e)
+					{
+						DimDungeons.logMessageWarn("spawnEnemyHere: could not parse mainWeapon NBT for '" + identifier + "': " + e.getMessage());
+					}
+				}
 			}
-			if (type == DungeonType.ADVANCED)
+			else
 			{
-				healthScaling = DungeonConfig.advancedEnemyHealthScaling;
+				// tier-level scaling (existing behavior for direct entity IDs)
+				double healthScaling = DungeonConfig.basicEnemyHealthScaling;
+				if (theme > 0)
+				{
+					healthScaling = DungeonConfig.themeSettings.get(theme - 1).themeEnemyHealthScaling;
+				}
+				if (type == DungeonType.ADVANCED)
+				{
+					healthScaling = DungeonConfig.advancedEnemyHealthScaling;
+				}
+				AttributeInstance tempHealth = ((Mob) mob).getAttribute(Attributes.MAX_HEALTH);
+				((Mob) mob).getAttribute(Attributes.MAX_HEALTH).setBaseValue(tempHealth.getBaseValue() * healthScaling);
+				((Mob) mob).setHealth((float) ((Mob) mob).getAttribute(Attributes.MAX_HEALTH).getBaseValue());
 			}
-			AttributeInstance tempHealth = ((Mob) mob).getAttribute(Attributes.MAX_HEALTH);
-			((Mob) mob).getAttribute(Attributes.MAX_HEALTH).setBaseValue(tempHealth.getBaseValue() * healthScaling);
-			((Mob) mob).setHealth((float) ((Mob) mob).getAttribute(Attributes.MAX_HEALTH).getBaseValue());
 
 			// randomly put a themed key into a mob's offhand
 			int chanceForTheme = DungeonConfig.chanceForThemeKeys;
@@ -850,17 +925,8 @@ public class DungeonPlacement
 					((Mob) mob).setDropChance(EquipmentSlot.OFFHAND, 1.0f);
 				}
 			}
-
-			if (type == DungeonType.ADVANCED)
-			{
-				// ADVANCED MODE! EVEN HARDER MOBS!
-				((Mob) mob).getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.35f); // baby zombie speed
-				((Mob) mob).addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, -1, 1, false, false));
-				((Mob) mob).addEffect(new MobEffectInstance(MobEffects.JUMP_BOOST, -1, 3, false, false));
-				((Mob) mob).addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, -1, 1, false, false));
-			}
 		}
-		
+
 		return mob;
 	}
 
