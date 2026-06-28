@@ -1100,7 +1100,7 @@ public class DungeonConfig
 	public static List<? extends String> defaultAdvancedEnemySet1()
 	{
 		List<String> temp = Lists.newArrayList();
-		temp.add("enemy09");
+		temp.add("enemy17");
 		temp.add("enemy10");
 		temp.add("enemy11");
 		temp.add("enemy12");
@@ -1125,11 +1125,11 @@ public class DungeonConfig
 	{
 		if (themeNum == 1)
 		{
-			return Lists.newArrayList("enemy13", "enemy13", "enemy17", "enemy17", "enemy14", "enemy18");
+			return Lists.newArrayList("enemy13", "enemy13", "enemy09", "enemy09", "enemy14", "enemy18");
 		}
 		if (themeNum == 2)
 		{
-			return Lists.newArrayList("enemy03", "enemy19", "enemy17", "enemy20");
+			return Lists.newArrayList("enemy03", "enemy19", "enemy09", "enemy20");
 		}
 
 		return defaultBasicEnemySet1();
