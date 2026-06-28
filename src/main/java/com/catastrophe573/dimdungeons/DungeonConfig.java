@@ -136,9 +136,6 @@ public class DungeonConfig
 		public String customName = "";
 	}
 
-	// some hardcoded weapon items for enemies
- 	public static String JUICED_CROSSBOW = "{components: {\"minecraft:enchantments\": {\"minecraft:quick_charge\": 2, \"minecraft:multishot\": 1}, \"minecraft:charged_projectiles\": [{components: {\"minecraft:fireworks\": {explosions: [{fade_colors: [8073150], has_trail: 1b, shape: \"star\", colors: [15790320], has_twinkle: 1b}], flight_duration: 2b}, \"minecraft:intangible_projectile\": {}}, id: \"minecraft:firework_rocket\"}, {components: {\"minecraft:fireworks\": {explosions: [{fade_colors: [8073150], has_trail: 1b, shape: \"star\", colors: [15790320], has_twinkle: 1b}], flight_duration: 2b}, \"minecraft:intangible_projectile\": {}}, id: \"minecraft:firework_rocket\"}, {components: {\"minecraft:fireworks\": {explosions: [{fade_colors: [8073150], has_trail: 1b, shape: \"star\", colors: [15790320], has_twinkle: 1b}], flight_duration: 2b}, \"minecraft:intangible_projectile\": {}}, id: \"minecraft:firework_rocket\"}]}, count: 1, id: \"minecraft:crossbow\"}";
-
 	// list of 99 enemies from the enemy config (that can be used in enemy sets)
 	public static List<EnemyDefinition> enemyDefinitions;
 
@@ -1309,10 +1306,17 @@ public class DungeonConfig
 	{
 		List<EnemyDefinition> list = Lists.newArrayList();
 
+		// some hardcoded weapon items for enemies
+		String FIREWORKS_CROSSBOW = "{components: {\"minecraft:enchantments\": {\"minecraft:quick_charge\": 2, \"minecraft:multishot\": 1}, \"minecraft:charged_projectiles\": [{components: {\"minecraft:fireworks\": {explosions: [{fade_colors: [8073150], has_trail: 1b, shape: \"star\", colors: [15790320], has_twinkle: 1b}], flight_duration: 2b}, \"minecraft:intangible_projectile\": {}}, id: \"minecraft:firework_rocket\"}, {components: {\"minecraft:fireworks\": {explosions: [{fade_colors: [8073150], has_trail: 1b, shape: \"star\", colors: [15790320], has_twinkle: 1b}], flight_duration: 2b}, \"minecraft:intangible_projectile\": {}}, id: \"minecraft:firework_rocket\"}, {components: {\"minecraft:fireworks\": {explosions: [{fade_colors: [8073150], has_trail: 1b, shape: \"star\", colors: [15790320], has_twinkle: 1b}], flight_duration: 2b}, \"minecraft:intangible_projectile\": {}}, id: \"minecraft:firework_rocket\"}]}, count: 1, id: \"minecraft:crossbow\"}";
+		String TRIDENT = "{count: 1, id: \"minecraft:trident\"}";
+		String DIAMOND_SWORD = "{components: {\"minecraft:enchantments\": {\"minecraft:sharpness\": 3}}, count: 1, id: \"minecraft:diamond_sword\"}";
+		String DIAMOND_AXE = "{components: {\"minecraft:enchantments\": {\"minecraft:sharpness\": 3}}, count: 1, id: \"minecraft:diamond_axe\"}";
+		String IRON_SPEAR = "{components: {\"minecraft:enchantments\": {\"minecraft:sharpness\": 3}}, count: 1, id: \"minecraft:iron_spear\"}";
+
 		// baseEntity, healthScaling, speedScaling, meleeScaling, scaleScaling, mainWeapon, customName
 		//                                  entity                  hp,  spd, dam, siz, main
 		/* enemy01 */ list.add(makeEnemyDef("minecraft:zombie", 	1.2, 0.8, 1.0, 1.5, "", "enemy.dimdungeons.enemy01"));
-		/* enemy02 */ list.add(makeEnemyDef("minecraft:pillager", 	1.0, 1.0, 1.0, 1.0, "", "enemy.dimdungeons.enemy02"));
+		/* enemy02 */ list.add(makeEnemyDef("minecraft:pillager", 	1.0, 1.0, 1.0, 1.0, FIREWORKS_CROSSBOW, "enemy.dimdungeons.enemy02"));
 		/* enemy03 */ list.add(makeEnemyDef("minecraft:husk", 		1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy03"));
 		/* enemy04 */ list.add(makeEnemyDef("minecraft:drowned", 	1.0, 1.0, 1.25, 1.0, "", "enemy.dimdungeons.enemy04"));
 		/* enemy05 */ list.add(makeEnemyDef("minecraft:skeleton", 	1.0, 1.0, 1.25, 1.0, "", "enemy.dimdungeons.enemy05"));
@@ -1322,13 +1326,13 @@ public class DungeonConfig
 		/* enemy09 */ list.add(makeEnemyDef("minecraft:blaze", 		1.0, 1.4, 1.0, 1.0, "", "enemy.dimdungeons.enemy09"));
 		/* enemy10 */ list.add(makeEnemyDef("minecraft:ghast", 		2.0, 1.5, 1.0, 0.4, "", "enemy.dimdungeons.enemy10"));
 		/* enemy11 */ list.add(makeEnemyDef("minecraft:vex", 		1.0, 1.0, 1.5, 1.4, "", "enemy.dimdungeons.enemy11"));
-		/* enemy12 */ list.add(makeEnemyDef("minecraft:drowned", 	1.2, 1.1, 1.25, 1.0, "", "enemy.dimdungeons.enemy12"));
-		/* enemy13 */ list.add(makeEnemyDef("minecraft:wither_skeleton", 1.2, 1.4, 1.2, 1.0, "", "enemy.dimdungeons.enemy13"));
+		/* enemy12 */ list.add(makeEnemyDef("minecraft:drowned", 	1.2, 1.1, 1.25, 1.0, TRIDENT, "enemy.dimdungeons.enemy12"));
+		/* enemy13 */ list.add(makeEnemyDef("minecraft:wither_skeleton", 1.2, 1.4, 1.2, 1.0, DIAMOND_SWORD, "enemy.dimdungeons.enemy13"));
 		/* enemy14 */ list.add(makeEnemyDef("minecraft:hoglin", 	1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy14"));
 		/* enemy15 */ list.add(makeEnemyDef("minecraft:vindicator", 1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy15"));
 		/* enemy16 */ list.add(makeEnemyDef("minecraft:witch", 		1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy16"));
 		/* enemy17 */ list.add(makeEnemyDef("minecraft:blaze", 		1.5, 1.4, 1.0, 1.0, "", "enemy.dimdungeons.enemy17"));
-		/* enemy18 */ list.add(makeEnemyDef("minecraft:piglin_brute", 0.8, 1.1, 1.1, 1.0, "", "enemy.dimdungeons.enemy18"));
+		/* enemy18 */ list.add(makeEnemyDef("minecraft:piglin_brute", 0.8, 1.0, 1.0, 1.0, DIAMOND_AXE, "enemy.dimdungeons.enemy18"));
 		/* enemy19 */ list.add(makeEnemyDef("minecraft:magma_cube", 1.0, 2.0, 2.0, 1.5, "", "enemy.dimdungeons.enemy19"));
 		/* enemy20 */ list.add(makeEnemyDef("minecraft:parched", 	2.0, 0.7, 3.0, 3.0, "", "enemy.dimdungeons.enemy20"));
 		/* enemy21 */ list.add(makeEnemyDef("minecraft:bogged", 	1.2, 1.2, 1.5, 1.25, "", "enemy.dimdungeons.enemy21"));
@@ -1337,7 +1341,7 @@ public class DungeonConfig
 		/* enemy24 */ list.add(makeEnemyDef("minecraft:guardian", 	0.8, 1.0, 1.0, 1.0, "", "enemy.dimdungeons.enemy24"));
 		/* enemy25 */ list.add(makeEnemyDef("minecraft:enderman", 	1.0, 1.0, 1.0, 1.0, "", "enemy.dimdungeons.enemy25"));
 		/* enemy26 */ list.add(makeEnemyDef("minecraft:enderman", 	0.8, 1.25, 1.2, 0.4, "", "enemy.dimdungeons.enemy26"));
-		/* enemy27 */ list.add(makeEnemyDef("minecraft:zombie", 	1.0, 1.0, 1.0, 1.0, "", "enemy.dimdungeons.enemy27"));
+		/* enemy27 */ list.add(makeEnemyDef("minecraft:zombie", 	1.0, 1.5, 1.0, 1.5, IRON_SPEAR, "enemy.dimdungeons.enemy27"));
 
 		return list;
 	}
