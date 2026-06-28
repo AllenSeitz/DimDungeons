@@ -743,6 +743,16 @@ public class DungeonPlacement
 
 			spawnEnemyHere(pos, mobid, world, room.theme, room.dungeonType);
 		}
+		else if (name.contains("SpecificEnemy"))
+		{
+			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
+
+			String whichDigits = name.replace("SpecificEnemy","");
+			int digits = Integer.valueOf(whichDigits);
+			String mobid = "enemy" + String.format("%02d", digits);
+
+			spawnEnemyHere(pos, mobid, world, room.theme, room.dungeonType);
+		}
 		else if ("SummonEnemy2".equals(name) || "SummonKeyholder".equals(name) )
 		{
 			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
