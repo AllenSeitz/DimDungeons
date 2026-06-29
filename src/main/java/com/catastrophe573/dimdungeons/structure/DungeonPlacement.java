@@ -20,9 +20,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -37,6 +39,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.RandomizableContainer;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -896,6 +899,22 @@ public class DungeonPlacement
 					catch (com.mojang.brigadier.exceptions.CommandSyntaxException e)
 					{
 						DimDungeons.logMessageWarn("spawnEnemyHere: could not parse mainWeapon NBT for '" + identifier + "': " + e.getMessage());
+					}
+				}
+
+				// apply potion effects
+				for (DungeonConfig.PotionEffectDefinition potionDef : definition.potionEffects)
+				{
+					// only if they exist
+					if (potionDef.effectId.isEmpty())
+					{
+						continue;
+					}
+					if (world.getRandom().nextInt(100) < potionDef.effectChance)
+					{
+						// effect, duration (-1 is infinite), level, ambient = false, showParticles = false
+						Optional<Holder.Reference<MobEffect>> effect = BuiltInRegistries.MOB_EFFECT.get(Identifier.parse(potionDef.effectId));
+						((Mob) mob).addEffect(new net.minecraft.world.effect.MobEffectInstance(effect.get(), -1, potionDef.effectLevel, false, false));
 					}
 				}
 			}

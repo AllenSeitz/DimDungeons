@@ -124,6 +124,14 @@ public class DungeonConfig
 	public static double advancedEnemyHealthScaling = 2.0f;
 	public static int numberOfThemes = DEFAULT_NUMBER_OF_THEMES;
 
+	// potion effect is part of EnemyDefinition
+	public static class PotionEffectDefinition
+	{
+		public String effectId = "";    // "minecraft:strength", or empty = do not use
+		public int effectLevel = 1;
+		public int effectChance = 100;  // 0-100 percent chance to apply
+	}
+
 	// enemy definition structure used in the enemy config
 	public static class EnemyDefinition
 	{
@@ -134,6 +142,15 @@ public class DungeonConfig
 		public double scaleScaling = 1.0;
 		public String mainWeapon = "";
 		public String customName = "";
+		public List<PotionEffectDefinition> potionEffects;
+
+		public EnemyDefinition()
+		{
+			potionEffects = new ArrayList<>();
+			potionEffects.add(new PotionEffectDefinition());
+			potionEffects.add(new PotionEffectDefinition());
+			potionEffects.add(new PotionEffectDefinition());
+		}
 	}
 
 	// list of 99 enemies from the enemy config (that can be used in enemy sets)
@@ -1289,7 +1306,7 @@ public class DungeonConfig
 	}
 
 	// used by buildDefaultEnemyDefinitions() to hardcode default enemy data concisely and clearly
-	private static EnemyDefinition makeEnemyDef(String baseEntity, double healthScaling, double speedScaling, double meleeScaling, double scaleScaling, String mainWeapon, String customName)
+	private static EnemyDefinition makeEnemyDef(String baseEntity, double healthScaling, double speedScaling, double meleeScaling, double scaleScaling, String mainWeapon, String customName, PotionEffectDefinition... effects)
 	{
 		EnemyDefinition def = new EnemyDefinition();
 		def.baseEntity = baseEntity;
@@ -1299,7 +1316,21 @@ public class DungeonConfig
 		def.scaleScaling = scaleScaling;
 		def.mainWeapon = mainWeapon;
 		def.customName = customName;
+		def.potionEffects = new ArrayList<>();
+		for (int i = 0; i < 3; i++)
+		{
+			def.potionEffects.add(i < effects.length ? effects[i] : new PotionEffectDefinition());
+		}
 		return def;
+	}
+
+	private static PotionEffectDefinition makePotionEffect(String effectId, int level, int chance)
+	{
+		PotionEffectDefinition p = new PotionEffectDefinition();
+		p.effectId = effectId;
+		p.effectLevel = level;
+		p.effectChance = chance;
+		return p;
 	}
 
 	public static List<EnemyDefinition> buildDefaultEnemyDefinitions()
@@ -1313,32 +1344,41 @@ public class DungeonConfig
 		String DIAMOND_AXE = "{components: {\"minecraft:enchantments\": {\"minecraft:sharpness\": 3}}, count: 1, id: \"minecraft:diamond_axe\"}";
 		String IRON_SPEAR = "{components: {\"minecraft:enchantments\": {\"minecraft:sharpness\": 3}}, count: 1, id: \"minecraft:iron_spear\"}";
 
+		PotionEffectDefinition SOMETIMES_STRENGTH = makePotionEffect("minecraft:strength", 1, 40);
+		PotionEffectDefinition SOMETIMES_INVISIBLE = makePotionEffect("minecraft:invisibility", 1, 40);
+		PotionEffectDefinition RARELY_INVISIBLE = makePotionEffect("minecraft:invisibility", 1, 10);
+		PotionEffectDefinition SOMETIMES_FAST = makePotionEffect("minecraft:speed", 1, 40);
+		PotionEffectDefinition FIRE_IMMUNE = makePotionEffect("minecraft:fire_resistance", 1, 100);
+		PotionEffectDefinition EXTRA_FAST = makePotionEffect("minecraft:speed", 2, 100);
+		PotionEffectDefinition JUMP_BOOST = makePotionEffect("minecraft:jump_boost", 2, 100);
+
+
 		// baseEntity, healthScaling, speedScaling, meleeScaling, scaleScaling, mainWeapon, customName
 		//                                  entity                  hp,  spd, dam, siz, main
-		/* enemy01 */ list.add(makeEnemyDef("minecraft:zombie", 	1.2, 0.8, 1.0, 1.5, "", "enemy.dimdungeons.enemy01"));
-		/* enemy02 */ list.add(makeEnemyDef("minecraft:pillager", 	1.0, 1.0, 1.0, 1.0, FIREWORKS_CROSSBOW, "enemy.dimdungeons.enemy02"));
-		/* enemy03 */ list.add(makeEnemyDef("minecraft:husk", 		1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy03"));
-		/* enemy04 */ list.add(makeEnemyDef("minecraft:drowned", 	1.0, 1.0, 1.25, 1.0, "", "enemy.dimdungeons.enemy04"));
-		/* enemy05 */ list.add(makeEnemyDef("minecraft:skeleton", 	1.0, 1.0, 1.25, 1.0, "", "enemy.dimdungeons.enemy05"));
-		/* enemy06 */ list.add(makeEnemyDef("minecraft:stray", 		1.2, 0.8, 1.0, 1.0, "", "enemy.dimdungeons.enemy06"));
-		/* enemy07 */ list.add(makeEnemyDef("minecraft:creeper", 	0.8, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy07"));
-		/* enemy08 */ list.add(makeEnemyDef("minecraft:wither_skeleton", 1.0, 1.0, 1.0, 1.0, "", "enemy.dimdungeons.enemy08"));
+		/* enemy01 */ list.add(makeEnemyDef("minecraft:zombie", 	1.2, 0.8, 1.0, 1.5, "", "enemy.dimdungeons.enemy01", SOMETIMES_STRENGTH));
+		/* enemy02 */ list.add(makeEnemyDef("minecraft:pillager", 	1.0, 1.0, 1.0, 1.0, FIREWORKS_CROSSBOW, "enemy.dimdungeons.enemy02", RARELY_INVISIBLE));
+		/* enemy03 */ list.add(makeEnemyDef("minecraft:husk", 		1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy03", SOMETIMES_STRENGTH));
+		/* enemy04 */ list.add(makeEnemyDef("minecraft:drowned", 	1.0, 1.0, 1.25, 1.0, "", "enemy.dimdungeons.enemy04", RARELY_INVISIBLE));
+		/* enemy05 */ list.add(makeEnemyDef("minecraft:skeleton", 	1.0, 1.0, 1.25, 1.0, "", "enemy.dimdungeons.enemy05", RARELY_INVISIBLE));
+		/* enemy06 */ list.add(makeEnemyDef("minecraft:stray", 		1.2, 0.8, 1.0, 1.0, "", "enemy.dimdungeons.enemy06", SOMETIMES_FAST, RARELY_INVISIBLE));
+		/* enemy07 */ list.add(makeEnemyDef("minecraft:creeper", 	0.8, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy07", SOMETIMES_FAST));
+		/* enemy08 */ list.add(makeEnemyDef("minecraft:wither_skeleton", 1.0, 1.0, 1.0, 1.0, "", "enemy.dimdungeons.enemy08", RARELY_INVISIBLE));
 		/* enemy09 */ list.add(makeEnemyDef("minecraft:blaze", 		1.0, 1.4, 1.0, 1.0, "", "enemy.dimdungeons.enemy09"));
 		/* enemy10 */ list.add(makeEnemyDef("minecraft:ghast", 		2.0, 1.5, 1.0, 0.4, "", "enemy.dimdungeons.enemy10"));
-		/* enemy11 */ list.add(makeEnemyDef("minecraft:vex", 		1.0, 1.0, 1.5, 1.4, "", "enemy.dimdungeons.enemy11"));
-		/* enemy12 */ list.add(makeEnemyDef("minecraft:drowned", 	1.2, 1.1, 1.25, 1.0, TRIDENT, "enemy.dimdungeons.enemy12"));
-		/* enemy13 */ list.add(makeEnemyDef("minecraft:wither_skeleton", 1.2, 1.4, 1.2, 1.0, DIAMOND_SWORD, "enemy.dimdungeons.enemy13"));
-		/* enemy14 */ list.add(makeEnemyDef("minecraft:hoglin", 	1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy14"));
-		/* enemy15 */ list.add(makeEnemyDef("minecraft:vindicator", 1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy15"));
-		/* enemy16 */ list.add(makeEnemyDef("minecraft:witch", 		1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy16"));
-		/* enemy17 */ list.add(makeEnemyDef("minecraft:blaze", 		1.5, 1.4, 1.0, 1.0, "", "enemy.dimdungeons.enemy17"));
-		/* enemy18 */ list.add(makeEnemyDef("minecraft:piglin_brute", 0.8, 1.0, 1.0, 1.0, DIAMOND_AXE, "enemy.dimdungeons.enemy18"));
+		/* enemy11 */ list.add(makeEnemyDef("minecraft:vex", 		1.0, 1.0, 1.5, 1.4, "", "enemy.dimdungeons.enemy11", FIRE_IMMUNE));
+		/* enemy12 */ list.add(makeEnemyDef("minecraft:drowned", 	1.2, 1.1, 1.25, 1.0, TRIDENT, "enemy.dimdungeons.enemy12", FIRE_IMMUNE));
+		/* enemy13 */ list.add(makeEnemyDef("minecraft:wither_skeleton", 1.2, 1.4, 1.2, 1.0, DIAMOND_SWORD, "enemy.dimdungeons.enemy13", SOMETIMES_INVISIBLE));
+		/* enemy14 */ list.add(makeEnemyDef("minecraft:hoglin", 	1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy14", JUMP_BOOST, FIRE_IMMUNE));
+		/* enemy15 */ list.add(makeEnemyDef("minecraft:vindicator", 1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy15", SOMETIMES_STRENGTH, FIRE_IMMUNE));
+		/* enemy16 */ list.add(makeEnemyDef("minecraft:witch", 		1.0, 1.2, 1.0, 1.0, "", "enemy.dimdungeons.enemy16", SOMETIMES_INVISIBLE, FIRE_IMMUNE));
+		/* enemy17 */ list.add(makeEnemyDef("minecraft:blaze", 		1.5, 1.4, 1.0, 1.0, "", "enemy.dimdungeons.enemy17", SOMETIMES_INVISIBLE));
+		/* enemy18 */ list.add(makeEnemyDef("minecraft:piglin_brute", 0.8, 1.0, 1.0, 1.0, DIAMOND_AXE, "enemy.dimdungeons.enemy18", FIRE_IMMUNE));
 		/* enemy19 */ list.add(makeEnemyDef("minecraft:magma_cube", 1.0, 2.0, 2.0, 1.5, "", "enemy.dimdungeons.enemy19"));
-		/* enemy20 */ list.add(makeEnemyDef("minecraft:parched", 	2.0, 0.7, 3.0, 3.0, "", "enemy.dimdungeons.enemy20"));
+		/* enemy20 */ list.add(makeEnemyDef("minecraft:parched", 	2.0, 0.7, 3.0, 3.0, "", "enemy.dimdungeons.enemy20", FIRE_IMMUNE));
 		/* enemy21 */ list.add(makeEnemyDef("minecraft:bogged", 	1.2, 1.2, 1.5, 1.25, "", "enemy.dimdungeons.enemy21"));
 		/* enemy22 */ list.add(makeEnemyDef("minecraft:zombie_villager", 1.2, 1.2, 1.25, 1.0, "", "enemy.dimdungeons.enemy22"));
-		/* enemy23 */ list.add(makeEnemyDef("minecraft:slime",		0.8, 2.0, 1.0, 1.5, "", "enemy.dimdungeons.enemy23"));
-		/* enemy24 */ list.add(makeEnemyDef("minecraft:guardian", 	0.8, 1.0, 1.0, 1.0, "", "enemy.dimdungeons.enemy24"));
+		/* enemy23 */ list.add(makeEnemyDef("minecraft:slime",		0.8, 2.0, 1.0, 1.5, "", "enemy.dimdungeons.enemy23", EXTRA_FAST));
+		/* enemy24 */ list.add(makeEnemyDef("minecraft:guardian", 	0.8, 1.0, 1.0, 1.0, "", "enemy.dimdungeons.enemy24", SOMETIMES_INVISIBLE));
 		/* enemy25 */ list.add(makeEnemyDef("minecraft:enderman", 	1.0, 1.0, 1.0, 1.0, "", "enemy.dimdungeons.enemy25"));
 		/* enemy26 */ list.add(makeEnemyDef("minecraft:enderman", 	0.8, 1.25, 1.2, 0.4, "", "enemy.dimdungeons.enemy26"));
 		/* enemy27 */ list.add(makeEnemyDef("minecraft:zombie", 	1.0, 1.5, 1.0, 1.5, IRON_SPEAR, "enemy.dimdungeons.enemy27"));
@@ -1503,6 +1543,13 @@ public class DungeonConfig
 		public final ConfigValue<Double> basicEnemyHealthScaling;
 		public final ConfigValue<Double> advancedEnemyHealthScaling;
 
+		public static class PotionEffectDefinitionConfig
+		{
+			public ConfigValue<String> effectId;
+			public ConfigValue<Integer> effectLevel;
+			public ConfigValue<Integer> effectChance;
+		}
+
 		public static class EnemyDefinitionConfig
 		{
 			public ConfigValue<String> baseEntity;
@@ -1512,6 +1559,9 @@ public class DungeonConfig
 			public ConfigValue<Double> scaleScaling;
 			public ConfigValue<String> mainWeapon;
 			public ConfigValue<String> customName;
+			public PotionEffectDefinitionConfig potionEffect1;
+			public PotionEffectDefinitionConfig potionEffect2;
+			public PotionEffectDefinitionConfig potionEffect3;
 		}
 
 		List<EnemyDefinitionConfig> allEnemyDefinitionConfigs;
@@ -1542,6 +1592,23 @@ public class DungeonConfig
 				def.scaleScaling = builder.comment("Multiplier applied to this enemy's size scale.").define("scaleScaling", slotDefault.scaleScaling);
 				def.mainWeapon = builder.comment("Serialized NBT string for the item placed in this enemy's main hand. Leave empty for no override.").define("mainWeapon", slotDefault.mainWeapon);
 				def.customName = builder.comment("Custom display name for this enemy. Leave empty for no custom name-tagging. Can be a translation string.").define("customName", slotDefault.customName);
+
+				PotionEffectDefinitionConfig[] potionConfigs = new PotionEffectDefinitionConfig[3];
+				for (int p = 0; p < 3; p++)
+				{
+					PotionEffectDefinition effectDefault = slotDefault.potionEffects.get(p);
+					PotionEffectDefinitionConfig effectCfg = new PotionEffectDefinitionConfig();
+					builder.push(String.format("potionEffect%02d", p + 1));
+					effectCfg.effectId = builder.comment("Potion effect ID (like minecraft:strength). Leave empty to disable.").define("effectId", effectDefault.effectId);
+					effectCfg.effectLevel = builder.comment("Effect level.").define("effectLevel", effectDefault.effectLevel);
+					effectCfg.effectChance = builder.comment("Percent chance (0-100) this effect is applied on spawn.").define("effectChance", effectDefault.effectChance);
+					builder.pop();
+					potionConfigs[p] = effectCfg;
+				}
+				def.potionEffect1 = potionConfigs[0];
+				def.potionEffect2 = potionConfigs[1];
+				def.potionEffect3 = potionConfigs[2];
+
 				builder.pop();
 				allEnemyDefinitionConfigs.add(def);
 			}
@@ -1606,13 +1673,18 @@ public class DungeonConfig
 		for (int i = 0; i < MAX_ENEMY_DEFINITIONS; i++)
 		{
 			EnemyDefinition def = new EnemyDefinition();
-			def.baseEntity = ENEMIES.allEnemyDefinitionConfigs.get(i).baseEntity.get();
-			def.healthScaling = ENEMIES.allEnemyDefinitionConfigs.get(i).healthScaling.get();
-			def.speedScaling = ENEMIES.allEnemyDefinitionConfigs.get(i).speedScaling.get();
-			def.meleeScaling = ENEMIES.allEnemyDefinitionConfigs.get(i).meleeScaling.get();
-			def.scaleScaling = ENEMIES.allEnemyDefinitionConfigs.get(i).scaleScaling.get();
-			def.mainWeapon = ENEMIES.allEnemyDefinitionConfigs.get(i).mainWeapon.get();
-			def.customName = ENEMIES.allEnemyDefinitionConfigs.get(i).customName.get();
+			EnemyConfig.EnemyDefinitionConfig cfg = ENEMIES.allEnemyDefinitionConfigs.get(i);
+			def.baseEntity = cfg.baseEntity.get();
+			def.healthScaling = cfg.healthScaling.get();
+			def.speedScaling = cfg.speedScaling.get();
+			def.meleeScaling = cfg.meleeScaling.get();
+			def.scaleScaling = cfg.scaleScaling.get();
+			def.mainWeapon = cfg.mainWeapon.get();
+			def.customName = cfg.customName.get();
+			def.potionEffects = new ArrayList<>();
+			def.potionEffects.add(readPotionEffect(cfg.potionEffect1));
+			def.potionEffects.add(readPotionEffect(cfg.potionEffect2));
+			def.potionEffects.add(readPotionEffect(cfg.potionEffect3));
 			enemyDefinitions.add(def);
 		}
 
@@ -1633,6 +1705,15 @@ public class DungeonConfig
 			tempStructure.themeDungeonSize = COMMON.allThemeConfigs.get(i).themeDungeonSize.get();
 			themeSettings.add(i, tempStructure);
 		}
+	}
+
+	private static PotionEffectDefinition readPotionEffect(EnemyConfig.PotionEffectDefinitionConfig cfg)
+	{
+		PotionEffectDefinition p = new PotionEffectDefinition();
+		p.effectId = cfg.effectId.get();
+		p.effectLevel = cfg.effectLevel.get();
+		p.effectChance = cfg.effectChance.get();
+		return p;
 	}
 
 	// a helper function for translating Identifier strings (such as minecraft:chest) into blocks
