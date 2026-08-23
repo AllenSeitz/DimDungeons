@@ -22,6 +22,9 @@ import com.catastrophe573.dimdungeons.utils.DungeonUtils;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
@@ -171,122 +174,138 @@ public class BlockGoldPortal extends BaseEntityBlock
 			return;
 		}
 
-		// only teleport players! items and mobs and who knows what else must stay behind
-		if (!(entityIn instanceof ServerPlayer))
+		// only teleport players and non-hostile mobs
+		boolean isBoss = entityIn instanceof EnderDragon || entityIn instanceof WitherBoss;
+		boolean isHostile = entityIn instanceof net.minecraft.world.entity.monster.Monster || isBoss;
+		DimDungeons.logMessageError("ALLOW? boss="+isBoss+", hostile="+isHostile);
+		if (isHostile)
 		{
 			return;
 		}
 
-		if (!entityIn.isPassenger() && !entityIn.isVehicle())
+		DimDungeons.logMessageInfo("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
+
+		BlockEntity tile = worldIn.getBlockEntity(pos);
+
+		if (tile != null && tile instanceof TileEntityGoldPortal)
 		{
-			// DimDungeons.LOGGER.info("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
+			TileEntityGoldPortal te = (TileEntityGoldPortal) worldIn.getBlockEntity(pos);
 
-			BlockEntity tile = worldIn.getBlockEntity(pos);
+			BlockPos destination = te.getDestination();
+			float warpX = destination.getX();
+			float warpY = destination.getY();
+			float warpZ = destination.getZ();
+			ResourceKey<Level> destDim = te.getDestinationDimension();
+			int cooldown = te.getCooldown();
 
-			if (tile != null && tile instanceof TileEntityGoldPortal)
+			// ask vanilla for permission
+			if ( !entityIn.canChangeDimensions(worldIn, entityIn.getServer().getLevel(te.getDestinationDimension())) )
 			{
-				TileEntityGoldPortal te = (TileEntityGoldPortal) worldIn.getBlockEntity(pos);
+				return;
+			}
 
-				BlockPos destination = te.getDestination();
-				float warpX = destination.getX();
-				float warpY = destination.getY();
-				float warpZ = destination.getZ();
-				ResourceKey<Level> destDim = te.getDestinationDimension();
-				int cooldown = te.getCooldown();
+			// implement the cooldown on the portal block itself
+			int currentTick = worldIn.getServer().getTickCount();
+			if (!te.needsUpdateThisTick(currentTick))
+			{
+				return;
+			}
+			if (cooldown > 0)
+			{
+				// DimDungeons.LOGGER.info("PORTAL BLOCK COOLDOWN: " + cooldown);
+				te.setCooldown(cooldown - 1, worldIn, pos, currentTick);
+				return;
+			}
+			else
+			{
+				// DimDungeons.LOGGER.info("RESETTING COOLDOWN ON PORTAL");
+				te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
+			}
 
-				// ask vanilla for permission
-				if ( !entityIn.canChangeDimensions(worldIn, entityIn.getServer().getLevel(te.getDestinationDimension())) )
+			if (destDim.location().getPath().equals(DimDungeons.dungeon_dimension_regname))
+			{
+				// implement hardcore mode
+				if (DungeonConfig.hardcoreMode)
 				{
-					return;
+					TileEntityPortalKeyhole keyhole = findKeyholeForThisPortal(state, worldIn, pos);
+					if (keyhole != null)
+					{
+						keyhole.removeContents();
+						BlockState emptyState = worldIn.getBlockState(keyhole.getBlockPos());
+						worldIn.setBlockAndUpdate(keyhole.getBlockPos(), emptyState.setValue(BlockPortalKeyhole.FILLED, false).setValue(BlockPortalKeyhole.LIT, false));
+					}
 				}
 
-				// implement the cooldown on the portal block itself
-				int currentTick = worldIn.getServer().getTickCount();
-				if (!te.needsUpdateThisTick(currentTick))
+				// server config to disable this dimension
+				if (DungeonConfig.disableAllDungeons)
 				{
+					te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
+					if (entityIn instanceof ServerPlayer)
+					{
+						DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.disabled_dungeon_dimension");
+					}
 					return;
 				}
-				if (cooldown > 0)
+			}
+
+			// implement the whitelist or blacklist for players the try to enter the Personal Build Dimension
+			// this is actually 50% defensive coding against cases that should never happen
+			if (destDim.location().getPath().equals(DimDungeons.build_dimension_regname))
+			{
+				TileEntityPortalKeyhole keyhole = findKeyholeForThisPortal(state, worldIn, pos);
+				if (keyhole == null)
 				{
-					// DimDungeons.LOGGER.info("PORTAL BLOCK COOLDOWN: " + cooldown);
-					te.setCooldown(cooldown - 1, worldIn, pos, currentTick);
-					return;
+					DimDungeons.logMessageError("Unable to check the permissions for a personal build dimension because the keyhole is missing.");
 				}
 				else
 				{
-					// DimDungeons.LOGGER.info("RESETTING COOLDOWN ON PORTAL");
-					te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
-				}
-
-				if (destDim.location().getPath().equals(DimDungeons.dungeon_dimension_regname))
-				{
-					// implement hardcore mode
-					if (DungeonConfig.hardcoreMode)
+					ItemStack key = keyhole.getObjectInserted();
+					if (key.getItem() == ItemRegistrar.ITEM_BUILD_KEY.get())
 					{
-						TileEntityPortalKeyhole keyhole = findKeyholeForThisPortal(state, worldIn, pos);
-						if (keyhole != null)
+						DungeonKeyDataComponentRecord itemData = key.get(DimDungeons.DUNGEON_KEY_DATA);
+						ChunkPos cpos = new ChunkPos((int) itemData.dest_x(), (int) itemData.dest_z());
+
+						boolean isPlayer = entityIn instanceof ServerPlayer;
+						if (isPlayer && !PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(entityIn.getServer())).isPlayerAllowedInPersonalDimension((ServerPlayer) entityIn, cpos))
 						{
-							keyhole.removeContents();
-							BlockState emptyState = worldIn.getBlockState(keyhole.getBlockPos());
-							worldIn.setBlockAndUpdate(keyhole.getBlockPos(), emptyState.setValue(BlockPortalKeyhole.FILLED, false).setValue(BlockPortalKeyhole.LIT, false));							
-						}
-					}
-					
-					// server config to disable this dimension
-					if (DungeonConfig.disableAllDungeons)
-					{
-						te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
-						DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.disabled_dungeon_dimension");
-						return;
-					}
-				}
-
-				// implement the whitelist or blacklist for players the try to enter the Personal Build Dimension
-				// this is actually 50% defensive coding against cases that should never happen
-				if (destDim.location().getPath().equals(DimDungeons.build_dimension_regname))
-				{
-					TileEntityPortalKeyhole keyhole = findKeyholeForThisPortal(state, worldIn, pos);
-					if (keyhole == null)
-					{
-						DimDungeons.logMessageError("Unable to check the permissions for a personal build dimension because the keyhole is missing.");
-					}
-					else
-					{
-						ItemStack key = keyhole.getObjectInserted();
-						if (key.getItem() == ItemRegistrar.ITEM_BUILD_KEY.get())
-						{
-							DungeonKeyDataComponentRecord itemData = key.get(DimDungeons.DUNGEON_KEY_DATA);
-							ChunkPos cpos = new ChunkPos((int) itemData.dest_x(), (int) itemData.dest_z());
-
-							if (!PersonalBuildData.get(DungeonUtils.getPersonalBuildWorld(entityIn.getServer())).isPlayerAllowedInPersonalDimension((ServerPlayer) entityIn, cpos))
-							{
-								te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
-								DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.player_failed_teleport");
-								return;
-							}
-							else
-							{
-								DimDungeons.logMessageInfo("You passed the permissions check!");
-							}
+							te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
+							DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.player_failed_teleport");
+							return;
 						}
 						else
 						{
-							DimDungeons.logMessageError("Unable to check the permissions for a personal build dimension because the keyhole does not contain a key?");
+							DimDungeons.logMessageInfo("You passed the permissions check!");
 						}
 					}
-
-					// server config to disable this dimension
-					if (DungeonConfig.disablePersonalBuildDimension)
+					else
 					{
-						te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
-						DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.disabled_build_dimension");
-						return;
+						DimDungeons.logMessageError("Unable to check the permissions for a personal build dimension because the keyhole does not contain a key?");
 					}
 				}
 
+				// server config to disable this dimension
+				if (DungeonConfig.disablePersonalBuildDimension)
+				{
+					te.setCooldown(DungeonConfig.portalCooldownTicks, worldIn, pos, currentTick);
+					if (entityIn instanceof ServerPlayer)
+					{
+						DungeonUtils.giveSecuritySystemPrompt((ServerPlayer) entityIn, "security.dimdungeons.disabled_build_dimension");
+					}
+					return;
+				}
+			}
+
+			if ( entityIn instanceof ServerPlayer )
+			{
 				DimDungeons.logMessageInfo("Player is using a gold portal to teleport to (" + warpX + " " + warpY + " " + warpZ + ") in dimension " + destDim.location().toString() + ".");
 				ServerPlayer player = (ServerPlayer) entityIn;
 				actuallyPerformTeleport(player, player.getServer().getLevel(te.getDestinationDimension()), warpX, warpY, warpZ, getReturnYawForDirection(te.getExitDirection()));
+			}
+			else
+			{
+				// we allow non-players to use portals now
+				DimDungeons.logMessageInfo("NON-PLAYER is using a gold portal to teleport to (" + warpX + " " + warpY + " " + warpZ + ") in dimension " + destDim.location().toString() + ".");
+				actuallyPerformTeleportForNonPlayer(entityIn, entityIn.getServer().getLevel(te.getDestinationDimension()), warpX, warpY, warpZ, getReturnYawForDirection(te.getExitDirection()));
 			}
 		}
 	}
@@ -316,7 +335,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 
 		// this is only used when hardcore players teleport into a dungeon, otherwise ignore
 		List<ServerPlayer> multiplayerHardcore = null;
-		
+
 		// if the player just entered a dungeon then force them to face north
 		if (DungeonUtils.isDimensionDungeon(dim))
 		{
@@ -333,7 +352,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 				int range = DungeonConfig.hardcoreMultiplayerRadius;
 				multiplayerHardcore = player.level().getEntitiesOfClass(ServerPlayer.class, new AABB(pos.add(-range, -range, -range), pos.add(range + 1, range + 1, range + 1)), getSelector());
 			}
-			
+
 			// also check for teleporting into an advanced dungeon for the first time
 			DungeonRoom entrance = DungeonData.get(dim).getRoomAtPos(cpos);
 			if (entrance != null && entrance.dungeonType == DungeonType.ADVANCED)
@@ -375,7 +394,7 @@ public class BlockGoldPortal extends BaseEntityBlock
 		//CustomTeleporter tele = new CustomTeleporter(dim);
 		//tele.setDestPos(x, y, z, destYaw, destPitch);
 		//player.changeDimension(dim, tele);
-		
+
 		// also teleport nearby hardcore players
 		if ( multiplayerHardcore != null )
 		{
@@ -384,8 +403,38 @@ public class BlockGoldPortal extends BaseEntityBlock
 				friend.changeDimension(dt);
 			}
 		}
-		
+
 		return player;
+	}
+
+	protected Entity actuallyPerformTeleportForNonPlayer(Entity entity, ServerLevel dim, double x, double y, double z, float yaw)
+	{
+		float destPitch = 0;
+		float destYaw = yaw;
+
+		// if the entity just entered a dungeon then force them to face north
+		if (DungeonUtils.isDimensionDungeon(dim))
+		{
+			x -= 0.00;
+			z += 1.0D;
+
+			ChunkPos cpos = new ChunkPos(new BlockPos((int) x, (int) y, (int) z));
+		}
+		else if (DungeonUtils.isDimensionPersonalBuild(dim) && !DungeonUtils.isPersonalBuildChunk(new BlockPos((int) x, (int) y, (int) z)))
+		{
+			x += 1.0D; // an additional hack to center on the two block wide portal
+			z += 0.5D;
+		}
+		else
+		{
+			x += 0.5D; // stand on the target block
+			z += 0.5D;
+		}
+
+		DimensionTransition dt = new DimensionTransition(dim, new Vec3(x,y,z), new Vec3(0,0,0), destYaw, destPitch, false, DO_NOTHING);
+		entity.changeDimension(dt);
+
+		return entity;
 	}
 
 	// this is now only used a fail safe in case a BlockGoldPortal somehow ends up 'unassigned' (such as a world being imported from 1.15)
