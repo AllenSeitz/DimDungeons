@@ -318,39 +318,39 @@ public class DungeonPlacement
 		if (westRoom == null)
 		{
 			// place 12 stone bricks
-			world.setBlock(startPos.south(7).east(0).above(0), fillBlock, 2);
-			world.setBlock(startPos.south(7).east(1).above(0), fillBlock, 2);
-			world.setBlock(startPos.south(8).east(0).above(0), fillBlock, 2);
-			world.setBlock(startPos.south(8).east(1).above(0), fillBlock, 2);
-			world.setBlock(startPos.south(7).east(0).above(1), fillBlock, 2);
-			world.setBlock(startPos.south(7).east(1).above(1), fillBlock, 2);
-			world.setBlock(startPos.south(8).east(0).above(1), fillBlock, 2);
-			world.setBlock(startPos.south(8).east(1).above(1), fillBlock, 2);
-			world.setBlock(startPos.south(7).east(0).above(2), fillBlock, 2);
-			world.setBlock(startPos.south(7).east(1).above(2), fillBlock, 2);
-			world.setBlock(startPos.south(8).east(0).above(2), fillBlock, 2);
-			world.setBlock(startPos.south(8).east(1).above(2), fillBlock, 2);
+			world.setBlockAndUpdate(startPos.south(7).east(0).above(0), fillBlock);
+			world.setBlockAndUpdate(startPos.south(7).east(1).above(0), fillBlock);
+			world.setBlockAndUpdate(startPos.south(8).east(0).above(0), fillBlock);
+			world.setBlockAndUpdate(startPos.south(8).east(1).above(0), fillBlock);
+			world.setBlockAndUpdate(startPos.south(7).east(0).above(1), fillBlock);
+			world.setBlockAndUpdate(startPos.south(7).east(1).above(1), fillBlock);
+			world.setBlockAndUpdate(startPos.south(8).east(0).above(1), fillBlock);
+			world.setBlockAndUpdate(startPos.south(8).east(1).above(1), fillBlock);
+			world.setBlockAndUpdate(startPos.south(7).east(0).above(2), fillBlock);
+			world.setBlockAndUpdate(startPos.south(7).east(1).above(2), fillBlock);
+			world.setBlockAndUpdate(startPos.south(8).east(0).above(2), fillBlock);
+			world.setBlockAndUpdate(startPos.south(8).east(1).above(2), fillBlock);
 			// and erase 2 red concrete from the roof
-			world.setBlock(startPos.south(7).east(0).above(7), airBlock, 2);
-			world.setBlock(startPos.south(8).east(0).above(7), airBlock, 2);
+			world.setBlockAndUpdate(startPos.south(7).east(0).above(7), airBlock);
+			world.setBlockAndUpdate(startPos.south(8).east(0).above(7), airBlock);
 		}
 		else
 		{
 			// extend the doorway on the minimap
 			if (westRoom.roomType != RoomType.LARGE && westRoom.roomType != RoomType.LARGE_DUMMY)
 			{
-				world.setBlock(startPos.south(7).east(1).above(7), redBlock, 2);
-				world.setBlock(startPos.south(8).east(1).above(7), redBlock, 2);
-				world.setBlock(startPos.south(7).east(2).above(7), redBlock, 2);
-				world.setBlock(startPos.south(8).east(2).above(7), redBlock, 2);
-				world.setBlock(startPos.south(7).east(3).above(7), redBlock, 2);
-				world.setBlock(startPos.south(8).east(3).above(7), redBlock, 2);
-				world.setBlock(startPos.south(7).east(4).above(7), redBlock, 2);
-				world.setBlock(startPos.south(8).east(4).above(7), redBlock, 2);
-				world.setBlock(startPos.south(7).east(5).above(7), redBlock, 2);
-				world.setBlock(startPos.south(8).east(5).above(7), redBlock, 2);
-				world.setBlock(startPos.south(7).east(6).above(7), redBlock, 2);
-				world.setBlock(startPos.south(8).east(6).above(7), redBlock, 2);
+				world.setBlockAndUpdate(startPos.south(7).east(1).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(8).east(1).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(7).east(2).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(8).east(2).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(7).east(3).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(8).east(3).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(7).east(4).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(8).east(4).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(7).east(5).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(8).east(5).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(7).east(6).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(8).east(6).above(7), redBlock);
 			}
 		}
 
@@ -358,39 +358,39 @@ public class DungeonPlacement
 		if (eastRoom == null)
 		{
 			// place 12 stone bricks
-			world.setBlock(startPos.south(7).east(14).above(0), fillBlock, 2);
-			world.setBlock(startPos.south(7).east(15).above(0), fillBlock, 2);
-			world.setBlock(startPos.south(8).east(14).above(0), fillBlock, 2);
-			world.setBlock(startPos.south(8).east(15).above(0), fillBlock, 2);
-			world.setBlock(startPos.south(7).east(14).above(1), fillBlock, 2);
-			world.setBlock(startPos.south(7).east(15).above(1), fillBlock, 2);
-			world.setBlock(startPos.south(8).east(14).above(1), fillBlock, 2);
-			world.setBlock(startPos.south(8).east(15).above(1), fillBlock, 2);
-			world.setBlock(startPos.south(7).east(14).above(2), fillBlock, 2);
-			world.setBlock(startPos.south(7).east(15).above(2), fillBlock, 2);
-			world.setBlock(startPos.south(8).east(14).above(2), fillBlock, 2);
-			world.setBlock(startPos.south(8).east(15).above(2), fillBlock, 2);
+			world.setBlockAndUpdate(startPos.south(7).east(14).above(0), fillBlock);
+			world.setBlockAndUpdate(startPos.south(7).east(15).above(0), fillBlock);
+			world.setBlockAndUpdate(startPos.south(8).east(14).above(0), fillBlock);
+			world.setBlockAndUpdate(startPos.south(8).east(15).above(0), fillBlock);
+			world.setBlockAndUpdate(startPos.south(7).east(14).above(1), fillBlock);
+			world.setBlockAndUpdate(startPos.south(7).east(15).above(1), fillBlock);
+			world.setBlockAndUpdate(startPos.south(8).east(14).above(1), fillBlock);
+			world.setBlockAndUpdate(startPos.south(8).east(15).above(1), fillBlock);
+			world.setBlockAndUpdate(startPos.south(7).east(14).above(2), fillBlock);
+			world.setBlockAndUpdate(startPos.south(7).east(15).above(2), fillBlock);
+			world.setBlockAndUpdate(startPos.south(8).east(14).above(2), fillBlock);
+			world.setBlockAndUpdate(startPos.south(8).east(15).above(2), fillBlock);
 			// and erase 2 red concrete from the roof
-			world.setBlock(startPos.south(7).east(15).above(7), airBlock, 2);
-			world.setBlock(startPos.south(8).east(15).above(7), airBlock, 2);
+			world.setBlockAndUpdate(startPos.south(7).east(15).above(7), airBlock);
+			world.setBlockAndUpdate(startPos.south(8).east(15).above(7), airBlock);
 		}
 		else
 		{
 			// extend the doorway on the minimap
 			if (eastRoom.roomType != RoomType.LARGE && eastRoom.roomType != RoomType.LARGE_DUMMY)
 			{
-				world.setBlock(startPos.south(7).east(14).above(7), redBlock, 2);
-				world.setBlock(startPos.south(8).east(14).above(7), redBlock, 2);
-				world.setBlock(startPos.south(7).east(13).above(7), redBlock, 2);
-				world.setBlock(startPos.south(8).east(13).above(7), redBlock, 2);
-				world.setBlock(startPos.south(7).east(12).above(7), redBlock, 2);
-				world.setBlock(startPos.south(8).east(12).above(7), redBlock, 2);
-				world.setBlock(startPos.south(7).east(11).above(7), redBlock, 2);
-				world.setBlock(startPos.south(8).east(11).above(7), redBlock, 2);
-				world.setBlock(startPos.south(7).east(10).above(7), redBlock, 2);
-				world.setBlock(startPos.south(8).east(10).above(7), redBlock, 2);
-				world.setBlock(startPos.south(7).east(9).above(7), redBlock, 2);
-				world.setBlock(startPos.south(8).east(9).above(7), redBlock, 2);
+				world.setBlockAndUpdate(startPos.south(7).east(14).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(8).east(14).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(7).east(13).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(8).east(13).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(7).east(12).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(8).east(12).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(7).east(11).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(8).east(11).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(7).east(10).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(8).east(10).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(7).east(9).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(8).east(9).above(7), redBlock);
 			}
 		}
 
@@ -405,18 +405,18 @@ public class DungeonPlacement
 			if (northRoom.roomType != RoomType.LARGE && northRoom.roomType != RoomType.LARGE_DUMMY)
 			{
 				// extend the doorway on the minimap
-				world.setBlock(startPos.south(1).east(7).above(7), redBlock, 2);
-				world.setBlock(startPos.south(1).east(8).above(7), redBlock, 2);
-				world.setBlock(startPos.south(2).east(7).above(7), redBlock, 2);
-				world.setBlock(startPos.south(2).east(8).above(7), redBlock, 2);
-				world.setBlock(startPos.south(3).east(7).above(7), redBlock, 2);
-				world.setBlock(startPos.south(3).east(8).above(7), redBlock, 2);
-				world.setBlock(startPos.south(4).east(7).above(7), redBlock, 2);
-				world.setBlock(startPos.south(4).east(8).above(7), redBlock, 2);
-				world.setBlock(startPos.south(5).east(7).above(7), redBlock, 2);
-				world.setBlock(startPos.south(5).east(8).above(7), redBlock, 2);
-				world.setBlock(startPos.south(6).east(7).above(7), redBlock, 2);
-				world.setBlock(startPos.south(6).east(8).above(7), redBlock, 2);
+				world.setBlockAndUpdate(startPos.south(1).east(7).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(1).east(8).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(2).east(7).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(2).east(8).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(3).east(7).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(3).east(8).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(4).east(7).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(4).east(8).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(5).east(7).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(5).east(8).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(6).east(7).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(6).east(8).above(7), redBlock);
 			}
 		}
 
@@ -430,18 +430,18 @@ public class DungeonPlacement
 			if (southRoom.roomType != RoomType.LARGE && southRoom.roomType != RoomType.LARGE_DUMMY)
 			{
 				// extend the doorway on the minimap
-				world.setBlock(startPos.south(14).east(7).above(7), redBlock, 2);
-				world.setBlock(startPos.south(14).east(8).above(7), redBlock, 2);
-				world.setBlock(startPos.south(13).east(7).above(7), redBlock, 2);
-				world.setBlock(startPos.south(13).east(8).above(7), redBlock, 2);
-				world.setBlock(startPos.south(12).east(7).above(7), redBlock, 2);
-				world.setBlock(startPos.south(12).east(8).above(7), redBlock, 2);
-				world.setBlock(startPos.south(11).east(7).above(7), redBlock, 2);
-				world.setBlock(startPos.south(11).east(8).above(7), redBlock, 2);
-				world.setBlock(startPos.south(10).east(7).above(7), redBlock, 2);
-				world.setBlock(startPos.south(10).east(8).above(7), redBlock, 2);
-				world.setBlock(startPos.south(9).east(7).above(7), redBlock, 2);
-				world.setBlock(startPos.south(9).east(8).above(7), redBlock, 2);
+				world.setBlockAndUpdate(startPos.south(14).east(7).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(14).east(8).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(13).east(7).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(13).east(8).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(12).east(7).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(12).east(8).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(11).east(7).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(11).east(8).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(10).east(7).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(10).east(8).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(9).east(7).above(7), redBlock);
+				world.setBlockAndUpdate(startPos.south(9).east(8).above(7), redBlock);
 			}
 		}
 	}
@@ -514,7 +514,7 @@ public class DungeonPlacement
 		{
 			for (StructureBlockInfo info : template.filterBlocks(position, placementsettings, Blocks.RED_CARPET))
 			{
-				world.setBlock(info.pos(), Blocks.GREEN_CARPET.defaultBlockState(), 3);
+				world.setBlockAndUpdate(info.pos(), Blocks.GREEN_CARPET.defaultBlockState());
 			}
 		}
 
@@ -542,7 +542,7 @@ public class DungeonPlacement
 
 		if ("ReturnPortal".equals(name))
 		{
-			world.setBlock(pos, BlockRegistrar.BLOCK_GOLD_PORTAL.get().defaultBlockState(), 2); // erase this data block
+			world.setBlockAndUpdate(pos, BlockRegistrar.BLOCK_GOLD_PORTAL.get().defaultBlockState()); // erase this data block
 			TileEntityGoldPortal te = (TileEntityGoldPortal) world.getBlockEntity(pos);
 			if (te != null)
 			{
@@ -552,7 +552,7 @@ public class DungeonPlacement
 		}
 		else if ("BackToEntrance".equals(name))
 		{
-			world.setBlock(pos, BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get().defaultBlockState(), 2); // erase this data block
+			world.setBlockAndUpdate(pos, BlockRegistrar.BLOCK_LOCAL_TELEPORTER.get().defaultBlockState()); // erase this data block
 			TileEntityLocalTeleporter te = (TileEntityLocalTeleporter) world.getBlockEntity(pos);
 			if (te != null)
 			{
@@ -567,7 +567,7 @@ public class DungeonPlacement
 		}
 		else if ("LockItStoneBrick".equals(name))
 		{
-			world.setBlock(pos, Blocks.STONE_BRICKS.defaultBlockState(), 2); // erase this data block
+			world.setBlockAndUpdate(pos, Blocks.STONE_BRICKS.defaultBlockState()); // erase this data block
 		}
 		else if ("LockIt".equals(name))
 		{
@@ -575,7 +575,7 @@ public class DungeonPlacement
 		}
 		else if ("LockWithCode".equals(name))
 		{
-			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+			world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()); // erase this data block
 			BlockEntity te = world.getBlockEntity(pos.below());
 
 			if (te instanceof BaseContainerBlockEntity)
@@ -592,7 +592,7 @@ public class DungeonPlacement
 		}
 		else if ("FortuneTeller".equals(name))
 		{
-			world.setBlock(pos, Blocks.STONE_BRICKS.defaultBlockState(), 2); // erase this data block
+			world.setBlockAndUpdate(pos, Blocks.STONE_BRICKS.defaultBlockState()); // erase this data block
 
 			// put a message inside the dispenser
 			BlockEntity te = world.getBlockEntity(pos.below());
@@ -647,13 +647,13 @@ public class DungeonPlacement
 					}
 				}
 
-				world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
-				world.setBlock(pos.below(), Blocks.AIR.defaultBlockState(), 2); // and erase the chest below it
+				world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()); // erase this data block
+				world.setBlockAndUpdate(pos.below(), Blocks.AIR.defaultBlockState()); // and erase the chest below it
 			}
 		}
 		else if ("PlaceL2Key".equals(name))
 		{
-			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+			world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()); // erase this data block
 			TileEntityPortalKeyhole te = (TileEntityPortalKeyhole) world.getBlockEntity(pos.below());
 			if (te != null)
 			{
@@ -666,7 +666,7 @@ public class DungeonPlacement
 			String tempDoornum = name.replace("TeleporterKey_", "");
 			int doornum = Integer.valueOf(tempDoornum);
 
-			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+			world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()); // erase this data block
 			TileEntityPortalKeyhole te = (TileEntityPortalKeyhole) world.getBlockEntity(pos.below(3));
 			if (te != null)
 			{
@@ -690,22 +690,22 @@ public class DungeonPlacement
 		}
 		else if ("SummonWitch".equals(name))
 		{
-			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
+			world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
 			spawnEnemyHere(pos, "minecraft:witch", world, room.theme, room.dungeonType);
 		}
 		else if ("SummonWaterEnemy".equals(name))
 		{
-			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
+			world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
 			spawnEnemyHere(pos, "minecraft:guardian", world, room.theme, room.dungeonType);
 		}
 		else if ("SummonEnderman".equals(name))
 		{
-			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
+			world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
 			spawnEnemyHere(pos, "minecraft:enderman", world, room.theme, room.dungeonType);
 		}
 		else if ("SummonEnemy1".equals(name))
 		{
-			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
+			world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
 
 			int poolSize = DungeonConfig.basicEnemySet1.size();
 			String mobid = DungeonConfig.basicEnemySet1.get(rand.nextInt(poolSize));
@@ -724,7 +724,7 @@ public class DungeonPlacement
 		}
 		else if ("SummonEnemy2".equals(name) || "SummonKeyholder".equals(name) )
 		{
-			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
+			world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
 
 			int poolSize = DungeonConfig.basicEnemySet2.size();
 			String mobid = DungeonConfig.basicEnemySet2.get(rand.nextInt(poolSize));
@@ -767,7 +767,7 @@ public class DungeonPlacement
 		else
 		{
 			DimDungeons.logMessageWarn("UNHANDLED DATA BLOCK WITH name = " + name);
-			world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+			world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()); // erase this data block
 		}
 	}
 
@@ -853,7 +853,7 @@ public class DungeonPlacement
 
 	private static void fillChestBelow(BlockPos pos, ResourceLocation lootTable, LevelAccessor world, RandomSource rand)
 	{
-		world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2); // erase this data block
+		world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3); // erase this data block
 		ResourceKey<LootTable> lootTableKey = ResourceKey.create(Registries.LOOT_TABLE, lootTable);
 		RandomizableContainer.setBlockEntityLootTable(world, rand, pos.below(), lootTableKey);
 	}
