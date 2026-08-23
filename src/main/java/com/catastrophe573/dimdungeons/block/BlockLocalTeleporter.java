@@ -2,7 +2,10 @@ package com.catastrophe573.dimdungeons.block;
 
 import javax.annotation.Nullable;
 
+import com.catastrophe573.dimdungeons.DimDungeons;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.server.TickTask;
+import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -24,6 +27,7 @@ import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.Vec3;
 
 import static net.minecraft.world.level.portal.DimensionTransition.DO_NOTHING;
+import static net.minecraft.world.level.portal.DimensionTransition.PLAY_PORTAL_SOUND;
 
 public class BlockLocalTeleporter extends BaseEntityBlock
 {
@@ -37,7 +41,7 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 
 	public BlockLocalTeleporter()
 	{
-		super(BlockBehaviour.Properties.of().pushReaction(PushReaction.BLOCK).randomTicks().strength(9999).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
+		super(BlockBehaviour.Properties.of().pushReaction(PushReaction.IGNORE).randomTicks().strength(9999).sound(SoundType.GLASS).noCollission().lightLevel((p) -> 15));
 	}
 
 	@Override
@@ -81,14 +85,13 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 			return;
 		}
 
-		// only teleport players! items and mobs and who knows what else must stay
-		// behind
+		// only teleport players! items and mobs and who knows what else must stay behind
 		if (!(entityIn instanceof ServerPlayer))
 		{
 			return;
 		}
 
-		if (!entityIn.isPassenger() && !entityIn.isVehicle() && entityIn.canUsePortal(false))
+		if (entityIn.canUsePortal(false))
 		{
 			BlockEntity tile = worldIn.getBlockEntity(pos);
 
@@ -110,13 +113,28 @@ public class BlockLocalTeleporter extends BaseEntityBlock
 
 	protected Entity actuallyPerformTeleport(ServerPlayer player, ServerLevel dim, double x, double y, double z, float destYaw, float destPitch)
 	{
-		// old 1.20 logic - remove this once the port is finished
-		//CustomTeleporter tele = new CustomTeleporter(dim);
-		//tele.setDestPos(x, y, z, destYaw, destPitch);
-		//player.changeDimension(dim, tele); // changing within the same dimension, but still teleport safely anyways
-
-		DimensionTransition dt = new DimensionTransition(dim, new Vec3(x, y, z), new Vec3(0, 0, 0), destYaw, destPitch, false, DO_NOTHING);
-		player.changeDimension(dt);
+		if ( player.level() == dim )
+		{
+			// "player moved wrongly" is the dumbest thing in modded Minecraft
+			// schedule the teleport to happen later, to avoid Minecraft's built in anticheat
+			var server = dim.getServer();
+			if (server != null)
+			{
+				server.tell(new TickTask(server.getTickCount(), () ->
+				{
+					if (player.connection != null)
+					{
+						player.teleportTo(dim, x, y, z, destYaw, destPitch);
+					}
+				}));
+			}
+		}
+		else
+		{
+			// somehow we're using a "local teleporter" to go to another dimension? idk, I'll allow it to work I guess
+			DimensionTransition dt = new DimensionTransition(dim, new Vec3(x, y, z), Vec3.ZERO, destYaw, destPitch, false, PLAY_PORTAL_SOUND);
+			player.changeDimension(dt);
+		}
 
 		return player;
 	}
