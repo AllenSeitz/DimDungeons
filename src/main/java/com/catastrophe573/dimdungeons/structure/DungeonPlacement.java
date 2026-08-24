@@ -494,7 +494,7 @@ public class DungeonPlacement
 		}
 
 		// this is the big call to the structure block
-		boolean success = template.placeInWorld((ServerLevelAccessor) world, position, sizeRange, placementsettings, world.getRandom(), 2);
+		boolean success = template.placeInWorld((ServerLevelAccessor) world, position, sizeRange, placementsettings, world.getRandom(), 3);
 
 		// handle data blocks - this code block is copied from TemplateStructurePiece
 		for (StructureTemplate.StructureBlockInfo template$blockinfo : template.filterBlocks(position, placementsettings, Blocks.STRUCTURE_BLOCK))

@@ -177,13 +177,12 @@ public class BlockGoldPortal extends BaseEntityBlock
 		// only teleport players and non-hostile mobs
 		boolean isBoss = entityIn instanceof EnderDragon || entityIn instanceof WitherBoss;
 		boolean isHostile = entityIn instanceof net.minecraft.world.entity.monster.Monster || isBoss;
-		DimDungeons.logMessageError("ALLOW? boss="+isBoss+", hostile="+isHostile);
 		if (isHostile)
 		{
 			return;
 		}
 
-		DimDungeons.logMessageInfo("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
+		//DimDungeons.logMessageInfo("Entity " + entityIn.getName().getString() + " just entered a gold portal.");
 
 		BlockEntity tile = worldIn.getBlockEntity(pos);
 
