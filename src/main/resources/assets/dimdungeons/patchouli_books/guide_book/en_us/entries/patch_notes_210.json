@@ -1,0 +1,16 @@
+{
+    "name": "Version 210",
+    "icon": "minecraft:book",
+    "category": "dimdungeons:patch_notes",	
+	"sortnum": 210,
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(li)Non-hostile entities can now use portals! $(li)Lighting issues have been fixed. $(li)Updated block and item textures. $(li)Fixed decorated pots."
+        },
+        {
+            "type": "text",
+            "text": "$(li)Various room fixes. $(li)Players can now drink milk buckets in the dungeon dimension. $(li)Fixed this very guidebook."
+        }		
+    ]
+}
